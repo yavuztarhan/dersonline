@@ -13,13 +13,14 @@ import {
   Award,
   Zap,
   Eye,
-  EyeOff
+  EyeOff,
+  Shuffle
 } from 'lucide-react';
 
 interface WordClue {
   id: string;
   question: string;
-  word: string; // Turkish uppercase without special accents if needed or standard TR uppercase
+  word: string;
   hint: string;
   color: string;
 }
@@ -69,25 +70,10 @@ const CLUES: WordClue[] = [
   }
 ];
 
-// Fixed 10x12 Word Search Grid with Turkish Characters (Ğ, Ş, Ç, I)
-// Words placed:
-// Row 0: D O Ğ R U P A R Ç A S I (DOĞRUPARÇASI - 12 letters)
-// Row 2, Col 1-5: N O K T A (5 letters)
-// Row 4, Col 2-5: I Ş I N (4 letters)
-// Row 6, Col 1-5: D O Ğ R U (5 letters)
-// Row 8, Col 2-7: C E T V E L (6 letters)
-// Row 5, Col 8-9: O K (2 letters)
-const FIXED_GRID = [
-  ['D', 'O', 'Ğ', 'R', 'U', 'P', 'A', 'R', 'Ç', 'A', 'S', 'I'],
-  ['M', 'K', 'L', 'T', 'B', 'Z', 'Y', 'P', 'Q', 'E', 'F', 'H'],
-  ['A', 'N', 'O', 'K', 'T', 'A', 'S', 'V', 'B', 'K', 'L', 'M'],
-  ['B', 'R', 'P', 'S', 'F', 'G', 'H', 'M', 'N', 'A', 'C', 'E'],
-  ['T', 'Y', 'I', 'Ş', 'I', 'N', 'K', 'L', 'P', 'O', 'K', 'Z'],
-  ['K', 'M', 'A', 'B', 'C', 'D', 'E', 'F', 'O', 'K', 'S', 'T'],
-  ['E', 'D', 'O', 'Ğ', 'R', 'U', 'H', 'J', 'K', 'L', 'M', 'N'],
-  ['F', 'G', 'H', 'P', 'R', 'S', 'T', 'Y', 'Z', 'A', 'B', 'C'],
-  ['M', 'A', 'C', 'E', 'T', 'V', 'E', 'L', 'K', 'P', 'R', 'S'],
-  ['X', 'Y', 'Z', 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L']
+const TURKISH_CHARS = [
+  'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
+  'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
+  'Ü', 'V', 'Y', 'Z'
 ];
 
 interface CellPos {
@@ -95,18 +81,130 @@ interface CellPos {
   col: number;
 }
 
+interface PlacedWord {
+  id: string;
+  word: string;
+  cells: CellPos[];
+}
+
+const GRID_SIZE = 12;
+
+function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
+  const directions = [
+    { dr: 0, dc: 1 },   // Yatay sağa
+    { dr: 0, dc: -1 },  // Yatay sola
+    { dr: 1, dc: 0 },   // Dikey aşağı
+    { dr: -1, dc: 0 },  // Dikey yukarı
+    { dr: 1, dc: 1 },   // Çapraz sağ-aşağı
+    { dr: -1, dc: 1 },  // Çapraz sağ-yukarı
+    { dr: 1, dc: -1 },  // Çapraz sol-aşağı
+    { dr: -1, dc: -1 }  // Çapraz sol-yukarı
+  ];
+
+  const sortedClues = [...clues].sort((a, b) => b.word.length - a.word.length);
+
+  for (let attempt = 0; attempt < 250; attempt++) {
+    const grid: string[][] = Array.from({ length: size }, () => Array(size).fill(''));
+    const placed: PlacedWord[] = [];
+    let allPlaced = true;
+
+    for (const clue of sortedClues) {
+      const letters = Array.from(clue.word);
+      const len = letters.length;
+      let wordPlaced = false;
+
+      // Randomize directions list
+      const shuffledDirs = [...directions].sort(() => Math.random() - 0.5);
+
+      for (let tries = 0; tries < 250; tries++) {
+        const dir = shuffledDirs[tries % shuffledDirs.length];
+        const minR = dir.dr < 0 ? len - 1 : 0;
+        const maxR = dir.dr > 0 ? size - len : size - 1;
+        const minC = dir.dc < 0 ? len - 1 : 0;
+        const maxC = dir.dc > 0 ? size - len : size - 1;
+
+        if (minR > maxR || minC > maxC) continue;
+
+        const r = Math.floor(Math.random() * (maxR - minR + 1)) + minR;
+        const c = Math.floor(Math.random() * (maxC - minC + 1)) + minC;
+
+        let canFit = true;
+        const wordCells: CellPos[] = [];
+
+        for (let i = 0; i < len; i++) {
+          const currR = r + i * dir.dr;
+          const currC = c + i * dir.dc;
+          const existing = grid[currR][currC];
+          if (existing !== '' && existing !== letters[i]) {
+            canFit = false;
+            break;
+          }
+          wordCells.push({ row: currR, col: currC });
+        }
+
+        if (canFit) {
+          for (let i = 0; i < len; i++) {
+            grid[wordCells[i].row][wordCells[i].col] = letters[i];
+          }
+          placed.push({ id: clue.id, word: clue.word, cells: wordCells });
+          wordPlaced = true;
+          break;
+        }
+      }
+
+      if (!wordPlaced) {
+        allPlaced = false;
+        break;
+      }
+    }
+
+    if (allPlaced) {
+      // Fill empty cells with random Turkish characters
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          if (grid[r][c] === '') {
+            grid[r][c] = TURKISH_CHARS[Math.floor(Math.random() * TURKISH_CHARS.length)];
+          }
+        }
+      }
+      return { grid, placed };
+    }
+  }
+
+  // Fallback simple placement if needed
+  const fallbackGrid = Array.from({ length: size }, () =>
+    Array.from({ length: size }, () => TURKISH_CHARS[Math.floor(Math.random() * TURKISH_CHARS.length)])
+  );
+  return { grid: fallbackGrid, placed: [] };
+}
+
 export function WordSearchGame() {
   const { playSound, addPoints, unlockBadge, role } = useApp();
 
+  const [gridMatrix, setGridMatrix] = useState<string[][]>([]);
+  const [placedWords, setPlacedWords] = useState<PlacedWord[]>([]);
   const [foundWordIds, setFoundWordIds] = useState<string[]>([]);
   const [selectedCells, setSelectedCells] = useState<CellPos[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [revealedHints, setRevealedHints] = useState<Record<string, boolean>>({});
   const [showAllAnswers, setShowAllAnswers] = useState(false);
-
-  // Check if cell is in a found word
-  // Map of cells to colors
   const [foundCellColors, setFoundCellColors] = useState<Record<string, string>>({});
+
+  // Initialize random grid on load
+  useEffect(() => {
+    initRandomGrid();
+  }, []);
+
+  const initRandomGrid = () => {
+    const generated = generateWordGrid(CLUES, GRID_SIZE);
+    setGridMatrix(generated.grid);
+    setPlacedWords(generated.placed);
+    setFoundWordIds([]);
+    setSelectedCells([]);
+    setFoundCellColors({});
+    setRevealedHints({});
+    setShowAllAnswers(false);
+  };
 
   const isCellSelected = (r: number, c: number) => {
     return selectedCells.some((cell) => cell.row === r && cell.col === c);
@@ -115,6 +213,19 @@ export function WordSearchGame() {
   const getCellColor = (r: number, c: number) => {
     const key = `${r}-${c}`;
     return foundCellColors[key] || null;
+  };
+
+  // Check if cell belongs to a placed answer (for Teacher Mode)
+  const getTeacherAnswerColor = (r: number, c: number) => {
+    if (!showAllAnswers) return null;
+    const found = placedWords.find((pw) =>
+      pw.cells.some((cell) => cell.row === r && cell.col === c)
+    );
+    if (found) {
+      const clue = CLUES.find((cl) => cl.id === found.id);
+      return clue?.color || '#10b396';
+    }
+    return null;
   };
 
   const startSelection = (r: number, c: number) => {
@@ -128,7 +239,6 @@ export function WordSearchGame() {
     const start = selectedCells[0];
     const end = { row: r, col: c };
 
-    // Calculate straight line cells (horizontal, vertical, diagonal)
     const newCells: CellPos[] = [];
     const dRow = end.row - start.row;
     const dCol = end.col - start.col;
@@ -140,7 +250,6 @@ export function WordSearchGame() {
       const stepRow = dRow === 0 ? 0 : dRow / Math.abs(dRow);
       const stepCol = dCol === 0 ? 0 : dCol / Math.abs(dCol);
 
-      // Only allow straight horizontal, vertical, or 45deg diagonal
       if (dRow === 0 || dCol === 0 || Math.abs(dRow) === Math.abs(dCol)) {
         for (let i = 0; i <= steps; i++) {
           newCells.push({
@@ -160,16 +269,14 @@ export function WordSearchGame() {
     if (!isSelecting) return;
     setIsSelecting(false);
 
-    if (selectedCells.length < 2) {
+    if (selectedCells.length < 2 || gridMatrix.length === 0) {
       setSelectedCells([]);
       return;
     }
 
-    // Build the string from selected cells
-    const forwardWord = selectedCells.map((c) => FIXED_GRID[c.row][c.col]).join('');
-    const reverseWord = forwardWord.split('').reverse().join('');
+    const forwardWord = selectedCells.map((c) => gridMatrix[c.row][c.col]).join('');
+    const reverseWord = Array.from(forwardWord).reverse().join('');
 
-    // Check against clues
     const matchedClue = CLUES.find(
       (clue) =>
         !foundWordIds.includes(clue.id) &&
@@ -181,7 +288,6 @@ export function WordSearchGame() {
       setFoundWordIds((prev) => [...prev, matchedClue.id]);
       addPoints(20);
 
-      // Save colors for found cells
       const newColors = { ...foundCellColors };
       selectedCells.forEach((cell) => {
         newColors[`${cell.row}-${cell.col}`] = matchedClue.color;
@@ -206,15 +312,6 @@ export function WordSearchGame() {
     setSelectedCells([]);
   };
 
-  const resetGame = () => {
-    playSound('clear');
-    setFoundWordIds([]);
-    setSelectedCells([]);
-    setFoundCellColors({});
-    setRevealedHints({});
-    setShowAllAnswers(false);
-  };
-
   const toggleHint = (clueId: string) => {
     playSound('click');
     setRevealedHints((prev) => ({
@@ -235,7 +332,7 @@ export function WordSearchGame() {
             <Search className="w-3.5 h-3.5 text-teal-300" />
             <span>Soru Temelli Matematiksel Kelime Avı</span>
           </div>
-          <h3 className="text-xl font-black text-white">Geometrik Kavramları Sorularla Keşfet</h3>
+          <h3 className="text-xl font-black text-white">Rastgele Karışık Geometri Bulmacası</h3>
           <p className="text-xs text-teal-100 mt-1 max-w-xl">
             Sol paneldeki soruları dikkatlice okuyunuz; cevabı bulmaca tablosunda harfleri parmağınızla/fareyle seçerek işaretleyiniz!
           </p>
@@ -253,11 +350,15 @@ export function WordSearchGame() {
           )}
 
           <button
-            onClick={resetGame}
-            className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors"
-            title="Yeniden Başlat"
+            onClick={() => {
+              playSound('clear');
+              initRandomGrid();
+            }}
+            className="px-3.5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95"
+            title="Kelimeleri Yeniden Karıştır ve Dağıt"
           >
-            <RotateCcw className="w-4 h-4" />
+            <Shuffle className="w-4 h-4" />
+            <span>Yeniden Karıştır</span>
           </button>
         </div>
       </div>
@@ -276,6 +377,17 @@ export function WordSearchGame() {
               </p>
             </div>
           </div>
+
+          <button
+            onClick={() => {
+              playSound('select');
+              initRandomGrid();
+            }}
+            className="whitespace-nowrap px-6 py-3 rounded-xl bg-white text-emerald-950 font-black text-xs shadow-md hover:bg-emerald-50 transition-all flex items-center gap-1.5"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>Yeni Bulmaca Karıştır</span>
+          </button>
         </div>
       )}
 
@@ -292,7 +404,7 @@ export function WordSearchGame() {
               <span className="text-xs font-bold text-teal-600">Her Doğru: +20 Puan</span>
             </div>
 
-            <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
               {CLUES.map((clue, idx) => {
                 const isFound = foundWordIds.includes(clue.id);
                 const isHintOpen = revealedHints[clue.id] || showAllAnswers;
@@ -363,19 +475,20 @@ export function WordSearchGame() {
             
             <div className="flex items-center justify-between w-full text-xs font-semibold text-slate-500 border-b border-slate-100 pb-2">
               <span>Harflerin üzerinden basılı tutarak veya tıklayarak kelimeyi seçin</span>
-              <span className="text-teal-700 font-bold">10 × 12 Izgara</span>
+              <span className="text-teal-700 font-bold">{GRID_SIZE} × {GRID_SIZE} Dinamik Izgara</span>
             </div>
 
-            {/* Letter Grid Matrix */}
+            {/* Dynamic Letter Grid Matrix */}
             <div
-              className="grid grid-cols-12 gap-1.5 sm:gap-2 p-3 bg-slate-900 rounded-2xl select-none touch-none shadow-inner max-w-full overflow-x-auto"
+              className="grid grid-cols-12 gap-1 sm:gap-1.5 p-3 bg-slate-900 rounded-2xl select-none touch-none shadow-inner max-w-full overflow-x-auto"
               onPointerLeave={endSelection}
               onPointerUp={endSelection}
             >
-              {FIXED_GRID.map((row, rIdx) =>
+              {gridMatrix.map((row, rIdx) =>
                 row.map((letter, cIdx) => {
                   const selected = isCellSelected(rIdx, cIdx);
                   const foundColor = getCellColor(rIdx, cIdx);
+                  const teacherColor = getTeacherAnswerColor(rIdx, cIdx);
 
                   let cellBg = 'bg-slate-800 text-white hover:bg-slate-700';
 
@@ -383,6 +496,8 @@ export function WordSearchGame() {
                     cellBg = 'bg-teal-400 text-slate-950 font-black scale-105 ring-2 ring-white shadow-lg';
                   } else if (foundColor) {
                     cellBg = 'text-white font-black shadow-md';
+                  } else if (teacherColor) {
+                    cellBg = 'text-white font-black ring-1 ring-white/50 opacity-90';
                   }
 
                   return (
@@ -390,9 +505,12 @@ export function WordSearchGame() {
                       key={`${rIdx}-${cIdx}`}
                       onPointerDown={() => startSelection(rIdx, cIdx)}
                       onPointerEnter={() => updateSelection(rIdx, cIdx)}
-                      className={`w-7 h-7 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-xs sm:text-base font-black cursor-pointer transition-all duration-100 ${cellBg}`}
+                      className={`w-6 h-6 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-xs sm:text-sm font-black cursor-pointer transition-all duration-100 ${cellBg}`}
                       style={{
-                        backgroundColor: !selected && foundColor ? foundColor : undefined
+                        backgroundColor:
+                          !selected && (foundColor || teacherColor)
+                            ? (foundColor || teacherColor || undefined)
+                            : undefined
                       }}
                     >
                       {letter}
@@ -403,13 +521,13 @@ export function WordSearchGame() {
             </div>
 
             {/* Quick Helper Legend */}
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-[11px] text-slate-500 font-medium">
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2 text-[11px] text-slate-500 font-medium">
               <span className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded-full bg-teal-500" /> Yatay & Çapraz Seçim Yapılabilir
+                <span className="w-2.5 h-2.5 rounded-full bg-teal-500" /> Yatay, Dikey & Çapraz
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded-full bg-emerald-500" /> Bulunan Kelimeler Rengarenk Kilitlenir
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Otomatik Rastgele Dağılım
               </span>
             </div>
 
