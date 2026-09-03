@@ -259,12 +259,12 @@ export const CURRICULUM_DATA: Grade[] = [
                       },
                       assessment: {
                         title: 'Kazanım Değerlendirme ve Pekiştirme Testi',
-                        instructions: 'Soruları dikkatle okuyunuz. Öğretmen modunda cevapları açabilir, öğrenci modunda anında dönüt alabilirsiniz.',
+                        instructions: 'Soruları dikkatle okuyunuz. Soruları tek tek çözerek gerçek hayat modellerini analiz ediniz.',
                         questions: [
                           {
                             id: 'q1',
-                            questionText: 'Bir ucunda elektrik direği bulunan, diğer ucu uzay boşluğuna doğru kesintisiz devam eden lazer ışığı demeti hangi geometrik kavram ile modellenir?',
-                            context: 'Günlük Hayat Modellemesi',
+                            questionText: 'Fırtınalı bir gecede sahil fenerinin kulesindeki lambadan çıkıp gökyüzüne ve denize doğru kesintisiz ilerleyen sarı ışık demeti hangi geometrik kavram ile modellenir?',
+                            context: 'Deniz Feneri & Optik',
                             options: [
                               'A) Doğru',
                               'B) Doğru Parçası',
@@ -272,36 +272,106 @@ export const CURRICULUM_DATA: Grade[] = [
                               'D) Düzlem'
                             ],
                             correctOptionIndex: 2,
-                            explanation: 'Elektrik direği sabit bir başlangıç noktasıdır, lazerin sonsuza ilerlemesi ise tek yönde sınırsızlığı ifade eder. Bu model IŞINdır ve [AB şeklinde sembolize edilir.',
-                            bloomLevel: 'Kavrama ve Modelleme'
+                            explanation: 'Fener lambası sabit kapalı bir başlangıç noktasıdır [A], uzaya doğru kesintisiz ilerleyen ışık ise tek yönde sınırsızlığı ifade eder. Bu model IŞINdır ve [AB şeklinde gösterilir.',
+                            bloomLevel: 'Kavrama & Modelleme'
                           },
                           {
                             id: 'q2',
-                            questionText: 'Aşağıdaki sembolik gösterimlerden hangisi iki ucu da sınırlı olan ve cetvelle uzunluğu ölçülebilen bir geometrik yapıyı ifade eder?',
-                            context: 'Sembolik Gösterim',
+                            questionText: 'Mimar Defne, iki taş kule arasına 24 metre uzunluğunda gergin bir çelik köprü kirişi yerleştirmiştir. Bu köprü kirişi için aşağıdakilerden hangisi KESİNLİKLE doğrudur?',
+                            context: 'Köprü Mühendisliği',
                             options: [
-                              'A) AB',
-                              'B) [AB]',
-                              'C) [AB',
-                              'D) BA>'
+                              'A) İki ucu da sınırsızca uzar.',
+                              'B) Bir ucu kapalı, diğer ucu oklu bir ışındır.',
+                              'C) İki ucu da sınırlı bir Doğru Parçasıdır ve boyu ölçülebilir.',
+                              'D) Bir doğru modelidir ve uzunluğu hesaplanamaz.'
                             ],
-                            correctOptionIndex: 1,
-                            explanation: 'Köşeli parantezlerin her iki tarafta da olması [AB], çizginin A ve B noktalarında sınırlandığını (Doğru Parçası) belirtir.',
-                            bloomLevel: 'Bilgi ve Sembolik Gösterim'
+                            correctOptionIndex: 2,
+                            explanation: 'İki kule arasında sabit sınırları bulunan ve 24 metre olarak cetvelle/metreyle ölçülebilen çizgi modeli bir DOĞRU PARÇASI ([AB]) modelidir.',
+                            bloomLevel: 'Analiz & Akıl Yürütme'
                           },
                           {
                             id: 'q3',
-                            questionText: 'Mimar Sinan, bir cami kemeri inşa ederken iki sütun arasına 12 metrelik gergin bir çelik halat çekmiştir. Bu halat ile ilgili hangisi KESİNLİKLE doğrudur?',
-                            context: 'Beceri Temelli Problem',
+                            questionText: 'Açık denizde gemiden baktığımızda gökyüzü ile denizin birleştiği ve gözümüzün görebildiği her iki yöne doğru sınırsızca devam eden Ufuk Çizgisi hangi geometrik kavrama en yakın modeldir?',
+                            context: 'Coğrafi Gözlem & Doğa',
                             options: [
-                              'A) İki ucu da sonsuza kadar uzatılabilir.',
-                              'B) Bir doğru modelidir ve boyu ölçülemez.',
-                              'C) Başlangıcı var ama bitişi yoktur.',
-                              'D) Bir doğru parçası modelidir ve uzunluğu 12 metredir.'
+                              'A) Doğru',
+                              'B) Işın',
+                              'C) Doğru Parçası',
+                              'D) Nokta'
                             ],
-                            correctOptionIndex: 3,
-                            explanation: 'İki sütun arasında sınırlandırılmış gergin halat bir doğru parçasıdır. Her iki ucu da sınırlı olduğu için net bir uzunluğa sahiptir.',
-                            bloomLevel: 'Analiz ve Çıkarım'
+                            correctOptionIndex: 0,
+                            explanation: 'Ufuk çizgisi her iki uca doğru da kesintisiz ve sınırsız devam ettiği için çift yönlü uzayan DOĞRU (AB) kavramı ile modellenir.',
+                            bloomLevel: 'Kavrama & İlişkilendirme'
+                          },
+                          {
+                            id: 'q4',
+                            questionText: 'Kaptan Bilge harita üzerinde gizli limanın yerini belirlemek için kalemin sivri ucuyla küçük bir iz bırakmış ve yanına "A" yazmıştır. Bu iz geometride neyi temsil eder?',
+                            context: 'Haritacılık & Navigasyon',
+                            options: [
+                              'A) Kalınlığı 2 cm olan bir doğru parçasıdır.',
+                              'B) Sadece konum belirten, boyutu (eni-boyu) olmayan bir Noktadır.',
+                              'C) Bir ucu sonsuza giden ışıltılı bir ışındır.',
+                              'D) Bir yüzey alanına sahip geometrik şekildir.'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Noktanın boyutu (eni, boyu, derinliği) yoktur; sadece uzayda veya düzlemde kesin bir konumu belirtir ve büyük harfle isimlendirilir.',
+                            bloomLevel: 'Temel Bilgi & Tanım'
+                          },
+                          {
+                            id: 'q5',
+                            questionText: 'Karayolları mühendisi, A şehri ile B şehri arasına 45 kilometrelik dümdüz bir otoban şeridi inşa etmiştir. Bu otoban şeridinin sembolik matematiksel gösterimi hangisidir?',
+                            context: 'Ulaşım & Altyapı',
+                            options: [
+                              'A) AB veya d',
+                              'B) [AB]',
+                              'C) [AB',
+                              'D) (AB>'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'A şehri başlangıç, B şehri ise bitiş sınırıdır. İki ucu da kapalı ve uzunluğu 45 km olan bu yol [AB] Doğru Parçası sembolü ile gösterilir.',
+                            bloomLevel: 'Sembolik Gösterim & Uygulama'
+                          },
+                          {
+                            id: 'q6',
+                            questionText: 'Güneşten yayılarak Dünya\'mıza ulaşan güneş ışıkları ile ilgili yapılan aşağıdaki yorumlardan hangisi matematiksel olarak DOĞRUDUR?',
+                            context: 'Astronomi & Güneş Sistemi',
+                            options: [
+                              'A) Güneş sabit başlangıç noktası olduğu için bir IŞIN modelidir.',
+                              'B) İki ucu da sonsuza gittiği için bir DOĞRU modelidir.',
+                              'C) Uzunluğu metreyle tam olarak ölçülebilen bir DOĞRU PARÇASI modelidir.',
+                              'D) Kalınlığı ve yüzeyi olan bir DÜZLEM modelidir.'
+                            ],
+                            correctOptionIndex: 0,
+                            explanation: 'Güneş küresi ışığın çıktığı sabit başlangıç noktasıdır [G], uzaya yayılan ışık ise tek yönde sonsuza gider. Bu nedenle bir IŞIN modelidir.',
+                            bloomLevel: 'Akıl Yürütme & Çıkarım'
+                          },
+                          {
+                            id: 'q7',
+                            questionText: 'Aşağıda verilen geometrik kavramlardan hangisinin uzunluğu cetvel veya şerit metre kullanılarak HESAPLANABİLİR?',
+                            context: 'Ölçme & Değerlendirme',
+                            options: [
+                              'A) d Doğrusu',
+                              'B) [KL Işını',
+                              'C) [MN] Doğru Parçası',
+                              'D) AB Doğrusu'
+                            ],
+                            correctOptionIndex: 2,
+                            explanation: 'Doğru ve Işın en az bir yönde sonsuza uzadığı için uzunlukları ölçülemez. Yalnızca her iki ucu da sınırlı olan [MN] Doğru Parçasının boyu ölçülebilir.',
+                            bloomLevel: 'Kritik Düşünme & Analiz'
+                          },
+                          {
+                            id: 'q8',
+                            questionText: 'Bir sınıfta öğretmen tahtaya iki ucu oklu düz bir çizgi çizmiş ve üzerine K ve L noktalarını işaretlemiştir. Öğrencilerden bu çizimi sembolle ifade etmelerini istemiştir. Hangi öğrencinin cevabı DOĞRUDUR?',
+                            context: 'Sınıf İçi Akıllı Tahta Uygulaması',
+                            options: [
+                              'A) Ali: "[KL]"',
+                              'B) Ayşe: "[KL"',
+                              'C) Can: "KL veya d"',
+                              'D) Zeynep: "|KL|"'
+                            ],
+                            correctOptionIndex: 2,
+                            explanation: 'İki ucunda da ok olan ve sınırsız uzanan çizgi bir doğrudur. Sembolik olarak KL veya küçük harfle d doğrusu olarak gösterilir.',
+                            bloomLevel: 'Kavramsal Değerlendirme'
                           }
                         ]
                       }
