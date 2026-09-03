@@ -541,10 +541,24 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               {/* Draw Geometric Objects */}
               {objects.map((obj) => {
                 const { p1, p2, type, color, id } = obj;
+                const dx = p2.x - p1.x;
+                const dy = p2.y - p1.y;
+                const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                const angle = Math.atan2(dy, dx);
+                const midX = (p1.x + p2.x) / 2;
+                const midY = (p1.y + p2.y) / 2;
+
+                const getArrowPoints = (x: number, y: number, dirAngle: number, arrowLen = 14, arrowWidth = 7) => {
+                  const cos = Math.cos(dirAngle);
+                  const sin = Math.sin(dirAngle);
+                  const leftX = x - arrowLen * cos - arrowWidth * sin;
+                  const leftY = y - arrowLen * sin + arrowWidth * cos;
+                  const rightX = x - arrowLen * cos + arrowWidth * sin;
+                  const rightY = y - arrowLen * sin - arrowWidth * cos;
+                  return `${x},${y} ${leftX},${leftY} ${rightX},${rightY}`;
+                };
 
                 if (type === 'segment') {
-                  const midX = (p1.x + p2.x) / 2;
-                  const midY = (p1.y + p2.y) / 2;
                   return (
                     <g key={id}>
                       <line
@@ -557,12 +571,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         strokeLinecap="round"
                       />
                       {/* Segment Bounds visualizer */}
-                      <circle cx={p1.x} cy={p1.y} r="5" fill={color} />
-                      <circle cx={p2.x} cy={p2.y} r="5" fill={color} />
+                      <circle cx={p1.x} cy={p1.y} r="5" fill={color} stroke="#ffffff" strokeWidth="1.5" />
+                      <circle cx={p2.x} cy={p2.y} r="5" fill={color} stroke="#ffffff" strokeWidth="1.5" />
                       {/* Label badge */}
                       <rect
                         x={midX - 25}
-                        y={midY - 22}
+                        y={midY - 24}
                         width="50"
                         height="18"
                         rx="6"
@@ -571,7 +585,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       />
                       <text
                         x={midX}
-                        y={midY - 10}
+                        y={midY - 11}
                         textAnchor="middle"
                         fill="#ffffff"
                         fontSize="10"
@@ -584,13 +598,11 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 }
 
                 if (type === 'ray') {
-                  // Extend line slightly past p2 to show ray direction
-                  const dx = p2.x - p1.x;
-                  const dy = p2.y - p1.y;
-                  const len = Math.sqrt(dx * dx + dy * dy) || 1;
-                  const extendLen = Math.min(len + 40, 500);
+                  // Extend line past p2 in direction angle
+                  const extendLen = Math.max(len + 45, 80);
                   const extX = p1.x + (dx / len) * extendLen;
                   const extY = p1.y + (dy / len) * extendLen;
+                  const rayArrow = getArrowPoints(extX, extY, angle);
 
                   return (
                     <g key={id}>
@@ -601,22 +613,27 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         y2={extY}
                         stroke={color}
                         strokeWidth="4"
-                        markerEnd="url(#arrow)"
+                        strokeLinecap="round"
                       />
+                      <polygon points={rayArrow} fill={color} />
                       {/* Closed start point */}
+                      <circle cx={p1.x} cy={p1.y} r="6" fill={color} stroke="#ffffff" strokeWidth="2" />
+                      {/* Label badge */}
                       <rect
-                        x={p1.x - 5}
-                        y={p1.y - 5}
-                        width="10"
-                        height="10"
-                        fill={color}
+                        x={midX - 32}
+                        y={midY - 24}
+                        width="64"
+                        height="18"
+                        rx="6"
+                        fill="#0f172a"
+                        opacity="0.85"
                       />
-                      {/* Label */}
                       <text
-                        x={p1.x + 10}
-                        y={p1.y - 12}
-                        fill={color}
-                        fontSize="12"
+                        x={midX}
+                        y={midY - 11}
+                        textAnchor="middle"
+                        fill="#ffffff"
+                        fontSize="10"
                         fontWeight="bold"
                       >
                         [{p1.label}{p2.label} Işını
@@ -626,14 +643,17 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 }
 
                 if (type === 'line') {
-                  // Line extends both sides
-                  const dx = p2.x - p1.x;
-                  const dy = p2.y - p1.y;
-                  const len = Math.sqrt(dx * dx + dy * dy) || 1;
-                  const ext1X = p1.x - (dx / len) * 50;
-                  const ext1Y = p1.y - (dy / len) * 50;
-                  const ext2X = p2.x + (dx / len) * 50;
-                  const ext2Y = p2.y + (dy / len) * 50;
+                  // Line extends both sides away from p1 and p2
+                  const extendBy = 55;
+                  const ext1X = p1.x - (dx / len) * extendBy;
+                  const ext1Y = p1.y - (dy / len) * extendBy;
+                  const ext2X = p2.x + (dx / len) * extendBy;
+                  const ext2Y = p2.y + (dy / len) * extendBy;
+
+                  // Arrow 1 at ext1 points backward (angle + PI)
+                  const arrow1 = getArrowPoints(ext1X, ext1Y, angle + Math.PI);
+                  // Arrow 2 at ext2 points forward (angle)
+                  const arrow2 = getArrowPoints(ext2X, ext2Y, angle);
 
                   return (
                     <g key={id}>
@@ -644,14 +664,26 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         y2={ext2Y}
                         stroke={color}
                         strokeWidth="4"
-                        markerStart="url(#arrow-line-start)"
-                        markerEnd="url(#arrow-line-end)"
+                        strokeLinecap="round"
+                      />
+                      <polygon points={arrow1} fill={color} />
+                      <polygon points={arrow2} fill={color} />
+                      {/* Label badge centered between points */}
+                      <rect
+                        x={midX - 38}
+                        y={midY - 24}
+                        width="76"
+                        height="18"
+                        rx="6"
+                        fill="#0f172a"
+                        opacity="0.85"
                       />
                       <text
-                        x={p1.x - 10}
-                        y={p1.y - 14}
-                        fill={color}
-                        fontSize="12"
+                        x={midX}
+                        y={midY - 11}
+                        textAnchor="middle"
+                        fill="#ffffff"
+                        fontSize="10"
                         fontWeight="bold"
                       >
                         {p1.label}{p2.label} Doğrusu
