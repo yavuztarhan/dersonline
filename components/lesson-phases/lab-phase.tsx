@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { LabPhaseData } from '@/types';
 import { useApp } from '@/lib/store';
+import { ExperimentBench } from '@/components/lesson-phases/experiment-bench';
 import {
   Shapes,
   Dot,
@@ -17,7 +18,9 @@ import {
   Layers,
   HelpCircle,
   Award,
-  Undo2
+  Undo2,
+  FlaskConical,
+  Compass
 } from 'lucide-react';
 
 interface LabPhaseProps {
@@ -49,6 +52,10 @@ const COLORS = ['#10b396', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#ef4444'
 
 export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const { playSound, unlockBadge, addPoints, role } = useApp();
+
+  const [labMode, setLabMode] = useState<'experiment' | 'canvas'>(
+    data.toolType === 'experiment-bench' ? 'experiment' : 'canvas'
+  );
   
   const [activeTool, setActiveTool] = useState<'point' | 'segment' | 'ray' | 'line'>('point');
   // Starts completely empty as requested
@@ -297,43 +304,71 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold uppercase tracking-wider mb-2">
             <Shapes className="w-3.5 h-3.5 text-teal-600" />
-            <span>2. Aşama: İnteraktif Çizim Laboratuvarı</span>
+            <span>2. Aşama: İnteraktif Geometri Laboratuvarı</span>
           </div>
           <h2 className="text-2xl font-black text-slate-800">{data.title}</h2>
           <p className="text-xs text-slate-500 mt-1">{data.taskGoal}</p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* View Mode Switcher (Experiment Bench vs Freehand Canvas) */}
+        <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
           <button
-            onClick={undoLast}
-            disabled={objects.length === 0 && points.length === 0}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 font-bold text-xs border border-slate-200 transition-colors flex items-center gap-1.5"
-            title="Son İşlemi Geri Al"
+            onClick={() => {
+              setLabMode('experiment');
+              playSound('click');
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all ${
+              labMode === 'experiment'
+                ? 'bg-teal-600 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
           >
-            <Undo2 className="w-3.5 h-3.5" />
-            <span>Geri Al</span>
+            <FlaskConical className="w-4 h-4" />
+            <span>🧪 Hipotez Masası</span>
           </button>
 
           <button
-            onClick={loadPresets}
-            className="px-4 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold text-xs border border-teal-200 transition-colors flex items-center gap-1.5"
+            onClick={() => {
+              setLabMode('canvas');
+              playSound('click');
+            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all ${
+              labMode === 'canvas'
+                ? 'bg-teal-600 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-            <span>Örnekleri Yükle</span>
-          </button>
-
-          <button
-            onClick={clearAll}
-            className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors flex items-center gap-1.5"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span>Temizle</span>
+            <Compass className="w-4 h-4" />
+            <span>📐 Serbest Çizim</span>
           </button>
         </div>
       </div>
 
-      {/* Main Lab Workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* EXPERIMENT BENCH MODE */}
+      {labMode === 'experiment' ? (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          <ExperimentBench />
+
+          {/* Jump to Phase 3 */}
+          <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
+            <div className="text-xs text-slate-500 font-bold">
+              3 Deneyi de tamamladıktan sonra kavram bulmacasına geçebilirsiniz.
+            </div>
+            <button
+              onClick={() => {
+                playSound('select');
+                onNextPhase();
+              }}
+              className="px-6 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 active:scale-95"
+            >
+              <span>3. Aşamaya Geç: Bulmaca & Oyunlar</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* FREEHAND CANVAS MODE */
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in duration-200">
         
         {/* Left Toolbar */}
         <div className="lg:col-span-1 space-y-4">
@@ -778,7 +813,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         </div>
 
       </div>
+    )}
 
-    </div>
-  );
+  </div>
+);
 }

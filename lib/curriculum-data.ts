@@ -380,57 +380,310 @@ export const CURRICULUM_DATA: Grade[] = [
                   {
                     id: 'MAT.5.3.2',
                     code: 'MAT.5.3.2',
-                    title: 'İki Noktanın Birbirine Göre Konumu ve Yön Analizi',
-                    shortTitle: 'İki Noktanın Konumu',
-                    description: 'Bir noktanın diğer bir noktaya göre konumunu yön ve birim kullanarak ifade eder.',
+                    title: 'Temel Geometrik Çizimlere Dayalı Deneyimlerini Yansıtabilme',
+                    shortTitle: 'Geometrinin İzinde: Çıkarım ve Keşif',
+                    description: 'Temel geometrik çizimlerin özelliklerine yönelik mantıksal çıkarımlar yapar, deneyimlerini yansıtır ve çıkarımlarını farklı örnekler üzerinden değerlendirir.',
                     gradeId: 'grade-5',
                     subjectId: 'mat-5',
                     unitId: 'unit-5-geo',
                     topicId: 'topic-5-geo-1',
                     durationMinutes: 40,
                     pedagogyGuide: {
-                      maarifSDBs: ['SDB1.1: Kendini Yönlendirme', 'SDB3.1: Mantıksal Akıl Yürütme'],
-                      processComponents: ['SB2.2: Kartezyen ve Yönsel Temsil', 'SB3.1: Karşılaştırma'],
-                      learningGoals: ['Yukarı/Aşağı, Sağ/Sol yön birimlerini kullanarak bağıl konum açıklar.'],
-                      teacherTips: ['Izgara kağıt ve satranç tahtası analojisi kullanın.'],
-                      misconceptions: ['Referans noktasını karıştırıp yönü ters söylemek.'],
-                      keyQuestions: ['B noktası A noktasının neresinde kalır?']
+                      maarifSDBs: [
+                        'SDB1.1: Öz Farkındalık',
+                        'SDB1.2: Öz Düzenleme',
+                        'SDB1.3: Öz Yansıtma',
+                        'SDB2.2: İş Birliği',
+                        'SDB2.3: Sosyal Farkındalık'
+                      ],
+                      processComponents: [
+                        'a) Temel geometrik çizimlere dayalı deneyimlerini gözden geçirir.',
+                        'b) Temel geometrik çizimlerin özelliklerine yönelik çıkarım yapar.',
+                        'c) Çıkarımını farklı örnekler üzerinden değerlendirir.'
+                      ],
+                      learningGoals: [
+                        'Doğru, doğru parçası ve ışının ayırt edici özelliklerini mantıksal olarak karşılaştırır.',
+                        'Doğru parçasının neden ölçülebilir, doğru ve ışının neden ölçülemez olduğunu gerekçelendirir.',
+                        'Başlangıç noktası ortak iki ışının açı oluşturduğunu keşfeder.',
+                        'Aynı doğruya indirilen iki dikmenin birbirine paralel olduğunu deneyimler.'
+                      ],
+                      teacherTips: [
+                        'Öğrencilere doğrudan kural vermek yerine deney masasında cetvel ile sonsuzluk (∞) ve ölçülebilirlik hipotezini test ettiriniz.',
+                        'Edirne Selimiye Camii planı üzerinden milli ve estetik değerlerimizi (D7, D19) hissettiriniz.'
+                      ],
+                      misconceptions: [
+                        'Işın ve doğrunun kağıda çizilen boyutu kadar olduğunu düşünüp ölçülebileceğini sanmak.',
+                        'Aynı doğruya dik olan doğruların kesişeceğini düşünmek.'
+                      ],
+                      keyQuestions: [
+                        'Neden güneş ışınları sonsuza giderken, minare merdiveninin basamağı iki uçtan sınırlıdır?',
+                        'Bir doğruya çizilen iki dikme sonsuza kadar uzatılsa birbiriyle karşılaşır mı?'
+                      ]
                     },
                     phases: {
                       story: {
-                        title: 'Labirentte Hazine Avı',
-                        character: { name: 'Piri Reis Çırağı', role: 'Haritacı', avatar: '🗺️' },
-                        scenario: 'Eski bir deniz haritasında gizli adadaki hazineye ulaşmak için adımları yönlere göre tam hesaplamalıyız.',
-                        realLifeConnection: 'GPS ve navigasyon sistemleri de noktaların bağıl konumlarına göre rota belirler.',
-                        reflectionQuestion: '3 birim sağ, 4 birim yukarı gitmek ile tam tersi aynı yere ulaştırır mı?',
-                        keyTakeaway: 'Konum her zaman bir referans noktasına göre belirlenir.'
+                        title: 'Tarihi Haritanın Şifresi: Mimar Sinan’ın Notları',
+                        character: {
+                          name: 'Çırak Hasan & Mimar Sinan',
+                          role: 'Tarihi Geometri Dedektifleri',
+                          avatar: '🏛️'
+                        },
+                        scenario: 'Çırak Hasan, Mimar Sinan’ın Edirne Selimiye Camii planları üzerindeki gizemli geometrik notları inceliyor. Çizimler var ancak mimari tanımlar zamanla silinmiş. Hasan, çizimlerin özelliklerini çıkararak haritanın şifresini çözmek zorunda!',
+                        realLifeConnection: 'Mimaride kullanılan her çizgi bir amaca hizmet eder: Minare basamakları sınırlı mesafelerdir ([AB]), kubbeden yayılan ışık hüzmeleri ise sınırsız ışınlardır ([CD).',
+                        reflectionQuestion: 'Neden güneş ışınları sonsuza giderken minare merdiveninin basamağı iki uçtan sınırlıdır? Hangisini cetvelle ölçebiliriz?',
+                        keyTakeaway: 'Geometrik modeller soyut kurallar değil; evrenin, mimarinin ve ışığın mantıksal çıkarım dilidir.',
+                        pages: [
+                          {
+                            id: 'p2-1',
+                            pageNumber: 1,
+                            chapterTitle: '1. Bölüm: Selimiye Camii Planındaki Gizem',
+                            conceptTitle: 'Silinmiş Geometrik Notlar',
+                            conceptBadge: 'Çıkarım Başlangıcı',
+                            symbolicCode: 'Selimiye Planı',
+                            narrativeText: 'Çırak Hasan, Selimiye Camii’nin kubbe planını açtığında Mimar Sinan’ın düştüğü gizemli geometrik çizgilerle karşılaştı. Çizimlerin yanındaki tanımlar silinmişti.',
+                            characterDialogue: {
+                              speaker: 'Çırak Hasan',
+                              text: 'Ustam bu çizimleri öylesine yapmamış! Her çizginin başlangıcı, bitişi ve doğrultusu büyük bir mimari sır taşıyor.'
+                            },
+                            visualScene: {
+                              type: 'selimiye-plan',
+                              caption: 'Selimiye Camii planı üzerindeki gizemli geometrik doğrular ve ışınlar.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Plandaki kubbe merkezine tıklayarak başlangıç referans noktasını belirleyin!',
+                              actionLabel: 'Kubbe Merkezini Belirle (•)',
+                              feedbackRevealed: 'Referans noktası belirlendi! Mimaride tüm ölçümler ve ışınlar bu merkez noktadan başlar.'
+                            },
+                            mathTakeaway: 'Tüm geometrik inşalar ve açılar sabit bir referans noktasıyla başlar.'
+                          },
+                          {
+                            id: 'p2-2',
+                            pageNumber: 2,
+                            chapterTitle: '2. Bölüm: Işık ve Taşın Karşılaştırılması',
+                            conceptTitle: 'Işın ve Doğru Parçası Farkı',
+                            conceptBadge: 'Işın vs Doğru Parçası',
+                            symbolicCode: '[AB vs [CD]',
+                            narrativeText: 'Kubbe pencerelerinden süzülen güneş ışığı sonsuzluğa uzanırken, minareye tırmanan taş basamakların iki yanı sağlam duvarlarla sınırlandırılmıştı.',
+                            characterDialogue: {
+                              speaker: 'Mimar Sinan',
+                              text: 'Evlat, ışık bir kaynaktan çıkar ve sınırsızca yayılır ([AB). Merdiven basamağı ise iki uçtan sınırlı kalmalıdır ([CD]), yoksa üzerinde yürüyemezsin!'
+                            },
+                            visualScene: {
+                              type: 'ray-angle',
+                              caption: 'Pencerelerden yayılan ışıklar ile taş basamakların geometrik karşılaştırması.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Işık ile merdiven basamağını karşılaştırın!',
+                              actionLabel: 'Özellikleri Karşılaştır ⚖️',
+                              feedbackRevealed: 'Çıkarım yapıldı: Işının bir ucu sonsuzdur [AB, doğru parçasının her iki ucu sınırlıdır [CD].'
+                            },
+                            mathTakeaway: 'Doğru parçası iki uçtan sınırlandığı için güvenli bir mesafe oluşturur; ışın ise tek yönde sonsuz bir doğrultu tanımlar.'
+                          },
+                          {
+                            id: 'p2-3',
+                            pageNumber: 3,
+                            chapterTitle: '3. Bölüm: Cetvelin Sırrı: Ölçülebilirlik',
+                            conceptTitle: 'Neden Doğru Parçası Ölçülebilir?',
+                            conceptBadge: 'Ölçülebilirlik Hipotezi',
+                            symbolicCode: '|AB| = 8 cm',
+                            narrativeText: 'Hasan eline tahta cetveli aldı. Doğru ve ışının üzerine cetveli koyduğunda bir türlü sonuna ulaşamadı. Ancak doğru parçasını bir saniyede ölçebildi.',
+                            characterDialogue: {
+                              speaker: 'Çırak Hasan',
+                              text: 'Buldum! İki ucu da kapalı olduğu için yalnızca doğru parçasının kesin bir boyu vardır. Doğru ve ışın sonsuz olduğu için ölçülemez!'
+                            },
+                            visualScene: {
+                              type: 'bridge-segment',
+                              caption: 'Cetvelle yapılan ölçüm hipotezi: Yalnızca sınırlandırılmış parçalar ölçülebilir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Cetvel ile doğru parçasının uzunluğunu test edin!',
+                              actionLabel: 'Cetvel Hipotezini Test Et 📏',
+                              feedbackRevealed: 'Hipotez Doğrulandı! Doğru ve ışında cetvel sonsuz (∞) verir; doğru parçası net 8 cm çıkar.'
+                            },
+                            mathTakeaway: 'Sınırlılık ölçülebilirliğin tek şartıdır. İki ucu kapalı olmayan hiçbir çizginin uzunluğu sayısal olarak hesaplanamaz.'
+                          },
+                          {
+                            id: 'p2-4',
+                            pageNumber: 4,
+                            chapterTitle: '4. Bölüm: Göğe Yükselen Çifte Minareler',
+                            conceptTitle: 'Diklik ve Paralellik Çıkarımı',
+                            conceptBadge: 'Diklik ⊥ ve Paralellik ∥',
+                            symbolicCode: 'd1 ∥ d2, d ⊥ taban',
+                            narrativeText: 'Selimiye’nin heybetli minareleri zemine tam 90 derecelik dik açıyla yükseliyordu. Hasan fark etti ki, aynı zemine dik olan minareler göğe kadar uzansa bile asla birbirine değmiyordu.',
+                            characterDialogue: {
+                              speaker: 'Mimar Sinan & Hasan',
+                              text: 'Aynı düzleme dik indirilen iki doğru, birbirine daima paraleldir! Asla kesişmezler ve aralarındaki mesafe hep aynı kalır.'
+                            },
+                            visualScene: {
+                              type: 'perpendicular-parallel',
+                              caption: 'Aynı taban doğrusuna dik olan minare doğruları birbirine paraleldir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Minarelerin zeminle yaptığı 90 derecelik dik açıları test edin!',
+                              actionLabel: 'Çifte Dikmeyi İncele 📐',
+                              feedbackRevealed: 'Harika! Zeminle 90° açı yapan iki dikme birbirine paralel (d1 ∥ d2) olur ve asla kesişmez.'
+                            },
+                            mathTakeaway: 'Aynı doğruya dik olan iki farklı doğru birbiriyle hiçbir zaman kesişmez; bu doğrular birbirine paraleldir.'
+                          },
+                          {
+                            id: 'p2-5',
+                            pageNumber: 5,
+                            chapterTitle: '5. Bölüm: Çırak Hasan’ın Çıkarım Defteri',
+                            conceptTitle: 'Büyük Çıkarım Tablosu',
+                            conceptBadge: 'Maarif Özeti',
+                            symbolicCode: 'Çıkarım Notu',
+                            narrativeText: 'Çırak Hasan tüm bu mantıksal çıkarımları Mimar Sinan’ın defterine temize çekti. Artık geometri onun için ezber değil, mantıksal bir keşif dünyasıydı!',
+                            characterDialogue: {
+                              speaker: 'Tarihi Dedektifler',
+                              text: 'Tebrikler! Tarihi haritanın tüm geometrik şifrelerini çözdünüz. Şimdi laboratuvarda kendi hipotezlerinizi test etme zamanı!'
+                            },
+                            visualScene: {
+                              type: 'summary-chart',
+                              caption: 'Ölçülebilirlik, Açı Oluşumu ve Paralellik çıkarımlarının tam özeti.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Çıkarım defterini onaylayıp Deney Laboratuvarına geçin!',
+                              actionLabel: 'Deney Masasına Geç 🧪',
+                              feedbackRevealed: '1. Aşama tamamlandı! Şimdi 3 kritik geometri deneyini canlı olarak test edeceksiniz.'
+                            },
+                            mathTakeaway: 'Deneyim + Mantıksal Çıkarım = Kalıcı Matematiksel Düşünme Becerisi.'
+                          }
+                        ]
                       },
                       lab: {
-                        title: 'Nokta Konumlandırıcı Izgara',
-                        toolType: 'geometry-canvas',
-                        instructions: 'Izgarada iki nokta belirleyin ve A noktasından B noktasına yön adımlarını sayın.',
-                        taskGoal: 'A noktasının B noktasına göre konumunu bulun.',
-                        interactiveTips: ['Izgara üzerindeki birim kareleri sayın.'],
+                        title: 'Özellik Karşılaştırma & Hipotez Testi Masası',
+                        toolType: 'experiment-bench',
+                        instructions: 'Aşağıdaki 3 kritik geometri deneyini sırayla uygulayarak özellik çıkarımlarını canlı olarak test ediniz.',
+                        taskGoal: '3 deneyi de tamamlayıp çıkarım kartlarını açınız.',
+                        interactiveTips: [
+                          '1. Deney: Cetveli şekillerin üzerine getirip hangisinin ölçülebildiğini keşfedin.',
+                          '2. Deney: İki ışının başlangıç noktasını çakıştırıp açıyı büyütüp küçültün.',
+                          '3. Deney: Taban doğrusuna iki dikme indirip paralellik durumunu sürükleyerek inceleyin.'
+                        ],
                         presetObjects: []
                       },
                       puzzle: {
-                        title: 'Yön ve Adım Bulmacası',
-                        instructions: 'Verilen yön tariflerini doğru hedeflerle eşleştirin.',
+                        title: 'Kavram Dedektifi ve Çıkarım Terazisi',
+                        instructions: 'Geometrik çıkarımları ve inşaları eğlenceli oyunlarla pekiştirin.',
                         items: [
-                          { id: 'pz-201', concept: '4 birim sağ, 2 birim yukarı', symbol: '->4, ^2', definition: 'Doğu ve Kuzey yönlü ilerleme.', visualType: 'point' }
+                          {
+                            id: 'pz-2-1',
+                            concept: 'Ölçülebilirlik İlkesi',
+                            symbol: '|AB|',
+                            definition: 'İki ucu da sınırlı olduğu için cetvelle boyu tam olarak hesaplanabilir.',
+                            visualType: 'segment'
+                          },
+                          {
+                            id: 'pz-2-2',
+                            concept: 'Açı İnşası',
+                            symbol: '∠AOB veya [OA ∪ [OB',
+                            definition: 'Başlangıç noktaları ortak iki ışının birleşmesiyle oluşan açıklık.',
+                            visualType: 'angle'
+                          },
+                          {
+                            id: 'pz-2-3',
+                            concept: 'Çifte Dikme ve Paralellik',
+                            symbol: 'd1 ∥ d2',
+                            definition: 'Aynı doğruya 90° dik olan iki doğru birbirini asla kesmez.',
+                            visualType: 'line'
+                          },
+                          {
+                            id: 'pz-2-4',
+                            concept: 'Tek Yönlü Sınırsızlık',
+                            symbol: '[AB',
+                            definition: 'Başlangıcı sabit bir kaynaktır ancak ucu sonsuza dek uzar.',
+                            visualType: 'ray'
+                          }
                         ]
                       },
                       assessment: {
-                        title: 'Konum Analizi Mini Test',
-                        instructions: 'Soruları yanıtlayınız.',
+                        title: 'Çıkarım ve Yansıtma Değerlendirmesi',
+                        instructions: 'Soruları tek tek yanıtlayınız ve ders sonunda dijital öğrenme günlüğünüze çıkarımınızı yazınız.',
+                        reflectionPrompt: 'Bugün öğrendiğim en şaşırtıcı geometrik çıkarım şuydu:',
                         questions: [
                           {
-                            id: 'q-loc-1',
-                            questionText: 'A(2,3) noktasından 3 birim sağa, 2 birim aşağıya gidilirse hangi konuma ulaşılır?',
-                            options: ['A) (5, 1)', 'B) (5, 5)', 'C) (-1, 1)', 'D) (2, 1)'],
+                            id: 'q2-1',
+                            questionText: 'Bir Doğru Parçasını [AB], bir Doğrudan (AB) ve Işından ([AB) ayıran EN TEMEL özellik aşağıdakilerden hangisidir?',
+                            context: 'Ölçülebilirlik & Sınırlılık',
+                            options: [
+                              'A) İki ucunun da sınırlı olması ve uzunluğunun kesinlikle ölçülebilmesi',
+                              'B) Sadece tek yönde sonsuza uzaması',
+                              'C) Kalınlığının ve alanının hesaplanabilmesi',
+                              'D) Başlangıç noktasının olmaması'
+                            ],
                             correctOptionIndex: 0,
-                            explanation: 'X ekseninde 3 birim sağ (2+3=5), Y ekseninde 2 birim aşağı (3-2=1).',
-                            bloomLevel: 'Uygulama'
+                            explanation: 'Doğru ve Işın sonsuza uzandığı için ölçülemez; yalnız iki ucu da kapalı olan Doğru Parçası [AB] net bir uzunluğa sahiptir.',
+                            bloomLevel: 'Kavramsal Çıkarım'
+                          },
+                          {
+                            id: 'q2-2',
+                            questionText: 'Geometride bir AÇI inşa edebilmek için başlangıç noktaları ortak olan en az kaç adet IŞINA ihtiyaç vardır?',
+                            context: 'Açı ve Doğrultu İnşası',
+                            options: [
+                              'A) 1 adet',
+                              'B) 2 adet',
+                              'C) 3 adet',
+                              'D) 4 adet'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Başlangıç noktaları ortak iki ışının ([OA ve [OB) birleşimi bir açı (∠AOB) meydana getirir.',
+                            bloomLevel: 'Uygulama & Modelleme'
+                          },
+                          {
+                            id: 'q2-3',
+                            questionText: 'Bir d doğrusuna indirilen bir dikme ile d doğrusu arasındaki açı kaç derecedir?',
+                            context: 'Diklik ve Gönye Analizi',
+                            options: [
+                              'A) 45°',
+                              'B) 60°',
+                              'C) 90°',
+                              'D) 180°'
+                            ],
+                            correctOptionIndex: 2,
+                            explanation: 'Bir doğruya indirilen dikme (⊥), o doğruyla tam 90 derecelik dik açı oluşturur.',
+                            bloomLevel: 'Temel Bilgi & Tanım'
+                          },
+                          {
+                            id: 'q2-4',
+                            questionText: 'Aynı taban doğrusuna 90° dik açı ile çizilen iki farklı dikme doğru (d1 ve d2) uzayda sonsuza kadar uzatılırsa ne olur?',
+                            context: 'Paralellik ve Kesişmeme İlkesi',
+                            options: [
+                              'A) İleride bir noktada mutlaka kesişirler.',
+                              'B) Birbirine paraleldirler ve hiçbir zaman kesişmezler.',
+                              'C) Aralarındaki açı zamanla daralır.',
+                              'D) Birbirine dik hale gelirler.'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Aynı doğruya dik olan iki doğru birbirine paraleldir (d1 ∥ d2) ve aralarındaki mesafe daima sabit kalır; asla kesişmezler.',
+                            bloomLevel: 'Mantıksal Çıkarım'
+                          },
+                          {
+                            id: 'q2-5',
+                            questionText: 'Selimiye Camii planını inceleyen Çırak Hasan, minare basamağı ile pencerelerden giren ışığı karşılaştırıyor. Hasan’ın yapacağı hangisi DOĞRU bir çıkarımdır?',
+                            context: 'Selimiye Camii & Mimari Çıkarım',
+                            options: [
+                              'A) İkisinin de uzunluğu cetvelle tam olarak ölçülebilir.',
+                              'B) Minare basamağı bir doğru parçasıdır; ışık ise başlangıcı olan bir ışındır.',
+                              'C) Işık bir doğrudur ve iki yönde de sınırsızdır.',
+                              'D) Minare basamağının bir ucu sonsuza kadar uzar.'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Basamak iki duvar arasında sınırlandırılmış bir doğru parçasıdır ([AB]); pencereden çıkan ışık ise başlangıcı sabit bir ışındır ([CD).',
+                            bloomLevel: 'Karşılaştırma & Analiz'
+                          },
+                          {
+                            id: 'q2-6',
+                            questionText: 'Öğretmen tahtada bir Doğrunun üzerine cetvel koyduğunda cetvelin sağında ve solunda oklar olduğunu göstermiştir. Bu durum neyi ispatlar?',
+                            context: 'Bilimsel Hipotez ve İspat',
+                            options: [
+                              'A) Doğrunun boyunun sonlu olduğunu',
+                              'B) Doğrunun her iki yönden de sınırsız uzadığı için ölçülemeyeceğini',
+                              'C) Doğrunun bir başlangıç noktası olduğunu',
+                              'D) Cetvelin yetersiz olduğunu'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Çift yönlü oklar sınırsızlığı temsil eder; sınırsız uzayan bir yapının uzunluğu cetvelle hesaplanamaz.',
+                            bloomLevel: 'Kritik Düşünme & Değerlendirme'
                           }
                         ]
                       }

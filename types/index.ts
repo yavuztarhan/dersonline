@@ -31,7 +31,7 @@ export interface StorybookPage {
     text: string;
   };
   visualScene: {
-    type: 'point-map' | 'lighthouse-ray' | 'bridge-segment' | 'horizon-line' | 'summary-chart';
+    type: 'point-map' | 'lighthouse-ray' | 'bridge-segment' | 'horizon-line' | 'summary-chart' | 'selimiye-plan' | 'ray-angle' | 'perpendicular-parallel' | string;
     caption: string;
   };
   interactiveAction: {
@@ -63,7 +63,7 @@ export interface GeometryToolState {
 
 export interface LabPhaseData {
   title: string;
-  toolType: 'geometry-canvas' | 'angle-protractor' | 'number-line' | 'fraction-wall';
+  toolType: 'geometry-canvas' | 'angle-protractor' | 'number-line' | 'fraction-wall' | 'experiment-bench';
   instructions: string;
   taskGoal: string;
   interactiveTips: string[];
@@ -108,6 +108,7 @@ export interface AssessmentPhaseData {
   title: string;
   instructions: string;
   questions: AssessmentQuestion[];
+  reflectionPrompt?: string;
 }
 
 export interface OutcomePhases {

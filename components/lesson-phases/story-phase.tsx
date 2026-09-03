@@ -412,31 +412,127 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   </svg>
                 )}
 
+                {/* SCENE: SELIMIYE PLAN (MAT.5.3.2) */}
+                {currentPage.visualScene.type === 'selimiye-plan' && (
+                  <svg className="w-full h-full" viewBox="0 0 400 280">
+                    <rect width="400" height="280" fill="#0f172a" />
+                    {/* Architectural Blueprint Grid */}
+                    <defs>
+                      <pattern id="arch-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.8" />
+                      </pattern>
+                    </defs>
+                    <rect width="400" height="280" fill="url(#arch-grid)" />
+
+                    {/* Central Dome Circle */}
+                    <circle cx="200" cy="140" r="75" fill="none" stroke="#0284c7" strokeWidth="2.5" strokeDasharray="4,4" />
+                    <circle cx="200" cy="140" r="50" fill="#0369a1" opacity="0.3" />
+                    <circle cx="200" cy="140" r="25" fill="none" stroke="#38bdf8" strokeWidth="1.5" />
+
+                    {/* Octagonal Pillars */}
+                    <rect x="120" y="80" width="12" height="12" fill="#f59e0b" rx="2" />
+                    <rect x="268" y="80" width="12" height="12" fill="#f59e0b" rx="2" />
+                    <rect x="120" y="188" width="12" height="12" fill="#f59e0b" rx="2" />
+                    <rect x="268" y="188" width="12" height="12" fill="#f59e0b" rx="2" />
+
+                    {/* Radial Ray Lines from Center */}
+                    <line x1="200" y1="140" x2="350" y2="40" stroke="#fde047" strokeWidth="2" strokeDasharray="3,3" />
+                    <line x1="200" y1="140" x2="50" y2="40" stroke="#fde047" strokeWidth="2" strokeDasharray="3,3" />
+                    <line x1="200" y1="140" x2="350" y2="240" stroke="#fde047" strokeWidth="2" strokeDasharray="3,3" />
+                    <line x1="200" y1="140" x2="50" y2="240" stroke="#fde047" strokeWidth="2" strokeDasharray="3,3" />
+
+                    {/* Interactive Dome Center */}
+                    <circle cx="200" cy="140" r="8" fill="#10b396" stroke="#ffffff" strokeWidth="2.5" className="animate-pulse" />
+                    <text fill="#ffffff" fontSize="13" fontWeight="900" x="200" y="125" textAnchor="middle">Merkez (O) Noktası</text>
+                    <text fill="#38bdf8" fontSize="10" fontWeight="bold" x="200" y="245" textAnchor="middle">🏛️ Selimiye Kubbe Planı ve Işınsal Doğrultular</text>
+                  </svg>
+                )}
+
+                {/* SCENE: RAY ANGLE (MAT.5.3.2) */}
+                {currentPage.visualScene.type === 'ray-angle' && (
+                  <svg className="w-full h-full" viewBox="0 0 400 280">
+                    <rect width="400" height="280" fill="#090d16" />
+                    {/* Dome Arch */}
+                    <path d="M 60 260 C 60 100, 340 100, 340 260" fill="none" stroke="#334155" strokeWidth="4" />
+                    {/* Window Lamp O */}
+                    <circle cx="200" cy="200" r="10" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" />
+                    <text fill="#fde047" fontSize="13" fontWeight="900" x="200" y="230" textAnchor="middle">Ortak Başlangıç (O)</text>
+
+                    {/* Ray 1 [OA */}
+                    <line x1="200" y1="200" x2="70" y2="70" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" />
+                    <polygon points="60,60 78,65 72,82" fill="#38bdf8" />
+                    <text fill="#38bdf8" fontSize="12" fontWeight="900" x="90" y="60">[OA Işını</text>
+
+                    {/* Ray 2 [OB */}
+                    <line x1="200" y1="200" x2="330" y2="70" stroke="#fde047" strokeWidth="4" strokeLinecap="round" />
+                    <polygon points="340,60 322,65 328,82" fill="#fde047" />
+                    <text fill="#fde047" fontSize="12" fontWeight="900" x="310" y="60">[OB Işını</text>
+
+                    {/* Dynamic Angle Arc */}
+                    <path d="M 160 160 Q 200 135 240 160" fill="none" stroke="#ec4899" strokeWidth="3" />
+                    <rect x="165" y="110" width="70" height="24" rx="6" fill="#831843" />
+                    <text fill="#fbcfe8" fontSize="11" fontWeight="900" x="200" y="126" textAnchor="middle">Açı ∠AOB</text>
+
+                    <text fill="#94a3b8" fontSize="10" fontStyle="italic" x="200" y="260" textAnchor="middle">İki ışının başlangıcı birleşince AÇI oluşur</text>
+                  </svg>
+                )}
+
+                {/* SCENE: PERPENDICULAR PARALLEL MINARETS (MAT.5.3.2) */}
+                {currentPage.visualScene.type === 'perpendicular-parallel' && (
+                  <svg className="w-full h-full" viewBox="0 0 400 280">
+                    <rect width="400" height="280" fill="#0f172a" />
+                    {/* Base ground line */}
+                    <line x1="20" y1="230" x2="380" y2="230" stroke="#64748b" strokeWidth="4" strokeLinecap="round" />
+                    <text fill="#94a3b8" fontSize="11" fontWeight="bold" x="385" y="234">Taban Doğrusu (t)</text>
+
+                    {/* Left Minaret Line d1 */}
+                    <line x1="120" y1="230" x2="120" y2="40" stroke="#10b396" strokeWidth="5" />
+                    <polygon points="120,25 113,42 127,42" fill="#10b396" />
+                    <rect x="120" y="212" width="18" height="18" fill="none" stroke="#f59e0b" strokeWidth="2" />
+                    <circle cx="129" cy="221" r="2" fill="#f59e0b" />
+                    <text fill="#10b396" fontSize="13" fontWeight="900" x="120" y="20" textAnchor="middle">Minare 1 (d1)</text>
+
+                    {/* Right Minaret Line d2 */}
+                    <line x1="280" y1="230" x2="280" y2="40" stroke="#10b396" strokeWidth="5" />
+                    <polygon points="280,25 273,42 287,42" fill="#10b396" />
+                    <rect x="280" y="212" width="18" height="18" fill="none" stroke="#f59e0b" strokeWidth="2" />
+                    <circle cx="289" cy="221" r="2" fill="#f59e0b" />
+                    <text fill="#10b396" fontSize="13" fontWeight="900" x="280" y="20" textAnchor="middle">Minare 2 (d2)</text>
+
+                    {/* Parallel Distance Arrows */}
+                    <line x1="125" y1="120" x2="275" y2="120" stroke="#38bdf8" strokeWidth="2" strokeDasharray="4,4" />
+                    <rect x="160" y="105" width="80" height="26" rx="8" fill="#0c4a6e" stroke="#0284c7" />
+                    <text fill="#38bdf8" fontSize="11" fontWeight="900" x="200" y="122" textAnchor="middle">d1 ∥ d2 (Paralel)</text>
+
+                    <text fill="#fde047" fontSize="10" fontWeight="bold" x="200" y="260" textAnchor="middle">Aynı tabana dik (90°) olan minareler asla kesişmez!</text>
+                  </svg>
+                )}
+
                 {/* SCENE 5: SUMMARY CHART */}
                 {currentPage.visualScene.type === 'summary-chart' && (
                   <div className="w-full h-full p-3 grid grid-cols-2 gap-2 text-white overflow-hidden text-center text-xs">
                     <div className="bg-slate-800/90 p-2.5 rounded-xl border border-slate-700 flex flex-col justify-between">
-                      <div className="font-extrabold text-teal-400">📍 NOKTA (A)</div>
-                      <div className="text-[11px] text-slate-300">Boyutu yoktur, sadece konum belirtir.</div>
-                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-teal-200">A, B, C...</div>
+                      <div className="font-extrabold text-teal-400">📏 ÖLÇÜLEBİLİRLİK</div>
+                      <div className="text-[11px] text-slate-300">Yalnızca iki ucu sınırlı Doğru Parçası ölçülebilir.</div>
+                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-teal-200">|AB| = net sayı</div>
                     </div>
 
                     <div className="bg-slate-800/90 p-2.5 rounded-xl border border-slate-700 flex flex-col justify-between">
-                      <div className="font-extrabold text-amber-400">📏 DOĞRU PARÇASI [AB]</div>
-                      <div className="text-[11px] text-slate-300">İki ucu kapalıdır, boyu ölçülür.</div>
-                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-amber-200">[AB] veya [BA]</div>
+                      <div className="font-extrabold text-amber-400">📐 AÇI İNŞASI</div>
+                      <div className="text-[11px] text-slate-300">Ortak başlangıç noktalı iki ışın açı oluşturur.</div>
+                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-amber-200">[OA ∪ [OB = ∠AOB</div>
                     </div>
 
                     <div className="bg-slate-800/90 p-2.5 rounded-xl border border-slate-700 flex flex-col justify-between">
-                      <div className="font-extrabold text-blue-400">🔦 IŞIN [AB</div>
-                      <div className="text-[11px] text-slate-300">Bir ucu kapalı, diğer ucu sonsuzdur.</div>
-                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-blue-200">[AB veya [AB&gt;</div>
+                      <div className="font-extrabold text-blue-400">⊥ DİKLİK</div>
+                      <div className="text-[11px] text-slate-300">Doğruya dik çizilen doğru 90° açı yapar.</div>
+                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-blue-200">d1 ⊥ taban (90°)</div>
                     </div>
 
                     <div className="bg-slate-800/90 p-2.5 rounded-xl border border-slate-700 flex flex-col justify-between">
-                      <div className="font-extrabold text-purple-400">↔️ DOĞRU AB</div>
-                      <div className="text-[11px] text-slate-300">İki yönden de sınırsız uzar.</div>
-                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-purple-200">AB veya d</div>
+                      <div className="font-extrabold text-purple-400">∥ PARALELLİK</div>
+                      <div className="text-[11px] text-slate-300">Aynı doğruya dik iki doğru asla kesişmez.</div>
+                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-purple-200">d1 ∥ d2</div>
                     </div>
                   </div>
                 )}

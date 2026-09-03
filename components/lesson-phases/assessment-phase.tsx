@@ -358,7 +358,52 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+          {/* SDB1.3: Digital Reflection Journal / Exit Ticket */}
+          <div className="bg-gradient-to-tr from-teal-50 to-indigo-50/50 p-6 rounded-3xl border-2 border-teal-200/80 text-left space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2 text-xs font-black text-teal-900 uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-teal-600" />
+                <span>Öğrenme Günlüğü & Yansıtma (SDB1.3: Öz Yansıtma)</span>
+              </div>
+              <span className="text-[11px] font-bold text-teal-700 bg-teal-100/80 px-2.5 py-0.5 rounded-full">
+                Ders Çıkış Bileti (Exit Ticket)
+              </span>
+            </div>
+
+            <p className="text-xs sm:text-sm font-bold text-slate-800">
+              "{data.reflectionPrompt || 'Bugün öğrendiğim en şaşırtıcı geometrik özellik ve çıkarım şuydu:'}"
+            </p>
+
+            <div className="space-y-3">
+              <textarea
+                placeholder="Örnek: Doğru parçasının iki ucunun kapalı olması sayesinde boyunun ölçülebildiğini, fener ışığının ise tek yönde sonsuza uzayan bir ışın olduğunu keşfettim..."
+                rows={3}
+                className="w-full p-4 rounded-2xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none text-xs sm:text-sm text-slate-800 bg-white shadow-xs resize-none"
+              />
+
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <span className="text-[11px] text-slate-500 font-medium">
+                  💡 Bu cümle sınıfın öğrenme panosuna ve öğrenci karnesine yansıtılacaktır.
+                </span>
+                <button
+                  onClick={() => {
+                    playSound('success');
+                    unlockBadge('maarif-genius');
+                    addPoints(30);
+                    try {
+                      confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+                    } catch (e) {}
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>Günlüğü Kaydet (+30 XP)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <button
               onClick={() => {
                 playSound('click');
