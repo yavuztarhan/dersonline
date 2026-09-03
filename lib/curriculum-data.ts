@@ -88,7 +88,124 @@ export const CURRICULUM_DATA: Grade[] = [
                         scenario: 'Kaptan Bilge, fırtınalı bir gecede gemisini güvenli limana ulaştırmak için sahil fenerinin yaydığı ışık hüzmesini takip ediyor. Mimar Defne ise liman ile fener kulesi arasına sağlam bir köprü kirişi inşa etmeye çalışıyor.',
                         realLifeConnection: 'Fenerin ampulünden çıkıp sonsuz karanlığa doğru uzanan ışık bir IŞIN modelidir. İki iskele arasına döşenen sabit demir köprü bir DOĞRU PARÇASI modelidir. Ufuk çizgisi ise gözümüzün alabildiğine iki yöne uzanan bir DOĞRU modelidir.',
                         reflectionQuestion: 'Sizce fenerden çıkan ışığın uzunluğunu cetvelle ölçebilir miyiz? Peki köprü kirişini ölçebilir miyiz?',
-                        keyTakeaway: 'Nokta bir başlangıçtır, doğru iki yöne sonsuzdur, doğru parçası iki uçtan sınırlıdır, ışın ise tek yönde sonsuza akar.'
+                        keyTakeaway: 'Nokta bir başlangıçtır, doğru iki yöne sonsuzdur, doğru parçası iki uçtan sınırlıdır, ışın ise tek yönde sonsuza akar.',
+                        pages: [
+                          {
+                            id: 'p-1',
+                            pageNumber: 1,
+                            chapterTitle: '1. Bölüm: Haritadaki İşaret',
+                            conceptTitle: 'Nokta Kavramı',
+                            conceptBadge: 'Nokta (•)',
+                            symbolicCode: 'A, B, C...',
+                            narrativeText: 'Karanlık ve fırtınalı bir gecede Kaptan Bilge, gemisini dev dalgalardan korumak için haritasını açtı. Kaleminin ucuyla haritada sığınılacak limanın tam yerini işaretledi.',
+                            characterDialogue: {
+                              speaker: 'Kaptan Bilge',
+                              text: 'Haritada işaretlediğim bu küçük iz, sadece bir konumu gösterir. Kalınlığı, eni ya da boyu yoktur; burası bizim başlangıç Noktamızdır!'
+                            },
+                            visualScene: {
+                              type: 'point-map',
+                              caption: 'Harita üzerindeki A Noktası: Konum belirtir, boyutu yoktur.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Haritadaki liman iskelesine tıklayarak A Noktasını işaretleyin!',
+                              actionLabel: 'Haritada Noktayı İşaretle (•)',
+                              feedbackRevealed: 'Harika! A Noktası belirlendi. Nokta sadece konum belirtir ve büyük harfle isimlendirilir.'
+                            },
+                            mathTakeaway: 'Nokta: Boyutu (eni, boyu, derinliği) olmayan, uzayda veya düzlemde tam bir konum belirten geometrik yapıdır.'
+                          },
+                          {
+                            id: 'p-2',
+                            pageNumber: 2,
+                            chapterTitle: '2. Bölüm: Karanlığı Yaran Işık',
+                            conceptTitle: 'Işın Modeli',
+                            conceptBadge: 'Işın [AB',
+                            symbolicCode: '[AB veya [AB>',
+                            narrativeText: 'Kaptan rotasını belirlerken uzaktaki sahil fenerinin dev ampulü yandı. Fenerin içindeki lambadan çıkan güçlü ışık demeti, gökyüzünde sonsuzluğa doğru kesintisiz ilerledi.',
+                            characterDialogue: {
+                              speaker: 'Kaptan Bilge',
+                              text: 'Bakın! Işığın başladığı yer fener kulesidir (Başlangıç Noktası [A]). Ama ışığın sonu yoktur, uzay boşluğunda sonsuza doğru akar!'
+                            },
+                            visualScene: {
+                              type: 'lighthouse-ray',
+                              caption: 'Fener lambasından çıkan ışık hüzmesi bir IŞIN [AB modelidir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Feneri açarak ışık huzmesini karanlığa doğru fırlatın!',
+                              actionLabel: 'Fenerin Işığını Aç 🔦',
+                              feedbackRevealed: 'Işın [AB oluşturuldu! Başlangıç noktası kapalı [A], diğer ucu sonsuza doğru giden oktur.'
+                            },
+                            mathTakeaway: 'Işın: Bir ucu sabit ve kapalı bir başlangıç noktasına sahip, diğer ucu ise bir yönde sınırsızca uzayan çizgi modelidir.'
+                          },
+                          {
+                            id: 'p-3',
+                            pageNumber: 3,
+                            chapterTitle: '3. Bölüm: İki Kıyı Arasındaki Köprü',
+                            conceptTitle: 'Doğru Parçası Modeli',
+                            conceptBadge: 'Doğru Parçası [AB]',
+                            symbolicCode: '[AB] veya [BA]',
+                            narrativeText: 'Liman güvenliğe kavuştuğunda Mimar Defne sabahın ilk ışıklarıyla işe koyuldu. Liman iskelesi ile fener kulesi arasına 24 metrelik gergin bir çelik köprü kirişi yerleştirdi.',
+                            characterDialogue: {
+                              speaker: 'Mimar Defne',
+                              text: 'Bu köprü kirişinin başlangıcı da bitişi de sabittir. İki ucu da sınırlandırılmış olduğu için uzunluğu metre ile tam olarak ölçülebilir!'
+                            },
+                            visualScene: {
+                              type: 'bridge-segment',
+                              caption: 'İki sütun arasına gerilen çelik kiriş bir DOĞRU PARÇASI [AB] modelidir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Cetvel ile iki sütun arasındaki köprü kirişini ölçün!',
+                              actionLabel: 'Köprüyü Cetvelle Ölç 📏',
+                              feedbackRevealed: 'Ölçüm tamamlandı: 24 metre! Her iki ucu da kapalı [A ve B] olduğu için boyu tam hesaplanabilir.'
+                            },
+                            mathTakeaway: 'Doğru Parçası: İki ucu da sınırlı olan, üzerinde sonsuz nokta barındıran ve uzunluğu kesinlikle ölçülebilen düz çizgidir.'
+                          },
+                          {
+                            id: 'p-4',
+                            pageNumber: 4,
+                            chapterTitle: '4. Bölüm: Sonsuz Ufuk Çizgisi',
+                            conceptTitle: 'Doğru Modeli',
+                            conceptBadge: 'Doğru AB',
+                            symbolicCode: 'AB veya d',
+                            narrativeText: 'Güneş tamamen doğduğunda deniz ve gökyüzü buluştu. Kaptan Bilge ve Mimar Defne, doğudan batıya iki yönde de sınırsızca uzanan ufuk çizgisine hayranlıkla baktılar.',
+                            characterDialogue: {
+                              speaker: 'Kaptan & Mimar',
+                              text: 'Ufuk çizgisi gibi bir model düşünün; ne başında bir duvar var ne de sonunda. İki yönden de sonsuza dek devam eder!'
+                            },
+                            visualScene: {
+                              type: 'horizon-line',
+                              caption: 'İki uca sınırsızca uzanan ufuk çizgisi bir DOĞRU (AB) modelidir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Ufuk çizgisinin iki ucuna sonsuzluk oklarını ekleyin!',
+                              actionLabel: 'İki Yöne Sonsuzluk Okları Çek ↔️',
+                              feedbackRevealed: 'AB Doğrusu tamamlandı! İki yönde de ok bulunması sınırsız uzandığını gösterir.'
+                            },
+                            mathTakeaway: 'Doğru: Her iki yönden de sınırsızca uzayan, kalınlığı olmayan ve uçlarına çift yönlü ok konulan düz çizgidir.'
+                          },
+                          {
+                            id: 'p-5',
+                            pageNumber: 5,
+                            chapterTitle: '5. Bölüm: Büyük Geometri Özeti',
+                            conceptTitle: 'Karşılaştırma & Maarif Değerlendirmesi',
+                            conceptBadge: 'Büyük Tablo',
+                            symbolicCode: 'Özet Tablo',
+                            narrativeText: 'Maceranın sonunda Kaptan Bilge ve Mimar Defne öğrendikleri tüm geometrik kavramları gemi günlüğünde bir araya getirdiler.',
+                            characterDialogue: {
+                              speaker: 'Gezgin Matematikçiler',
+                              text: 'Artık etrafımızdaki her yapının bir geometrik dille konuşulduğunu biliyoruz. Şimdi sıra çizim atölyesinde kendi modellerimizi oluşturmakta!'
+                            },
+                            visualScene: {
+                              type: 'summary-chart',
+                              caption: 'Nokta, Işın, Doğru Parçası ve Doğru modellerinin tam tablosu.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Sınıf tartışma sorusunu inceleyin ve çizim atölyesine geçin!',
+                              actionLabel: 'Sınıf Tartışmasını Başlat 💬',
+                              feedbackRevealed: 'Tebrikler! 1. Aşamayı tamamladınız. Şimdi Çizim Atölyesi ile kendi modellerinizi tasarlayabilirsiniz.'
+                            },
+                            mathTakeaway: 'Geometri günlük hayatı anlamlandırma sanatıdır: Nokta konumdur, Işın yayılmadır, Doğru Parçası mesafedir, Doğru ise sınırsızlıktır.'
+                          }
+                        ]
                       },
                       lab: {
                         title: 'İnteraktif Geometri Çizim Laboratuvarı',

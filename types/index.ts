@@ -19,6 +19,30 @@ export interface PedagogyGuide {
   keyQuestions: string[];
 }
 
+export interface StorybookPage {
+  id: string;
+  pageNumber: number;
+  chapterTitle: string;
+  conceptTitle: string;
+  conceptBadge: string;
+  narrativeText: string;
+  characterDialogue?: {
+    speaker: string;
+    text: string;
+  };
+  visualScene: {
+    type: 'point-map' | 'lighthouse-ray' | 'bridge-segment' | 'horizon-line' | 'summary-chart';
+    caption: string;
+  };
+  interactiveAction: {
+    prompt: string;
+    actionLabel: string;
+    feedbackRevealed: string;
+  };
+  mathTakeaway: string;
+  symbolicCode?: string;
+}
+
 export interface StoryPhaseData {
   title: string;
   character: {
@@ -30,6 +54,7 @@ export interface StoryPhaseData {
   realLifeConnection: string;
   reflectionQuestion: string;
   keyTakeaway: string;
+  pages?: StorybookPage[];
 }
 
 export interface GeometryToolState {
