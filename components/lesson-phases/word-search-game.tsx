@@ -28,21 +28,21 @@ const CLUES: WordClue[] = [
   {
     id: 'c1',
     question: 'İki ucu da sınırlı olan ve boyu cetvelle ölçülebilen düz çizgi modeline ne denir?',
-    word: 'DOGRUPARCASI',
+    word: 'DOĞRUPARÇASI',
     hint: '12 Harfli • Sembolü [AB]',
     color: '#10b396'
   },
   {
     id: 'c2',
     question: 'Başlangıç noktası sabit olup diğer ucu uzayda sonsuza uzanan fener ışığı modeline ne denir?',
-    word: 'ISIN',
+    word: 'IŞIN',
     hint: '4 Harfli • Sembolü [AB',
     color: '#3b82f6'
   },
   {
     id: 'c3',
     question: 'Her iki yönden de sınırsızca uzayan ve iki ucuna ok konulan çizgi modeline ne denir?',
-    word: 'DOGRU',
+    word: 'DOĞRU',
     hint: '5 Harfli • Sembolü AB',
     color: '#f59e0b'
   },
@@ -69,22 +69,22 @@ const CLUES: WordClue[] = [
   }
 ];
 
-// Fixed 10x12 Word Search Grid designed for the clues
+// Fixed 10x12 Word Search Grid with Turkish Characters (Ğ, Ş, Ç, I)
 // Words placed:
-// Row 0: D O G R U P A R C A S I (DOGRUPARCASI - Horizontal across row 0)
-// Row 2, Col 1-5: N O K T A (Horizontal)
-// Row 4, Col 2-5: I S I N (Horizontal)
-// Row 6, Col 1-5: D O G R U (Horizontal)
-// Row 8, Col 2-7: C E T V E L (Horizontal)
-// Row 5, Col 8-9: O K (Horizontal)
+// Row 0: D O Ğ R U P A R Ç A S I (DOĞRUPARÇASI - 12 letters)
+// Row 2, Col 1-5: N O K T A (5 letters)
+// Row 4, Col 2-5: I Ş I N (4 letters)
+// Row 6, Col 1-5: D O Ğ R U (5 letters)
+// Row 8, Col 2-7: C E T V E L (6 letters)
+// Row 5, Col 8-9: O K (2 letters)
 const FIXED_GRID = [
-  ['D', 'O', 'G', 'R', 'U', 'P', 'A', 'R', 'C', 'A', 'S', 'I'],
+  ['D', 'O', 'Ğ', 'R', 'U', 'P', 'A', 'R', 'Ç', 'A', 'S', 'I'],
   ['M', 'K', 'L', 'T', 'B', 'Z', 'Y', 'P', 'Q', 'E', 'F', 'H'],
   ['A', 'N', 'O', 'K', 'T', 'A', 'S', 'V', 'B', 'K', 'L', 'M'],
   ['B', 'R', 'P', 'S', 'F', 'G', 'H', 'M', 'N', 'A', 'C', 'E'],
-  ['T', 'Y', 'I', 'S', 'I', 'N', 'K', 'L', 'P', 'O', 'K', 'Z'],
+  ['T', 'Y', 'I', 'Ş', 'I', 'N', 'K', 'L', 'P', 'O', 'K', 'Z'],
   ['K', 'M', 'A', 'B', 'C', 'D', 'E', 'F', 'O', 'K', 'S', 'T'],
-  ['E', 'D', 'O', 'G', 'R', 'U', 'H', 'J', 'K', 'L', 'M', 'N'],
+  ['E', 'D', 'O', 'Ğ', 'R', 'U', 'H', 'J', 'K', 'L', 'M', 'N'],
   ['F', 'G', 'H', 'P', 'R', 'S', 'T', 'Y', 'Z', 'A', 'B', 'C'],
   ['M', 'A', 'C', 'E', 'T', 'V', 'E', 'L', 'K', 'P', 'R', 'S'],
   ['X', 'Y', 'Z', 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L']
