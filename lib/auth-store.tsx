@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 import {
   AuthUser,
   TeacherUser,
@@ -200,6 +201,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {}
   }, [currentUser]);
 
+  const { data: session } = useSession();
+
+  // Sync live NextAuth OAuth session
+  useEffect(() => {
+    if (session?.user?.email) {
+      const email = session.user.email;
+      if (!currentUser || currentUser.email.toLowerCase() !== email.toLowerCase()) {
+        loginWithGoogle({
+          name: session.user.name || 'Google Kullanıcısı',
+          email: session.user.email,
+          avatar: session.user.image || '✨'
+        });
+      }
+    }
+  }, [session]);
+
   const loginAsRole = (role: UserRole) => {
     if (role === 'admin') {
       setCurrentUser(SEED_ADMIN);
@@ -235,6 +252,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setCurrentUser(null);
+    try {
+      signOut({ redirect: false });
+    } catch (e) {}
   };
 
   const loginWithGoogle = (profile: { name: string; email: string; avatar?: string }): { isNewUser: boolean; user: AuthUser } => {

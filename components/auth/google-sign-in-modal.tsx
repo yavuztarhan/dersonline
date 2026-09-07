@@ -123,10 +123,33 @@ export function GoogleSignInModal({
 
         {/* Content */}
         <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+          
+          {/* Primary Live Google OAuth Button */}
+          <button
+            onClick={handleLiveOAuth}
+            className="w-full py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg active:scale-98 cursor-pointer"
+          >
+            <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center p-0.5">
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.43 7.34 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.98 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.57 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+              </svg>
+            </div>
+            <span>Canlı Google Hesabı ile Giriş Yap (OAuth 2.0)</span>
+          </button>
+
+          <div className="relative border-t border-slate-200 my-2">
+            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              veya test / demo hesap seçin
+            </span>
+          </div>
+
           {!customMode ? (
             <div className="space-y-2">
               <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2">
-                Kayıtlı veya Simüle Google Hesapları:
+                Hızlı Rol / Test Hesapları:
               </div>
 
               {PRESET_ACCOUNTS.map((acc) => (
@@ -212,7 +235,7 @@ export function GoogleSignInModal({
                 </button>
                 <button
                   type="submit"
-                  className="w-2/3 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-xs"
+                  className="w-2/3 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <span>Giriş Yap</span>
                   <ArrowRight className="w-4 h-4" />
@@ -220,17 +243,6 @@ export function GoogleSignInModal({
               </div>
             </form>
           )}
-
-          {/* Live OAuth Button */}
-          <div className="pt-3 border-t border-slate-100">
-            <button
-              onClick={handleLiveOAuth}
-              className="w-full py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 font-bold text-[11px] transition-colors flex items-center justify-center gap-1.5"
-            >
-              <Globe className="w-3.5 h-3.5" />
-              <span>Gerçek Google OAuth Sunucusu ile Bağlan (NextAuth)</span>
-            </button>
-          </div>
         </div>
 
         {/* Security Footer */}
