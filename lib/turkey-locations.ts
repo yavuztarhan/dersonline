@@ -625,3 +625,42 @@ export function getSchoolsByDistrict(provinceName: string, districtName: string)
   if (!dist) return [];
   return dist.schools;
 }
+
+// Live async fetchers connected to ogretmenevrak.com API
+export async function fetchDistrictsApi(provinceName: string): Promise<string[]> {
+  try {
+    const res = await fetch(`/api/locations/districts?province=${encodeURIComponent(provinceName)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.districts && Array.isArray(data.districts) && data.districts.length > 0) {
+        return data.districts.map((d: any) => d.isim);
+      }
+    }
+  } catch (e) {
+    console.warn('Live districts fetch fallback:', e);
+  }
+  return getDistrictsByProvince(provinceName);
+}
+
+export async function fetchSchoolsApi(
+  provinceName: string,
+  districtName: string,
+  search?: string
+): Promise<{ id: string; name: string; type: string; slug?: string }[]> {
+  try {
+    const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
+    const res = await fetch(
+      `/api/locations/schools?province=${encodeURIComponent(provinceName)}&district=${encodeURIComponent(districtName)}${searchParam}`
+    );
+    if (res.ok) {
+      const data = await res.json();
+      if (data.schools && Array.isArray(data.schools) && data.schools.length > 0) {
+        return data.schools;
+      }
+    }
+  } catch (e) {
+    console.warn('Live schools fetch fallback:', e);
+  }
+  return getSchoolsByDistrict(provinceName, districtName) || [];
+}
+

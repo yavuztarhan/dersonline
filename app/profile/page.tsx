@@ -8,7 +8,9 @@ import { useApp } from '@/lib/store';
 import {
   getAllProvinces,
   getDistrictsByProvince,
-  getSchoolsByDistrict
+  getSchoolsByDistrict,
+  fetchDistrictsApi,
+  fetchSchoolsApi
 } from '@/lib/turkey-locations';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import {
@@ -26,7 +28,10 @@ import {
   Plus,
   ShieldCheck,
   Building2,
-  AlertCircle
+  AlertCircle,
+  Search,
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 
 const BRANCH_OPTIONS = [
@@ -64,9 +69,19 @@ export default function ProfilePage() {
   const [assignedClasses, setAssignedClasses] = useState<string[]>(['5-A', '5-B']);
   const [newClassInput, setNewClassInput] = useState('');
 
+  // Live API States
+  const [districtsList, setDistrictsList] = useState<string[]>([]);
+  const [schoolsList, setSchoolsList] = useState<{ id: string; name: string; type: string }[]>([]);
+  const [schoolSearchQuery, setSchoolSearchQuery] = useState('');
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [loadingSchools, setLoadingSchools] = useState(false);
+
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // All 81 Turkish Provinces
+  const allProvinces = getAllProvinces();
 
   // Initialize form with currentUser data
   useEffect(() => {
@@ -78,42 +93,99 @@ export default function ProfilePage() {
         const tch = currentUser as any;
         setPhone(tch.phone || '');
         setBranch(tch.branch || 'Matematik');
-        setCity(tch.city || 'Edirne');
-        setDistrict(tch.district || 'Merkez');
+        const initialCity = tch.city || 'Edirne';
+        const initialDistrict = tch.district || 'Merkez';
+        setCity(initialCity);
+        setDistrict(initialDistrict);
         setSchool(tch.school || 'Edirne Selimiye İmam Hatip Ortaokulu');
         setAssignedClasses(tch.assignedClasses && tch.assignedClasses.length > 0 ? tch.assignedClasses : ['5-A', '5-B']);
       }
     }
   }, [currentUser]);
 
-  // Derived location lists
-  const allProvinces = getAllProvinces();
-  const availableDistricts = getDistrictsByProvince(city);
-  const availableSchools = getSchoolsByDistrict(city, district);
+  // Load districts when city changes
+  useEffect(() => {
+    let isMounted = true;
+    async function loadDistricts() {
+      setLoadingDistricts(true);
+      try {
+        const districts = await fetchDistrictsApi(city);
+        if (isMounted) {
+          setDistrictsList(districts);
+          if (!districts.includes(district)) {
+            setDistrict(districts[0] || 'Merkez');
+          }
+        }
+      } catch (err) {
+        console.warn('Districts load error:', err);
+        if (isMounted) {
+          const fallback = getDistrictsByProvince(city);
+          setDistrictsList(fallback);
+        }
+      } finally {
+        if (isMounted) setLoadingDistricts(false);
+      }
+    }
+    loadDistricts();
+    return () => {
+      isMounted = false;
+    };
+  }, [city]);
+
+  // Load schools when city or district changes
+  useEffect(() => {
+    let isMounted = true;
+    async function loadSchools() {
+      if (!district) return;
+      setLoadingSchools(true);
+      try {
+        const schools = await fetchSchoolsApi(city, district);
+        if (isMounted) {
+          setSchoolsList(schools);
+          // If current school is not in list and not custom, set to first school
+          if (schools.length > 0 && !isCustomSchool) {
+            const exists = schools.some((s) => s.name.toLocaleLowerCase('tr') === school.toLocaleLowerCase('tr'));
+            if (!exists) {
+              setSchool(schools[0].name);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Schools load error:', err);
+        if (isMounted) {
+          const fallback = getSchoolsByDistrict(city, district);
+          setSchoolsList(fallback);
+        }
+      } finally {
+        if (isMounted) setLoadingSchools(false);
+      }
+    }
+    loadSchools();
+    return () => {
+      isMounted = false;
+    };
+  }, [city, district]);
 
   // Handle City Change
   const handleCityChange = (newCity: string) => {
     setCity(newCity);
-    const districts = getDistrictsByProvince(newCity);
-    const firstDist = districts[0] || 'Merkez';
-    setDistrict(firstDist);
-
-    const schools = getSchoolsByDistrict(newCity, firstDist);
-    const firstSchool = schools[0]?.name || 'Diğer / Özel Okul';
-    setSchool(firstSchool);
     setIsCustomSchool(false);
     setCustomSchoolName('');
+    setSchoolSearchQuery('');
   };
 
   // Handle District Change
   const handleDistrictChange = (newDist: string) => {
     setDistrict(newDist);
-    const schools = getSchoolsByDistrict(city, newDist);
-    const firstSchool = schools[0]?.name || 'Diğer / Özel Okul';
-    setSchool(firstSchool);
     setIsCustomSchool(false);
     setCustomSchoolName('');
+    setSchoolSearchQuery('');
   };
+
+  // Filtered schools according to search query
+  const filteredSchools = schoolsList.filter((s) =>
+    s.name.toLocaleLowerCase('tr').includes(schoolSearchQuery.trim().toLocaleLowerCase('tr'))
+  );
 
   // Add Class tag
   const handleAddClass = (e?: React.FormEvent) => {
@@ -383,10 +455,15 @@ export default function ProfilePage() {
 
           {/* Location & School Selection (Provinces -> Districts -> Schools) */}
           <div className="pt-4 border-t border-slate-100 space-y-4">
-            <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-teal-600" />
-              <span>Görev Yaptığınız Okul ve Konum Bilgileri</span>
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-teal-600" />
+                <span>Görev Yaptığınız Okul ve Konum Bilgileri</span>
+              </h3>
+              <span className="text-[10px] font-bold text-slate-400">
+                MEB / ÖğretmenEvrak Okul Veritabanı
+              </span>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               
@@ -408,17 +485,19 @@ export default function ProfilePage() {
                 </select>
               </div>
 
-              {/* İlçe Seçimi */}
+              {/* İlçe Seçimi (Live) */}
               <div className="space-y-1.5">
-                <label className="text-xs font-extrabold text-slate-700">
-                  İlçe <span className="text-rose-500">*</span>
+                <label className="text-xs font-extrabold text-slate-700 flex items-center justify-between">
+                  <span>İlçe <span className="text-rose-500">*</span></span>
+                  {loadingDistricts && <Loader2 className="w-3 h-3 text-teal-600 animate-spin" />}
                 </label>
                 <select
                   value={district}
                   onChange={(e) => handleDistrictChange(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
+                  disabled={loadingDistricts}
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer disabled:bg-slate-100"
                 >
-                  {availableDistricts.map((d) => (
+                  {districtsList.map((d) => (
                     <option key={d} value={d}>
                       {d}
                     </option>
@@ -426,10 +505,13 @@ export default function ProfilePage() {
                 </select>
               </div>
 
-              {/* Okul Dropdown */}
+              {/* Okul Dropdown / Search */}
               <div className="space-y-1.5">
                 <label className="text-xs font-extrabold text-slate-700 flex items-center justify-between">
-                  <span>Okul Adı <span className="text-rose-500">*</span></span>
+                  <span className="flex items-center gap-1.5">
+                    <span>Okul Adı <span className="text-rose-500">*</span></span>
+                    {loadingSchools && <Loader2 className="w-3 h-3 text-teal-600 animate-spin" />}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setIsCustomSchool(!isCustomSchool)}
@@ -440,24 +522,40 @@ export default function ProfilePage() {
                 </label>
 
                 {!isCustomSchool ? (
-                  <select
-                    value={school}
-                    onChange={(e) => {
-                      if (e.target.value === 'CUSTOM_NEW') {
-                        setIsCustomSchool(true);
-                      } else {
-                        setSchool(e.target.value);
-                      }
-                    }}
-                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
-                  >
-                    {availableSchools.map((s) => (
-                      <option key={s.id} value={s.name}>
-                        {s.name} ({s.type})
-                      </option>
-                    ))}
-                    <option value="CUSTOM_NEW">➕ Listede Yoksa Yeni Okul Ekle...</option>
-                  </select>
+                  <div className="space-y-2">
+                    {/* Filter search if schools count is high */}
+                    {schoolsList.length > 5 && (
+                      <div className="relative">
+                        <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                        <input
+                          type="text"
+                          placeholder={`${schoolsList.length} okul arasında ara...`}
+                          value={schoolSearchQuery}
+                          onChange={(e) => setSchoolSearchQuery(e.target.value)}
+                          className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-[11px] font-bold text-slate-800 outline-none focus:border-teal-500 bg-slate-50"
+                        />
+                      </div>
+                    )}
+
+                    <select
+                      value={school}
+                      onChange={(e) => {
+                        if (e.target.value === 'CUSTOM_NEW') {
+                          setIsCustomSchool(true);
+                        } else {
+                          setSchool(e.target.value);
+                        }
+                      }}
+                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
+                    >
+                      {filteredSchools.map((s) => (
+                        <option key={s.id} value={s.name}>
+                          {s.name} ({s.type})
+                        </option>
+                      ))}
+                      <option value="CUSTOM_NEW">➕ Listede Yoksa Yeni Okul Ekle...</option>
+                    </select>
+                  </div>
                 ) : (
                   <input
                     type="text"
