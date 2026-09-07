@@ -78,6 +78,15 @@ export default function HomePage() {
         {/* Quick Dashboard & Logout Action */}
         <div className="flex items-center gap-2 self-end sm:self-center">
           <Link
+            href="/profile"
+            className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+            title="Profil Bilgilerim"
+          >
+            <User className="w-3.5 h-3.5 text-slate-500" />
+            <span className="hidden sm:inline">Profilim</span>
+          </Link>
+
+          <Link
             href={
               currentUser.role === 'admin'
                 ? '/admin'
@@ -104,6 +113,29 @@ export default function HomePage() {
           </button>
         </div>
       </div>
+
+      {/* Teacher Incomplete Profile Notice Banner */}
+      {currentUser.role === 'teacher' && !(currentUser as any).isProfileComplete && (
+        <div className="p-5 rounded-3xl bg-teal-50/80 border-2 border-teal-300 text-teal-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in slide-in-from-top">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-teal-600 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-sm">
+              ✨
+            </div>
+            <div>
+              <div className="font-black text-sm text-teal-950">Öğretmen Profilinizi & Okulunuzu Belirleyin</div>
+              <div className="text-xs text-teal-800">
+                Google ile bağlandınız. İl, ilçe, okul, branş ve telefon bilgilerinizi kaydederek sınıfınızı yönetmeye başlayın.
+              </div>
+            </div>
+          </div>
+          <Link
+            href="/profile"
+            className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer"
+          >
+            <span>Profili Düzenle ➔</span>
+          </Link>
+        </div>
+      )}
 
       {/* Hero Welcome Banner */}
       <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-8 sm:p-10 text-white shadow-2xl border border-slate-800">

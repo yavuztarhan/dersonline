@@ -23,6 +23,7 @@ export interface TeacherUser extends BaseUser {
   verifiedAt?: string;
   approvedAt?: string;
   assignedClasses: string[]; // ['5-A', '5-B']
+  isProfileComplete?: boolean;
 }
 
 export interface StudentUser extends BaseUser {

@@ -23,16 +23,23 @@ interface AuthContextType {
   loginWithGoogle: (profile: { name: string; email: string; avatar?: string }) => { isNewUser: boolean; user: AuthUser };
   logout: () => void;
   
-  // Teacher Registration Flow
+  // Teacher Registration & Profile Flow
   startTeacherRegistration: (data: TeacherRegistrationPayload) => { code: string; success: boolean };
   verifyTeacherEmail: (email: string, code: string) => boolean;
   resendVerificationCode: (email: string) => string | null;
+  updateTeacherProfile: (teacherId: string, updates: Partial<TeacherUser>) => void;
+  addClassToTeacher: (teacherId: string, className: string) => void;
   
   // Admin Operations
   approveTeacher: (teacherId: string) => void;
   rejectTeacher: (teacherId: string, reason?: string) => void;
   deleteTeacher: (teacherId: string) => void;
+  
+  // Student Operations & Visibility
+  addStudent: (student: StudentUser) => void;
   updateStudent: (student: StudentUser) => void;
+  deleteStudent: (studentId: string) => void;
+  getVisibleStudents: (user?: AuthUser | null) => StudentUser[];
 }
 
 export const ADMIN_EMAILS = [
@@ -454,17 +461,138 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteTeacher = (teacherId: string) => {
-    setTeachers(teachers.filter((t) => t.id !== teacherId));
+    setTeachers((prev) => prev.filter((t) => t.id !== teacherId));
     if (currentUser && currentUser.id === teacherId) {
       setCurrentUser(null);
     }
   };
 
+  const updateTeacherProfile = (teacherId: string, updates: Partial<TeacherUser>) => {
+    const updated = teachers.map((t) => {
+      if (t.id === teacherId) {
+        const item: TeacherUser = {
+          ...t,
+          ...updates,
+          email: t.email, // email is immutable
+          isProfileComplete: true
+        };
+        return item;
+      }
+      return t;
+    });
+    setTeachers(updated);
+
+    if (currentUser && currentUser.id === teacherId) {
+      const target = updated.find((t) => t.id === teacherId);
+      if (target) setCurrentUser(target);
+    }
+  };
+
+  const addClassToTeacher = (teacherId: string, className: string) => {
+    const trimmed = className.trim().toUpperCase();
+    if (!trimmed) return;
+
+    const updated = teachers.map((t) => {
+      if (t.id === teacherId) {
+        const classes = t.assignedClasses || [];
+        if (!classes.includes(trimmed)) {
+          return {
+            ...t,
+            assignedClasses: [...classes, trimmed]
+          };
+        }
+      }
+      return t;
+    });
+    setTeachers(updated);
+
+    if (currentUser && currentUser.id === teacherId) {
+      const target = updated.find((t) => t.id === teacherId);
+      if (target) setCurrentUser(target);
+    }
+  };
+
+  const addStudent = (student: StudentUser) => {
+    setStudents((prev) => {
+      const exists = prev.some((s) => s.id === student.id);
+      if (exists) {
+        return prev.map((s) => (s.id === student.id ? student : s));
+      }
+      return [student, ...prev];
+    });
+  };
+
   const updateStudent = (student: StudentUser) => {
-    setStudents(students.map((s) => (s.id === student.id ? student : s)));
+    setStudents((prev) => {
+      const exists = prev.some((s) => s.id === student.id);
+      if (exists) {
+        return prev.map((s) => (s.id === student.id ? student : s));
+      }
+      return [student, ...prev];
+    });
+
     if (currentUser && currentUser.id === student.id) {
       setCurrentUser(student);
     }
+  };
+
+  const deleteStudent = (studentId: string) => {
+    setStudents((prev) => prev.filter((s) => s.id !== studentId));
+  };
+
+  const getVisibleStudents = (user?: AuthUser | null): StudentUser[] => {
+    const target = user || currentUser;
+    if (!target) return [];
+
+    // 1. Admin sees all students across the system
+    if (target.role === 'admin') {
+      return students;
+    }
+
+    // 2. Student sees own record / classmates
+    if (target.role === 'student') {
+      const stu = target as StudentUser;
+      return students.filter(
+        (s) =>
+          s.id === stu.id ||
+          (s.school &&
+            stu.school &&
+            s.school.trim().toLowerCase() === stu.school.trim().toLowerCase() &&
+            s.classSection === stu.classSection)
+      );
+    }
+
+    // 3. Teacher visibility rule:
+    // Teachers only see students they created OR students enrolled in their own school & district & city.
+    // Teachers from other schools cannot see these students.
+    if (target.role === 'teacher') {
+      const tch = target as TeacherUser;
+      return students.filter((s) => {
+        // Condition A: Teacher explicitly added this student
+        if (s.teacherId && s.teacherId === tch.id) {
+          return true;
+        }
+
+        // Condition B: Student is enrolled in the same school (case-insensitive) and location
+        if (tch.school && s.school) {
+          const sameSchool = s.school.trim().toLowerCase() === tch.school.trim().toLowerCase();
+          const sameCity =
+            !tch.city || !s.city || s.city.trim().toLowerCase() === tch.city.trim().toLowerCase();
+          const sameDistrict =
+            !tch.district ||
+            !s.district ||
+            s.district.trim().toLowerCase() === tch.district.trim().toLowerCase();
+
+          if (sameSchool && sameCity && sameDistrict) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+    }
+
+    return [];
   };
 
   return (
@@ -481,10 +609,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         startTeacherRegistration,
         verifyTeacherEmail,
         resendVerificationCode,
+        updateTeacherProfile,
+        addClassToTeacher,
         approveTeacher,
         rejectTeacher,
         deleteTeacher,
-        updateStudent
+        addStudent,
+        updateStudent,
+        deleteStudent,
+        getVisibleStudents
       }}
     >
       {children}

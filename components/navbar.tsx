@@ -165,6 +165,14 @@ export function Navbar() {
                     </div>
                   </Link>
 
+                  <Link
+                    href="/profile"
+                    className="p-1.5 rounded-xl hover:bg-teal-50 text-slate-500 hover:text-teal-700 text-xs font-bold transition-colors cursor-pointer"
+                    title="Profilim & Okul Bilgilerim"
+                  >
+                    <User className="w-3.5 h-3.5" />
+                  </Link>
+
                   <button
                     onClick={handleOpenLogin}
                     className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-800 text-xs font-bold transition-colors cursor-pointer"
