@@ -5,18 +5,27 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Maarif Akademi PostgreSQL veritabanı tohumlanıyor (Seeding)...');
 
-  // 1. Admin Kullanıcı
-  const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@maarif.gov.tr' },
-    update: {},
-    create: {
-      email: 'admin@maarif.gov.tr',
-      name: 'Maarif Sistem Yöneticisi',
-      role: Role.ADMIN,
-      avatar: '🛡️',
-    },
-  });
-  console.log('✅ Admin oluşturuldu:', adminUser.email);
+  // 1. Admin Kullanıcılar
+  const adminUsers = [
+    { email: 'admin@maarif.gov.tr', name: 'Maarif Sistem Yöneticisi', avatar: '🛡️' },
+    { email: 'powerose@gmail.com', name: 'Sistem Yöneticisi (Powerose)', avatar: '🛡️' },
+    { email: 'maarifakademi.com.tr@gmail.com', name: 'Maarif Akademi Yönetim', avatar: '🛡️' },
+    { email: 'viziteci325@gmail.com', name: 'Sistem Yöneticisi', avatar: '🛡️' },
+  ];
+
+  for (const admin of adminUsers) {
+    const createdAdmin = await prisma.user.upsert({
+      where: { email: admin.email },
+      update: { role: Role.ADMIN },
+      create: {
+        email: admin.email,
+        name: admin.name,
+        role: Role.ADMIN,
+        avatar: admin.avatar,
+      },
+    });
+    console.log('✅ Admin oluşturuldu/güncellendi:', createdAdmin.email);
+  }
 
   // 2. Onaylı Öğretmen (Edirne Selimiye İHO)
   const teacher1User = await prisma.user.upsert({

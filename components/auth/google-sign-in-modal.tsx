@@ -14,6 +14,27 @@ interface GoogleAccount {
 
 const PRESET_ACCOUNTS: GoogleAccount[] = [
   {
+    name: 'Sistem Yöneticisi (Powerose)',
+    email: 'powerose@gmail.com',
+    avatar: '🛡️',
+    desc: 'Tam Yetkili Sistem Yöneticisi (Admin)',
+    badge: 'Yönetici'
+  },
+  {
+    name: 'Maarif Akademi Yönetim',
+    email: 'maarifakademi.com.tr@gmail.com',
+    avatar: '🛡️',
+    desc: 'Tam Yetkili Sistem Yöneticisi (Admin)',
+    badge: 'Yönetici'
+  },
+  {
+    name: 'Sistem Yöneticisi',
+    email: 'viziteci325@gmail.com',
+    avatar: '🛡️',
+    desc: 'Tam Yetkili Sistem Yöneticisi (Admin)',
+    badge: 'Yönetici'
+  },
+  {
     name: 'Ahmet Öğretmen',
     email: 'ahmet.ogretmen@meb.k12.tr',
     avatar: '👨‍🏫',

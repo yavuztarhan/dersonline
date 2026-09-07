@@ -35,6 +35,13 @@ interface AuthContextType {
   updateStudent: (student: StudentUser) => void;
 }
 
+export const ADMIN_EMAILS = [
+  'admin@maarif.gov.tr',
+  'powerose@gmail.com',
+  'maarifakademi.com.tr@gmail.com',
+  'viziteci325@gmail.com'
+];
+
 const SEED_ADMIN: AdminUser = {
   id: 'usr-admin-1',
   name: 'Maarif Sistem Yöneticisi',
@@ -43,6 +50,28 @@ const SEED_ADMIN: AdminUser = {
   avatar: '🛡️',
   createdAt: '2026-09-01',
   permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports']
+};
+
+export const isUserAdmin = (email?: string | null): boolean => {
+  if (!email) return false;
+  const trimmed = email.trim().toLowerCase();
+  return ADMIN_EMAILS.some((e) => e.toLowerCase() === trimmed);
+};
+
+export const getAdminUser = (email: string, name?: string, avatar?: string): AdminUser => {
+  const trimmed = email.trim().toLowerCase();
+  if (trimmed === 'admin@maarif.gov.tr') {
+    return SEED_ADMIN;
+  }
+  return {
+    id: `usr-admin-${trimmed.replace(/[^a-z0-9]/g, '_')}`,
+    name: name || (trimmed.startsWith('powerose') ? 'Sistem Yöneticisi (Powerose)' : trimmed.startsWith('maarifakademi') ? 'Maarif Akademi Yönetim' : 'Sistem Yöneticisi'),
+    email: trimmed,
+    role: 'admin',
+    avatar: avatar || '🛡️',
+    createdAt: '2026-09-08',
+    permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports']
+  };
 };
 
 const SEED_TEACHERS: TeacherUser[] = [
@@ -230,8 +259,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithEmail = (email: string, _pass?: string): boolean => {
     const trimmed = email.trim().toLowerCase();
-    if (trimmed === SEED_ADMIN.email.toLowerCase()) {
-      setCurrentUser(SEED_ADMIN);
+    if (isUserAdmin(trimmed)) {
+      const adminUser = getAdminUser(trimmed);
+      setCurrentUser(adminUser);
       return true;
     }
 
@@ -261,9 +291,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const trimmed = profile.email.trim().toLowerCase();
 
     // 1. Check if admin
-    if (trimmed === SEED_ADMIN.email.toLowerCase()) {
-      setCurrentUser(SEED_ADMIN);
-      return { isNewUser: false, user: SEED_ADMIN };
+    if (isUserAdmin(trimmed)) {
+      const adminUser = getAdminUser(trimmed, profile.name, profile.avatar);
+      setCurrentUser(adminUser);
+      return { isNewUser: false, user: adminUser };
     }
 
     // 2. Check if student
