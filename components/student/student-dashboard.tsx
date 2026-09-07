@@ -4,6 +4,7 @@ import React from 'react';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import Link from 'next/link';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   GraduationCap,
   Sparkles,
@@ -30,9 +31,12 @@ export function StudentDashboard() {
       {/* Student Gamified Hero Banner */}
       <div className="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl border border-blue-800/40 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-start sm:items-center gap-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-blue-500/20 border-2 border-blue-400 text-blue-200 text-3xl sm:text-4xl flex items-center justify-center shrink-0 shadow-inner">
-            🎓
-          </div>
+          <UserAvatar
+            avatar={student?.avatar}
+            name={student?.name}
+            size="xl"
+            className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-blue-400 bg-blue-500/20 text-blue-200 shadow-inner"
+          />
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl sm:text-3xl font-black">{student?.name || 'Çırak Hasan'}</h1>

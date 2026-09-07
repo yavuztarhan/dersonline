@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '@/lib/store';
 import { useAuth } from '@/lib/auth-store';
 import { AuthModal } from '@/components/auth/auth-modal';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   GraduationCap,
   Sparkles,
@@ -149,9 +150,7 @@ export function Navbar() {
                     className="flex items-center gap-2 px-2.5 py-1 rounded-xl hover:bg-white transition-all text-xs group"
                     title="Panelime Git"
                   >
-                    <span className="text-base group-hover:scale-110 transition-transform">
-                      {currentUser.avatar || '👤'}
-                    </span>
+                    <UserAvatar avatar={currentUser.avatar} name={currentUser.name} size="sm" />
                     <div className="text-left hidden sm:block">
                       <div className="font-extrabold text-slate-900 leading-tight">
                         {currentUser.name}

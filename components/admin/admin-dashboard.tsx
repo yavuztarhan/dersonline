@@ -23,6 +23,7 @@ import {
   RefreshCw,
   Plus
 } from 'lucide-react';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import confetti from 'canvas-confetti';
 
 export function AdminDashboard() {
@@ -290,9 +291,12 @@ export function AdminDashboard() {
                   <div className="space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-10 h-10 rounded-xl bg-amber-200 text-amber-900 font-black text-lg flex items-center justify-center">
-                          {teacher.avatar || '👨‍🏫'}
-                        </div>
+                        <UserAvatar
+                          avatar={teacher.avatar}
+                          name={teacher.name}
+                          size="md"
+                          className="bg-amber-100 text-amber-900 border border-amber-300"
+                        />
                         <div>
                           <div className="font-extrabold text-sm text-slate-900">{teacher.name}</div>
                           <div className="text-xs text-slate-500 flex items-center gap-1">

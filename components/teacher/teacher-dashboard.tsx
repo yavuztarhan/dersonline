@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import Link from 'next/link';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   School,
   MapPin,
@@ -73,9 +74,12 @@ export function TeacherDashboard() {
       {/* Teacher Profile Banner */}
       <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white p-6 sm:p-8 rounded-3xl border border-teal-800/40 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-start sm:items-center gap-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-teal-500/20 border-2 border-teal-400 text-teal-200 text-3xl sm:text-4xl flex items-center justify-center shrink-0 shadow-inner">
-            {teacher?.avatar || '👨‍🏫'}
-          </div>
+          <UserAvatar
+            avatar={teacher?.avatar}
+            name={teacher?.name}
+            size="xl"
+            className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-teal-400 bg-teal-500/20 text-teal-200 shadow-inner"
+          />
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl sm:text-3xl font-black">{teacher?.name || 'Öğretmen Masası'}</h1>

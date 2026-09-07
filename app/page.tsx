@@ -8,6 +8,7 @@ import { StepSelector } from '@/components/step-selector';
 import { StudentBadgePanel } from '@/components/student-badge-panel';
 import { LandingPage } from '@/components/landing/landing-page';
 import { AuthModal } from '@/components/auth/auth-modal';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   GraduationCap,
   Sparkles,
@@ -47,9 +48,12 @@ export default function HomePage() {
       {/* Authenticated User Welcome Bar */}
       <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 text-2xl flex items-center justify-center shadow-inner shrink-0">
-            {currentUser.avatar || '👤'}
-          </div>
+          <UserAvatar
+            avatar={currentUser.avatar}
+            name={currentUser.name}
+            size="lg"
+            className="border-teal-200 bg-teal-50 shadow-inner"
+          />
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-base sm:text-lg font-black text-slate-900">
