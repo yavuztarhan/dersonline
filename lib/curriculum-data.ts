@@ -23,7 +23,7 @@ export const CURRICULUM_DATA: Grade[] = [
             id: 'unit-5-geo',
             subjectId: 'mat-5',
             unitNumber: 3,
-            title: '3. Ünite: Geometrik Şekiller ve Ölçme',
+            title: 'Geometrik Şekiller ve Ölçme',
             description: 'Temel geometrik kavramlar, açılar, çokgenler ve çevre-alan ilişkileri.',
             icon: 'Shapes',
             themeColor: '#10b396',
