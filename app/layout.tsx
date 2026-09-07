@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AppProvider } from '@/lib/store';
+import { AuthProvider } from '@/lib/auth-store';
 import { Navbar } from '@/components/navbar';
 import { RandomStudentPickerModal } from '@/components/random-student-picker';
 
@@ -18,13 +19,15 @@ export default function RootLayout({
   return (
     <html lang="tr" className="h-full">
       <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans antialiased selection:bg-teal-500 selection:text-white">
-        <AppProvider>
-          <Navbar />
-          <main className="flex-1 w-full">
-            {children}
-          </main>
-          <RandomStudentPickerModal />
-        </AppProvider>
+        <AuthProvider>
+          <AppProvider>
+            <Navbar />
+            <main className="flex-1 w-full">
+              {children}
+            </main>
+            <RandomStudentPickerModal />
+          </AppProvider>
+        </AuthProvider>
       </body>
     </html>
   );
