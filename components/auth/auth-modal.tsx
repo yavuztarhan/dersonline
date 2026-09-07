@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { TeacherRegisterWizard } from './teacher-register-wizard';
+import { GoogleSignInModal } from './google-sign-in-modal';
 import {
   X,
   ShieldCheck,
@@ -25,18 +26,30 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalProps) {
-  const { loginAsRole, loginWithEmail, currentUser, logout } = useAuth();
+  const { loginAsRole, loginWithEmail, loginWithGoogle, currentUser, logout } = useAuth();
   const { setRole } = useApp();
 
   const [activeTab, setActiveTab] = useState<'login' | 'register'>(defaultTab);
   const [emailInput, setEmailInput] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
 
   if (!isOpen) return null;
 
   const handleQuickLogin = (role: 'admin' | 'teacher' | 'student') => {
     loginAsRole(role);
     setRole(role === 'student' ? 'student' : 'teacher');
+    onClose();
+  };
+
+  const handleGoogleAccountSelect = (profile: { name: string; email: string; avatar?: string }) => {
+    const result = loginWithGoogle(profile);
+    if (result.user.role === 'student') {
+      setRole('student');
+    } else {
+      setRole('teacher');
+    }
+    setShowGoogleModal(false);
     onClose();
   };
 
@@ -170,6 +183,23 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
               </div>
             </div>
 
+            {/* GOOGLE SIGN IN BUTTON */}
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setShowGoogleModal(true)}
+                className="w-full py-3 px-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-teal-500 hover:bg-teal-50/30 text-slate-800 font-extrabold text-xs transition-all flex items-center justify-center gap-3 shadow-xs group cursor-pointer"
+              >
+                <svg className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.43 7.34 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.98 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.57 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+                <span>Google ile Giriş Yap / Hesap Seç</span>
+              </button>
+            </div>
+
             {/* EMAIL FORM LOGIN */}
             <div className="relative border-t border-slate-200 pt-4 space-y-3">
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-[10px] font-bold text-slate-400 uppercase">
@@ -197,7 +227,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>Sisteme Giriş Yap</span>
@@ -207,6 +237,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
           </div>
         )}
+
+        {/* Google Sign In Account Chooser Modal */}
+        <GoogleSignInModal
+          isOpen={showGoogleModal}
+          onClose={() => setShowGoogleModal(false)}
+          onSelectAccount={handleGoogleAccountSelect}
+          mode="login"
+        />
 
       </div>
     </div>

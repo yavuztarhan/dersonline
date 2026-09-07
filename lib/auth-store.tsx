@@ -19,6 +19,7 @@ interface AuthContextType {
   // Auth Operations
   loginAsRole: (role: UserRole) => void;
   loginWithEmail: (email: string, pass?: string) => boolean;
+  loginWithGoogle: (profile: { name: string; email: string; avatar?: string }) => { isNewUser: boolean; user: AuthUser };
   logout: () => void;
   
   // Teacher Registration Flow
@@ -236,6 +237,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCurrentUser(null);
   };
 
+  const loginWithGoogle = (profile: { name: string; email: string; avatar?: string }): { isNewUser: boolean; user: AuthUser } => {
+    const trimmed = profile.email.trim().toLowerCase();
+
+    // 1. Check if admin
+    if (trimmed === SEED_ADMIN.email.toLowerCase()) {
+      setCurrentUser(SEED_ADMIN);
+      return { isNewUser: false, user: SEED_ADMIN };
+    }
+
+    // 2. Check if student
+    const existingStudent = students.find((s) => s.email.toLowerCase() === trimmed);
+    if (existingStudent) {
+      setCurrentUser(existingStudent);
+      return { isNewUser: false, user: existingStudent };
+    }
+
+    // 3. Check if teacher exists
+    const existingTeacher = teachers.find((t) => t.email.toLowerCase() === trimmed);
+    if (existingTeacher) {
+      setCurrentUser(existingTeacher);
+      return { isNewUser: false, user: existingTeacher };
+    }
+
+    // 4. If new teacher user, create profile with pre-verified email (since Google validates email ownership)
+    // and status 'pending_admin_approval'
+    const newTeacher: TeacherUser = {
+      id: `tch-g-${Date.now()}`,
+      name: profile.name || 'Google Kullanıcısı',
+      email: profile.email,
+      role: 'teacher',
+      avatar: profile.avatar || '👨‍🏫',
+      city: 'Edirne',
+      district: 'Merkez',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      branch: 'Matematik',
+      status: 'pending_admin_approval',
+      verifiedAt: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString().split('T')[0],
+      assignedClasses: ['5-A']
+    };
+
+    const updated = [...teachers, newTeacher];
+    setTeachers(updated);
+    setCurrentUser(newTeacher);
+
+    return { isNewUser: true, user: newTeacher };
+  };
+
   const startTeacherRegistration = (data: TeacherRegistrationPayload): { code: string; success: boolean } => {
     // Generate 6-digit numeric verification code
     const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -376,6 +425,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         activeVerificationCode,
         loginAsRole,
         loginWithEmail,
+        loginWithGoogle,
         logout,
         startTeacherRegistration,
         verifyTeacherEmail,
