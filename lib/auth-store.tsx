@@ -153,7 +153,7 @@ const SEED_STUDENTS: StudentUser[] = [
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(SEED_TEACHERS[0]); // default active as approved teacher
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null); // default as unauthenticated guest
   const [teachers, setTeachers] = useState<TeacherUser[]>(SEED_TEACHERS);
   const [students, setStudents] = useState<StudentUser[]>(SEED_STUDENTS);
   const [activeVerificationCode, setActiveVerificationCode] = useState<{

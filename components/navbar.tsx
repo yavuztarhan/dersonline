@@ -134,40 +134,59 @@ export function Navbar() {
               </div>
             )}
 
-            {/* User Account / Login Button */}
+            {/* User Account / Login Button / Logout Button */}
             {currentUser ? (
-              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 p-1 rounded-2xl">
-                <Link
-                  href={
-                    currentUser.role === 'admin'
-                      ? '/admin'
-                      : currentUser.role === 'teacher'
-                      ? '/teacher'
-                      : '/student'
-                  }
-                  className="flex items-center gap-2 px-2.5 py-1 rounded-xl hover:bg-white transition-all text-xs"
-                >
-                  <span className="text-base">{currentUser.avatar || '👤'}</span>
-                  <div className="text-left hidden sm:block">
-                    <div className="font-extrabold text-slate-900 leading-tight">
-                      {currentUser.name}
-                    </div>
-                    <div className="text-[10px] text-slate-400 uppercase font-bold">
-                      {currentUser.role === 'admin'
-                        ? '🛡️ Yönetici'
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 p-1 rounded-2xl shadow-xs">
+                  <Link
+                    href={
+                      currentUser.role === 'admin'
+                        ? '/admin'
                         : currentUser.role === 'teacher'
-                        ? '👨‍🏫 Öğretmen'
-                        : '🎓 Öğrenci'}
+                        ? '/teacher'
+                        : '/student'
+                    }
+                    className="flex items-center gap-2 px-2.5 py-1 rounded-xl hover:bg-white transition-all text-xs group"
+                    title="Panelime Git"
+                  >
+                    <span className="text-base group-hover:scale-110 transition-transform">
+                      {currentUser.avatar || '👤'}
+                    </span>
+                    <div className="text-left hidden sm:block">
+                      <div className="font-extrabold text-slate-900 leading-tight">
+                        {currentUser.name}
+                      </div>
+                      <div className="text-[10px] text-teal-700 uppercase font-bold">
+                        {currentUser.role === 'admin'
+                          ? '🛡️ Yönetici'
+                          : currentUser.role === 'teacher'
+                          ? '👨‍🏫 Öğretmen'
+                          : '🎓 Öğrenci'}
+                      </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
 
+                  <button
+                    onClick={handleOpenLogin}
+                    className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-800 text-xs font-bold transition-colors cursor-pointer"
+                    title="Hesap Değiştir / Hızlı Giriş"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Prominent Logout Button */}
                 <button
-                  onClick={handleOpenLogin}
-                  className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-500 text-xs font-bold"
-                  title="Rolü Değiştir / Giriş Yap"
+                  onClick={() => {
+                    playSound('click');
+                    logout();
+                    router.push('/');
+                  }}
+                  className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-900 border border-rose-200 font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer"
+                  title="Oturumu Kapat (Çıkış Yap)"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
+                  <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                  <span className="hidden md:inline">Çıkış Yap</span>
                 </button>
               </div>
             ) : (

@@ -21,6 +21,7 @@ import {
   Sparkles,
   AlertCircle
 } from 'lucide-react';
+import { AuthGuard } from '@/components/auth/auth-guard';
 
 export default function LessonRoomPage() {
   const params = useParams();
@@ -56,77 +57,82 @@ export default function LessonRoomPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4.5rem)] flex flex-col bg-slate-50">
-      
-      {/* Smart Board Annotation Transparent Canvas Layer */}
-      <DrawingCanvas />
+    <AuthGuard
+      title="Akıllı Tahta Ders Odası Girişi"
+      description={`"${outcome.code} - ${outcome.shortTitle}" interaktif ders odasına ve 4 fazlı akıllı tahta atölyesine erişmek için lütfen giriş yapınız.`}
+    >
+      <div className="relative min-h-[calc(100vh-4.5rem)] flex flex-col bg-slate-50">
+        
+        {/* Smart Board Annotation Transparent Canvas Layer */}
+        <DrawingCanvas />
 
-      {/* Top Board Navigation & Toolbar */}
-      <BoardToolbar
-        currentPhase={activePhase}
-        onSelectPhase={(phase) => setActivePhase(phase)}
-        outcomeCode={outcome.code}
-        outcomeTitle={outcome.shortTitle}
-      />
+        {/* Top Board Navigation & Toolbar */}
+        <BoardToolbar
+          currentPhase={activePhase}
+          onSelectPhase={(phase) => setActivePhase(phase)}
+          outcomeCode={outcome.code}
+          outcomeTitle={outcome.shortTitle}
+        />
 
-      {/* Breadcrumb Path Banner */}
-      <div className="bg-slate-100/80 border-b border-slate-200/60 px-4 sm:px-6 py-2 text-xs font-semibold text-slate-500">
-        <div className="max-w-7xl mx-auto flex items-center gap-1.5 flex-wrap">
-          <Link href="/" className="hover:text-teal-700 transition-colors flex items-center gap-1">
-            <Home className="w-3.5 h-3.5" />
-            <span>Ana Sayfa</span>
-          </Link>
+        {/* Breadcrumb Path Banner */}
+        <div className="bg-slate-100/80 border-b border-slate-200/60 px-4 sm:px-6 py-2 text-xs font-semibold text-slate-500">
+          <div className="max-w-7xl mx-auto flex items-center gap-1.5 flex-wrap">
+            <Link href="/" className="hover:text-teal-700 transition-colors flex items-center gap-1">
+              <Home className="w-3.5 h-3.5" />
+              <span>Ana Sayfa</span>
+            </Link>
 
-          {pathInfo && (
-            <>
-              <ChevronRight className="w-3 h-3 text-slate-400" />
-              <span>{pathInfo.grade.title}</span>
-              <ChevronRight className="w-3 h-3 text-slate-400" />
-              <span>{pathInfo.subject.title}</span>
-              <ChevronRight className="w-3 h-3 text-slate-400" />
-              <span className="line-clamp-1">{pathInfo.unit.title.split(':')[0]}</span>
-              <ChevronRight className="w-3 h-3 text-slate-400" />
-              <span className="text-teal-700 font-bold">{outcome.code}</span>
-            </>
+            {pathInfo && (
+              <>
+                <ChevronRight className="w-3 h-3 text-slate-400" />
+                <span>{pathInfo.grade.title}</span>
+                <ChevronRight className="w-3 h-3 text-slate-400" />
+                <span>{pathInfo.subject.title}</span>
+                <ChevronRight className="w-3 h-3 text-slate-400" />
+                <span className="line-clamp-1">{pathInfo.unit.title.split(':')[0]}</span>
+                <ChevronRight className="w-3 h-3 text-slate-400" />
+                <span className="text-teal-700 font-bold">{outcome.code}</span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Dynamic Lesson Phase Slot */}
+        <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 z-10">
+          {activePhase === 'story' && (
+            <StoryPhase
+              data={outcome.phases.story}
+              onNextPhase={() => setActivePhase('lab')}
+            />
+          )}
+
+          {activePhase === 'lab' && (
+            <LabPhase
+              data={outcome.phases.lab}
+              onNextPhase={() => setActivePhase('puzzle')}
+            />
+          )}
+
+          {activePhase === 'puzzle' && (
+            <PuzzlePhase
+              data={outcome.phases.puzzle}
+              onNextPhase={() => setActivePhase('assessment')}
+            />
+          )}
+
+          {activePhase === 'assessment' && (
+            <AssessmentPhase data={outcome.phases.assessment} />
           )}
         </div>
+
+        {/* Pedagogical Guide Slide-over Drawer for Teacher */}
+        <TeacherGuideDrawer
+          outcomeCode={outcome.code}
+          outcomeTitle={outcome.title}
+          guide={outcome.pedagogyGuide}
+        />
+
       </div>
-
-      {/* Dynamic Lesson Phase Slot */}
-      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 z-10">
-        {activePhase === 'story' && (
-          <StoryPhase
-            data={outcome.phases.story}
-            onNextPhase={() => setActivePhase('lab')}
-          />
-        )}
-
-        {activePhase === 'lab' && (
-          <LabPhase
-            data={outcome.phases.lab}
-            onNextPhase={() => setActivePhase('puzzle')}
-          />
-        )}
-
-        {activePhase === 'puzzle' && (
-          <PuzzlePhase
-            data={outcome.phases.puzzle}
-            onNextPhase={() => setActivePhase('assessment')}
-          />
-        )}
-
-        {activePhase === 'assessment' && (
-          <AssessmentPhase data={outcome.phases.assessment} />
-        )}
-      </div>
-
-      {/* Pedagogical Guide Slide-over Drawer for Teacher */}
-      <TeacherGuideDrawer
-        outcomeCode={outcome.code}
-        outcomeTitle={outcome.title}
-        guide={outcome.pedagogyGuide}
-      />
-
-    </div>
+    </AuthGuard>
   );
 }
