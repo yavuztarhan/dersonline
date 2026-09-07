@@ -1,0 +1,133 @@
+// Prisma Schema for Maarif Akademi (PostgreSQL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum TeacherStatus {
+  PENDING_EMAIL
+  PENDING_ADMIN_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      Role     @default(STUDENT)
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teacherProfile TeacherProfile?
+  studentProfile StudentProfile?
+
+  @@map("users")
+}
+
+model TeacherProfile {
+  id               String        @id @default(cuid())
+  userId           String        @unique
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone            String?
+  city             String        // İl
+  district         String        // İlçe
+  school           String        // Okul Adı
+  branch           String        @default("Matematik") // Branş
+  status           TeacherStatus @default(PENDING_EMAIL)
+  verificationCode String?       // 6 haneli e-posta güvenlik kodu
+  verifiedAt       DateTime?
+  approvedAt       DateTime?
+  rejectionReason  String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  classrooms       Classroom[]
+  students         StudentProfile[]
+
+  @@map("teacher_profiles")
+}
+
+model StudentProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studentNumber String   // Okul No (Örn: 104)
+  gradeLevel    Int      @default(5)
+  classSection  String   @default("5-A") // Şube (5-A, 5-B vb.)
+  city          String
+  district      String
+  school        String
+  teacherId     String?
+  teacher       TeacherProfile? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  points        Int      @default(0) // XP Puanı
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  badges        StudentBadge[]
+  progresses    OutcomeProgress[]
+
+  @@map("student_profiles")
+}
+
+model Classroom {
+  id         String   @id @default(cuid())
+  name       String   // 5-A
+  gradeLevel Int      @default(5)
+  school     String
+  teacherId  String
+  teacher    TeacherProfile @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@map("classrooms")
+}
+
+model Badge {
+  id             String   @id @default(cuid())
+  slug           String   @unique // 'first-step', 'geometry-master'
+  title          String
+  description    String
+  icon           String
+  pointsRequired Int      @default(50)
+  createdAt      DateTime @default(now())
+
+  studentBadges  StudentBadge[]
+
+  @@map("badges")
+}
+
+model StudentBadge {
+  id        String   @id @default(cuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  badgeId   String
+  badge     Badge          @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt  DateTime       @default(now())
+
+  @@unique([studentId, badgeId])
+  @@map("student_badges")
+}
+
+model OutcomeProgress {
+  id             String   @id @default(cuid())
+  studentId      String
+  student        StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  outcomeCode    String   // 'MAT.5.3.1', 'MAT.5.3.2'
+  score          Int      @default(0)
+  reflectionNote String?
+  completedAt    DateTime @default(now())
+
+  @@map("outcome_progresses")
+}
