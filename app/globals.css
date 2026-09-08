@@ -72,3 +72,16 @@ button, select, input {
     linear-gradient(to right, rgba(51, 65, 85, 0.35) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(51, 65, 85, 0.35) 1px, transparent 1px);
 }
+
+@keyframes trainDrive {
+  0% {
+    transform: translateX(-350px);
+  }
+  100% {
+    transform: translateX(450px);
+  }
+}
+
+.animate-train-drive {
+  animation: trainDrive 2.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}

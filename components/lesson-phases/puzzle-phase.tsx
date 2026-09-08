@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti';
 import { WordSearchGame } from '@/components/lesson-phases/word-search-game';
 import { TrueFalseGame } from '@/components/lesson-phases/true-false-game';
 import { AngleRadarGame } from '@/components/lesson-phases/angle-radar-game';
+import { ConstructionDeductionGame } from '@/components/lesson-phases/construction-deduction-game';
 import {
   Puzzle,
   Sparkles,
@@ -21,7 +22,8 @@ import {
   Gamepad2,
   ChevronRight,
   Play,
-  Crosshair
+  Crosshair,
+  Compass
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -38,7 +40,7 @@ interface MatchCard {
   matched: boolean;
 }
 
-export type PuzzleGameId = 'radargame' | 'matching' | 'wordsearch' | 'truefalse';
+export type PuzzleGameId = 'radargame' | 'constructiongame' | 'matching' | 'wordsearch' | 'truefalse';
 
 export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   const { playSound, unlockBadge, addPoints, role, selectedOutcome } = useApp();
@@ -157,6 +159,15 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     data.title?.toLowerCase().includes('iletki') ||
     selectedOutcome?.id === 'MAT.5.3.3';
 
+  const isConstructionTopic =
+    selectedOutcome?.id === 'MAT.5.3.2' ||
+    data.title?.toLowerCase().includes('inşa') ||
+    data.title?.toLowerCase().includes('çıkarım') ||
+    data.title?.toLowerCase().includes('cetvel') ||
+    data.title?.toLowerCase().includes('gönye') ||
+    data.title?.toLowerCase().includes('pergel') ||
+    data.title?.toLowerCase().includes('ray');
+
   const baseGamesList: Array<{
     id: PuzzleGameId;
     title: string;
@@ -178,6 +189,19 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
       badge: '3 Seviye • 360° İletki',
       gradient: 'from-cyan-500 via-blue-600 to-indigo-900',
       reward: '+100 XP & Rozet'
+    });
+  }
+
+  if (isConstructionTopic) {
+    baseGamesList.push({
+      id: 'constructiongame',
+      title: 'Adım Adım İnşa & Çıkarım Terazisi',
+      tagline: 'Gönye, Cetvel, Pergel & Terazi',
+      description: 'Kayıp tren rayını gönye ve cetvelle döşe, treni geçir! Açı kollarını pergelle dengele ve çıkarım terazisinde aksiyomları test et.',
+      icon: <Compass className="w-8 h-8" />,
+      badge: '3 Görev • İnşa & Terazi',
+      gradient: 'from-amber-600 via-teal-700 to-slate-900',
+      reward: '+130 XP & Usta Rozeti'
     });
   }
 
@@ -354,6 +378,13 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
           {selectedGameId === 'radargame' && (
             <div className="animate-in fade-in duration-200">
               <AngleRadarGame onBackToMenu={() => setSelectedGameId(null)} />
+            </div>
+          )}
+
+          {/* FEATURED GAME: CONSTRUCTION & DEDUCTION GAME */}
+          {selectedGameId === 'constructiongame' && (
+            <div className="animate-in fade-in duration-200">
+              <ConstructionDeductionGame onBackToMenu={() => setSelectedGameId(null)} />
             </div>
           )}
 
