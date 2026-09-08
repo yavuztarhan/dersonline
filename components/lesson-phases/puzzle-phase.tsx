@@ -8,6 +8,7 @@ import { WordSearchGame } from '@/components/lesson-phases/word-search-game';
 import { TrueFalseGame } from '@/components/lesson-phases/true-false-game';
 import { AngleRadarGame } from '@/components/lesson-phases/angle-radar-game';
 import { ConstructionDeductionGame } from '@/components/lesson-phases/construction-deduction-game';
+import { JunctionArchitectGame } from '@/components/lesson-phases/junction-architect-game';
 import {
   Puzzle,
   Sparkles,
@@ -40,7 +41,7 @@ interface MatchCard {
   matched: boolean;
 }
 
-export type PuzzleGameId = 'radargame' | 'constructiongame' | 'matching' | 'wordsearch' | 'truefalse';
+export type PuzzleGameId = 'junctiongame' | 'radargame' | 'constructiongame' | 'matching' | 'wordsearch' | 'truefalse';
 
 export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   const { playSound, unlockBadge, addPoints, role, selectedOutcome } = useApp();
@@ -182,6 +183,19 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     gradient: string;
     reward: string;
   }> = [];
+
+  if (isLinesAnglesTopic) {
+    baseGamesList.push({
+      id: 'junctiongame',
+      title: 'Kavşak Mimarı: Lazer Yolları & Açı Kilidi',
+      tagline: 'Dinamik Kesişim, Şifre & Arcade',
+      description: 'Lazer kavşağında ters açıları ve komşu bütünleri çöz, neon arabaları geçir! Açı terazisinde tümler ve bütünler enerjisini topla.',
+      icon: <Zap className="w-8 h-8" />,
+      badge: '3 Oyun Modu • Siberpunk',
+      gradient: 'from-cyan-600 via-indigo-600 to-amber-600',
+      reward: '+150 XP & Usta Rozeti'
+    });
+  }
 
   if (isAngleTopic) {
     baseGamesList.push({
@@ -383,6 +397,13 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+
+          {/* FEATURED GAME: JUNCTION ARCHITECT (KAVŞAK MİMARI) */}
+          {selectedGameId === 'junctiongame' && (
+            <div className="animate-in fade-in duration-200">
+              <JunctionArchitectGame onBackToMenu={() => setSelectedGameId(null)} />
+            </div>
+          )}
 
           {/* FEATURED GAME: ANGLE RADAR (HEDEF KİLİTLENDİ) */}
           {selectedGameId === 'radargame' && (
