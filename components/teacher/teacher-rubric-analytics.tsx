@@ -14,6 +14,7 @@ import {
   downloadStudentRubricPDF,
   downloadBulkClassRubricPDF
 } from '@/lib/pdf-report-generator';
+import { useAuth } from '@/lib/auth-store';
 import {
   ClipboardCheck,
   Users,
@@ -46,13 +47,23 @@ import {
 interface TeacherRubricAnalyticsProps {
   teacherClasses?: string[];
   teacherSchool?: string;
+  teacherName?: string;
+  teacherBranch?: string;
 }
 
 export function TeacherRubricAnalytics({
   teacherClasses = ['5-A', '5-B', '5-C'],
-  teacherSchool = 'Edirne Selimiye İmam Hatip Ortaokulu'
+  teacherSchool,
+  teacherName,
+  teacherBranch
 }: TeacherRubricAnalyticsProps) {
   const { playSound } = useApp();
+  const { currentUser } = useAuth();
+
+  const currentTeacher = currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin') ? currentUser : null;
+  const activeSchool = teacherSchool || (currentTeacher as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
+  const activeTeacherName = teacherName || currentTeacher?.name || 'Ahmet Yılmaz';
+  const activeTeacherBranch = teacherBranch || (currentTeacher as any)?.branch || 'Matematik';
 
   const [submissions, setSubmissions] = useState<RubricSubmissionRecord[]>([]);
   const [activeViewMode, setActiveViewMode] = useState<'class_based' | 'outcome_based'>('class_based');
@@ -131,8 +142,9 @@ export function TeacherRubricAnalytics({
       setDownloadingId(sub.id);
       playSound('select');
       await downloadStudentRubricPDF(sub, {
-        schoolName: teacherSchool,
-        teacherName: 'Matematik Dersi Zümre Öğretmeni'
+        schoolName: activeSchool,
+        teacherName: activeTeacherName,
+        teacherBranch: activeTeacherBranch
       });
       playSound('success');
     } catch (err) {
@@ -157,8 +169,9 @@ export function TeacherRubricAnalytics({
       setDownloadingId(loadingKey);
       playSound('select');
       await downloadBulkClassRubricPDF(targetSubmissions, {
-        schoolName: teacherSchool,
-        teacherName: 'Matematik Dersi Zümre Öğretmeni',
+        schoolName: activeSchool,
+        teacherName: activeTeacherName,
+        teacherBranch: activeTeacherBranch,
         ...meta
       });
       playSound('success');

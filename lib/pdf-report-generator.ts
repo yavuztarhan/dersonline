@@ -8,6 +8,7 @@ import { getRubricForOutcome } from '@/lib/rubric-data';
 export interface ReportMetaOptions {
   schoolName?: string;
   teacherName?: string;
+  teacherBranch?: string;
   academicYear?: string;
 }
 
@@ -19,7 +20,9 @@ export function createStudentReportHTML(
   options?: ReportMetaOptions
 ): HTMLDivElement {
   const school = options?.schoolName || sub.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
-  const teacher = options?.teacherName || 'Matematik Dersi Zümre Öğretmeni';
+  const teacher = options?.teacherName || 'Ahmet Yılmaz';
+  const rawBranch = options?.teacherBranch || 'Matematik';
+  const teacherBranch = rawBranch.toLowerCase().includes('öğretmen') ? rawBranch : `${rawBranch} Öğretmeni`;
   const year = options?.academicYear || '2026 - 2027 Eğitim-Öğretim Yılı';
   const formattedDate = new Date(sub.submittedAt).toLocaleDateString('tr-TR', {
     day: 'numeric',
@@ -199,17 +202,16 @@ export function createStudentReportHTML(
     </div>
 
     <!-- SIGNATURE BLOCK -->
-    <div style="border-top: 1px solid #cbd5e1; padding-top: 12px; margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-size: 10.5px; color: #334155;">
+    <div style="border-top: 1px solid #cbd5e1; padding-top: 14px; margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-size: 10.5px; color: #334155;">
       <div style="text-align: center; width: 220px;">
-        <div style="font-weight: 800; color: #0f172a;">${sub.studentName}</div>
-        <div style="font-size: 9.5px; color: #64748b; margin-top: 2px;">Öğrenci İmzası</div>
-        <div style="margin-top: 18px; border-bottom: 1px dotted #94a3b8; width: 140px; margin-left: auto; margin-right: auto;"></div>
+        <div style="font-weight: 800; color: #0f172a; font-size: 11px;">${sub.studentName}</div>
+        <div style="margin-top: 26px; border-bottom: 1px dashed #94a3b8; width: 140px; margin-left: auto; margin-right: auto;"></div>
       </div>
 
       <div style="text-align: center; width: 220px;">
-        <div style="font-weight: 800; color: #0f172a;">${teacher}</div>
-        <div style="font-size: 9.5px; color: #64748b; margin-top: 2px;">Ders Öğretmeni Kaşe / İmza</div>
-        <div style="margin-top: 18px; border-bottom: 1px dotted #94a3b8; width: 140px; margin-left: auto; margin-right: auto;"></div>
+        <div style="font-weight: 800; color: #0f172a; font-size: 11px;">${teacher}</div>
+        <div style="font-size: 9.5px; color: #475569; margin-top: 2px; font-weight: 600;">${teacherBranch}</div>
+        <div style="margin-top: 16px; border-bottom: 1px dashed #94a3b8; width: 140px; margin-left: auto; margin-right: auto;"></div>
       </div>
     </div>
   `;

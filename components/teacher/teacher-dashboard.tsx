@@ -266,6 +266,8 @@ export function TeacherDashboard() {
           <TeacherRubricAnalytics
             teacherClasses={teacherClasses}
             teacherSchool={teacher?.school}
+            teacherName={teacher?.name}
+            teacherBranch={teacher?.branch}
           />
         </div>
       )}
