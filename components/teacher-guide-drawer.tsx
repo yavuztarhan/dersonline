@@ -32,7 +32,7 @@ export function TeacherGuideDrawer({ outcomeCode, outcomeTitle, guide, outcome }
   if (!teacherDrawerOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[70] flex justify-end bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="w-full max-w-xl bg-white h-full shadow-2xl border-l border-slate-200 flex flex-col animate-in slide-in-from-right duration-300">
         
         {/* Header */}

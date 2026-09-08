@@ -85,7 +85,7 @@ export function BoardToolbar({
   return (
     <>
       {/* Top Smart Board Header Navigation */}
-      <div className="sticky top-0 z-35 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs px-4 sm:px-6 py-3">
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs px-4 sm:px-6 py-3">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           
           {/* Outcome Info */}
@@ -134,7 +134,7 @@ export function BoardToolbar({
 
       {/* Floating Smart Board Pen & Teaching Tools (Left Side) */}
       <div
-        className={`fixed left-4 bottom-6 z-45 transition-all duration-300 ${
+        className={`fixed left-4 bottom-6 z-50 transition-all duration-300 ${
           toolbarCollapsed ? '-translate-x-full' : 'translate-x-0'
         }`}
       >
@@ -220,7 +220,7 @@ export function BoardToolbar({
             </button>
 
             {colorMenuOpen && (
-              <div className="absolute left-14 bottom-0 bg-slate-900 border border-slate-700 p-2.5 rounded-2xl shadow-xl flex flex-col gap-2 z-50 animate-in fade-in zoom-in-95">
+              <div className="absolute left-14 bottom-0 bg-slate-900 border border-slate-700 p-2.5 rounded-2xl shadow-xl flex flex-col gap-2 z-[60] animate-in fade-in zoom-in-95">
                 <span className="text-[10px] font-bold text-slate-400 uppercase">Renkler</span>
                 <div className="grid grid-cols-3 gap-1.5">
                   {PEN_COLORS.map((c) => (
