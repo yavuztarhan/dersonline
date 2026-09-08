@@ -151,7 +151,7 @@ export function createStudentReportHTML(
           HEDEF ÖĞRENME ÇIKTISI / KAZANIM:
         </div>
         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <span style="background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 2px 7px; border-radius: 5px; font-family: monospace; font-size: 11px; font-weight: 900; line-height: 1.2; display: inline-block;">${sub.outcomeCode}</span>
+          <span style="display: inline-block; background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; border-radius: 5px; font-family: monospace; font-size: 11px; font-weight: 900; height: 22px; line-height: 20px; padding: 0 8px; text-align: center; vertical-align: middle; box-sizing: border-box;">${sub.outcomeCode}</span>
           <span style="font-size: 11.5px; font-weight: 800; color: #0f172a; line-height: 1.35;">${sub.outcomeTitle}</span>
         </div>
       </div>
