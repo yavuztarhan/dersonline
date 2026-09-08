@@ -11,6 +11,10 @@ import {
 } from '@/lib/rubric-store';
 import { getRubricForOutcome } from '@/lib/rubric-data';
 import {
+  downloadStudentRubricPDF,
+  downloadBulkClassRubricPDF
+} from '@/lib/pdf-report-generator';
+import {
   ClipboardCheck,
   Users,
   Target,
@@ -33,7 +37,10 @@ import {
   Check,
   HelpCircle,
   Printer,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Download,
+  FileText,
+  Loader2
 } from 'lucide-react';
 
 interface TeacherRubricAnalyticsProps {
@@ -54,7 +61,10 @@ export function TeacherRubricAnalytics({
   const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '5-A');
 
   // Mode B: Outcome-based selection
-  const [selectedOutcomeCode, setSelectedOutcomeCode] = useState<string>('MAT.5.3.3');
+  const [selectedOutcomeCode, setSelectedOutcomeCode] = useState<string>('MAT.5.3.4');
+
+  // PDF Generation loading state
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   // Student Detail Modal state
   const [inspectingSubmission, setInspectingSubmission] = useState<RubricSubmissionRecord | null>(null);
@@ -76,7 +86,9 @@ export function TeacherRubricAnalytics({
 
   // Distinct Outcomes in DB
   const availableOutcomes = [
+    { code: 'MAT.5.3.4', title: 'Düzlemde Doğruların Durumları ve Açı Çıkarımları' },
     { code: 'MAT.5.3.3', title: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme' },
+    { code: 'MAT.5.3.2', title: 'Geometrik İnşa ve Çıkarım (Cetvel, Pergel, Gönye)' },
     { code: 'MAT.5.3.1', title: 'Doğru, Doğru Parçası ve Işın ile İlgili Temel Geometrik Çizimler' }
   ];
 
@@ -111,6 +123,51 @@ export function TeacherRubricAnalytics({
       ...inspectingSubmission,
       teacherFeedback: teacherFeedbackInput.trim()
     });
+  };
+
+  // Single Student PDF Download
+  const handleDownloadSinglePDF = async (sub: RubricSubmissionRecord) => {
+    try {
+      setDownloadingId(sub.id);
+      playSound('select');
+      await downloadStudentRubricPDF(sub, {
+        schoolName: teacherSchool,
+        teacherName: 'Matematik Dersi Zümre Öğretmeni'
+      });
+      playSound('success');
+    } catch (err) {
+      console.error('PDF indirme hatası:', err);
+      alert('PDF raporu oluşturulurken bir hata oluştu.');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  // Bulk Class PDF Download
+  const handleDownloadBulkPDF = async (
+    targetSubmissions: RubricSubmissionRecord[],
+    loadingKey: string,
+    meta?: { classSection?: string; outcomeCode?: string; outcomeTitle?: string }
+  ) => {
+    if (!targetSubmissions || targetSubmissions.length === 0) {
+      alert('İndirilecek öğrenci değerlendirmesi bulunmuyor.');
+      return;
+    }
+    try {
+      setDownloadingId(loadingKey);
+      playSound('select');
+      await downloadBulkClassRubricPDF(targetSubmissions, {
+        schoolName: teacherSchool,
+        teacherName: 'Matematik Dersi Zümre Öğretmeni',
+        ...meta
+      });
+      playSound('success');
+    } catch (err) {
+      console.error('Toplu PDF indirme hatası:', err);
+      alert('Toplu PDF raporu oluşturulurken bir hata oluştu.');
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   const getLevelBadge = (level: string) => {
@@ -329,6 +386,36 @@ export function TeacherRubricAnalytics({
                     <span className="text-rose-700 font-bold">💡 {stat.needSupportCount}</span>
                   </div>
                 </div>
+
+                {/* BULK OUTCOME PDF DOWNLOAD BUTTON */}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div className="text-[11px] text-slate-500 font-medium">
+                    {selectedClass} • {stat.outcomeCode}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadBulkPDF(
+                      stat.submissions,
+                      `bulk-${selectedClass}-${stat.outcomeCode}`,
+                      { classSection: selectedClass, outcomeCode: stat.outcomeCode, outcomeTitle: stat.outcomeTitle }
+                    )}
+                    disabled={downloadingId !== null || stat.submissions.length === 0}
+                    className="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ml-auto"
+                    title={`${selectedClass} şubesindeki ${stat.submissions.length} öğrencinin raporunu alt alta tek PDF olarak indir`}
+                  >
+                    {downloadingId === `bulk-${selectedClass}-${stat.outcomeCode}` ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
+                        <span>PDF Hazırlanıyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-3.5 h-3.5 text-teal-600" />
+                        <span>Sınıf Raporunu Toplu PDF İndir</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -341,11 +428,11 @@ export function TeacherRubricAnalytics({
                   {selectedClass} Şubesi Öğrenci Öz Değerlendirme Formları
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Öğrencinin puanına ve kişisel yansıtma notuna bakmak için satıra veya &quot;İncele&quot; butonuna tıklayınız.
+                  Öğrencinin puanına ve kişisel yansıtma notuna bakmak için &quot;İncele&quot; butonuna, resmi rapor çıktısı için &quot;PDF&quot; butonuna basınız.
                 </p>
               </div>
 
-              {/* Filters */}
+              {/* Filters & Bulk PDF Button */}
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
@@ -369,6 +456,31 @@ export function TeacherRubricAnalytics({
                   <option value="Orta">🔄 Orta</option>
                   <option value="Geliştirilmeli">💡 Geliştirilmeli</option>
                 </select>
+
+                {/* Bulk Download for All Class Submissions */}
+                <button
+                  type="button"
+                  onClick={() => handleDownloadBulkPDF(
+                    classAnalytics.allClassSubmissions,
+                    `bulk-all-${selectedClass}`,
+                    { classSection: selectedClass, outcomeCode: 'Tum_Kazanimlar', outcomeTitle: `${selectedClass} Şubesi Tüm Kazanımlar Öz Değerlendirme` }
+                  )}
+                  disabled={downloadingId !== null || classAnalytics.allClassSubmissions.length === 0}
+                  className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title={`${selectedClass} şubesinin tüm formlarını alt alta toplu PDF olarak indir`}
+                >
+                  {downloadingId === `bulk-all-${selectedClass}` ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                      <span>Hazırlanıyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Şube Toplu PDF İndir</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 
@@ -383,7 +495,7 @@ export function TeacherRubricAnalytics({
                     <th className="py-2.5 px-3 text-center">Toplam Puan</th>
                     <th className="py-2.5 px-3">Düzey</th>
                     <th className="py-2.5 px-3">Öğretmen Notu</th>
-                    <th className="py-2.5 px-3 text-right">İşlem</th>
+                    <th className="py-2.5 px-3 text-right">İşlemler</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -443,13 +555,31 @@ export function TeacherRubricAnalytics({
                           )}
                         </td>
                         <td className="py-3 px-3 text-right">
-                          <button
-                            onClick={() => handleOpenInspector(sub)}
-                            className="px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold text-xs border border-teal-200 transition-colors flex items-center gap-1 ml-auto cursor-pointer"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>İncele</span>
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            {/* Individual Student PDF Download Button */}
+                            <button
+                              onClick={() => handleDownloadSinglePDF(sub)}
+                              disabled={downloadingId !== null}
+                              className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                              title="Öğrencinin Öz Değerlendirme Raporunu PDF Olarak İndir"
+                            >
+                              {downloadingId === sub.id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
+                              ) : (
+                                <Download className="w-3.5 h-3.5 text-teal-600" />
+                              )}
+                              <span>PDF</span>
+                            </button>
+
+                            <button
+                              onClick={() => handleOpenInspector(sub)}
+                              className="px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold text-xs border border-teal-200 transition-colors flex items-center gap-1 cursor-pointer"
+                              title="Detaylı İncele ve Öğretmen Notu Ekle"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>İncele</span>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -483,7 +613,7 @@ export function TeacherRubricAnalytics({
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    {out.code} ({out.code === 'MAT.5.3.3' ? 'Açılar & İletki' : 'Temel Çizimler'})
+                    {out.code} ({out.code === 'MAT.5.3.4' ? 'Doğruların Durumları' : out.code === 'MAT.5.3.3' ? 'Açılar & İletki' : out.code === 'MAT.5.3.2' ? 'İnşa & Çıkarım' : 'Temel Çizimler'})
                   </button>
                 ))}
               </div>
@@ -499,62 +629,92 @@ export function TeacherRubricAnalytics({
             {outcomeAnalytics.classStats.map((cStat) => (
               <div
                 key={cStat.classSection}
-                className="bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-teal-400 transition-all shadow-sm space-y-4"
+                className="bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-teal-400 transition-all shadow-sm space-y-4 flex flex-col justify-between"
               >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="text-xs font-black uppercase text-teal-700 tracking-wider">Şube Raporu</span>
-                    <h3 className="text-xl font-black text-slate-900">{cStat.classSection} Şubesi</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">{cStat.studentCount} Öğrenci Değerlendirdi</p>
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <span className="text-xs font-black uppercase text-teal-700 tracking-wider">Şube Raporu</span>
+                      <h3 className="text-xl font-black text-slate-900">{cStat.classSection} Şubesi</h3>
+                      <p className="text-xs text-slate-400 mt-0.5">{cStat.studentCount} Öğrenci Değerlendirdi</p>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-3xl font-black text-teal-600 font-mono">%{cStat.avgPercent}</div>
+                      <div className="text-[10px] font-bold text-slate-400">Ortalama Skor: {cStat.avgScore}/20</div>
+                    </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="text-3xl font-black text-teal-600 font-mono">%{cStat.avgPercent}</div>
-                    <div className="text-[10px] font-bold text-slate-400">Ortalama Skor: {cStat.avgScore}/20</div>
+                  {/* Progress Bar */}
+                  <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div
+                      className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
+                      style={{ width: `${cStat.avgPercent}%` }}
+                    />
+                  </div>
+
+                  {/* Criteria Breakdown */}
+                  <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                    <div className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
+                      Ölçüt Düzeyleri (1-4):
+                    </div>
+                    <div className="grid grid-cols-5 gap-1 text-center font-mono text-xs">
+                      <div className="p-1.5 rounded-lg bg-slate-50 border">
+                        <div className="text-[8px] text-slate-400">c1</div>
+                        <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c1']}</div>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-slate-50 border">
+                        <div className="text-[8px] text-slate-400">c2</div>
+                        <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c2']}</div>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-slate-50 border">
+                        <div className="text-[8px] text-slate-400">c3</div>
+                        <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c3']}</div>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-slate-50 border">
+                        <div className="text-[8px] text-slate-400">c4</div>
+                        <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c4']}</div>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-slate-50 border">
+                        <div className="text-[8px] text-slate-400">c5</div>
+                        <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c5']}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Badges */}
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <span className="text-emerald-700 font-bold">🌟 {cStat.excellentCount} Mükemmel</span>
+                    <span className="text-amber-700 font-bold">💡 {cStat.needSupportCount} Destek</span>
                   </div>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                  <div
-                    className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
-                    style={{ width: `${cStat.avgPercent}%` }}
-                  />
-                </div>
-
-                {/* Criteria Breakdown */}
-                <div className="space-y-1.5 pt-2 border-t border-slate-100">
-                  <div className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
-                    Ölçüt Düzeyleri (1-4):
-                  </div>
-                  <div className="grid grid-cols-5 gap-1 text-center font-mono text-xs">
-                    <div className="p-1.5 rounded-lg bg-slate-50 border">
-                      <div className="text-[8px] text-slate-400">c1</div>
-                      <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c1']}</div>
-                    </div>
-                    <div className="p-1.5 rounded-lg bg-slate-50 border">
-                      <div className="text-[8px] text-slate-400">c2</div>
-                      <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c2']}</div>
-                    </div>
-                    <div className="p-1.5 rounded-lg bg-slate-50 border">
-                      <div className="text-[8px] text-slate-400">c3</div>
-                      <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c3']}</div>
-                    </div>
-                    <div className="p-1.5 rounded-lg bg-slate-50 border">
-                      <div className="text-[8px] text-slate-400">c4</div>
-                      <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c4']}</div>
-                    </div>
-                    <div className="p-1.5 rounded-lg bg-slate-50 border">
-                      <div className="text-[8px] text-slate-400">c5</div>
-                      <div className="font-bold text-slate-800">{cStat.criteriaAvgs['c5']}</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Badges */}
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <span className="text-emerald-700 font-bold">🌟 {cStat.excellentCount} Mükemmel</span>
-                  <span className="text-amber-700 font-bold">💡 {cStat.needSupportCount} Destek</span>
+                {/* Bulk Download for this Class in Outcome Mode */}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-slate-500 font-medium">Toplam {cStat.studentCount} Form</span>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadBulkPDF(
+                      cStat.submissions,
+                      `bulk-cross-${cStat.classSection}-${selectedOutcomeCode}`,
+                      { classSection: cStat.classSection, outcomeCode: selectedOutcomeCode, outcomeTitle: outcomeAnalytics.outcomeTitle }
+                    )}
+                    disabled={downloadingId !== null || cStat.submissions.length === 0}
+                    className="px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ml-auto"
+                    title={`${cStat.classSection} şubesinin ${selectedOutcomeCode} kazanımı için tüm öğrenci raporlarını tek PDF olarak indir`}
+                  >
+                    {downloadingId === `bulk-cross-${cStat.classSection}-${selectedOutcomeCode}` ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
+                        <span>Hazırlanıyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-3.5 h-3.5 text-teal-600" />
+                        <span>Toplu PDF İndir</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             ))}
@@ -573,7 +733,7 @@ export function TeacherRubricAnalytics({
                 {selectedOutcomeCode} Kazanımı Şubeler Arası Analiz Raporu
               </h4>
               <p className="text-xs text-slate-300 leading-relaxed max-w-3xl">
-                5-A şubesinde öğrencilerin %80&apos;i <strong>İletki Kullanımı (c2)</strong> ve <strong>Kavram Yanılgısı (c4)</strong> ölçütlerinde üst düzey başarı gösterirken, 5-B şubesinde ters ölçekten okuma (iç/dış cetvel) konusunda laboratuvar ortamında ek bir simülasyon tekrarı tavsiye edilmektedir.
+                Öğrencilerin öz değerlendirme raporlarındaki ölçüt dağılımlarına göre şubeler arası kazanım pekiştirme ve ek laboratuvar etkinlikleri planlayabilirsiniz.
               </p>
             </div>
           </div>
@@ -587,7 +747,7 @@ export function TeacherRubricAnalytics({
           <div className="bg-white w-full max-w-3xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 max-h-[90vh] overflow-y-auto">
             
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4 gap-4">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 font-mono font-bold text-xs">
@@ -605,12 +765,35 @@ export function TeacherRubricAnalytics({
                 </p>
               </div>
 
-              <button
-                onClick={() => setInspectingSubmission(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                {/* PDF Download Button inside Inspector */}
+                <button
+                  type="button"
+                  onClick={() => handleDownloadSinglePDF(inspectingSubmission)}
+                  disabled={downloadingId !== null}
+                  className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title="Bu Değerlendirmeyi MEB Formatında PDF Olarak İndir"
+                >
+                  {downloadingId === inspectingSubmission.id ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>PDF Oluşturuluyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      <span>PDF Raporu İndir</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setInspectingSubmission(null)}
+                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             {/* Score & Performance Banner */}
