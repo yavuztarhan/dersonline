@@ -144,20 +144,20 @@ export function createStudentReportHTML(
       </div>
     </div>
 
-    <!-- LEARNING OUTCOME BANNER -->
-    <div style="background-color: #042f2e; color: #ffffff; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
-      <div>
-        <div style="font-size: 9.5px; font-weight: 800; color: #5eead4; text-transform: uppercase; letter-spacing: 0.5px;">
+    <!-- LEARNING OUTCOME BANNER (LIGHT & TONER-FRIENDLY) -->
+    <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+      <div style="flex: 1;">
+        <div style="font-size: 9.5px; font-weight: 900; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
           HEDEF ÖĞRENME ÇIKTISI / KAZANIM:
         </div>
-        <div style="font-size: 11.5px; font-weight: 800; color: #ffffff; margin-top: 2px;">
-          <span style="background-color: #0d9488; padding: 2px 6px; border-radius: 4px; font-family: monospace; margin-right: 6px;">${sub.outcomeCode}</span>
-          ${sub.outcomeTitle}
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span style="background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 2px 7px; border-radius: 5px; font-family: monospace; font-size: 11px; font-weight: 900; line-height: 1.2; display: inline-block;">${sub.outcomeCode}</span>
+          <span style="font-size: 11.5px; font-weight: 800; color: #0f172a; line-height: 1.35;">${sub.outcomeTitle}</span>
         </div>
       </div>
-      <div style="text-align: right; background-color: #134e4a; padding: 6px 10px; border-radius: 8px; border: 1px solid #2dd4bf;">
-        <div style="font-size: 8.5px; color: #99f6e4; font-weight: 700; text-transform: uppercase;">Toplam Skor</div>
-        <div style="font-size: 14px; font-weight: 900; color: #ffffff; font-family: monospace;">${sub.totalScore} / ${sub.maxScore} (%${sub.percentage})</div>
+      <div style="text-align: right; background-color: #ffffff; padding: 6px 12px; border-radius: 8px; border: 1px solid #bbf7d0; flex-shrink: 0;">
+        <div style="font-size: 8.5px; color: #166534; font-weight: 800; text-transform: uppercase;">Toplam Skor</div>
+        <div style="font-size: 13.5px; font-weight: 900; color: #15803d; font-family: monospace; margin-top: 1px;">${sub.totalScore} / ${sub.maxScore} (%${sub.percentage})</div>
       </div>
     </div>
 
