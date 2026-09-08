@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth-store';
+import { UserRole } from '@/types/auth';
 import {
   ShieldCheck,
   UserCheck,
@@ -21,37 +22,75 @@ import {
   Mail,
   MapPin,
   RefreshCw,
-  Plus
+  Plus,
+  Crown,
+  ChevronDown,
+  UserCog,
+  Check
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import confetti from 'canvas-confetti';
 
 export function AdminDashboard() {
   const {
+    admins,
     teachers,
     students,
+    currentUser,
     approveTeacher,
     rejectTeacher,
     deleteTeacher,
+    deleteAdmin,
+    deleteStudent,
+    changeUserRole,
     startTeacherRegistration
   } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'pending' | 'teachers' | 'students'>('pending');
+  const [activeTab, setActiveTab] = useState<'pending' | 'admins' | 'teachers' | 'students'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCityFilter, setSelectedCityFilter] = useState('Tümü');
+  const [notificationMsg, setNotificationMsg] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
 
   const pendingTeachers = teachers.filter((t) => t.status === 'pending_admin_approval');
   const approvedTeachers = teachers.filter((t) => t.status === 'approved');
 
-  const handleApprove = (id: string, name: string) => {
-    approveTeacher(id);
+  const showNotification = (text: string, type: 'success' | 'info' = 'success') => {
+    setNotificationMsg({ text, type });
     try {
-      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+      if (type === 'success') {
+        confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+      }
     } catch (e) {}
+    setTimeout(() => {
+      setNotificationMsg(null);
+    }, 4000);
   };
 
-  const handleReject = (id: string) => {
+  const handleApprove = (id: string, name: string) => {
+    approveTeacher(id);
+    showNotification(`"${name}" adlı öğretmenin başvurusu başarıyla onaylandı.`);
+  };
+
+  const handleReject = (id: string, name: string) => {
     rejectTeacher(id, 'Okul veya kimlik doğrulaması tamamlanamadı.');
+    showNotification(`"${name}" adlı öğretmenin başvurusu reddedildi.`, 'info');
+  };
+
+  const handleRoleChange = (userId: string, userName: string, currentRole: UserRole, newRole: UserRole) => {
+    if (currentRole === newRole) return;
+    
+    const roleLabels: Record<UserRole, string> = {
+      admin: '👑 Yönetici (Admin)',
+      teacher: '👨‍🏫 Öğretmen',
+      student: '🎓 Öğrenci'
+    };
+
+    const ok = changeUserRole(userId, newRole);
+    if (ok) {
+      showNotification(
+        `"${userName}" kullanıcısının rolü başarıyla ${roleLabels[newRole]} olarak güncellendi!`
+      );
+    }
   };
 
   const handleCreateMockPendingTeacher = () => {
@@ -66,7 +105,6 @@ export function AdminDashboard() {
       branch: 'Matematik'
     };
     startTeacherRegistration(mockPayload);
-    // Directly mark email as verified to simulate instant test in admin panel
     setTimeout(() => {
       const saved = JSON.parse(localStorage.getItem('maarif_teachers') || '[]');
       const updated = saved.map((t: any) =>
@@ -76,6 +114,13 @@ export function AdminDashboard() {
       window.location.reload();
     }, 100);
   };
+
+  const filteredAdmins = admins.filter((a) => {
+    return (
+      a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   const filteredTeachers = teachers.filter((t) => {
     const matchSearch =
@@ -105,10 +150,10 @@ export function AdminDashboard() {
             <span>Maarif Akademi Yönetici Masası</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-            Admin Kontrol & Onay Paneli
+            Admin Kontrol & Rol Yönetim Paneli
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
-            Öğretmen başvurularını inceleyip onaylayabilir, sistemdeki tüm öğretmen ve öğrenci kayıtlarını yönetebilirsiniz.
+            Kullanıcı rollerini anında değiştirebilir (öğretmeni admin yapma, yetkilendirme), başvuruları onaylayabilir ve tüm veritabanını yönetebilirsiniz.
           </p>
         </div>
 
@@ -117,9 +162,25 @@ export function AdminDashboard() {
           className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
         >
           <Plus className="w-4 h-4" />
-          <span>+ Test İçin Başvuru Ekle</span>
+          <span>+ Test Başvurusu Ekle</span>
         </button>
       </div>
+
+      {/* Notification Toast Alert */}
+      {notificationMsg && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-2.5 text-xs font-black">
+            <CheckCircle2 className="w-5 h-5 text-emerald-100" />
+            <span>{notificationMsg.text}</span>
+          </div>
+          <button
+            onClick={() => setNotificationMsg(null)}
+            className="text-white/80 hover:text-white text-xs font-bold px-2 py-1"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Overview Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -143,11 +204,34 @@ export function AdminDashboard() {
             {pendingTeachers.length}
           </div>
           <div className="text-[11px] text-amber-700 font-bold mt-0.5">
-            {pendingTeachers.length > 0 ? 'İnceleme bekleyen öğretmen' : 'Bekleyen başvuru yok'}
+            {pendingTeachers.length > 0 ? 'İnceleme bekleyen başvuru' : 'Bekleyen başvuru yok'}
           </div>
         </div>
 
-        {/* Card 2: Approved Teachers */}
+        {/* Card 2: Admins */}
+        <div
+          onClick={() => setActiveTab('admins')}
+          className={`p-5 rounded-3xl border-2 cursor-pointer transition-all duration-200 ${
+            activeTab === 'admins'
+              ? 'bg-purple-50/80 border-purple-600 ring-2 ring-purple-300 shadow-md'
+              : 'bg-white border-slate-200 hover:border-purple-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black uppercase tracking-wider text-purple-800">Yöneticiler</span>
+            <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black">
+              👑
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
+            {admins.length}
+          </div>
+          <div className="text-[11px] text-purple-700 font-bold mt-0.5">
+            Yetkili Sistem Yöneticisi
+          </div>
+        </div>
+
+        {/* Card 3: Teachers */}
         <div
           onClick={() => setActiveTab('teachers')}
           className={`p-5 rounded-3xl border-2 cursor-pointer transition-all duration-200 ${
@@ -157,7 +241,7 @@ export function AdminDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-teal-800">Kayıtlı Öğretmenler</span>
+            <span className="text-xs font-black uppercase tracking-wider text-teal-800">Öğretmenler</span>
             <div className="w-8 h-8 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-black">
               👨‍🏫
             </div>
@@ -166,11 +250,11 @@ export function AdminDashboard() {
             {teachers.length}
           </div>
           <div className="text-[11px] text-teal-700 font-bold mt-0.5">
-            {approvedTeachers.length} onaylı aktif öğretmen
+            {approvedTeachers.length} aktif öğretmen
           </div>
         </div>
 
-        {/* Card 3: Registered Students */}
+        {/* Card 4: Students */}
         <div
           onClick={() => setActiveTab('students')}
           className={`p-5 rounded-3xl border-2 cursor-pointer transition-all duration-200 ${
@@ -180,7 +264,7 @@ export function AdminDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-blue-800">Kayıtlı Öğrenciler</span>
+            <span className="text-xs font-black uppercase tracking-wider text-blue-800">Öğrenciler</span>
             <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black">
               🎓
             </div>
@@ -189,23 +273,7 @@ export function AdminDashboard() {
             {students.length}
           </div>
           <div className="text-[11px] text-blue-700 font-bold mt-0.5">
-            5. Sınıf Matematik grupları
-          </div>
-        </div>
-
-        {/* Card 4: Active Schools */}
-        <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-purple-800">Bağlı Okul Sayısı</span>
-            <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black">
-              🏛️
-            </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
-            {new Set(teachers.map((t) => t.school)).size}
-          </div>
-          <div className="text-[11px] text-purple-700 font-bold mt-0.5">
-            Türkiye geneli MEB okulları
+            Kayıtlı öğrenci sayısı
           </div>
         </div>
 
@@ -223,6 +291,18 @@ export function AdminDashboard() {
         >
           <Clock className="w-4 h-4" />
           <span>Onay Bekleyen Başvurular ({pendingTeachers.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('admins')}
+          className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
+            activeTab === 'admins'
+              ? 'bg-purple-600 text-white shadow-md'
+              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+          }`}
+        >
+          <Crown className="w-4 h-4" />
+          <span>Sistem Yöneticileri (Adminler) ({admins.length})</span>
         </button>
 
         <button
@@ -261,7 +341,7 @@ export function AdminDashboard() {
               </span>
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              E-posta kodunu doğrulayan öğretmenlerin okul ve kimlik bilgileri aşağıdadır. Onaylanan öğretmenler sisteme tam yetkiyle giriş yapabilir.
+              E-posta kodunu doğrulayan öğretmenlerin okul ve kimlik bilgileri aşağıdadır. Onaylanan öğretmenler sisteme tam yetkiyle giriş yapabilir veya direkt Admin olarak atanabilir.
             </p>
           </div>
 
@@ -327,24 +407,35 @@ export function AdminDashboard() {
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 pt-2">
-                    <button
-                      onClick={() => handleApprove(teacher.id, teacher.name)}
-                      className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 active:scale-95"
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Onayla (Yetkilendir)</span>
-                    </button>
+                  {/* Actions & Role Promotions */}
+                  <div className="space-y-2 pt-2 border-t border-amber-200/60">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleApprove(teacher.id, teacher.name)}
+                        className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Öğretmen Olarak Onayla</span>
+                      </button>
 
-                    <button
-                      onClick={() => handleReject(teacher.id)}
-                      className="py-2.5 px-3 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-xs border border-rose-200 transition-all flex items-center justify-center gap-1"
-                      title="Başvuruyu Reddet"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      <span>Reddet</span>
-                    </button>
+                      <button
+                        onClick={() => handleRoleChange(teacher.id, teacher.name, 'teacher', 'admin')}
+                        className="py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer"
+                        title="Bu öğretmeni onaylayıp doğrudan Admin yap"
+                      >
+                        <Crown className="w-4 h-4" />
+                        <span>Admin Yap 👑</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleReject(teacher.id, teacher.name)}
+                        className="py-2.5 px-3 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-xs border border-rose-200 transition-all flex items-center justify-center gap-1 cursor-pointer"
+                        title="Başvuruyu Reddet"
+                      >
+                        <XCircle className="w-4 h-4" />
+                        <span>Reddet</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -353,14 +444,131 @@ export function AdminDashboard() {
         </div>
       )}
 
-      {/* TAB 2: ALL TEACHERS DIRECTORY */}
+      {/* TAB 2: SYSTEM ADMINS DIRECTORY & ROLE MANAGEMENT */}
+      {activeTab === 'admins' && (
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 animate-in fade-in">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Crown className="w-5 h-5 text-purple-600" />
+                <span>Sistem Yöneticileri (Adminler)</span>
+                <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 text-xs font-black">
+                  {admins.length} Yönetici
+                </span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Admin yetkisine sahip tüm hesaplar. Buradan adminlerin rolünü değiştirebilir veya yetkilerini yönetebilirsiniz.
+              </p>
+            </div>
+
+            <div className="relative sm:w-64">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                type="text"
+                placeholder="Admin adı veya e-posta ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:border-purple-500 outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700 border-collapse">
+              <thead>
+                <tr className="bg-purple-50/60 text-purple-900 uppercase font-black tracking-wider text-[10px] border-b border-purple-100">
+                  <th className="py-3 px-4">Yönetici Adı</th>
+                  <th className="py-3 px-4">E-Posta Adresi</th>
+                  <th className="py-3 px-4">Yetki Alanı</th>
+                  <th className="py-3 px-4">Mevcut Rol</th>
+                  <th className="py-3 px-4">Rolü Değiştir</th>
+                  <th className="py-3 px-4 text-right">İşlem</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredAdmins.map((adm) => {
+                  const isSuperAdmin = adm.email.toLowerCase() === 'admin@maarif.gov.tr' || adm.email.toLowerCase() === 'powerose@gmail.com';
+                  return (
+                    <tr key={adm.id} className="hover:bg-purple-50/30 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-900">
+                        <div className="flex items-center gap-2.5">
+                          <UserAvatar
+                            avatar={adm.avatar || '👑'}
+                            name={adm.name}
+                            size="sm"
+                            className="bg-purple-100 text-purple-900 border border-purple-300"
+                          />
+                          <div>
+                            <div className="font-extrabold text-slate-900">{adm.name}</div>
+                            {adm.school && <div className="text-[10px] text-slate-400">{adm.school}</div>}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 font-mono font-medium text-slate-700">
+                        {adm.email}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-extrabold text-[10px] border border-purple-200">
+                          ⚡ Tam Yetkili Admin
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="px-2.5 py-1 rounded-full bg-purple-600 text-white font-black text-[10px] inline-flex items-center gap-1 shadow-xs">
+                          <Crown className="w-3 h-3 text-amber-300" />
+                          <span>Admin (Yönetici)</span>
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {isSuperAdmin ? (
+                          <span className="text-[11px] font-bold text-slate-400 italic">Ana Süper Admin</span>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <select
+                              value="admin"
+                              onChange={(e) => handleRoleChange(adm.id, adm.name, 'admin', e.target.value as UserRole)}
+                              className="px-2.5 py-1 rounded-lg border border-purple-200 text-xs font-bold text-purple-950 bg-purple-50/50 hover:bg-white focus:border-purple-500 outline-none cursor-pointer"
+                            >
+                              <option value="admin">👑 Admin (Yönetici)</option>
+                              <option value="teacher">👨‍🏫 Öğretmen Yap</option>
+                              <option value="student">🎓 Öğrenci Yap</option>
+                            </select>
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        {!isSuperAdmin && (
+                          <button
+                            onClick={() => deleteAdmin(adm.id)}
+                            className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50"
+                            title="Admin Yetkisini Kaldır / Sil"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: ALL TEACHERS DIRECTORY & ROLE CONVERTER */}
       {activeTab === 'teachers' && (
         <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 animate-in fade-in">
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-900">Kayıtlı Öğretmen Listesi</h3>
-              <p className="text-xs text-slate-500">Tüm onaylı ve bekleyen öğretmen profilleri.</p>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Users className="w-5 h-5 text-teal-600" />
+                <span>Kayıtlı Öğretmen Listesi</span>
+                <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-900 text-xs font-black">
+                  {teachers.length} Öğretmen
+                </span>
+              </h3>
+              <p className="text-xs text-slate-500">Tüm onaylı ve bekleyen öğretmen profilleri. Buradan herhangi bir öğretmeni anında <strong>Admin</strong> yapabilirsiniz.</p>
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -386,20 +594,21 @@ export function AdminDashboard() {
                   <th className="py-3 px-4">Okul Adı</th>
                   <th className="py-3 px-4">Branş</th>
                   <th className="py-3 px-4">Durum</th>
+                  <th className="py-3 px-4">Rol Değiştir</th>
                   <th className="py-3 px-4 text-right">İşlemler</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredTeachers.map((tch) => (
                   <tr key={tch.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3 px-4 font-bold text-slate-900">
+                    <td className="py-3.5 px-4 font-bold text-slate-900">
                       <div>{tch.name}</div>
                       <div className="text-[10px] text-slate-400 font-normal">{tch.email}</div>
                     </td>
-                    <td className="py-3 px-4 font-medium">{tch.city} / {tch.district}</td>
-                    <td className="py-3 px-4 font-extrabold text-teal-900">{tch.school}</td>
-                    <td className="py-3 px-4">{tch.branch}</td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4 font-medium">{tch.city} / {tch.district}</td>
+                    <td className="py-3.5 px-4 font-extrabold text-teal-900">{tch.school}</td>
+                    <td className="py-3.5 px-4">{tch.branch}</td>
+                    <td className="py-3.5 px-4">
                       {tch.status === 'approved' && (
                         <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 font-bold text-[10px] inline-flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
@@ -419,7 +628,21 @@ export function AdminDashboard() {
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right space-x-1">
+                    <td className="py-3.5 px-4">
+                      {/* Dynamic Role Switcher Dropdown */}
+                      <div className="flex items-center gap-1.5">
+                        <select
+                          value="teacher"
+                          onChange={(e) => handleRoleChange(tch.id, tch.name, 'teacher', e.target.value as UserRole)}
+                          className="px-2.5 py-1 rounded-lg border border-teal-300 text-xs font-extrabold text-teal-950 bg-teal-50/50 hover:bg-white focus:border-teal-600 outline-none cursor-pointer"
+                        >
+                          <option value="teacher">👨‍🏫 Öğretmen</option>
+                          <option value="admin">👑 Admin Yap (Yönetici)</option>
+                          <option value="student">🎓 Öğrenci Yap</option>
+                        </select>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4 text-right space-x-1.5">
                       {tch.status === 'pending_admin_approval' && (
                         <button
                           onClick={() => handleApprove(tch.id, tch.name)}
@@ -445,14 +668,20 @@ export function AdminDashboard() {
         </div>
       )}
 
-      {/* TAB 3: ALL STUDENTS DIRECTORY */}
+      {/* TAB 4: ALL STUDENTS DIRECTORY & ROLE CONVERTER */}
       {activeTab === 'students' && (
         <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 animate-in fade-in">
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-900">Öğrenci Veritabanı</h3>
-              <p className="text-xs text-slate-500">Sistemdeki tüm kayıtlı öğrenciler ve sınıf başarıları.</p>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-blue-600" />
+                <span>Öğrenci Veritabanı</span>
+                <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 text-xs font-black">
+                  {students.length} Öğrenci
+                </span>
+              </h3>
+              <p className="text-xs text-slate-500">Sistemdeki kayıtlı öğrenciler. Gerekirse rolü <strong>Öğretmen</strong> veya <strong>Admin</strong> olarak değiştirilebilir.</p>
             </div>
 
             <div className="relative sm:w-64">
@@ -476,26 +705,46 @@ export function AdminDashboard() {
                   <th className="py-3 px-4">Sınıf & Şube</th>
                   <th className="py-3 px-4">Okulu</th>
                   <th className="py-3 px-4">Puan (XP)</th>
-                  <th className="py-3 px-4">Kazanılan Rozetler</th>
+                  <th className="py-3 px-4">Rol Değiştir</th>
+                  <th className="py-3 px-4 text-right">İşlem</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredStudents.map((stu) => (
                   <tr key={stu.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3 px-4 font-mono font-black text-slate-900">#{stu.studentNumber}</td>
-                    <td className="py-3 px-4 font-bold text-slate-900">
+                    <td className="py-3.5 px-4 font-mono font-black text-slate-900">#{stu.studentNumber}</td>
+                    <td className="py-3.5 px-4 font-bold text-slate-900">
                       <div className="flex items-center gap-2">
                         <span>🎓</span>
-                        <span>{stu.name}</span>
+                        <div>
+                          <div>{stu.name}</div>
+                          <div className="text-[10px] text-slate-400 font-normal">{stu.email}</div>
+                        </div>
                       </div>
                     </td>
-                    <td className="py-3 px-4 font-extrabold text-indigo-700">{stu.classSection}</td>
-                    <td className="py-3 px-4 font-medium">{stu.school}</td>
-                    <td className="py-3 px-4 font-black text-amber-600">+{stu.points} XP</td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 font-bold border border-teal-200 text-[10px]">
-                        🏅 {stu.unlockedBadges.length} Rozet
-                      </span>
+                    <td className="py-3.5 px-4 font-extrabold text-indigo-700">{stu.classSection}</td>
+                    <td className="py-3.5 px-4 font-medium">{stu.school}</td>
+                    <td className="py-3.5 px-4 font-black text-amber-600">+{stu.points} XP</td>
+                    <td className="py-3.5 px-4">
+                      {/* Dynamic Role Switcher Dropdown */}
+                      <select
+                        value="student"
+                        onChange={(e) => handleRoleChange(stu.id, stu.name, 'student', e.target.value as UserRole)}
+                        className="px-2.5 py-1 rounded-lg border border-blue-200 text-xs font-bold text-blue-950 bg-blue-50/50 hover:bg-white focus:border-blue-500 outline-none cursor-pointer"
+                      >
+                        <option value="student">🎓 Öğrenci</option>
+                        <option value="teacher">👨‍🏫 Öğretmen Yap</option>
+                        <option value="admin">👑 Admin Yap (Yönetici)</option>
+                      </select>
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <button
+                        onClick={() => deleteStudent(stu.id)}
+                        className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50"
+                        title="Öğrenciyi Sil"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </td>
                   </tr>
                 ))}

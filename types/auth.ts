@@ -42,6 +42,11 @@ export interface StudentUser extends BaseUser {
 export interface AdminUser extends BaseUser {
   role: 'admin';
   permissions: string[];
+  phone?: string;
+  city?: string;
+  district?: string;
+  school?: string;
+  branch?: string;
 }
 
 export type AuthUser = TeacherUser | StudentUser | AdminUser;
