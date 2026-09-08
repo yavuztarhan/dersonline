@@ -360,7 +360,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
             {currentQuestion.options.map((option, optIdx) => {
               const isSelected = currentAnswer === optIdx;
               const isThisCorrect = optIdx === currentQuestion.correctOptionIndex;
-              const showAsCorrect = showAnswers || (isCurrentAnswered && isThisCorrect);
+              const showAsCorrect = (showAnswers && isThisCorrect) || (isCurrentAnswered && isThisCorrect);
               const showAsWrong = isCurrentAnswered && isSelected && !isCurrentCorrect;
 
               let btnStyle = 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100 hover:border-teal-300';

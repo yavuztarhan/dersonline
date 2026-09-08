@@ -28,17 +28,19 @@ export default function LessonRoomPage() {
   const router = useRouter();
   const outcomeId = typeof params?.outcomeId === 'string' ? params.outcomeId : '';
 
-  const { playSound, role, setSelectedOutcome } = useApp();
+  const { playSound, role, setSelectedOutcome, setDrawingActive, setShowAnswers } = useApp();
   const [activePhase, setActivePhase] = useState<LessonPhaseId>('story');
 
   const outcome = getOutcomeById(outcomeId);
   const pathInfo = getBreadcrumbPath(outcomeId);
 
   useEffect(() => {
+    setDrawingActive(false);
+    setShowAnswers(false);
     if (outcome) {
       setSelectedOutcome(outcome);
     }
-  }, [outcomeId, outcome, setSelectedOutcome]);
+  }, [outcomeId, outcome, setSelectedOutcome, setDrawingActive, setShowAnswers]);
 
   // If outcome not found
   if (!outcome) {

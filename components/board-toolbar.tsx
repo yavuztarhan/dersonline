@@ -76,10 +76,12 @@ export function BoardToolbar({
 
   const handleToolSelect = (tool: 'pen' | 'highlighter' | 'eraser') => {
     playSound('click');
-    if (!drawingActive) {
+    if (drawingActive && drawingTool === tool) {
+      setDrawingActive(false);
+    } else {
       setDrawingActive(true);
+      setDrawingTool(tool);
     }
-    setDrawingTool(tool);
   };
 
   return (
