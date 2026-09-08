@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
 import { LessonPhaseId, Outcome } from '@/types';
 import { getOutcomeById } from '@/lib/curriculum-data';
@@ -11,10 +11,6 @@ import {
   Trash2,
   Users,
   BookOpen,
-  Play,
-  Pause,
-  RotateCcw,
-  Clock,
   Sparkles,
   ChevronLeft,
   ChevronRight,
@@ -75,43 +71,8 @@ export function BoardToolbar({
 
   const targetOutcome = outcome || getOutcomeById(outcomeCode);
 
-  // 40:00 Countdown Timer
-  const [timeLeft, setTimeLeft] = useState(40 * 60);
-  const [timerRunning, setTimerRunning] = useState(false);
   const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
   const [colorMenuOpen, setColorMenuOpen] = useState(false);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (timerRunning && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (timeLeft === 0 && timerRunning) {
-      setTimerRunning(false);
-      playSound('bell');
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [timerRunning, timeLeft]);
-
-  const toggleTimer = () => {
-    playSound('click');
-    setTimerRunning(!timerRunning);
-  };
-
-  const resetTimer = () => {
-    playSound('click');
-    setTimerRunning(false);
-    setTimeLeft(40 * 60);
-  };
-
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
 
   const handleToolSelect = (tool: 'pen' | 'highlighter' | 'eraser') => {
     playSound('click');
@@ -127,7 +88,7 @@ export function BoardToolbar({
       <div className="sticky top-0 z-35 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs px-4 sm:px-6 py-3">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           
-          {/* Outcome Info & Timer */}
+          {/* Outcome Info */}
           <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-1 rounded-lg bg-teal-700 text-white font-black text-xs">
@@ -136,28 +97,6 @@ export function BoardToolbar({
               <span className="font-bold text-slate-800 text-xs sm:text-sm line-clamp-1 max-w-[200px] sm:max-w-xs">
                 {outcomeTitle}
               </span>
-            </div>
-
-            {/* Classroom 40:00 Timer */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 text-white shadow-xs">
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span className="font-mono font-bold text-xs sm:text-sm tracking-wider">
-                {formatTime(timeLeft)}
-              </span>
-              <button
-                onClick={toggleTimer}
-                className="p-1 hover:bg-slate-800 rounded-lg text-amber-300 transition-colors cursor-pointer"
-                title={timerRunning ? 'Durdur' : 'Başlat'}
-              >
-                {timerRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3 fill-amber-300" />}
-              </button>
-              <button
-                onClick={resetTimer}
-                className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors cursor-pointer"
-                title="Sıfırla"
-              >
-                <RotateCcw className="w-3 h-3" />
-              </button>
             </div>
           </div>
 
