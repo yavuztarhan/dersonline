@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
 import { LessonPhaseId, Outcome } from '@/types';
 import { getOutcomeById } from '@/lib/curriculum-data';
-import { LessonPlanModal } from '@/components/lesson-plan-modal';
 import {
   PenTool,
   Highlighter,
@@ -25,7 +24,6 @@ import {
   Eye,
   EyeOff,
   Palette,
-  FileText,
   Download
 } from 'lucide-react';
 
@@ -76,7 +74,6 @@ export function BoardToolbar({
   } = useApp();
 
   const targetOutcome = outcome || getOutcomeById(outcomeCode);
-  const [planModalOpen, setPlanModalOpen] = useState(false);
 
   // 40:00 Countdown Timer
   const [timeLeft, setTimeLeft] = useState(40 * 60);
@@ -191,22 +188,6 @@ export function BoardToolbar({
                 );
               })}
             </div>
-
-            {/* Günlük Ders Planı İndir (PDF) Button */}
-            {targetOutcome && (
-              <button
-                onClick={() => {
-                  playSound('select');
-                  setPlanModalOpen(true);
-                }}
-                className="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
-                title="Bu dersin Maarif Modeli Günlük Planını PDF olarak indir"
-              >
-                <FileText className="w-4 h-4 text-teal-600" />
-                <span className="hidden sm:inline">Ders Planı (PDF)</span>
-                <span className="sm:hidden">Plan</span>
-              </button>
-            )}
           </div>
 
         </div>
@@ -380,20 +361,6 @@ export function BoardToolbar({
             <BookOpen className="w-5 h-5" />
           </button>
 
-          {/* Günlük Ders Planı PDF Trigger */}
-          {targetOutcome && (
-            <button
-              onClick={() => {
-                playSound('select');
-                setPlanModalOpen(true);
-              }}
-              className="p-3 rounded-2xl hover:bg-slate-800 text-teal-300 hover:text-teal-200 transition-colors"
-              title="Resmi Günlük Ders Planı (PDF İndir)"
-            >
-              <FileText className="w-5 h-5" />
-            </button>
-          )}
-
           {/* Teacher Answer Key Toggle */}
           {role === 'teacher' && (
             <button
@@ -412,15 +379,6 @@ export function BoardToolbar({
 
         </div>
       </div>
-
-      {/* Lesson Plan PDF Modal */}
-      {targetOutcome && (
-        <LessonPlanModal
-          isOpen={planModalOpen}
-          onClose={() => setPlanModalOpen(false)}
-          outcome={targetOutcome}
-        />
-      )}
     </>
   );
 }
