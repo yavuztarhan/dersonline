@@ -42,6 +42,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [scene2LighthouseOn, setScene2LighthouseOn] = useState(false);
   const [scene3RulerMeasured, setScene3RulerMeasured] = useState(false);
   const [scene4HorizonExtended, setScene4HorizonExtended] = useState(false);
+  const [scene41Tested, setScene41Tested] = useState(false);
+  const [scene42Tested, setScene42Tested] = useState(false);
+  const [scene43Tested, setScene43Tested] = useState(false);
+  const [scene44Tested, setScene44Tested] = useState(false);
+  const [scene45Tested, setScene45Tested] = useState(false);
 
   const pages: StorybookPage[] = data.pages || [
     {
@@ -847,6 +852,255 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                       <div className="font-extrabold text-purple-400">∥ PARALELLİK</div>
                       <div className="text-[11px] text-slate-300">Aynı doğruya dik iki doğru asla kesişmez.</div>
                       <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-purple-200">d1 ∥ d2</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE 6: INTERSECTING LINES & VERTICAL/OPPOSITE ANGLES (MAT.5.3.4) */}
+                {currentPage.visualScene.type === 'intersecting-lines' && (
+                  <svg className="w-full h-full cursor-pointer" viewBox="0 0 400 280" onClick={() => { setScene41Tested(!scene41Tested); playSound('select'); }}>
+                    <rect width="400" height="280" fill="#0b1329" />
+                    {/* Background City/Blueprint Grid */}
+                    <path d="M 0 70 L 400 70 M 0 140 L 400 140 M 0 210 L 400 210" stroke="#1e293b" strokeWidth="1" strokeDasharray="4,4" />
+                    <path d="M 100 0 L 100 280 M 200 0 L 200 280 M 300 0 L 300 280" stroke="#1e293b" strokeWidth="1" strokeDasharray="4,4" />
+
+                    {/* Intersection Center (200, 140) */}
+                    {/* Line 1 (d1 - Cyan) */}
+                    <line x1="30" y1="140" x2="370" y2="140" stroke="#00f0ff" strokeWidth="4" strokeLinecap="round" />
+                    <text x="375" y="144" fill="#00f0ff" fontSize="13" fontWeight="900">d₁</text>
+
+                    {/* Line 2 (d2 - Amber, angle ~55 deg) */}
+                    <line x1="90" y1="240" x2="310" y2="40" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                    <text x="315" y="38" fill="#f59e0b" fontSize="13" fontWeight="900">d₂</text>
+
+                    {/* Angle Arcs */}
+                    {/* a1 (Right-Top, 65°) */}
+                    <path d="M 245 140 A 45 45 0 0 0 225 100" fill="none" stroke="#10b981" strokeWidth="3" />
+                    <text x="250" y="125" fill="#10b981" fontSize="12" fontWeight="bold">a = 65°</text>
+
+                    {/* a3 (Left-Bottom, 65° - Opposite / Ters) */}
+                    <path d="M 155 140 A 45 45 0 0 0 175 180" fill="none" stroke="#10b981" strokeWidth="3" />
+                    <text x="140" y="165" fill="#10b981" fontSize="12" fontWeight="bold" textAnchor="end">c = 65°</text>
+
+                    {/* a2 (Left-Top, 115°) */}
+                    <path d="M 160 140 A 40 40 0 0 1 225 100" fill="none" stroke="#ec4899" strokeWidth="3" />
+                    <text x="175" y="105" fill="#ec4899" fontSize="12" fontWeight="bold" textAnchor="end">b = 115°</text>
+
+                    {/* a4 (Right-Bottom, 115° - Opposite / Ters) */}
+                    <path d="M 240 140 A 40 40 0 0 1 175 180" fill="none" stroke="#ec4899" strokeWidth="3" />
+                    <text x="220" y="185" fill="#ec4899" fontSize="12" fontWeight="bold">d = 115°</text>
+
+                    {/* Center Vertex O */}
+                    <circle cx="200" cy="140" r="6" fill="#ffffff" stroke="#00f0ff" strokeWidth="2.5" />
+                    <text x="200" y="160" fill="#ffffff" fontSize="12" fontWeight="900" textAnchor="middle">O</text>
+
+                    {/* Highlight Pill on Click */}
+                    <g transform="translate(200, 255)">
+                      <rect x="-140" y="-14" width="280" height="24" rx="8" fill="#042f2e" stroke="#10b981" strokeWidth="1.5" />
+                      <text x="0" y="3" fill="#34d399" fontSize="11" fontWeight="bold" textAnchor="middle">
+                        ✨ Ters Açılar: a = c (65°) ve b = d (115°) Eşittir!
+                      </text>
+                    </g>
+                  </svg>
+                )}
+
+                {/* SCENE 7: SUPPLEMENTARY ANGLES (MAT.5.3.4) */}
+                {currentPage.visualScene.type === 'supplementary-angles' && (
+                  <svg className="w-full h-full cursor-pointer" viewBox="0 0 400 280" onClick={() => { setScene42Tested(!scene42Tested); playSound('select'); }}>
+                    <rect width="400" height="280" fill="#0b1329" />
+                    {/* Ground line d1 */}
+                    <line x1="40" y1="180" x2="360" y2="180" stroke="#00f0ff" strokeWidth="4" strokeLinecap="round" />
+                    <text x="365" y="184" fill="#00f0ff" fontSize="12" fontWeight="bold">d₁ (Doğru)</text>
+
+                    {/* Splitting Ray [OC (Gold) */}
+                    <line x1="200" y1="180" x2="130" y2="60" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                    <circle cx="130" cy="60" r="5" fill="#f59e0b" />
+                    <text x="120" y="50" fill="#f59e0b" fontSize="12" fontWeight="900">C [Ortak Kol]</text>
+
+                    {/* Vertex O */}
+                    <circle cx="200" cy="180" r="6" fill="#ffffff" stroke="#00f0ff" strokeWidth="2.5" />
+                    <text x="200" y="202" fill="#ffffff" fontSize="12" fontWeight="bold" textAnchor="middle">O (Köşe)</text>
+
+                    {/* Left Angle (120° - Cyan) */}
+                    <path d="M 140 180 A 60 60 0 0 1 170 125" fill="none" stroke="#06b6d4" strokeWidth="3.5" />
+                    <text x="145" y="145" fill="#06b6d4" fontSize="13" fontWeight="bold" textAnchor="middle">a = 120°</text>
+
+                    {/* Right Angle (60° - Amber) */}
+                    <path d="M 260 180 A 60 60 0 0 0 170 125" fill="none" stroke="#f59e0b" strokeWidth="3.5" />
+                    <text x="235" y="150" fill="#f59e0b" fontSize="13" fontWeight="bold" textAnchor="middle">b = 60°</text>
+
+                    {/* Semicircle 180° Top Arch */}
+                    <path d="M 280 180 A 80 80 0 0 0 120 180" fill="none" stroke="#a855f7" strokeWidth="2" strokeDasharray="5,5" />
+                    <text x="200" y="95" fill="#c084fc" fontSize="11" fontWeight="bold" textAnchor="middle">Doğru Açı (180°)</text>
+
+                    {/* Bottom Formula Banner */}
+                    <g transform="translate(200, 245)">
+                      <rect x="-150" y="-14" width="300" height="26" rx="8" fill="#1e1b4b" stroke="#818cf8" strokeWidth="1.5" />
+                      <text x="0" y="4" fill="#a5b4fc" fontSize="11" fontWeight="black" textAnchor="middle">
+                        ➕ Komşu Bütünler: a + b = 120° + 60° = 180°
+                      </text>
+                    </g>
+                  </svg>
+                )}
+
+                {/* SCENE 8: PERPENDICULAR & COMPLEMENTARY (MAT.5.3.4) */}
+                {currentPage.visualScene.type === 'perpendicular-complementary' && (
+                  <svg className="w-full h-full cursor-pointer" viewBox="0 0 400 280" onClick={() => { setScene43Tested(!scene43Tested); playSound('select'); }}>
+                    <rect width="400" height="280" fill="#0b1329" />
+                    
+                    {/* Base ground d1 */}
+                    <line x1="50" y1="200" x2="350" y2="200" stroke="#00f0ff" strokeWidth="4" strokeLinecap="round" />
+                    <text x="355" y="204" fill="#00f0ff" fontSize="12" fontWeight="bold">d₁</text>
+
+                    {/* Vertical Perpendicular Column d2 */}
+                    <line x1="200" y1="40" x2="200" y2="240" stroke="#00f0ff" strokeWidth="4" strokeLinecap="round" />
+                    <text x="200" y="30" fill="#00f0ff" fontSize="12" fontWeight="900" textAnchor="middle">d₂ (⊥ Dik)</text>
+
+                    {/* Right Angle Marker (Square + Dot) */}
+                    <rect x="180" y="180" width="20" height="20" fill="none" stroke="#10b981" strokeWidth="2" />
+                    <circle cx="190" cy="190" r="2.5" fill="#10b981" />
+
+                    {/* Splitting Ray [OC in quadrant 1 */}
+                    <line x1="200" y1="200" x2="290" y2="110" stroke="#f59e0b" strokeWidth="3.5" strokeDasharray="5,5" />
+                    <circle cx="290" cy="110" r="5" fill="#f59e0b" />
+                    <text x="300" y="110" fill="#f59e0b" fontSize="12" fontWeight="bold">C [Işın]</text>
+
+                    {/* Angle x (45°) and Angle y (45°) */}
+                    <path d="M 250 200 A 50 50 0 0 0 265 135" fill="none" stroke="#06b6d4" strokeWidth="3" />
+                    <text x="260" y="185" fill="#06b6d4" fontSize="12" fontWeight="bold">x = 35°</text>
+
+                    <path d="M 265 135 A 50 50 0 0 0 200 150" fill="none" stroke="#ec4899" strokeWidth="3" />
+                    <text x="235" y="140" fill="#ec4899" fontSize="12" fontWeight="bold">y = 55°</text>
+
+                    {/* Center O */}
+                    <circle cx="200" cy="200" r="6" fill="#ffffff" stroke="#00f0ff" strokeWidth="2.5" />
+                    <text x="188" y="222" fill="#ffffff" fontSize="12" fontWeight="bold">O</text>
+
+                    {/* Banner */}
+                    <g transform="translate(200, 255)">
+                      <rect x="-140" y="-14" width="280" height="24" rx="8" fill="#042f2e" stroke="#10b981" strokeWidth="1.5" />
+                      <text x="0" y="3" fill="#34d399" fontSize="11" fontWeight="bold" textAnchor="middle">
+                        📐 Dik Kesişim (⊥ 90°) • Tümler: x + y = 90°
+                      </text>
+                    </g>
+                  </svg>
+                )}
+
+                {/* SCENE 9: PARALLEL LINES & NO ANGLE (MAT.5.3.4) */}
+                {currentPage.visualScene.type === 'parallel-lines-noangle' && (
+                  <svg className="w-full h-full cursor-pointer" viewBox="0 0 400 280" onClick={() => { setScene44Tested(!scene44Tested); playSound('select'); }}>
+                    <rect width="400" height="280" fill="#0b1329" />
+                    
+                    {/* Upper Cable d1 */}
+                    <line x1="40" y1="90" x2="360" y2="90" stroke="#00f0ff" strokeWidth="4.5" strokeLinecap="round" />
+                    <text x="365" y="94" fill="#00f0ff" fontSize="13" fontWeight="900">d₁ (Üst Halat)</text>
+
+                    {/* Lower Cable d2 */}
+                    <line x1="40" y1="180" x2="360" y2="180" stroke="#00f0ff" strokeWidth="4.5" strokeLinecap="round" />
+                    <text x="365" y="184" fill="#00f0ff" fontSize="13" fontWeight="900">d₂ (Alt Halat)</text>
+
+                    {/* Vertical Suspension Wires / Distance Indicators */}
+                    <line x1="100" y1="90" x2="100" y2="180" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4,4" />
+                    <text x="105" y="140" fill="#f59e0b" fontSize="10" fontWeight="bold">h = 15m</text>
+
+                    <line x1="200" y1="90" x2="200" y2="180" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4,4" />
+                    <text x="205" y="140" fill="#f59e0b" fontSize="10" fontWeight="bold">h = 15m</text>
+
+                    <line x1="300" y1="90" x2="300" y2="180" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4,4" />
+                    <text x="305" y="140" fill="#f59e0b" fontSize="10" fontWeight="bold">h = 15m</text>
+
+                    {/* Extension Arrows */}
+                    <text x="45" y="85" fill="#38bdf8" fontSize="14">◀──</text>
+                    <text x="340" y="85" fill="#38bdf8" fontSize="14">──▶</text>
+                    <text x="45" y="175" fill="#38bdf8" fontSize="14">◀──</text>
+                    <text x="340" y="175" fill="#38bdf8" fontSize="14">──▶</text>
+
+                    {/* Banner */}
+                    <g transform="translate(200, 240)">
+                      <rect x="-165" y="-16" width="330" height="30" rx="10" fill="#1e1b4b" stroke="#c084fc" strokeWidth="1.5" />
+                      <text x="0" y="4" fill="#e9d5ff" fontSize="11" fontWeight="black" textAnchor="middle">
+                        ⏸️ d₁ ∥ d₂ (Paralel Doğrular Kesişmez • Açı Oluşmaz!)
+                      </text>
+                    </g>
+                  </svg>
+                )}
+
+                {/* SCENE 10: TRANSVERSAL ANGLES & 8-ANGLE MODEL (MAT.5.3.4) */}
+                {currentPage.visualScene.type === 'transversal-angles' && (
+                  <svg className="w-full h-full cursor-pointer" viewBox="0 0 400 280" onClick={() => { setScene45Tested(!scene45Tested); playSound('select'); }}>
+                    <rect width="400" height="280" fill="#0b1329" />
+
+                    {/* Parallel line 1 */}
+                    <line x1="40" y1="85" x2="360" y2="85" stroke="#00f0ff" strokeWidth="4" strokeLinecap="round" />
+                    <text x="365" y="89" fill="#00f0ff" fontSize="12" fontWeight="bold">d₁</text>
+
+                    {/* Parallel line 2 */}
+                    <line x1="40" y1="185" x2="360" y2="185" stroke="#00f0ff" strokeWidth="4" strokeLinecap="round" />
+                    <text x="365" y="189" fill="#00f0ff" fontSize="12" fontWeight="bold">d₂ (∥ d₁)</text>
+
+                    {/* Transversal Line d3 (Amber) */}
+                    <line x1="120" y1="240" x2="280" y2="30" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                    <text x="285" y="28" fill="#f59e0b" fontSize="13" fontWeight="900">d₃ (Kesen)</text>
+
+                    {/* Top Intersection Node (235, 85) */}
+                    <circle cx="235" cy="85" r="5" fill="#ffffff" />
+                    {/* Angles 1, 2, 3, 4 */}
+                    <text x="260" y="70" fill="#10b981" fontSize="11" fontWeight="bold">∠1 (65°)</text>
+                    <text x="200" y="70" fill="#ec4899" fontSize="11" fontWeight="bold">∠2 (115°)</text>
+                    <text x="205" y="105" fill="#10b981" fontSize="11" fontWeight="bold">∠3 (65°)</text>
+                    <text x="260" y="105" fill="#ec4899" fontSize="11" fontWeight="bold">∠4 (115°)</text>
+
+                    {/* Bottom Intersection Node (160, 185) */}
+                    <circle cx="160" cy="185" r="5" fill="#ffffff" />
+                    {/* Angles 5, 6, 7, 8 */}
+                    <text x="185" y="170" fill="#10b981" fontSize="11" fontWeight="bold">∠5 (65°)</text>
+                    <text x="125" y="170" fill="#ec4899" fontSize="11" fontWeight="bold">∠6 (115°)</text>
+                    <text x="130" y="205" fill="#10b981" fontSize="11" fontWeight="bold">∠7 (65°)</text>
+                    <text x="185" y="205" fill="#ec4899" fontSize="11" fontWeight="bold">∠8 (115°)</text>
+
+                    {/* Banner */}
+                    <g transform="translate(200, 255)">
+                      <rect x="-155" y="-14" width="310" height="24" rx="8" fill="#042f2e" stroke="#10b981" strokeWidth="1.5" />
+                      <text x="0" y="3" fill="#34d399" fontSize="11" fontWeight="bold" textAnchor="middle">
+                        🌐 Kesen Doğru Paraleller Üzerinde 8 Eş Açı Modeli Kurar!
+                      </text>
+                    </g>
+                  </svg>
+                )}
+
+                {/* GENERIC GEOMETRIC CHALKBOARD SCENE FALLBACK (For any unexpected scene type) */}
+                {![
+                  'point-map',
+                  'lighthouse-ray',
+                  'bridge-segment',
+                  'horizon-line',
+                  'selimiye-plan',
+                  'ray-angle',
+                  'perpendicular-parallel',
+                  'straightedge-twopoints',
+                  'compass-circle-ray',
+                  'angle-compass-cut',
+                  'setsquare-perpendicular',
+                  'parallel-tracks',
+                  'protractor-tool',
+                  'angle-classification',
+                  'summary-chart',
+                  'intersecting-lines',
+                  'supplementary-angles',
+                  'perpendicular-complementary',
+                  'parallel-lines-noangle',
+                  'transversal-angles'
+                ].includes(currentPage.visualScene.type) && (
+                  <div className="w-full h-full p-5 bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 flex flex-col items-center justify-center text-center space-y-3">
+                    <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border-2 border-teal-400 text-teal-300 flex items-center justify-center">
+                      <Sparkles className="w-7 h-7" />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="px-3 py-1 rounded-full bg-teal-900/80 border border-teal-500/50 text-teal-200 text-[11px] font-black">
+                        {currentPage.conceptBadge}
+                      </span>
+                      <h4 className="text-lg font-black text-white">{currentPage.conceptTitle}</h4>
+                      <p className="text-xs text-slate-400 max-w-sm">{currentPage.symbolicCode}</p>
                     </div>
                   </div>
                 )}
