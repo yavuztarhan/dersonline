@@ -85,12 +85,9 @@ export function Navbar() {
                   <span className="font-extrabold text-xl tracking-tight text-slate-800">
                     MAARİF <span className="text-teal-600 font-black">AKADEMİ</span>
                   </span>
-                  <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    Maarif Modeli
-                  </span>
                 </div>
                 <p className="text-xs text-slate-500 font-medium hidden sm:block">
-                  Kademeli Akıllı Tahta & İnteraktif Matematik
+                  İnteraktif Dersler & Oyunlaştırma
                 </p>
               </div>
             </button>

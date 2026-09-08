@@ -20,7 +20,8 @@ interface TFQuestion {
   explanation: string;
 }
 
-const TF_QUESTIONS: TFQuestion[] = [
+// 1. MAT.5.3.1 (Temel Çizimler)
+const MAT_5_3_1_TF: TFQuestion[] = [
   {
     id: 'tf-1',
     statement: 'Bir doğrunun iki ucu da sonsuza kadar uzadığı için boyu cetvelle ölçülemez.',
@@ -31,7 +32,7 @@ const TF_QUESTIONS: TFQuestion[] = [
     id: 'tf-2',
     statement: 'Işının hem başlangıç hem de bitiş noktası kapalıdır.',
     isTrue: false,
-    explanation: 'Işının başlangıç noktası sabittir ancak diğer ucu tek yönde sonsuza gider ([AB).'
+    explanation: 'Işının başlangıç noktası sabittir ancak diğer ucu tek yönde sonsuza gider ([AB>).'
   },
   {
     id: 'tf-3',
@@ -53,15 +54,92 @@ const TF_QUESTIONS: TFQuestion[] = [
   }
 ];
 
+// 2. MAT.5.3.2 (Temel Çizim Araçları ve Çıkarımlar)
+const MAT_5_3_2_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat2-1',
+    statement: 'Ölçüsüz düz bir cetvel kullanılarak iki farklı noktadan yalnız ve yalnız 1 tane düz doğru çizilebilir.',
+    isTrue: true,
+    explanation: 'İki noktadan geçen yalnızca tek bir düz doğru vardır; bu iki noktadan 2. bir düz doğru geçirilemez.'
+  },
+  {
+    id: 'tf-mat2-2',
+    statement: 'Bir çemberin merkezinden çember üzerindeki noktalara çizilen tüm doğru parçalarının (yarıçap) uzunlukları birbirine eşittir.',
+    isTrue: true,
+    explanation: 'Pergel açıklığı sabit kaldığı için merkezden çember üzerindeki her noktaya olan mesafe eşit yarıçaptır (r).'
+  },
+  {
+    id: 'tf-mat2-3',
+    statement: 'Pergel açıklığı değiştirilmeden bir ışının başlangıç noktasından itibaren adımlayarak yan yana eşit parçalar kesilebilir.',
+    isTrue: true,
+    explanation: 'Pergel açıklığı sabit tutularak ışın üzerinde [AB] = [BC] = [CD] eşit doğru parçaları inşa edilebilir.'
+  },
+  {
+    id: 'tf-mat2-4',
+    statement: 'Bir doğruya dışındaki sabit bir noktadan gönye yardımıyla birden fazla farklı dikme çizilebilir.',
+    isTrue: false,
+    explanation: 'Bir doğruya dışındaki sabit bir noktadan YALNIZ BİR dikme indirilebilir.'
+  },
+  {
+    id: 'tf-mat2-5',
+    statement: 'Bir doğruya eşit uzaklıktaki dikmelerin uç noktaları birleştirildiğinde oluşan yeni doğru, ilk doğruya paraleldir (d1 ∥ d2) ve asla kesişmez.',
+    isTrue: true,
+    explanation: 'Aralarındaki dik mesafe sabit kalan doğrular paraleldir; tren rayları gibi sonsuza uzatılsa bile kesişmezler.'
+  }
+];
+
+// 3. MAT.5.3.3 (Açı Ölçme ve İletki)
+const MAT_5_3_3_TF: TFQuestion[] = [
+  {
+    id: 'tf-ang-1',
+    statement: 'Ölçüsü 89° olan bir açı Dar Açıdır.',
+    isTrue: true,
+    explanation: '0° ile 90° arasındaki tüm açılar Dar Açı olarak sınıflandırılır (89° < 90°).'
+  },
+  {
+    id: 'tf-ang-2',
+    statement: 'Bir açının kollarını cetvelle uzatırsak açının derecesi de büyür.',
+    isTrue: false,
+    explanation: 'Açının derecesi kolların boyuna değil, kollar arasındaki dönme açıklığına bağlıdır; kollar uzatılsa da derece kesinlikle değişmez.'
+  },
+  {
+    id: 'tf-ang-3',
+    statement: 'İletki (açıölçer) ile açı ölçülürken iletkinin merkezi açının köşe noktasına oturtulur.',
+    isTrue: true,
+    explanation: 'Kusursuz ölçüm için iletki merkezi açının köşesine, taban çizgisi ise bir koluna tam çakıştırılmalıdır.'
+  },
+  {
+    id: 'tf-ang-4',
+    statement: 'Saat tam 15:00 (3:00) iken akrep ve yelkovan arasındaki açı 90 derecelik Dik Açıdır.',
+    isTrue: true,
+    explanation: 'Akrep 3te, yelkovan 12dedir. Aradaki 3 saatlik fark 3 × 30° = 90°lik tam dik açı oluşturur.'
+  },
+  {
+    id: 'tf-ang-5',
+    statement: 'Ölçüsü 135° olan açı bir Dar Açıdır.',
+    isTrue: false,
+    explanation: '135° açısı 90°den büyük ve 180°den küçük olduğu için bir Geniş Açıdır (90° < 135° < 180°).'
+  }
+];
+
 export function TrueFalseGame() {
-  const { playSound, addPoints, unlockBadge } = useApp();
+  const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
+
+  const isAngleTopic = selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3');
+  const isSelimiyeTopic = selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2');
+
+  const questions = isAngleTopic
+    ? MAT_5_3_3_TF
+    : isSelimiyeTopic
+    ? MAT_5_3_2_TF
+    : MAT_5_3_1_TF;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, boolean>>({});
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
 
-  const currentQ = TF_QUESTIONS[currentIndex];
+  const currentQ = questions[currentIndex] || questions[0];
   const isAnswered = userAnswers[currentQ?.id] !== undefined;
 
   const handleAnswer = (answer: boolean) => {
@@ -79,7 +157,7 @@ export function TrueFalseGame() {
   };
 
   const handleNext = () => {
-    if (currentIndex < TF_QUESTIONS.length - 1) {
+    if (currentIndex < questions.length - 1) {
       playSound('select');
       setCurrentIndex((prev) => prev + 1);
     } else {
@@ -121,7 +199,7 @@ export function TrueFalseGame() {
 
         <div className="text-right">
           <div className="text-2xl font-black text-yellow-300">{score} Puan</div>
-          <div className="text-xs text-purple-200">Soru {currentIndex + 1} / {TF_QUESTIONS.length}</div>
+          <div className="text-xs text-purple-200">Soru {currentIndex + 1} / {questions.length}</div>
         </div>
       </div>
 
@@ -188,7 +266,7 @@ export function TrueFalseGame() {
                 onClick={handleNext}
                 className="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2"
               >
-                <span>{currentIndex === TF_QUESTIONS.length - 1 ? 'Sonuçları Gör' : 'Sonraki Soru'}</span>
+                <span>{currentIndex === questions.length - 1 ? 'Sonuçları Gör' : 'Sonraki Soru'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

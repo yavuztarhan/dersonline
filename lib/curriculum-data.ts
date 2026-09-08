@@ -380,9 +380,9 @@ export const CURRICULUM_DATA: Grade[] = [
                   {
                     id: 'MAT.5.3.2',
                     code: 'MAT.5.3.2',
-                    title: 'Temel Geometrik Çizimlere Dayalı Deneyimlerini Yansıtabilme',
-                    shortTitle: 'Geometrinin İzinde: Çıkarım ve Keşif',
-                    description: 'Temel geometrik çizimlerin özelliklerine yönelik mantıksal çıkarımlar yapar, deneyimlerini yansıtır ve çıkarımlarını farklı örnekler üzerinden değerlendirir.',
+                    title: 'Temel Geometrik Çizimlerin Özelliklerine Yönelik Çıkarımda Bulunabilme',
+                    shortTitle: 'Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye',
+                    description: 'Ölçüsüz cetvel, pergel ve gönye kullanarak temel geometrik çizimlerin (iki noktadan tek doğru, çember yarıçapları, ışın/açı kollarından eşit parça kesme, dış noktadan tek dikme, paralel doğrular) özelliklerine dair çıkarımda bulunur ve inşa çalışmaları yapar.',
                     gradeId: 'grade-5',
                     subjectId: 'mat-5',
                     unitId: 'unit-5-geo',
@@ -390,300 +390,297 @@ export const CURRICULUM_DATA: Grade[] = [
                     durationMinutes: 40,
                     pedagogyGuide: {
                       maarifSDBs: [
-                        'SDB1.1: Öz Farkındalık',
-                        'SDB1.2: Öz Düzenleme',
-                        'SDB1.3: Öz Yansıtma',
-                        'SDB2.2: İş Birliği',
-                        'SDB2.3: Sosyal Farkındalık'
+                        'SDB1.2: Öz Düzenleme (Pergel açıklığını bozmadan eşit parça kesme ve gönye dikliğini kontrol etme)',
+                        'SDB2.2: İş Birliği ve Akran Öğrenmesi (Paralel doğru inşalarında eşit uzaklık noktalarını paylaşma)',
+                        'SDB3.3: Mantıksal Çıkarım ve Geometrik Düşünme (Ölçüsüz cetvel, pergel ve gönye ile aksiyomatik çıkarım yapma)'
                       ],
                       processComponents: [
-                        'a) Temel geometrik çizimlere dayalı deneyimlerini gözden geçirir.',
-                        'b) Temel geometrik çizimlerin özelliklerine yönelik çıkarım yapar.',
-                        'c) Çıkarımını farklı örnekler üzerinden değerlendirir.'
+                        'a) Temel geometrik çizimlere (doğru, doğru parçası, ışın, açı, çember, dikme) dayalı deneyimlerini gözden geçirir.',
+                        'b) Ölçüsüz cetvel, gönye ve pergeli kullanarak temel geometrik çizimlerin özelliklerine dair çıkarım yapar (İki noktadan tek doğru, çember yarıçap eşitliği, dış noktadan tek dikme, paralel doğrular).',
+                        'c) Pergel ve ölçüsüz cetvelle ışın ve açı kollarından eşit parça kesme inşalarını yapar, çıkarımlarını farklı örneklerle (tren rayları vb.) değerlendirir (OB2).'
                       ],
                       learningGoals: [
-                        'Doğru, doğru parçası ve ışının ayırt edici özelliklerini mantıksal olarak karşılaştırır.',
-                        'Doğru parçasının neden ölçülebilir, doğru ve ışının neden ölçülemez olduğunu gerekçelendirir.',
-                        'Başlangıç noktası ortak iki ışının açı oluşturduğunu keşfeder.',
-                        'Aynı doğruya indirilen iki dikmenin birbirine paralel olduğunu deneyimler.'
+                        'İki noktadan yalnız bir doğru çizilebildiğini ölçüsüz cetvelle deneyimleyerek çıkarır.',
+                        'Çemberin merkezinden üzerindeki tüm noktalara çizilen doğru parçalarının (yarıçap) eşit uzunlukta olduğunu ve yarıçapları eşit çemberler çizilebildiğini pergel ile keşfeder.',
+                        'Pergel ve ölçüsüz cetvel yardımıyla bir ışının başlangıç noktasından itibaren yan yana eşit uzunlukta doğru parçaları keser.',
+                        'Bir açının kollarından pergel yardımıyla eşit uzunlukta doğru parçaları kesme inşa çalışmasını gerçekleştirir.',
+                        'Bir doğruya dışındaki bir noktadan yalnız bir dikme çizilebildiğini; dışındaki farklı noktalardan eşit veya farklı uzunlukta dikmeler çizilebildiğini gönye ile çıkarır.',
+                        'Gönye yardımıyla bir doğruya eşit uzaklıktaki noktaları belirleyip birleştirerek paralel doğrular inşa eder; günlük hayat modelleriyle (tren rayları) ilişkilendirir.'
                       ],
                       teacherTips: [
-                        'Öğrencilere doğrudan kural vermek yerine deney masasında cetvel ile sonsuzluk (∞) ve ölçülebilirlik hipotezini test ettiriniz.',
-                        'Edirne Selimiye Camii planı üzerinden milli ve estetik değerlerimizi (D7, D19) hissettiriniz.'
+                        'Öğrencilere cetveli doğrudan sayı okumak için değil, "Ölçüsüz Cetvel (Düztahta)" mantığıyla iki noktayı birleştiren tek çizgi çekme aracı olarak kullandırınız.',
+                        'Pergeli hem çember çizme hem de "açıklığı sabit tutarak eşit mesafe kopyalama / kesme" aracı olarak deneyimletiniz.',
+                        'Dinamik geometri yazılımı (OB2) desteğiyle noktaları sürükleterek paralel doğrular arasındaki dik mesafenin hep sabit kaldığını görselleştiriniz.'
                       ],
                       misconceptions: [
-                        'Işın ve doğrunun kağıda çizilen boyutu kadar olduğunu düşünüp ölçülebileceğini sanmak.',
-                        'Aynı doğruya dik olan doğruların kesişeceğini düşünmek.'
+                        'İki noktadan birden fazla düz doğru geçirilebileceğini düşünmek.',
+                        'Çemberin merkezinden üzerindeki farklı noktalara çizilen doğru parçalarının uzunluklarının farklı olabileceğini sanmak.',
+                        'Bir doğruya dışındaki sabit tek bir noktadan birden fazla farklı dikme çizilebileceğini zannetmek.',
+                        'Paralel doğruların ileride bir yerde çok az da olsa birbirine yaklaşacağını düşünmek.'
                       ],
                       keyQuestions: [
-                        'Neden güneş ışınları sonsuza giderken, minare merdiveninin basamağı iki uçtan sınırlıdır?',
-                        'Bir doğruya çizilen iki dikme sonsuza kadar uzatılsa birbiriyle karşılaşır mı?'
+                        'Neden iki noktayı birleştiren cetvel ile sadece tek bir düz doğru çizebiliriz?',
+                        'Pergelin ayağını hiç değiştirmeden bir ışın üzerine art arda batırırsak ne elde ederiz?',
+                        'Tren raylarının iki demiri neden uzayda nereye kadar uzarsa uzasın asla birbirine değmez?'
                       ]
                     },
                     phases: {
                       story: {
-                        title: 'Tarihi Haritanın Şifresi: Mimar Sinan’ın Notları',
+                        title: 'Mimarın Geometri Çantası: Cetvel, Pergel ve Gönyenin Sırrı',
                         character: {
-                          name: 'Çırak Hasan & Mimar Sinan',
-                          role: 'Tarihi Geometri Dedektifleri',
+                          name: 'Mimar Sinan & Çırak Hasan',
+                          role: 'Usta Geometrik Mimarlar',
                           avatar: '🏛️'
                         },
-                        scenario: 'Çırak Hasan, Mimar Sinan’ın Edirne Selimiye Camii planları üzerindeki gizemli geometrik notları inceliyor. Çizimler var ancak mimari tanımlar zamanla silinmiş. Hasan, çizimlerin özelliklerini çıkararak haritanın şifresini çözmek zorunda!',
-                        realLifeConnection: 'Mimaride kullanılan her çizgi bir amaca hizmet eder: Minare basamakları sınırlı mesafelerdir ([AB]), kubbeden yayılan ışık hüzmeleri ise sınırsız ışınlardır ([CD).',
-                        reflectionQuestion: 'Neden güneş ışınları sonsuza giderken minare merdiveninin basamağı iki uçtan sınırlıdır? Hangisini cetvelle ölçebiliriz?',
-                        keyTakeaway: 'Geometrik modeller soyut kurallar değil; evrenin, mimarinin ve ışığın mantıksal çıkarım dilidir.',
+                        scenario: 'Mimar Sinan, büyük mimari yapılar ve köprü projelerinde çırağı Hasan’a geometri çantasını açıyor. Çantada sayısız cetvel, pergel ve gönye var. Sinan Usta soruyor: "Bu aletler sadece çizim için değil, evrenin değişmez geometrik kurallarını inşa etmek içindir!"',
+                        realLifeConnection: 'Tarihi köprü ayakları iki noktadan geçen tek doğruyla hizalanır, kubbe ve kemerler pergelin eşit yarıçapıyla yükselir, tren rayları ise gönyenin eşit dikmeleriyle paralel kılınır.',
+                        reflectionQuestion: 'Bir doğruya dışındaki tek bir noktadan kaç tane dikme çizebiliriz? Peki bu doğruya paralel bir doğru inşa etmek için noktaların uzaklığı nasıl olmalıdır?',
+                        keyTakeaway: 'Ölçüsüz cetvel doğruluğu, pergel eşit mesafeyi, gönye ise diklik ve paralelliği inşa etmenin değişmez anahtarıdır.',
                         pages: [
                           {
                             id: 'p2-1',
                             pageNumber: 1,
-                            chapterTitle: '1. Bölüm: Selimiye Camii Planındaki Gizem',
-                            conceptTitle: 'Silinmiş Geometrik Notlar',
-                            conceptBadge: 'Çıkarım Başlangıcı',
-                            symbolicCode: 'Selimiye Planı',
-                            narrativeText: 'Çırak Hasan, Selimiye Camii’nin kubbe planını açtığında Mimar Sinan’ın düştüğü gizemli geometrik çizgilerle karşılaştı. Çizimlerin yanındaki tanımlar silinmişti.',
+                            chapterTitle: '1. Bölüm: İki Nokta Arasındaki Tek Yol',
+                            conceptTitle: 'Ölçüsüz Cetvel ve İki Noktadan Geçen Doğru',
+                            conceptBadge: 'A ve B Noktaları',
+                            symbolicCode: 'AB Doğrusu (Tek Doğru)',
+                            narrativeText: 'Mimar Sinan çizim masasına iki çivi çaktı (A ve B noktaları). Çırak Hasan’a ölçüsüz düz bir tahta cetvel uzattı.',
                             characterDialogue: {
-                              speaker: 'Çırak Hasan',
-                              text: 'Ustam bu çizimleri öylesine yapmamış! Her çizginin başlangıcı, bitişi ve doğrultusu büyük bir mimari sır taşıyor.'
+                              speaker: 'Mimar Sinan',
+                              text: 'Evlat, bu iki noktadan geçecek düz bir çizgi çek. İkinci bir farklı düz doğru çizebilir misin? Dene bakalım!'
                             },
                             visualScene: {
-                              type: 'selimiye-plan',
-                              caption: 'Selimiye Camii planı üzerindeki gizemli geometrik doğrular ve ışınlar.'
+                              type: 'straightedge-twopoints',
+                              caption: 'İki farklı noktadan yalnız ve yalnız tek bir doğru geçer.'
                             },
                             interactiveAction: {
-                              prompt: 'Plandaki kubbe merkezine tıklayarak başlangıç referans noktasını belirleyin!',
-                              actionLabel: 'Kubbe Merkezini Belirle (•)',
-                              feedbackRevealed: 'Referans noktası belirlendi! Mimaride tüm ölçümler ve ışınlar bu merkez noktadan başlar.'
+                              prompt: 'Ölçüsüz cetveli A ve B noktalarına oturtarak tek doğruyu çizin!',
+                              actionLabel: 'İki Noktadan Doğru Çek 📏',
+                              feedbackRevealed: 'Harika çıkarım! Düzlemdeki herhangi iki farklı noktadan yalnız 1 doğru çizilebilir.'
                             },
-                            mathTakeaway: 'Tüm geometrik inşalar ve açılar sabit bir referans noktasıyla başlar.'
+                            mathTakeaway: 'Çıkarım 1: İki farklı noktadan geçen yalnız ve yalnız bir doğru çizilebilir.'
                           },
                           {
                             id: 'p2-2',
                             pageNumber: 2,
-                            chapterTitle: '2. Bölüm: Işık ve Taşın Karşılaştırılması',
-                            conceptTitle: 'Işın ve Doğru Parçası Farkı',
-                            conceptBadge: 'Işın vs Doğru Parçası',
-                            symbolicCode: '[AB vs [CD]',
-                            narrativeText: 'Kubbe pencerelerinden süzülen güneş ışığı sonsuzluğa uzanırken, minareye tırmanan taş basamakların iki yanı sağlam duvarlarla sınırlandırılmıştı.',
+                            chapterTitle: '2. Bölüm: Pergelin Adımları ve Çemberin Yarıçapı',
+                            conceptTitle: 'Merkezden Eşit Uzaklık & Işında Parça Kesme',
+                            conceptBadge: 'Pergel & Yarıçap (r)',
+                            symbolicCode: '|OA| = |OB| = r, [AB] = [BC]',
+                            narrativeText: 'Sinan Usta pergelin sivri ucunu masaya sabitledi ve kurşun kalemli ucuyla tam bir tur döndü. Ardından aynı pergel açıklığını bir ışının başlangıç noktasına koydu.',
                             characterDialogue: {
                               speaker: 'Mimar Sinan',
-                              text: 'Evlat, ışık bir kaynaktan çıkar ve sınırsızca yayılır ([AB). Merdiven basamağı ise iki uçtan sınırlı kalmalıdır ([CD]), yoksa üzerinde yürüyemezsin!'
+                              text: 'Pergelin ayağını bozmadıkça merkezden çember üzerindeki her noktaya mesafe aynıdır! Işın üzerine art arda batırdığında ise yan yana eşit doğru parçaları kesersin.'
                             },
                             visualScene: {
-                              type: 'ray-angle',
-                              caption: 'Pencerelerden yayılan ışıklar ile taş basamakların geometrik karşılaştırması.'
+                              type: 'compass-circle-ray',
+                              caption: 'Çemberin tüm yarıçapları eşittir; pergel ışın üzerinde eşit parçalar keser.'
                             },
                             interactiveAction: {
-                              prompt: 'Işık ile merdiven basamağını karşılaştırın!',
-                              actionLabel: 'Özellikleri Karşılaştır ⚖️',
-                              feedbackRevealed: 'Çıkarım yapıldı: Işının bir ucu sonsuzdur [AB, doğru parçasının her iki ucu sınırlıdır [CD].'
+                              prompt: 'Pergel ile çemberi çizin ve ışın üzerinde eşit doğru parçaları adımlayın!',
+                              actionLabel: 'Pergel ile Eşit Parçalar Kes 🧭',
+                              feedbackRevealed: 'Kusursuz! Çemberin tüm yarıçapları eşittir (|OA|=|OB|=r). Işın üzerinde [AB]=[BC]=[CD] eşit parçaları inşa edildi.'
                             },
-                            mathTakeaway: 'Doğru parçası iki uçtan sınırlandığı için güvenli bir mesafe oluşturur; ışın ise tek yönde sonsuz bir doğrultu tanımlar.'
+                            mathTakeaway: 'Çıkarım 2: Çember merkezinden üzerindeki tüm noktalara çizilen doğru parçaları eşit uzunluktadır. Pergel eşit uzunlukta doğru parçaları kesmek için kullanılır.'
                           },
                           {
                             id: 'p2-3',
                             pageNumber: 3,
-                            chapterTitle: '3. Bölüm: Cetvelin Sırrı: Ölçülebilirlik',
-                            conceptTitle: 'Neden Doğru Parçası Ölçülebilir?',
-                            conceptBadge: 'Ölçülebilirlik Hipotezi',
-                            symbolicCode: '|AB| = 8 cm',
-                            narrativeText: 'Hasan eline tahta cetveli aldı. Doğru ve ışının üzerine cetveli koyduğunda bir türlü sonuna ulaşamadı. Ancak doğru parçasını bir saniyede ölçebildi.',
+                            chapterTitle: '3. Bölüm: Açının Kollarını Eşitleme',
+                            conceptTitle: 'Açının Kollarından Eşit Parça Kesme İnşası',
+                            conceptBadge: 'Açı Kolu İnşası',
+                            symbolicCode: '|OA| = |OB| (Eşit Kollar)',
+                            narrativeText: 'Çırak Hasan bir açı çizdi. Sinan Usta pergelin sivri ucunu açının köşe noktasına (O) batırıp açının her iki kolunu kesen bir yay çizdi.',
                             characterDialogue: {
                               speaker: 'Çırak Hasan',
-                              text: 'Buldum! İki ucu da kapalı olduğu için yalnızca doğru parçasının kesin bir boyu vardır. Doğru ve ışın sonsuz olduğu için ölçülemez!'
+                              text: 'Ustam! Pergelin açıklığını hiç değiştirmeden iki kolu da kestiğimiz için [OA] ve [OB] parçalarının uzunluğu birbirine tıpatıp eşit oldu!'
                             },
                             visualScene: {
-                              type: 'bridge-segment',
-                              caption: 'Cetvelle yapılan ölçüm hipotezi: Yalnızca sınırlandırılmış parçalar ölçülebilir.'
+                              type: 'angle-compass-cut',
+                              caption: 'Açının köşesine batırılan pergel, kollarından eşit uzunlukta parçalar keser.'
                             },
                             interactiveAction: {
-                              prompt: 'Cetvel ile doğru parçasının uzunluğunu test edin!',
-                              actionLabel: 'Cetvel Hipotezini Test Et 📏',
-                              feedbackRevealed: 'Hipotez Doğrulandı! Doğru ve ışında cetvel sonsuz (∞) verir; doğru parçası net 8 cm çıkar.'
+                              prompt: 'Pergeli açının köşesine batırıp iki koldan da eşit parçaları işaretleyin!',
+                              actionLabel: 'Açının Kollarını Kes 📐',
+                              feedbackRevealed: 'İnşa tamamlandı! Açının kollarından pergel yarıçapı kadar eşit uzunlukta doğru parçaları (|OA|=|OB|) kesildi.'
                             },
-                            mathTakeaway: 'Sınırlılık ölçülebilirliğin tek şartıdır. İki ucu kapalı olmayan hiçbir çizginin uzunluğu sayısal olarak hesaplanamaz.'
+                            mathTakeaway: 'Çıkarım 3: Pergel yardımıyla bir açının kollarından köşe noktasından itibaren eşit uzunlukta doğru parçaları kesilebilir.'
                           },
                           {
                             id: 'p2-4',
                             pageNumber: 4,
-                            chapterTitle: '4. Bölüm: Göğe Yükselen Çifte Minareler',
-                            conceptTitle: 'Diklik ve Paralellik Çıkarımı',
-                            conceptBadge: 'Diklik ⊥ ve Paralellik ∥',
-                            symbolicCode: 'd1 ∥ d2, d ⊥ taban',
-                            narrativeText: 'Selimiye’nin heybetli minareleri zemine tam 90 derecelik dik açıyla yükseliyordu. Hasan fark etti ki, aynı zemine dik olan minareler göğe kadar uzansa bile asla birbirine değmiyordu.',
+                            chapterTitle: '4. Bölüm: Gönyenin Dikliği ve Dış Noktalar',
+                            conceptTitle: 'Bir Doğruya Dış Noktadan Tek Dikme',
+                            conceptBadge: 'Dikme (⊥)',
+                            symbolicCode: 'P ⊥ d (Tek Dikme)',
+                            narrativeText: 'Sinan Usta bir zemin doğrusu çizdi ve doğrunun dışına bir P noktası koydu. Hasan eline gönyeyi alarak P noktasından taban doğrusuna dikme indirdi.',
                             characterDialogue: {
-                              speaker: 'Mimar Sinan & Hasan',
-                              text: 'Aynı düzleme dik indirilen iki doğru, birbirine daima paraleldir! Asla kesişmezler ve aralarındaki mesafe hep aynı kalır.'
+                              speaker: 'Mimar Sinan',
+                              text: 'Gönyenin dik köşesini tabana yasla. Dışarıdaki bu sabit P noktasından tabana ikinci bir farklı dikme çizebilir misin? Hayır, yalnız tek bir dikme geçer!'
                             },
                             visualScene: {
-                              type: 'perpendicular-parallel',
-                              caption: 'Aynı taban doğrusuna dik olan minare doğruları birbirine paraleldir.'
+                              type: 'setsquare-perpendicular',
+                              caption: 'Bir doğruya dışındaki sabit bir noktadan yalnız bir dikme çizilebilir.'
                             },
                             interactiveAction: {
-                              prompt: 'Minarelerin zeminle yaptığı 90 derecelik dik açıları test edin!',
-                              actionLabel: 'Çifte Dikmeyi İncele 📐',
-                              feedbackRevealed: 'Harika! Zeminle 90° açı yapan iki dikme birbirine paralel (d1 ∥ d2) olur ve asla kesişmez.'
+                              prompt: 'Gönyeyi P noktasına hizalayarak taban doğrusuna 90° dikme indirin!',
+                              actionLabel: 'Gönyeyle Dikme İndir 📐',
+                              feedbackRevealed: 'Harika çıkarım! Dışındaki sabit bir noktadan doğruya yalnız 1 adet dikme çizilebilir.'
                             },
-                            mathTakeaway: 'Aynı doğruya dik olan iki farklı doğru birbiriyle hiçbir zaman kesişmez; bu doğrular birbirine paraleldir.'
+                            mathTakeaway: 'Çıkarım 4: Bir doğruya dışındaki bir noktadan yalnız bir dikme çizilebilir. Dışındaki farklı noktalardan ise eşit veya farklı uzunlukta dikmeler çizilebilir.'
                           },
                           {
                             id: 'p2-5',
                             pageNumber: 5,
-                            chapterTitle: '5. Bölüm: Çırak Hasan’ın Çıkarım Defteri',
-                            conceptTitle: 'Büyük Çıkarım Tablosu',
-                            conceptBadge: 'Maarif Özeti',
-                            symbolicCode: 'Çıkarım Notu',
-                            narrativeText: 'Çırak Hasan tüm bu mantıksal çıkarımları Mimar Sinan’ın defterine temize çekti. Artık geometri onun için ezber değil, mantıksal bir keşif dünyasıydı!',
+                            chapterTitle: '5. Bölüm: Eşit Uzaklıktaki Noktalar ve Tren Rayları',
+                            conceptTitle: 'Paralel Doğru İnşası ve Çıkarım Özeti',
+                            conceptBadge: 'Paralel Doğrular (∥)',
+                            symbolicCode: 'd₁ ∥ d₂ (Sabit Mesafe)',
+                            narrativeText: 'Son olarak Hasan, taban doğrusuna gönye yardımıyla hep 10 cm uzaklıkta 3 farklı nokta belirledi ve bu noktaları cetvelle birleştirdi.',
                             characterDialogue: {
-                              speaker: 'Tarihi Dedektifler',
-                              text: 'Tebrikler! Tarihi haritanın tüm geometrik şifrelerini çözdünüz. Şimdi laboratuvarda kendi hipotezlerinizi test etme zamanı!'
+                              speaker: 'Hasan & Sinan',
+                              text: 'Tıpkı tren rayları gibi! Bir doğruya eşit uzaklıktaki tüm noktaların oluşturduğu doğru, ilk doğruyla asla kesişmez; bu doğrular PARALELDİR (d₁ ∥ d₂)!'
                             },
                             visualScene: {
-                              type: 'summary-chart',
-                              caption: 'Ölçülebilirlik, Açı Oluşumu ve Paralellik çıkarımlarının tam özeti.'
+                              type: 'parallel-tracks',
+                              caption: 'Bir doğruya eşit uzaklıktaki noktaların birleşimi paralel doğru oluşturur.'
                             },
                             interactiveAction: {
-                              prompt: 'Çıkarım defterini onaylayıp Deney Laboratuvarına geçin!',
-                              actionLabel: 'Deney Masasına Geç 🧪',
-                              feedbackRevealed: '1. Aşama tamamlandı! Şimdi 3 kritik geometri deneyini canlı olarak test edeceksiniz.'
+                              prompt: 'Eşit uzaklıktaki noktaları birleştirip paralel rayları oluşturun!',
+                              actionLabel: 'Paralel Doğruyu İnşa Et ⏸️',
+                              feedbackRevealed: 'Mükemmel! Bir doğruya eşit uzaklıktaki noktaların oluşturduğu yeni doğru, taban doğrusuna paraleldir (d₁ ∥ d₂).'
                             },
-                            mathTakeaway: 'Deneyim + Mantıksal Çıkarım = Kalıcı Matematiksel Düşünme Becerisi.'
+                            mathTakeaway: 'Çıkarım 5: Gönye ile bir doğruya eşit uzaklıktaki noktalar belirlenip birleştirildiğinde oluşan doğru, ilk doğruya paraleldir (d₁ ∥ d₂).'
                           }
                         ]
                       },
                       lab: {
-                        title: 'Özellik Karşılaştırma & Hipotez Testi Masası',
+                        title: 'İnteraktif Geometrik İnşa ve Çıkarım Masası',
                         toolType: 'experiment-bench',
-                        instructions: 'Aşağıdaki 3 kritik geometri deneyini sırayla uygulayarak özellik çıkarımlarını canlı olarak test ediniz.',
-                        taskGoal: '3 deneyi de tamamlayıp çıkarım kartlarını açınız.',
+                        instructions: 'Ölçüsüz cetvel, pergel ve gönye ile 3 kritik geometrik inşayı gerçekleştirin; nokta sürükleme ve uzaklık ölçme ile çıkarımlarınızı doğrulayınız.',
+                        taskGoal: '3 inşa deneyini de tamamlayıp geometrik çıkarım kartlarını açınız.',
                         interactiveTips: [
-                          '1. Deney: Cetveli şekillerin üzerine getirip hangisinin ölçülebildiğini keşfedin.',
-                          '2. Deney: İki ışının başlangıç noktasını çakıştırıp açıyı büyütüp küçültün.',
-                          '3. Deney: Taban doğrusuna iki dikme indirip paralellik durumunu sürükleyerek inceleyin.'
+                          '1. Deney (Ölçüsüz Cetvel): İki noktayı sürükleyin; aralarından sadece 1 düz doğru geçebildiğini test edin.',
+                          '2. Deney (Pergel İnşası): Pergel ile çember yarıçapını ölçün; ışın ve açı kollarından eşit parçalar kesin.',
+                          '3. Deney (Gönye & Paralellik): Taban doğrusuna eşit uzaklıkta dikmeler indirip paralel doğruyu sürükleyerek inceleyin (OB2).'
                         ],
                         presetObjects: []
                       },
                       puzzle: {
                         title: 'Kavram Dedektifi ve Çıkarım Terazisi',
-                        instructions: 'Geometrik çıkarımları ve inşaları eğlenceli oyunlarla pekiştirin.',
+                        instructions: 'Ölçüsüz cetvel, pergel ve gönye çıkarımlarını eğlenceli oyunlarla pekiştirin.',
                         items: [
                           {
                             id: 'pz-2-1',
-                            concept: 'Ölçülebilirlik İlkesi',
-                            symbol: '|AB|',
-                            definition: 'İki ucu da sınırlı olduğu için cetvelle boyu tam olarak hesaplanabilir.',
-                            visualType: 'segment'
+                            concept: 'İki Nokta — Tek Doğru',
+                            symbol: 'A •—————• B',
+                            definition: 'Ölçüsüz cetvelle iki farklı noktadan yalnız ve yalnız tek bir doğru çizilebilir.',
+                            visualType: 'line'
                           },
                           {
                             id: 'pz-2-2',
-                            concept: 'Açı İnşası',
-                            symbol: '∠AOB veya [OA ∪ [OB',
-                            definition: 'Başlangıç noktaları ortak iki ışının birleşmesiyle oluşan açıklık.',
+                            concept: 'Çember Yarıçap Eşitliği',
+                            symbol: '|OA| = |OB| = r',
+                            definition: 'Pergel ile çizilen çemberin merkezinden üzerindeki tüm noktalara uzaklık eşittir.',
                             visualType: 'angle'
                           },
                           {
                             id: 'pz-2-3',
-                            concept: 'Çifte Dikme ve Paralellik',
-                            symbol: 'd1 ∥ d2',
-                            definition: 'Aynı doğruya 90° dik olan iki doğru birbirini asla kesmez.',
-                            visualType: 'line'
+                            concept: 'Pergel ile Eşit Parça Kesme',
+                            symbol: '[AB] = [BC] = [CD]',
+                            definition: 'Pergel açıklığı bozulmadan bir ışın veya açı kolu üzerinde eşit mesafeler kopyalanır.',
+                            visualType: 'segment'
                           },
                           {
                             id: 'pz-2-4',
-                            concept: 'Tek Yönlü Sınırsızlık',
-                            symbol: '[AB',
-                            definition: 'Başlangıcı sabit bir kaynaktır ancak ucu sonsuza dek uzar.',
-                            visualType: 'ray'
+                            concept: 'Dış Noktadan Tek Dikme',
+                            symbol: 'P ⊥ d (Tek Dikme)',
+                            definition: 'Gönye ile bir doğruya dışındaki sabit bir noktadan yalnız bir adet dikme indirilebilir.',
+                            visualType: 'line'
+                          },
+                          {
+                            id: 'pz-2-5',
+                            concept: 'Paralel Doğrular',
+                            symbol: 'd₁ ∥ d₂ (Tren Rayları)',
+                            definition: 'Bir doğruya eşit uzaklıktaki noktaların birleşmesiyle oluşan ve asla kesişmeyen doğrular.',
+                            visualType: 'line'
                           }
                         ]
                       },
                       assessment: {
-                        title: 'Çıkarım ve Yansıtma Değerlendirmesi',
-                        instructions: 'Soruları tek tek yanıtlayınız ve ders sonunda dijital öğrenme günlüğünüze çıkarımınızı yazınız.',
-                        reflectionPrompt: 'Bugün öğrendiğim en şaşırtıcı geometrik çıkarım şuydu:',
+                        title: 'Temel Çizimler ve Geometrik Çıkarım Değerlendirmesi',
+                        instructions: 'Soruları dikkatle okuyunuz; ölçüsüz cetvel, pergel ve gönye çıkarımlarınızı test ediniz.',
+                        reflectionPrompt: 'Bugün geometrik aletlerle yaptığım en önemli çıkarım şuydu:',
                         questions: [
                           {
                             id: 'q2-1',
-                            questionText: 'Bir Doğru Parçasını [AB], bir Doğrudan (AB) ve Işından ([AB) ayıran EN TEMEL özellik aşağıdakilerden hangisidir?',
-                            context: 'Ölçülebilirlik & Sınırlılık',
+                            questionText: 'Düzlemde işaretlenen farklı iki noktadan (A ve B) ölçüsüz bir cetvel yardımıyla kaç tane FARKLI düz doğru çizilebilir?',
+                            context: 'Ölçüsüz Cetvel ve Aksiyom',
                             options: [
-                              'A) İki ucunun da sınırlı olması ve uzunluğunun kesinlikle ölçülebilmesi',
-                              'B) Sadece tek yönde sonsuza uzaması',
-                              'C) Kalınlığının ve alanının hesaplanabilmesi',
-                              'D) Başlangıç noktasının olmaması'
+                              'A) Yalnız 1 adet',
+                              'B) 2 adet',
+                              'C) 3 adet',
+                              'D) Sonsuz çoklukta'
                             ],
                             correctOptionIndex: 0,
-                            explanation: 'Doğru ve Işın sonsuza uzandığı için ölçülemez; yalnız iki ucu da kapalı olan Doğru Parçası [AB] net bir uzunluğa sahiptir.',
+                            explanation: 'Temel geometri aksiyomuna göre iki farklı noktadan yalnız ve yalnız bir doğru geçer.',
                             bloomLevel: 'Kavramsal Çıkarım'
                           },
                           {
                             id: 'q2-2',
-                            questionText: 'Geometride bir AÇI inşa edebilmek için başlangıç noktaları ortak olan en az kaç adet IŞINA ihtiyaç vardır?',
-                            context: 'Açı ve Doğrultu İnşası',
+                            questionText: 'Bir öğrenci pergelin ucunu O noktasına sabitleyip 6 cm yarıçaplı bir çember çizmiştir. Çember üzerindeki K ve L noktaları için aşağıdakilerden hangisi KESİNLİKLE doğrudur?',
+                            context: 'Pergel ve Çember Yarıçapı',
                             options: [
-                              'A) 1 adet',
-                              'B) 2 adet',
-                              'C) 3 adet',
-                              'D) 4 adet'
+                              'A) |OK| ve |OL| uzunlukları birbirine eşittir ve 6 cm’dir.',
+                              'B) |OK| uzunluğu |OL| uzunluğundan büyüktür.',
+                              'C) K ve L noktalarından geçen doğru merkezden geçer.',
+                              'D) Çemberin merkezinden geçen her çizgi 12 cm’dir.'
                             ],
-                            correctOptionIndex: 1,
-                            explanation: 'Başlangıç noktaları ortak iki ışının ([OA ve [OB) birleşimi bir açı (∠AOB) meydana getirir.',
-                            bloomLevel: 'Uygulama & Modelleme'
+                            correctOptionIndex: 0,
+                            explanation: 'Çemberin tanımı gereği merkezden çember üzerindeki tüm noktalara çizilen doğru parçaları (yarıçaplar) birbirine eşittir (|OK|=|OL|=r=6 cm).',
+                            bloomLevel: 'Mantıksal Çıkarım & Analiz'
                           },
                           {
                             id: 'q2-3',
-                            questionText: 'Bir d doğrusuna indirilen bir dikme ile d doğrusu arasındaki açı kaç derecedir?',
-                            context: 'Diklik ve Gönye Analizi',
+                            questionText: 'Bir ışının başlangıç noktasından itibaren pergel açıklığını hiç bozmadan yan yana adımlayarak işaretleme yapan bir öğrenci ne elde eder?',
+                            context: 'Pergel ile Geometrik İnşa',
                             options: [
-                              'A) 45°',
-                              'B) 60°',
-                              'C) 90°',
-                              'D) 180°'
+                              'A) Uzunlukları birbirinden farklı doğru parçaları',
+                              'B) Yan yana birbirine eşit uzunlukta doğru parçaları ([AB] = [BC] = [CD])',
+                              'C) Dik açılar',
+                              'D) Paralel doğrular'
                             ],
-                            correctOptionIndex: 2,
-                            explanation: 'Bir doğruya indirilen dikme (⊥), o doğruyla tam 90 derecelik dik açı oluşturur.',
-                            bloomLevel: 'Temel Bilgi & Tanım'
+                            correctOptionIndex: 1,
+                            explanation: 'Pergel açıklığı sabit kaldığı için her adımda eşit yarıçap uzunluğunda doğru parçaları kesilmiş olur.',
+                            bloomLevel: 'Uygulama ve İnşa'
                           },
                           {
                             id: 'q2-4',
-                            questionText: 'Aynı taban doğrusuna 90° dik açı ile çizilen iki farklı dikme doğru (d1 ve d2) uzayda sonsuza kadar uzatılırsa ne olur?',
-                            context: 'Paralellik ve Kesişmeme İlkesi',
+                            questionText: 'Bir d doğrusunun dışındaki sabit bir P noktasından bu doğruya gönye yardımıyla kaç tane DİKME çizilebilir?',
+                            context: 'Gönye ve Dikme Çıkarımı',
                             options: [
-                              'A) İleride bir noktada mutlaka kesişirler.',
-                              'B) Birbirine paraleldirler ve hiçbir zaman kesişmezler.',
-                              'C) Aralarındaki açı zamanla daralır.',
-                              'D) Birbirine dik hale gelirler.'
+                              'A) Yalnız 1 tane',
+                              'B) 2 tane',
+                              'C) 4 tane',
+                              'D) Sonsuz tane'
                             ],
-                            correctOptionIndex: 1,
-                            explanation: 'Aynı doğruya dik olan iki doğru birbirine paraleldir (d1 ∥ d2) ve aralarındaki mesafe daima sabit kalır; asla kesişmezler.',
-                            bloomLevel: 'Mantıksal Çıkarım'
+                            correctOptionIndex: 0,
+                            explanation: 'Bir doğruya dışındaki sabit tek bir noktadan yalnız ve yalnız 1 adet dikme (90° dik çizgi) çizilebilir.',
+                            bloomLevel: 'Kavramsal Çıkarım'
                           },
                           {
                             id: 'q2-5',
-                            questionText: 'Selimiye Camii planını inceleyen Çırak Hasan, minare basamağı ile pencerelerden giren ışığı karşılaştırıyor. Hasan’ın yapacağı hangisi DOĞRU bir çıkarımdır?',
-                            context: 'Selimiye Camii & Mimari Çıkarım',
+                            questionText: 'Bir d₁ doğrusuna gönye ile aynı yönde 8 cm uzaklıkta 3 farklı nokta belirlenmiş ve bu noktalar cetvelle birleştirilerek d₂ doğrusu çizilmiştir. d₁ ve d₂ doğruları için hangisi doğrudur?',
+                            context: 'Paralel Doğru İnşası (Tren Rayı Modeli)',
                             options: [
-                              'A) İkisinin de uzunluğu cetvelle tam olarak ölçülebilir.',
-                              'B) Minare basamağı bir doğru parçasıdır; ışık ise başlangıcı olan bir ışındır.',
-                              'C) Işık bir doğrudur ve iki yönde de sınırsızdır.',
-                              'D) Minare basamağının bir ucu sonsuza kadar uzar.'
+                              'A) Birbirine diktirler (d₁ ⊥ d₂).',
+                              'B) Birbirine paraleldirler (d₁ ∥ d₂) ve hiçbir zaman kesişmezler.',
+                              'C) İleride 45 derecelik açıyla kesişirler.',
+                              'D) Uzunlukları birbirinden farklıdır.'
                             ],
                             correctOptionIndex: 1,
-                            explanation: 'Basamak iki duvar arasında sınırlandırılmış bir doğru parçasıdır ([AB]); pencereden çıkan ışık ise başlangıcı sabit bir ışındır ([CD).',
-                            bloomLevel: 'Karşılaştırma & Analiz'
-                          },
-                          {
-                            id: 'q2-6',
-                            questionText: 'Öğretmen tahtada bir Doğrunun üzerine cetvel koyduğunda cetvelin sağında ve solunda oklar olduğunu göstermiştir. Bu durum neyi ispatlar?',
-                            context: 'Bilimsel Hipotez ve İspat',
-                            options: [
-                              'A) Doğrunun boyunun sonlu olduğunu',
-                              'B) Doğrunun her iki yönden de sınırsız uzadığı için ölçülemeyeceğini',
-                              'C) Doğrunun bir başlangıç noktası olduğunu',
-                              'D) Cetvelin yetersiz olduğunu'
-                            ],
-                            correctOptionIndex: 1,
-                            explanation: 'Çift yönlü oklar sınırsızlığı temsil eder; sınırsız uzayan bir yapının uzunluğu cetvelle hesaplanamaz.',
-                            bloomLevel: 'Kritik Düşünme & Değerlendirme'
+                            explanation: 'Bir doğruya eşit uzaklıktaki noktaların birleştirilmesiyle elde edilen doğru, ilk doğruya paraleldir (d₁ ∥ d₂); aralarındaki dik mesafe hep 8 cm kalır ve asla kesişmezler.',
+                            bloomLevel: 'Modelleme ve Çıkarım'
                           }
                         ]
                       }
@@ -694,65 +691,315 @@ export const CURRICULUM_DATA: Grade[] = [
               {
                 id: 'topic-5-geo-2',
                 unitId: 'unit-5-geo',
-                title: 'Açılar ve Açı Çeşitleri',
-                description: 'Dar, dik, geniş ve doğru açıların modelleri ve ölçümü.',
+                title: 'Açı Ölçme ve Açı Çeşitleri',
+                description: 'Açıölçer (İletki) ve gönye ile açıları ölçme, derece cinsinden ifade etme ve dar, dik, geniş, doğru açı olarak sınıflandırma.',
                 outcomes: [
                   {
                     id: 'MAT.5.3.3',
                     code: 'MAT.5.3.3',
-                    title: 'Açıları Belirleme, İsimlendirme ve Açıölçer ile Ölçme',
-                    shortTitle: 'Açılar ve Açıölçer',
-                    description: 'Açıyı iki ışının birleşimi olarak açıklar, açıölçer ile ölçer ve dar/dik/geniş olarak sınıflandırır.',
+                    title: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+                    shortTitle: 'Açı Ölçme ve İletki (Açıölçer) Kullanımı',
+                    description: 'Açıyı aynı başlangıç noktasına sahip iki ışının birleşimi olarak açıklar; iletki (açıölçer) ve gönye kullanarak açıları derece (°) cinsinden ölçer, oluşturur ve dar, dik, geniş, doğru açı olarak sınıflandırır.',
                     gradeId: 'grade-5',
                     subjectId: 'mat-5',
                     unitId: 'unit-5-geo',
                     topicId: 'topic-5-geo-2',
                     durationMinutes: 40,
                     pedagogyGuide: {
-                      maarifSDBs: ['SDB2.1: İletişim', 'SDB3.2: Sorgulama'],
-                      processComponents: ['SB1.1: Anlamlandırma', 'SB2.1: Ölçme Becerisi'],
-                      learningGoals: ['Açı çeşitlerini tanır, iletki (açıölçer) kullanır.'],
-                      teacherTips: ['Saat akrep ve yelkovanı üzerinden açıları somutlaştırın.'],
-                      misconceptions: ['Kolların uzunluğunun açının büyüklüğünü değiştirdiğini sanmak.'],
-                      keyQuestions: ['Saat tam 3:00 iken akrep ile yelkovan hangi açıyı oluşturur?']
+                      maarifSDBs: [
+                        'SDB1.2: Öz Düzenleme (İletkinin merkezini köşe noktasına tam oturtma sabrı ve ölçüm kontrolü)',
+                        'SDB2.2: İş Birliği ve Akran Öğrenmesi (Farklı nesnelerin açılarını ölçüp sonuçları karşılaştırma)',
+                        'SDB3.2: Sorgulama ve Çıkarım (Açının kollarının uzunluğunun açı derecesini değiştirmediğini keşfetme)'
+                      ],
+                      processComponents: [
+                        'SB1.1: Açı ölçmek için gerekli araç ve teknolojiyi (İletki/Açıölçer, Gönye, İletkili Dijital Cetvel) tanır.',
+                        'SB2.1: Açı ölçmek için uygun aracı ve ölçüm yöntemini belirler.',
+                        'SB3.1: İletkiyi doğru hizalayarak dar, dik, geniş ve doğru açıları derece cinsinden ölçer ve modeller.'
+                      ],
+                      learningGoals: [
+                        'Açının, başlangıç noktaları ortak iki ışının oluşturduğu geometrik açıklık olduğunu açıklar.',
+                        'Açı ölçme standart biriminin Derece (°) olduğunu ve sembolünü kavrar.',
+                        'İletkinin merkez noktasını açının köşesine, taban çizgisini ise bir koluna hizalayarak doğru okuma yapar.',
+                        'Ölçüsü 90°den küçük olan açıları Dar Açı, tam 90° olanları Dik Açı, 90° ile 180° arasındakileri Geniş Açı, tam 180° olanı Doğru Açı olarak adlandırır.'
+                      ],
+                      teacherTips: [
+                        'Sınıf kapısını açıp kapatarak veya saatin akrep-yelkovanı üzerinden açı derecelerini kinestetik olarak canlandırın.',
+                        'Öğrencilere iletkideki çift skala (iç ve dış dereceler) sistemini anlatırken "Açının baktığı yöndeki sıfırdan başlayarak sayma" kuralını öğretin.',
+                        'Kolların uzunluğunun açıyı büyütmediğini göstermek için aynı 60°lik açıyı hem küçük hem devasa çizip iletkiyle ölçtürün.'
+                      ],
+                      misconceptions: [
+                        'Kolların (ışınların) uzunluğu arttıkça açının derecesinin de büyüyeceğini sanmak.',
+                        'İletkinin merkez noktasını açının köşesine değil, cetvelin en alt plastik kenarına oturtmak.',
+                        'Çift taraflı ölçekte dar açıyı okurken ters taraftaki geniş açı değerini (örn: 60° yerine 120°) okumak.'
+                      ],
+                      keyQuestions: [
+                        'Güneş panellerinin elektrik üretimi ile güneş ışınlarının geliş açısı arasında nasıl bir ilişki vardır?',
+                        'Bir makasın kollarını daha uzun yaparsak, aynı aralıkta açtığımızda açının derecesi değişir mi?'
+                      ]
                     },
                     phases: {
                       story: {
-                        title: 'Güneş Saati ve Gölgeler',
-                        character: { name: 'Mühendis Ali', role: 'Astronomi Meraklısı', avatar: '☀️' },
-                        scenario: 'Güneş gökyüzünde yükseldikçe çubuğun gölgesi ile zemin arasındaki açı değişiyor.',
-                        realLifeConnection: 'Güneş panellerinin en yüksek verimle çalışması için güneş ışınlarının geliş açısına göre ayarlanması gerekir.',
-                        reflectionQuestion: 'Geniş açı ile dar açı arasındaki sınır nedir?',
-                        keyTakeaway: '90 derece dik açıdır; 90dan küçük açılar dar, büyük olanlar geniştir.'
+                        title: 'Gözlemevi Mimarları ve Güneş Saati Gizemi',
+                        character: {
+                          name: 'Mimar Sinan & Astronom Ali Kuşçu',
+                          role: 'Tarihi Bilim Rehberleri',
+                          avatar: '🔭'
+                        },
+                        scenario: 'Ali Kuşçu ve Mimar Sinan, tarihi rasathanenin dev teleskobunun yıldızları tam odaklayabilmesi ve avludaki güneş saatinin zamanı kusursuz gösterebilmesi için ışınların geliş açılarını İletki (Açıölçer) ile derece derece ölçüyorlar.',
+                        realLifeConnection: 'Güneş panellerinin maksimum elektrik üretmesi, uçakların güvenli iniş eğimi ve çatıların kar tutmaması için eğim açıları iletki ve hassas açı sensörleri ile belirlenir.',
+                        reflectionQuestion: 'Bir açının kollarını sonsuza kadar uzatırsak açının derecesi büyür mü, yoksa aynı mı kalır?',
+                        keyTakeaway: 'Açı iki ışının açıklığıdır; kolların boyu değişse bile açıölçerle ölçülen derece asla değişmez!',
+                        pages: [
+                          {
+                            id: 'p-1',
+                            pageNumber: 1,
+                            chapterTitle: '1. Bölüm: Açının Doğuşu',
+                            conceptTitle: 'Açı Kavramı ve Köşe/Kollar',
+                            conceptBadge: 'Açı ∠AOB',
+                            symbolicCode: '[OA ∪ [OB',
+                            narrativeText: 'Ali Kuşçu gökyüzünü gözlemlerken masasına iki parlak ışık çubuğu koydu. Çubukların başlangıç noktalarını (O) birleştirdiğinde aralarında muhteşem bir açıklık meydana geldi.',
+                            characterDialogue: {
+                              speaker: 'Astronom Ali Kuşçu',
+                              text: 'Bakın! Başlangıç noktası ortak olan iki ışın birleştiğinde bir AÇI doğar. Ortak nokta açının KÖŞESİ (O), ışınlar ise açının KOLLARIDIR ([OA ve [OB)!'
+                            },
+                            visualScene: {
+                              type: 'ray-angle',
+                              caption: 'Ortak başlangıç noktası O olan iki ışının oluşturduğu ∠AOB Açısı.'
+                            },
+                            interactiveAction: {
+                              prompt: 'İki ışını birleştirerek açının köşesini (O) sabitleyin!',
+                              actionLabel: 'Açının Köşesini Kilitle 📍',
+                              feedbackRevealed: 'Açı ∠AOB oluşturuldu! Ortak köşe O noktasıdır, kollar [OA ve [OB ışınlarıdır.'
+                            },
+                            mathTakeaway: 'Açı: Başlangıç noktaları ortak olan iki ışının birleşim kümesidir. Köşedeki harf ortaya gelecek şekilde ∠AOB veya O açısı olarak gösterilir.'
+                          },
+                          {
+                            id: 'p-2',
+                            pageNumber: 2,
+                            chapterTitle: '2. Bölüm: İletki (Açıölçer) ile Tanışma',
+                            conceptTitle: 'Açı Ölçme Aracı ve Derece (°)',
+                            conceptBadge: 'İletki 180°',
+                            symbolicCode: 's(∠AOB) = ...°',
+                            narrativeText: 'Mimar Sinan heybesinden pirinçten yapılmış yarım daire şeklinde bir cetvel çıkardı. Üzerinde 0dan 180e kadar eşit aralıklarla dizilmiş çizgiler vardı.',
+                            characterDialogue: {
+                              speaker: 'Mimar Sinan',
+                              text: 'Bu aletin adı İLETKİ (AÇIÖLÇER)dir. Çemberi 360 eşit parçaya böleriz; bu yarım daire 180 derecedir. Her küçük aralık 1 Derece (1°)lik açıyı temsil eder.'
+                            },
+                            visualScene: {
+                              type: 'protractor-tool',
+                              caption: 'İletki (Açıölçer): Açının derecesini ölçmek için kullanılan 180°lik cetvel.'
+                            },
+                            interactiveAction: {
+                              prompt: 'İletkinin merkezini açının köşesine tam hizalayın!',
+                              actionLabel: 'İletkiyi Köşeye Hizala 📐',
+                              feedbackRevealed: 'Hizalama kusursuz! İletkinin merkez noktası tam O köşesine, taban çizgisi ise taban koluna oturdu.'
+                            },
+                            mathTakeaway: 'İletki (Açıölçer): Açıları derece (°) cinsinden ölçmeye ve çizmeye yarayan araçtır. Tam bir daire 360°, doğru açı 180°dir.'
+                          },
+                          {
+                            id: 'p-3',
+                            pageNumber: 3,
+                            chapterTitle: '3. Bölüm: Dik Açının Sağlamlığı',
+                            conceptTitle: 'Dik Açı Modeli (90°)',
+                            conceptBadge: 'Dik Açı 90°',
+                            symbolicCode: 's(∠A) = 90° [⊥]',
+                            narrativeText: 'Rasathanenin ana sütunlarını inşa ederken Mimar Sinan gönyesini çıkardı. Duvarın taban ile yaptığı açıklık tam olarak 90 dereceyi gösteriyordu.',
+                            characterDialogue: {
+                              speaker: 'Mimar Sinan',
+                              text: 'Tam 90 derece olan açıya DİK AÇI deriz. Köşesine küçük bir kare ve nokta sembolü koyarız. Dik açı binaların yıkılmadan dimdik ayakta durmasını sağlar!'
+                            },
+                            visualScene: {
+                              type: 'perpendicular-parallel',
+                              caption: '90 Derecelik Dik Açı: Köşesine diklik sembolü (kare ve nokta) konur.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Gönye ile sütunun 90° dik açısını test edin!',
+                              actionLabel: 'Gönye ile Dikliği Test Et 📐',
+                              feedbackRevealed: 'Kusursuz 90°! Tam 90 derece olan açılara Dik Açı adı verilir.'
+                            },
+                            mathTakeaway: 'Dik Açı: Ölçüsü tam olarak 90° olan açıdır. İki kol birbirine diktir (⊥ sembolü ile gösterilir).'
+                          },
+                          {
+                            id: 'p-4',
+                            pageNumber: 4,
+                            chapterTitle: '4. Bölüm: Dar ve Geniş Açıların Dünyası',
+                            conceptTitle: 'Açı Çeşitlerinin Sınıflandırılması',
+                            conceptBadge: 'Dar, Dik, Geniş, Doğru',
+                            symbolicCode: '0° < Dar < 90° < Geniş < 180°',
+                            narrativeText: 'Güneş gökyüzünde yükseldikçe gölge çubuğu ile zemin arasındaki açı önce 35° (dar), öğleyin 90° (dik), ikindi vakti ise 140° (geniş) oldu.',
+                            characterDialogue: {
+                              speaker: 'Ali Kuşçu & Sinan',
+                              text: '90 dereceden küçük açılara DAR AÇI, 90 ile 180 derece arasındakilere GENİŞ AÇI, dümdüz bir çizgi oluşturan 180 derecelik açıya ise DOĞRU AÇI deriz!'
+                            },
+                            visualScene: {
+                              type: 'angle-classification',
+                              caption: 'Açı Sınıfları: Dar Açı (<90°), Dik Açı (90°), Geniş Açı (>90°), Doğru Açı (180°).'
+                            },
+                            interactiveAction: {
+                              prompt: 'Açı sürgüsünü hareket ettirerek açı türlerini keşfedin!',
+                              actionLabel: 'Açıları Sınıflandır 🔄',
+                              feedbackRevealed: 'Harika! 45° Dar Açı, 90° Dik Açı, 135° Geniş Açı ve 180° Doğru Açı başarıyla sınıflandırıldı.'
+                            },
+                            mathTakeaway: 'Ölçüsü 0°-90° arası olanlar Dar Açı, 90° olanlar Dik Açı, 90°-180° arası olanlar Geniş Açı, 180° olanlar Doğru Açıdır.'
+                          },
+                          {
+                            id: 'p-5',
+                            pageNumber: 5,
+                            chapterTitle: '5. Bölüm: Büyük Rasathane Özeti',
+                            conceptTitle: 'Açı Ölçme ve Maarif İlkeleri',
+                            conceptBadge: 'Özet Tablo',
+                            symbolicCode: 'Açı Bilim Rehberi',
+                            narrativeText: 'Gözlemevinin kubbesi tamamlandığında Ali Kuşçu ve Mimar Sinan tüm ölçüm kayıtlarını rasathane defterine işlediler.',
+                            characterDialogue: {
+                              speaker: 'Bilim Rehberleri',
+                              text: 'Artık biliyoruz ki: Açıların kollarını ne kadar uzatırsak uzatalım, açıklık ve derece değişmez. Şimdi iletki laboratuvarında kendi açılarımızı ölçelim!'
+                            },
+                            visualScene: {
+                              type: 'summary-chart',
+                              caption: 'Açı çeşitleri, iletki kullanımı ve ölçüm kuralları özet tablosu.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Açı Laboratuvarına geçmek için onaylayın!',
+                              actionLabel: 'Açı Laboratuvarını Aç 🧪',
+                              feedbackRevealed: 'Tebrikler! 1. Aşamayı tamamladınız. Şimdi İnteraktif İletki Laboratuvarında çizim ve ölçüm yapabilirsiniz.'
+                            },
+                            mathTakeaway: 'Açı ölçümü hassasiyet ve sabır gerektirir. İletkinin merkezi köşeye, tabanı kola oturtulur ve doğru skaladan derece okunur.'
+                          }
+                        ]
                       },
                       lab: {
-                        title: 'Dinamik Açıölçer Laboratuvarı',
-                        toolType: 'angle-protractor',
-                        instructions: 'Açının kollarını döndürerek dereceyi ayarlayın ve açı türünü gözlemleyin.',
-                        taskGoal: '90 derece dik açı ve 135 derece geniş açı oluşturun.',
-                        interactiveTips: ['Kolları tutup sürükleyin.'],
+                        title: 'İnteraktif İletki (Açıölçer) ve Açı Laboratuvarı',
+                        toolType: 'geometry-canvas',
+                        instructions: 'Aşağıdaki etkileşimli iletkiyi kullanarak açıları döndürün, dereceyi ölçün ve dar, dik, geniş veya doğru açı modelleri inşa ediniz.',
+                        taskGoal: 'En az 1 adet 90° Dik Açı, 1 adet 45° Dar Açı ve 1 adet 135° Geniş Açı oluşturup açıölçerle doğrulayınız.',
+                        interactiveTips: [
+                          'Açının kollarını fare veya dokunmatik ekranla döndürerek dereceyi ayarlayabilirsiniz.',
+                          'İletki butonuna basarak sanal iletkiyi açının üzerine yerleştirebilirsiniz.',
+                          'Deney masası sekmesine geçerek iletki ile farklı açıları doğrudan test edebilirsiniz.'
+                        ],
                         presetObjects: []
                       },
                       puzzle: {
-                        title: 'Açı Sınıflandırma Bulmacası',
-                        instructions: 'Verilen dereceleri doğru açı türleriyle eşleştirin.',
+                        title: 'Açı Çeşitleri ve İletki Kavram Eşleştirme',
+                        instructions: 'Sol taraftaki açı tanımlarını ve derecelerini sağ taraftaki doğru kavram kartlarıyla eşleştiriniz.',
                         items: [
-                          { id: 'pz-a1', concept: 'Dik Açı', symbol: '90°', definition: 'Ölçüsü tam olarak 90 derece olan açı.', visualType: 'angle' },
-                          { id: 'pz-a2', concept: 'Dar Açı', symbol: '< 90°', definition: 'Ölçüsü 0 ile 90 derece arasında olan açı.', visualType: 'angle' },
-                          { id: 'pz-a3', concept: 'Geniş Açı', symbol: '> 90°', definition: 'Ölçüsü 90 ile 180 derece arasında olan açı.', visualType: 'angle' }
+                          { id: 'pz-ang-1', concept: 'Dar Açı', symbol: '0° < s(A) < 90°', definition: 'Ölçüsü 0 derece ile 90 derece arasında olan açılardır (Örn: 45°, 75°, 89°).', visualType: 'angle' },
+                          { id: 'pz-ang-2', concept: 'Dik Açı', symbol: 's(A) = 90° [⊥]', definition: 'Ölçüsü tam olarak 90 derece olan açıdır; kolları birbirine diktir.', visualType: 'angle' },
+                          { id: 'pz-ang-3', concept: 'Geniş Açı', symbol: '90° < s(A) < 180°', definition: 'Ölçüsü 90 derece ile 180 derece arasında olan açılardır (Örn: 95°, 120°, 179°).', visualType: 'angle' },
+                          { id: 'pz-ang-4', concept: 'Doğru Açı', symbol: 's(A) = 180°', definition: 'Ölçüsü tam olarak 180 derece olan, kolları zıt yönlü bir doğru oluşturan açıdır.', visualType: 'angle' },
+                          { id: 'pz-ang-5', concept: 'İletki (Açıölçer)', symbol: '📐 0°-180°', definition: 'Açıları derece cinsinden ölçmek ve çizmek için kullanılan yarım daire şeklindeki matematiksel araçtır.', visualType: 'angle' },
+                          { id: 'pz-ang-6', concept: 'Açının Köşesi', symbol: 'O Noktası', definition: 'Açıyı oluşturan iki ışının ortak başlangıç noktasıdır.', visualType: 'point' },
+                          { id: 'pz-ang-7', concept: 'Açının Kolları', symbol: '[OA ve [OB', definition: 'Köşe noktasından çıkarak açıyı sınırlandıran iki ışındır.', visualType: 'ray' },
+                          { id: 'pz-ang-8', concept: 'Derece (°)', symbol: '1° = 1/360', definition: 'Bir tam çemberin 360ta birine karşılık gelen standart açı ölçme birimidir.', visualType: 'angle' }
                         ]
                       },
                       assessment: {
-                        title: 'Açılar Değerlendirme Testi',
-                        instructions: 'Soruları çözünüz.',
+                        title: 'Açı Ölçme ve Sınıflandırma Değerlendirme Testi',
+                        instructions: 'Aşağıdaki senaryolu soruları dikkatle okuyunuz, doğru seçeneği işaretleyip açıklamaları inceleyiniz.',
                         questions: [
                           {
                             id: 'q-ang-1',
-                            questionText: 'Ölçüsü 89 derece olan bir açı hangi açı türüne girer?',
-                            options: ['A) Dar Açı', 'B) Dik Açı', 'C) Geniş Açı', 'D) Doğru Açı'],
+                            questionText: 'Ölçüsü 89° olan bir açı ile ölçüsü 91° olan bir açı sırasıyla hangi açı türlerine aittir?',
+                            options: [
+                              'A) Dar Açı — Geniş Açı',
+                              'B) Dik Açı — Geniş Açı',
+                              'C) Dar Açı — Dik Açı',
+                              'D) Geniş Açı — Doğru Açı'
+                            ],
                             correctOptionIndex: 0,
-                            explanation: '90 dereceden küçük tüm pozitif açılar Dar Açı olarak adlandırılır.',
+                            explanation: '90 dereceden küçük pozitif açılar (89°) Dar Açı, 90 ile 180 derece arasındaki açılar (91°) Geniş Açı olarak adlandırılır.',
                             bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q-ang-2',
+                            questionText: 'Saat tam 15:00 (3:00) iken saatin akrep ve yelkovanı arasındaki açı kaç derecedir ve türü nedir?',
+                            options: [
+                              'A) 60° (Dar Açı)',
+                              'B) 90° (Dik Açı)',
+                              'C) 120° (Geniş Açı)',
+                              'D) 180° (Doğru Açı)'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Saat kadranı 12 eşit dilime bölünmüştür (360° / 12 = 30° her saat). Saat 3:00 iken yelkovan 12de, akrep 3tedir. Aralarındaki fark 3 saattir: 3 × 30° = 90° (Dik Açı).',
+                            bloomLevel: 'Uygulama & Gerçek Yaşam'
+                          },
+                          {
+                            id: 'q-ang-3',
+                            questionText: 'Bir öğrenci çizdiği dar açının kollarını cetvelle iki kat daha uzatıyor. Açının derecesi hakkında ne söylenebilir?',
+                            options: [
+                              'A) Açının derecesi iki katına çıkar.',
+                              'B) Açının derecesi yarıya düşer.',
+                              'C) Açının derecesi kesinlikle değişmez, aynı kalır.',
+                              'D) Dar açı geniş açıya dönüşür.'
+                            ],
+                            correctOptionIndex: 2,
+                            explanation: 'Açı, iki ışın arasındaki dönme açıklığıdır. Işınların (kolların) boyu uzatılsa bile aralarındaki açıklık ve açıölçerle ölçülen derece değişmez.',
+                            bloomLevel: 'Kritik Düşünme & Kavram Yanılgısı Analizi'
+                          },
+                          {
+                            id: 'q-ang-4',
+                            questionText: 'İletki (açıölçer) ile bir açı ölçülürken aşağıdaki adımlardan hangisi kesinlikle DOĞRU yapılmalıdır?',
+                            options: [
+                              'A) İletkinin merkez noktası açının köşe noktasına tam oturtulmalıdır.',
+                              'B) İletkinin en alt plastik kenarı açının köşesine konmalıdır.',
+                              'C) Açının her iki kolu da iletkinin dışına taşmamalıdır.',
+                              'D) İletki sadece dik açılarda kullanılabilir.'
+                            ],
+                            correctOptionIndex: 0,
+                            explanation: 'Doğru açı ölçümü için iletkinin tam orta merkez noktası açının köşesine, taban çizgisi ise açının bir koluna tam çakıştırılmalıdır.',
+                            bloomLevel: 'Kavrama & Ölçme Becerisi'
+                          },
+                          {
+                            id: 'q-ang-5',
+                            questionText: 'En büyük dar açı ile en küçük geniş açının tam sayı dereceleri toplamı kaçtır?',
+                            options: [
+                              'A) 180° (89° + 91° = 180°)',
+                              'B) 179° (89° + 90° = 179°)',
+                              'C) 181° (90° + 91° = 181°)',
+                              'D) 182° (91° + 91° = 182°)'
+                            ],
+                            correctOptionIndex: 0,
+                            explanation: 'En büyük tam sayı dar açı 89°dir. En küçük tam sayı geniş açı 91°dir. Toplamları: 89° + 91° = 180° (Doğru Açı büyüklüğü) yapar.',
+                            bloomLevel: 'Analiz & Matematiksel Muhakeme'
+                          },
+                          {
+                            id: 'q-ang-6',
+                            questionText: 'Bir çatının eğim açısı 135° olarak ölçülmüştür. Bu açı türü aşağıdakilerden hangisidir?',
+                            options: [
+                              'A) Dar Açı',
+                              'B) Dik Açı',
+                              'C) Geniş Açı',
+                              'D) Doğru Açı'
+                            ],
+                            correctOptionIndex: 2,
+                            explanation: '90°den büyük ve 180°den küçük olduğu için 135°lik açı bir Geniş Açıdır.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q-ang-7',
+                            questionText: 'Saat 18:00 (6:00) olduğunda akrep ile yelkovanın oluşturduğu dümdüz çizgi şeklindeki açı kaç derecedir?',
+                            options: [
+                              'A) 90°',
+                              'B) 120°',
+                              'C) 180°',
+                              'D) 360°'
+                            ],
+                            correctOptionIndex: 2,
+                            explanation: 'Saat 6:00da yelkovan 12de, akrep 6dadır. Zıt yönlü iki ışın bir doğru oluşturur ve bu açının ölçüsü tam 180° (Doğru Açı)dir.',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q-ang-8',
+                            questionText: 'Güneş paneli ustası Hasan Bey, kış aylarında güneş ışınlarının geliş açısını iletkiyle 40° olarak ölçüyor. Bu açının dik açıya (90°) ulaşması için kaç derece daha büyümesi gerekir?',
+                            options: [
+                              'A) 40°',
+                              'B) 50°',
+                              'C) 60°',
+                              'D) 90°'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Dik açı 90° olduğuna göre: 90° - 40° = 50° daha büyümesi gerekir.',
+                            bloomLevel: 'Problem Çözme & Çıkarım'
                           }
                         ]
                       }

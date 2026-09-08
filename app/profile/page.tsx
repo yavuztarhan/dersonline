@@ -64,6 +64,7 @@ export default function ProfilePage() {
   const [city, setCity] = useState('Edirne');
   const [district, setDistrict] = useState('Merkez');
   const [school, setSchool] = useState('Edirne Selimiye İmam Hatip Ortaokulu');
+  const [principalName, setPrincipalName] = useState('Mehmet GÜNGÖR');
   const [isCustomSchool, setIsCustomSchool] = useState(false);
   const [customSchoolName, setCustomSchoolName] = useState('');
   const [assignedClasses, setAssignedClasses] = useState<string[]>(['5-A', '5-B']);
@@ -93,6 +94,7 @@ export default function ProfilePage() {
         const tch = currentUser as any;
         setPhone(tch.phone || '');
         setBranch(tch.branch || 'Matematik');
+        setPrincipalName(tch.principalName || 'Mehmet GÜNGÖR');
         const initialCity = tch.city || 'Edirne';
         const initialDistrict = tch.district || 'Merkez';
         setCity(initialCity);
@@ -243,6 +245,7 @@ export default function ProfilePage() {
         city,
         district,
         school: finalSchoolName,
+        principalName: principalName.trim(),
         assignedClasses,
         isProfileComplete: true
       });
@@ -568,6 +571,30 @@ export default function ProfilePage() {
                 )}
               </div>
 
+            </div>
+
+            {/* Okul Müdürü Adı ve Soyadı (Günlük Ders Planı PDF İmzası İçin) */}
+            <div className="pt-2 space-y-1.5">
+              <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Okul Müdürü Adı ve Soyadı</span>
+                  <span className="text-teal-600 font-normal text-[11px]">(Resmi Günlük Plan PDF Onayı İçin)</span>
+                </span>
+                <span className="text-[10px] font-bold text-slate-400">
+                  Ders Planı İmzası
+                </span>
+              </label>
+              <input
+                type="text"
+                value={principalName}
+                onChange={(e) => setPrincipalName(e.target.value)}
+                placeholder="Örn: Mehmet GÜNGÖR"
+                className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
+              />
+              <p className="text-[11px] text-slate-400">
+                📄 İndireceğiniz MEB Maarif Modeli Günlük Ders Planı PDF çıktılarının sol/sağ alt imza bölümünde &quot;Okul Müdürü&quot; unvanıyla yer alır.
+              </p>
             </div>
           </div>
 

@@ -18,6 +18,7 @@ export interface TeacherUser extends BaseUser {
   district: string; // İlçe
   school: string; // Okul Adı
   branch: string; // Branş (örn. Matematik)
+  principalName?: string; // Okul Müdürü Adı Soyadı
   status: TeacherApprovalStatus;
   rejectionReason?: string;
   verifiedAt?: string;
@@ -47,6 +48,7 @@ export interface AdminUser extends BaseUser {
   district?: string;
   school?: string;
   branch?: string;
+  principalName?: string;
 }
 
 export type AuthUser = TeacherUser | StudentUser | AdminUser;

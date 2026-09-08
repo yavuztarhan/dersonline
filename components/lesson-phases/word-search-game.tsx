@@ -25,7 +25,8 @@ interface WordClue {
   color: string;
 }
 
-const CLUES: WordClue[] = [
+// 1. MAT.5.3.1 Clues (Temel Çizimler)
+const MAT_5_3_1_CLUES: WordClue[] = [
   {
     id: 'c1',
     question: 'İki ucu da sınırlı olan ve boyu cetvelle ölçülebilen düz çizgi modeline ne denir?',
@@ -37,7 +38,7 @@ const CLUES: WordClue[] = [
     id: 'c2',
     question: 'Başlangıç noktası sabit olup diğer ucu uzayda sonsuza uzanan fener ışığı modeline ne denir?',
     word: 'IŞIN',
-    hint: '4 Harfli • Sembolü [AB',
+    hint: '4 Harfli • Sembolü [AB>',
     color: '#3b82f6'
   },
   {
@@ -58,7 +59,7 @@ const CLUES: WordClue[] = [
     id: 'c5',
     question: 'Doğru parçasının iki ucu arasındaki mesafeyi ölçmek için kullanılan araca ne denir?',
     word: 'CETVEL',
-    hint: '6 Harfli • Üzerinde santimetre ve milimetre çizgileri vardır',
+    hint: '6 Harfli • Üzerinde santimetre çizgileri vardır',
     color: '#ec4899'
   },
   {
@@ -66,6 +67,98 @@ const CLUES: WordClue[] = [
     question: 'Doğru ve ışın modellerinin sınırsız uzandığını belirtmek için uçlarına konulan işarete ne denir?',
     word: 'OK',
     hint: '2 Harfli • Yön belirtir',
+    color: '#ef4444'
+  }
+];
+
+// 2. MAT.5.3.2 Clues (Temel Çizim Araçları ve Çıkarımlar)
+const MAT_5_3_2_CLUES: WordClue[] = [
+  {
+    id: 'mat2-c1',
+    question: 'Çember çizmek, yarıçap uzunluğunu aktarmak ve ışın üzerinde eşit parçalar kesmek için kullanılan iki kollu çizim aracına ne denir?',
+    word: 'PERGEL',
+    hint: '6 Harfli • Sabit iğnesi ve kalem ayağı vardır',
+    color: '#10b396'
+  },
+  {
+    id: 'mat2-c2',
+    question: 'Bir doğruya dışındaki bir noktadan dikme çizmek ve 90 derecelik dik açıları oluşturmak için kullanılan üçgen araca ne denir?',
+    word: 'GÖNYE',
+    hint: '5 Harfli • 90° dik köşesi olan üçgen çizim aracı',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat2-c3',
+    question: 'İki noktayı birleştirerek üzerinden düz bir doğru geçirmek için kullanılan ölçeksiz düz çizim aracına ne denir?',
+    word: 'CETVEL',
+    hint: '6 Harfli • Düz çizgi çizme aracı',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat2-c4',
+    question: 'Bir çemberin merkezinden çember üzerindeki herhangi bir noktaya çizilen ve pergel açıklığı kadar olan doğru parçasına ne denir?',
+    word: 'YARIÇAP',
+    hint: '7 Harfli • Sembolü (r) • Tüm yarıçaplar eşittir',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat2-c5',
+    question: 'Bir doğruya eşit uzaklıktaki dikmelerin birleştirilmesiyle elde edilen ve uzatıldığında hiçbir zaman kesişmeyen doğrulara ne denir?',
+    word: 'PARALEL',
+    hint: '7 Harfli • Sembolü (∥) • Tren rayı modeli',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat2-c6',
+    question: 'Bir doğruya dışındaki veya üzerindeki bir noktadan gönye yardımıyla 90 derecelik açıyla çizilen çizgiye ne denir?',
+    word: 'DİKME',
+    hint: '5 Harfli • Sembolü (⊥) • 90° dik açı yapar',
+    color: '#ef4444'
+  }
+];
+
+// 3. MAT.5.3.3 Clues (Açı Ölçme ve İletki)
+const MAT_5_3_3_CLUES: WordClue[] = [
+  {
+    id: 'ang-c1',
+    question: 'Ölçüsü 0° ile 90° arasında olan dar geometrik açıklığa ne denir?',
+    word: 'DARAÇI',
+    hint: '6 Harfli • Sembolü < 90°',
+    color: '#0284c7'
+  },
+  {
+    id: 'ang-c2',
+    question: 'Ölçüsü tam 90° olan ve köşesine diklik sembolü konulan açı türüne ne denir?',
+    word: 'DİKAÇI',
+    hint: '6 Harfli • Sembolü [⊥] (90°)',
+    color: '#10b396'
+  },
+  {
+    id: 'ang-c3',
+    question: 'Ölçüsü 90° ile 180° arasında olan geniş açıklıklı açıya ne denir?',
+    word: 'GENİŞAÇI',
+    hint: '8 Harfli • 90° < s(A) < 180°',
+    color: '#f59e0b'
+  },
+  {
+    id: 'ang-c4',
+    question: 'Ölçüsü tam 180° olan ve dümdüz bir doğru oluşturan açıya ne denir?',
+    word: 'DOĞRUAÇI',
+    hint: '8 Harfli • 180°',
+    color: '#a855f7'
+  },
+  {
+    id: 'ang-c5',
+    question: 'Açıları derece cinsinden ölçmeye yarayan yarım daire şeklindeki matematiksel araca ne denir?',
+    word: 'İLETKİ',
+    hint: '6 Harfli • Açıölçer',
+    color: '#ec4899'
+  },
+  {
+    id: 'ang-c6',
+    question: 'Açı ölçme standart birimine ne ad verilir?',
+    word: 'DERECE',
+    hint: '6 Harfli • Sembolü (°)',
     color: '#ef4444'
   }
 ];
@@ -91,14 +184,14 @@ const GRID_SIZE = 12;
 
 function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
   const directions = [
-    { dr: 0, dc: 1 },   // Yatay sağa
-    { dr: 0, dc: -1 },  // Yatay sola
-    { dr: 1, dc: 0 },   // Dikey aşağı
-    { dr: -1, dc: 0 },  // Dikey yukarı
-    { dr: 1, dc: 1 },   // Çapraz sağ-aşağı
-    { dr: -1, dc: 1 },  // Çapraz sağ-yukarı
-    { dr: 1, dc: -1 },  // Çapraz sol-aşağı
-    { dr: -1, dc: -1 }  // Çapraz sol-yukarı
+    { dr: 0, dc: 1 },
+    { dr: 0, dc: -1 },
+    { dr: 1, dc: 0 },
+    { dr: -1, dc: 0 },
+    { dr: 1, dc: 1 },
+    { dr: -1, dc: 1 },
+    { dr: 1, dc: -1 },
+    { dr: -1, dc: -1 }
   ];
 
   const sortedClues = [...clues].sort((a, b) => b.word.length - a.word.length);
@@ -113,7 +206,6 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
       const len = letters.length;
       let wordPlaced = false;
 
-      // Randomize directions list
       const shuffledDirs = [...directions].sort(() => Math.random() - 0.5);
 
       for (let tries = 0; tries < 250; tries++) {
@@ -134,8 +226,8 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
         for (let i = 0; i < len; i++) {
           const currR = r + i * dir.dr;
           const currC = c + i * dir.dc;
-          const existing = grid[currR][currC];
-          if (existing !== '' && existing !== letters[i]) {
+          const currentCell = grid[currR][currC];
+          if (currentCell !== '' && currentCell !== letters[i]) {
             canFit = false;
             break;
           }
@@ -159,7 +251,6 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
     }
 
     if (allPlaced) {
-      // Fill empty cells with random Turkish characters
       for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
           if (grid[r][c] === '') {
@@ -171,7 +262,6 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
     }
   }
 
-  // Fallback simple placement if needed
   const fallbackGrid = Array.from({ length: size }, () =>
     Array.from({ length: size }, () => TURKISH_CHARS[Math.floor(Math.random() * TURKISH_CHARS.length)])
   );
@@ -179,7 +269,16 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
 }
 
 export function WordSearchGame() {
-  const { playSound, addPoints, unlockBadge, role } = useApp();
+  const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
+
+  const isAngleTopic = selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3');
+  const isSelimiyeTopic = selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2');
+
+  const activeClues = isAngleTopic
+    ? MAT_5_3_3_CLUES
+    : isSelimiyeTopic
+    ? MAT_5_3_2_CLUES
+    : MAT_5_3_1_CLUES;
 
   const [gridMatrix, setGridMatrix] = useState<string[][]>([]);
   const [placedWords, setPlacedWords] = useState<PlacedWord[]>([]);
@@ -187,120 +286,92 @@ export function WordSearchGame() {
   const [selectedCells, setSelectedCells] = useState<CellPos[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [revealedHints, setRevealedHints] = useState<Record<string, boolean>>({});
-  const [showAllAnswers, setShowAllAnswers] = useState(false);
   const [foundCellColors, setFoundCellColors] = useState<Record<string, string>>({});
 
-  // Initialize random grid on load
   useEffect(() => {
     initRandomGrid();
-  }, []);
+  }, [selectedOutcome?.id]);
 
   const initRandomGrid = () => {
-    const generated = generateWordGrid(CLUES, GRID_SIZE);
+    const generated = generateWordGrid(activeClues, GRID_SIZE);
     setGridMatrix(generated.grid);
     setPlacedWords(generated.placed);
     setFoundWordIds([]);
     setSelectedCells([]);
     setFoundCellColors({});
     setRevealedHints({});
-    setShowAllAnswers(false);
   };
 
   const isCellSelected = (r: number, c: number) => {
     return selectedCells.some((cell) => cell.row === r && cell.col === c);
   };
 
-  const getCellColor = (r: number, c: number) => {
-    const key = `${r}-${c}`;
-    return foundCellColors[key] || null;
+  const isCellFound = (r: number, c: number) => {
+    return foundCellColors[`${r},${c}`];
   };
 
-  // Check if cell belongs to a placed answer (for Teacher Mode)
-  const getTeacherAnswerColor = (r: number, c: number) => {
-    if (!showAllAnswers) return null;
-    const found = placedWords.find((pw) =>
-      pw.cells.some((cell) => cell.row === r && cell.col === c)
-    );
-    if (found) {
-      const clue = CLUES.find((cl) => cl.id === found.id);
-      return clue?.color || '#10b396';
-    }
-    return null;
-  };
-
-  const startSelection = (r: number, c: number) => {
+  const handleCellMouseDown = (r: number, c: number) => {
     setIsSelecting(true);
     setSelectedCells([{ row: r, col: c }]);
-    playSound('click');
+    playSound('select');
   };
 
-  const updateSelection = (r: number, c: number) => {
-    if (!isSelecting || selectedCells.length === 0) return;
+  const handleCellMouseEnter = (r: number, c: number) => {
+    if (!isSelecting) return;
     const start = selectedCells[0];
-    const end = { row: r, col: c };
+    if (!start) return;
 
-    const newCells: CellPos[] = [];
-    const dRow = end.row - start.row;
-    const dCol = end.col - start.col;
-    const steps = Math.max(Math.abs(dRow), Math.abs(dCol));
+    const dr = r - start.row;
+    const dc = c - start.col;
+    const stepR = dr === 0 ? 0 : dr > 0 ? 1 : -1;
+    const stepC = dc === 0 ? 0 : dc > 0 ? 1 : -1;
 
-    if (steps === 0) {
-      newCells.push(start);
-    } else {
-      const stepRow = dRow === 0 ? 0 : dRow / Math.abs(dRow);
-      const stepCol = dCol === 0 ? 0 : dCol / Math.abs(dCol);
-
-      if (dRow === 0 || dCol === 0 || Math.abs(dRow) === Math.abs(dCol)) {
-        for (let i = 0; i <= steps; i++) {
-          newCells.push({
-            row: start.row + i * stepRow,
-            col: start.col + i * stepCol
-          });
-        }
+    if (dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc)) {
+      const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
+      const newSelection: CellPos[] = [];
+      for (let i = 0; i < length; i++) {
+        newSelection.push({ row: start.row + i * stepR, col: start.col + i * stepC });
       }
-    }
-
-    if (newCells.length > 0) {
-      setSelectedCells(newCells);
+      setSelectedCells(newSelection);
     }
   };
 
-  const endSelection = () => {
+  const handleCellMouseUp = () => {
     if (!isSelecting) return;
     setIsSelecting(false);
 
-    if (selectedCells.length < 2 || gridMatrix.length === 0) {
-      setSelectedCells([]);
-      return;
-    }
+    const selectedWordLetters = selectedCells.map((c) => gridMatrix[c.row]?.[c.col] || '').join('');
+    const reverseSelectedWord = selectedWordLetters.split('').reverse().join('');
 
-    const forwardWord = selectedCells.map((c) => gridMatrix[c.row][c.col]).join('');
-    const reverseWord = Array.from(forwardWord).reverse().join('');
-
-    const matchedClue = CLUES.find(
-      (clue) =>
-        !foundWordIds.includes(clue.id) &&
-        (clue.word === forwardWord || clue.word === reverseWord)
+    const matchedPlaced = placedWords.find(
+      (pw) =>
+        (pw.word === selectedWordLetters || pw.word === reverseSelectedWord) &&
+        !foundWordIds.includes(pw.id)
     );
 
-    if (matchedClue) {
+    if (matchedPlaced) {
       playSound('success');
-      setFoundWordIds((prev) => [...prev, matchedClue.id]);
       addPoints(20);
+      setFoundWordIds((prev) => [...prev, matchedPlaced.id]);
 
-      const newColors = { ...foundCellColors };
-      selectedCells.forEach((cell) => {
-        newColors[`${cell.row}-${cell.col}`] = matchedClue.color;
+      const clue = activeClues.find((c) => c.id === matchedPlaced.id);
+      const color = clue?.color || '#10b396';
+
+      setFoundCellColors((prev) => {
+        const next = { ...prev };
+        matchedPlaced.cells.forEach((cell) => {
+          next[`${cell.row},${cell.col}`] = color;
+        });
+        return next;
       });
-      setFoundCellColors(newColors);
 
-      if (foundWordIds.length + 1 === CLUES.length) {
+      if (foundWordIds.length + 1 === activeClues.length) {
         unlockBadge('puzzle-pro');
-        addPoints(60);
+        addPoints(50);
         try {
           confetti({
-            particleCount: 100,
-            spread: 90,
+            particleCount: 80,
+            spread: 70,
             origin: { y: 0.6 }
           });
         } catch (e) {}
@@ -313,224 +384,142 @@ export function WordSearchGame() {
   };
 
   const toggleHint = (clueId: string) => {
-    playSound('click');
-    setRevealedHints((prev) => ({
-      ...prev,
-      [clueId]: !prev[clueId]
-    }));
+    playSound('select');
+    setRevealedHints((prev) => ({ ...prev, [clueId]: !prev[clueId] }));
   };
 
-  const isAllFound = foundWordIds.length === CLUES.length;
-
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
       
-      {/* Banner */}
-      <div className="bg-gradient-to-r from-teal-800 via-teal-700 to-slate-900 rounded-3xl p-6 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/30 text-teal-200 text-xs font-bold uppercase tracking-wider mb-2 border border-teal-400/20">
-            <Search className="w-3.5 h-3.5 text-teal-300" />
-            <span>Soru Temelli Matematiksel Kelime Avı</span>
+      {/* Top Banner */}
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-800 to-slate-900 rounded-3xl p-6 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-xs font-bold uppercase">
+            <Search className="w-3.5 h-3.5 text-blue-300" />
+            <span>Matematiksel Kelime Avı Bulmacası</span>
           </div>
-          <h3 className="text-xl font-black text-white">Rastgele Karışık Geometri Bulmacası</h3>
-          <p className="text-xs text-teal-100 mt-1 max-w-xl">
-            Sol paneldeki soruları dikkatlice okuyunuz; cevabı bulmaca tablosunda harfleri parmağınızla/fareyle seçerek işaretleyiniz!
+          <h3 className="text-xl font-black text-white">Gizli Geometrik Kavramları Yakala!</h3>
+          <p className="text-xs text-blue-200 max-w-lg">
+            Aşağıdaki soruları oku, harf ızgarasında gizlenen doğru kavramı fare veya dokunmatik ekranla sürükleyerek seç!
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {role === 'teacher' && (
-            <button
-              onClick={() => setShowAllAnswers(!showAllAnswers)}
-              className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5"
-            >
-              {showAllAnswers ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              <span>{showAllAnswers ? 'Cevapları Gizle' : 'Cevapları Göster'}</span>
-            </button>
-          )}
-
+        <div className="flex items-center gap-3 self-end sm:self-center">
+          <div className="text-right">
+            <div className="text-2xl font-black text-yellow-300">
+              {foundWordIds.length} / {activeClues.length}
+            </div>
+            <div className="text-[11px] text-blue-200">Kavram Bulundu</div>
+          </div>
           <button
-            onClick={() => {
-              playSound('clear');
-              initRandomGrid();
-            }}
-            className="px-3.5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95"
-            title="Kelimeleri Yeniden Karıştır ve Dağıt"
+            onClick={initRandomGrid}
+            className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5 text-xs font-bold"
           >
             <Shuffle className="w-4 h-4" />
-            <span>Yeniden Karıştır</span>
+            <span className="hidden sm:inline">Yeni Izgara</span>
           </button>
         </div>
       </div>
 
-      {/* Completion Banner */}
-      {isAllFound && (
-        <div className="bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-600 text-white rounded-3xl p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-in zoom-in duration-300">
-          <div className="flex items-center gap-4 text-center sm:text-left">
-            <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl shadow-inner">
-              🎉
-            </div>
-            <div>
-              <h4 className="text-xl font-black">Tebrikler! Tüm Kavramları Başarıyla Buldun</h4>
-              <p className="text-xs text-emerald-100">
-                6 gizli geometrik kavramın tamamını soruları çözerek buldun. +60 Puan kazandın!
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              playSound('select');
-              initRandomGrid();
-            }}
-            className="whitespace-nowrap px-6 py-3 rounded-xl bg-white text-emerald-950 font-black text-xs shadow-md hover:bg-emerald-50 transition-all flex items-center gap-1.5"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Yeni Bulmaca Karıştır</span>
-          </button>
-        </div>
-      )}
-
-      {/* Main Grid & Questions Arena */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* LEFT COLUMN: Questions & Clues (Width 5 cols) */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
-                Sorular & İpuçları ({foundWordIds.length} / {CLUES.length} Bulundu)
-              </span>
-              <span className="text-xs font-bold text-teal-600">Her Doğru: +20 Puan</span>
-            </div>
+        {/* LEFT: WORD SEARCH GRID */}
+        <div className="lg:col-span-7 bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col items-center justify-center">
+          <div
+            className="grid gap-1.5 select-none touch-none"
+            style={{ gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}
+            onMouseLeave={handleCellMouseUp}
+          >
+            {gridMatrix.map((row, r) =>
+              row.map((letter, c) => {
+                const selected = isCellSelected(r, c);
+                const foundColor = isCellFound(r, c);
 
-            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-              {CLUES.map((clue, idx) => {
+                return (
+                  <button
+                    key={`${r}-${c}`}
+                    onMouseDown={() => handleCellMouseDown(r, c)}
+                    onMouseEnter={() => handleCellMouseEnter(r, c)}
+                    onMouseUp={handleCellMouseUp}
+                    className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl font-black text-xs sm:text-sm font-mono flex items-center justify-center transition-all ${
+                      selected
+                        ? 'bg-amber-400 text-slate-950 scale-110 shadow-md ring-2 ring-amber-500 z-10'
+                        : foundColor
+                        ? 'text-white font-black shadow-xs scale-102'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                    }`}
+                    style={foundColor && !selected ? { backgroundColor: foundColor } : {}}
+                  >
+                    {letter}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: CLUES / QUESTIONS LIST */}
+        <div className="lg:col-span-5 space-y-3">
+          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-3">
+            <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+              <span>Sorular ve İpuçları</span>
+              <span className="text-teal-600 font-bold">{foundWordIds.length}/{activeClues.length} Tamamlandı</span>
+            </h4>
+
+            <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+              {activeClues.map((clue, idx) => {
                 const isFound = foundWordIds.includes(clue.id);
-                const isHintOpen = revealedHints[clue.id] || showAllAnswers;
+                const isHintOpen = revealedHints[clue.id];
 
                 return (
                   <div
                     key={clue.id}
-                    className={`p-4 rounded-2xl border-2 transition-all duration-200 space-y-2 ${
+                    className={`p-3.5 rounded-2xl border transition-all ${
                       isFound
-                        ? 'bg-emerald-50/80 border-emerald-400 text-emerald-950 shadow-2xs'
-                        : 'bg-slate-50/70 border-slate-200 hover:border-teal-300'
+                        ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+                        : 'bg-slate-50 border-slate-200 text-slate-800'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="w-6 h-6 rounded-lg text-white font-black text-xs flex items-center justify-center shrink-0"
-                          style={{ backgroundColor: clue.color }}
-                        >
-                          {idx + 1}
-                        </span>
-                        <span className="text-xs font-bold text-slate-800 line-clamp-1">
-                          Soru {idx + 1}
-                        </span>
-                      </div>
-
-                      {isFound ? (
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-extrabold text-[10px] flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
-                          <span>Çözüldü: {clue.word}</span>
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => toggleHint(clue.id)}
-                          className="text-[10px] font-bold text-teal-700 hover:text-teal-900 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200 flex items-center gap-1"
-                        >
-                          <Lightbulb className="w-3 h-3 text-teal-600" />
-                          <span>{isHintOpen ? 'İpucu Kapat' : 'İpucu'}</span>
-                        </button>
-                      )}
-                    </div>
-
-                    <p className="text-xs font-medium text-slate-700 leading-relaxed">
-                      "{clue.question}"
-                    </p>
-
-                    {/* Hint / Revealed Answer Box */}
-                    {isHintOpen && (
-                      <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 font-semibold animate-in fade-in flex items-center justify-between">
-                        <span>💡 {clue.hint}</span>
-                        {showAllAnswers && (
-                          <span className="font-mono font-black bg-amber-200 px-2 py-0.5 rounded text-amber-950">
-                            {clue.word}
+                      <div className="space-y-1">
+                        <div className="text-xs font-black flex items-center gap-1.5">
+                          <span
+                            className="w-5 h-5 rounded-full text-white text-[10px] flex items-center justify-center font-bold"
+                            style={{ backgroundColor: clue.color }}
+                          >
+                            {idx + 1}
                           </span>
+                          <span>{clue.question}</span>
+                        </div>
+
+                        {/* Hint box */}
+                        {isHintOpen && (
+                          <div className="text-[11px] font-bold text-amber-800 bg-amber-100/80 px-2 py-1 rounded-md border border-amber-300 animate-in fade-in">
+                            💡 İpucu: {clue.hint}
+                          </div>
                         )}
                       </div>
-                    )}
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        {isFound ? (
+                          <span className="px-2 py-0.5 rounded-lg bg-emerald-500 text-white font-mono font-black text-[11px]">
+                            {clue.word}
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => toggleHint(clue.id)}
+                            className="p-1 rounded-lg hover:bg-slate-200 text-slate-500"
+                            title="İpucu Göster"
+                          >
+                            <Lightbulb className="w-4 h-4 text-amber-500" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
             </div>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: Interactive Word Grid (Width 7 cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col items-center justify-center space-y-4">
-            
-            <div className="flex items-center justify-between w-full text-xs font-semibold text-slate-500 border-b border-slate-100 pb-2">
-              <span>Harflerin üzerinden basılı tutarak veya tıklayarak kelimeyi seçin</span>
-              <span className="text-teal-700 font-bold">{GRID_SIZE} × {GRID_SIZE} Dinamik Izgara</span>
-            </div>
-
-            {/* Dynamic Letter Grid Matrix */}
-            <div
-              className="grid grid-cols-12 gap-1 sm:gap-1.5 p-3 bg-slate-900 rounded-2xl select-none touch-none shadow-inner max-w-full overflow-x-auto"
-              onPointerLeave={endSelection}
-              onPointerUp={endSelection}
-            >
-              {gridMatrix.map((row, rIdx) =>
-                row.map((letter, cIdx) => {
-                  const selected = isCellSelected(rIdx, cIdx);
-                  const foundColor = getCellColor(rIdx, cIdx);
-                  const teacherColor = getTeacherAnswerColor(rIdx, cIdx);
-
-                  let cellBg = 'bg-slate-800 text-white hover:bg-slate-700';
-
-                  if (selected) {
-                    cellBg = 'bg-teal-400 text-slate-950 font-black scale-105 ring-2 ring-white shadow-lg';
-                  } else if (foundColor) {
-                    cellBg = 'text-white font-black shadow-md';
-                  } else if (teacherColor) {
-                    cellBg = 'text-white font-black ring-1 ring-white/50 opacity-90';
-                  }
-
-                  return (
-                    <div
-                      key={`${rIdx}-${cIdx}`}
-                      onPointerDown={() => startSelection(rIdx, cIdx)}
-                      onPointerEnter={() => updateSelection(rIdx, cIdx)}
-                      className={`w-6 h-6 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-xs sm:text-sm font-black cursor-pointer transition-all duration-100 ${cellBg}`}
-                      style={{
-                        backgroundColor:
-                          !selected && (foundColor || teacherColor)
-                            ? (foundColor || teacherColor || undefined)
-                            : undefined
-                      }}
-                    >
-                      {letter}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            {/* Quick Helper Legend */}
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2 text-[11px] text-slate-500 font-medium">
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-teal-500" /> Yatay, Dikey & Çapraz
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Otomatik Rastgele Dağılım
-              </span>
-            </div>
-
           </div>
         </div>
 

@@ -6,6 +6,7 @@ import { useApp } from '@/lib/store';
 import confetti from 'canvas-confetti';
 import { WordSearchGame } from '@/components/lesson-phases/word-search-game';
 import { TrueFalseGame } from '@/components/lesson-phases/true-false-game';
+import { AngleRadarGame } from '@/components/lesson-phases/angle-radar-game';
 import {
   Puzzle,
   Sparkles,
@@ -19,7 +20,8 @@ import {
   Zap,
   Gamepad2,
   ChevronRight,
-  Play
+  Play,
+  Crosshair
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -36,10 +38,10 @@ interface MatchCard {
   matched: boolean;
 }
 
-export type PuzzleGameId = 'matching' | 'wordsearch' | 'truefalse';
+export type PuzzleGameId = 'radargame' | 'matching' | 'wordsearch' | 'truefalse';
 
 export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
-  const { playSound, unlockBadge, addPoints, role } = useApp();
+  const { playSound, unlockBadge, addPoints, role, selectedOutcome } = useApp();
 
   // null means showing the cards menu only
   const [selectedGameId, setSelectedGameId] = useState<PuzzleGameId | null>(null);
@@ -150,7 +152,12 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     }
   };
 
-  const GAMES_LIST: Array<{
+  const isAngleTopic =
+    data.title?.toLowerCase().includes('açı') ||
+    data.title?.toLowerCase().includes('iletki') ||
+    selectedOutcome?.id === 'MAT.5.3.3';
+
+  const baseGamesList: Array<{
     id: PuzzleGameId;
     title: string;
     tagline: string;
@@ -159,14 +166,31 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     badge: string;
     gradient: string;
     reward: string;
-  }> = [
+  }> = [];
+
+  if (isAngleTopic) {
+    baseGamesList.push({
+      id: 'radargame',
+      title: 'Açı Radarı: Hedef Kilitlendi!',
+      tagline: '360° İletki & Lazer Atışı',
+      description: 'Derin uzay radarında 360° dönebilen sanal iletkiyle açıları ölç, iletişim uydularına lazer antenini kilitle!',
+      icon: <Crosshair className="w-8 h-8" />,
+      badge: '3 Seviye • 360° İletki',
+      gradient: 'from-cyan-500 via-blue-600 to-indigo-900',
+      reward: '+100 XP & Rozet'
+    });
+  }
+
+  baseGamesList.push(
     {
       id: 'matching',
-      title: 'Kavram & Sembol Eşleştirme',
+      title: isAngleTopic ? 'Açı Çeşitleri & İletki Eşleştirme' : 'Kavram & Sembol Eşleştirme',
       tagline: 'Geometrik Modelleri Tanı',
-      description: 'Nokta, Doğru, Doğru Parçası ve Işın kavramlarını görsel modelleri ve sembolik formülleriyle eşleştir.',
+      description: isAngleTopic
+        ? 'Açı çeşitleri, ışın ve köşe kavramlarını görsel modelleri ve sembolik formülleriyle eşleştir.'
+        : 'Geometrik kavramları görsel modelleri, tanımları ve sembolik gösterimleriyle eşleştirin.',
       icon: <Puzzle className="w-8 h-8" />,
-      badge: '4 Çift • Eşleştirme',
+      badge: `${data.items?.length || 4} Çift • Eşleştirme`,
       gradient: 'from-teal-600 via-teal-700 to-emerald-800',
       reward: '+50 XP & Rozet'
     },
@@ -190,8 +214,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
       gradient: 'from-purple-600 via-pink-700 to-rose-800',
       reward: '+100 XP'
     }
-  ];
+  );
 
+  const GAMES_LIST = baseGamesList;
   const currentGameInfo = GAMES_LIST.find((g) => g.id === selectedGameId);
 
   return (
@@ -229,7 +254,7 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
           </div>
 
           {/* GAME CARDS GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {GAMES_LIST.map((game) => (
               <div
                 key={game.id}
@@ -325,6 +350,13 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
             </button>
           </div>
 
+          {/* FEATURED GAME: ANGLE RADAR (HEDEF KİLİTLENDİ) */}
+          {selectedGameId === 'radargame' && (
+            <div className="animate-in fade-in duration-200">
+              <AngleRadarGame onBackToMenu={() => setSelectedGameId(null)} />
+            </div>
+          )}
+
           {/* GAME 1: MATCHING GAME */}
           {selectedGameId === 'matching' && (
             <div className="space-y-6 animate-in fade-in duration-200">
@@ -416,24 +448,21 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
                               ? 'bg-rose-50 border-rose-400 text-rose-900 animate-shake'
                               : isSelected
                               ? 'bg-teal-50 border-teal-600 ring-2 ring-teal-400 shadow-md scale-101'
-                              : 'bg-white border-slate-200 hover:border-teal-300 hover:shadow-xs'
+                              : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800 shadow-xs'
                           }`}
                         >
                           <div>
-                            <div className="text-base font-black tracking-tight">{card.text}</div>
+                            <div className="font-black text-base">{card.text}</div>
                             {card.subtext && (
-                              <div className="text-xs text-slate-500 mt-0.5">{card.subtext}</div>
+                              <div className="text-xs text-slate-500 mt-1 font-medium">
+                                {card.subtext}
+                              </div>
                             )}
                           </div>
-
                           {card.matched ? (
-                            <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center">
-                              <CheckCircle2 className="w-5 h-5" />
-                            </div>
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-bold">
-                              ?
-                            </div>
+                            <div className="w-4 h-4 rounded-full border border-slate-300" />
                           )}
                         </button>
                       );
@@ -441,7 +470,7 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
                   </div>
                 </div>
 
-                {/* Right Column: Symbols & Descriptions */}
+                {/* Right Column: Symbols & Definitions */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-extrabold text-slate-700 uppercase tracking-wider">
@@ -467,26 +496,23 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
                               ? 'bg-rose-50 border-rose-400 text-rose-900 animate-shake'
                               : isSelected
                               ? 'bg-teal-50 border-teal-600 ring-2 ring-teal-400 shadow-md scale-101'
-                              : 'bg-white border-slate-200 hover:border-teal-300 hover:shadow-xs'
+                              : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800 shadow-xs'
                           }`}
                         >
-                          <div className="space-y-1">
-                            <span className="inline-block px-3 py-1 rounded-lg bg-slate-900 text-white font-mono font-black text-sm">
+                          <div>
+                            <div className="font-mono font-black text-amber-700 text-base">
                               {card.text}
-                            </span>
+                            </div>
                             {card.subtext && (
-                              <p className="text-xs text-slate-600 leading-snug">{card.subtext}</p>
+                              <div className="text-xs text-slate-500 mt-1">
+                                {card.subtext}
+                              </div>
                             )}
                           </div>
-
                           {card.matched ? (
-                            <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 ml-3">
-                              <CheckCircle2 className="w-5 h-5" />
-                            </div>
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-bold shrink-0 ml-3">
-                              🎯
-                            </div>
+                            <div className="w-4 h-4 rounded-full border border-slate-300" />
                           )}
                         </button>
                       );
@@ -499,14 +525,14 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
             </div>
           )}
 
-          {/* GAME 2: QUESTION-BASED WORD SEARCH GAME */}
+          {/* GAME 2: WORD SEARCH */}
           {selectedGameId === 'wordsearch' && (
             <div className="animate-in fade-in duration-200">
               <WordSearchGame />
             </div>
           )}
 
-          {/* GAME 3: TRUE / FALSE SPEED QUIZ */}
+          {/* GAME 3: TRUE / FALSE */}
           {selectedGameId === 'truefalse' && (
             <div className="animate-in fade-in duration-200">
               <TrueFalseGame />

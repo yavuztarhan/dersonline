@@ -34,7 +34,7 @@ export interface StorybookPage {
     type: 'point-map' | 'lighthouse-ray' | 'bridge-segment' | 'horizon-line' | 'summary-chart' | 'selimiye-plan' | 'ray-angle' | 'perpendicular-parallel' | string;
     caption: string;
   };
-  interactiveAction: {
+  interactiveAction?: {
     prompt: string;
     actionLabel: string;
     feedbackRevealed: string;
@@ -104,11 +104,32 @@ export interface AssessmentQuestion {
   bloomLevel?: string;
 }
 
+export interface RubricCriterion {
+  id: string;
+  title: string;
+  category: string;
+  levelDescriptions: {
+    1: string; // Geliştirilmeli (1 Puan)
+    2: string; // Kısmen Başarılı (2 Puan)
+    3: string; // Başarılı (3 Puan)
+    4: string; // Çok Başarılı (4 Puan)
+  };
+}
+
+export interface SelfAssessmentRubric {
+  id: string;
+  outcomeId: string;
+  title: string;
+  description: string;
+  criteria: RubricCriterion[];
+}
+
 export interface AssessmentPhaseData {
   title: string;
   instructions: string;
   questions: AssessmentQuestion[];
   reflectionPrompt?: string;
+  rubric?: SelfAssessmentRubric;
 }
 
 export interface OutcomePhases {

@@ -125,10 +125,10 @@ export function StudentDashboard() {
 
             <div>
               <h4 className="text-base font-black text-slate-900">
-                Geometrinin İzinde: Çıkarım ve Keşif Atölyesi
+                Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye
               </h4>
               <p className="text-xs text-slate-500 mt-1">
-                Selimiye Camii planları, 3 kritik deney masası (Ölçülebilirlik, Açı, Çifte Dikme), Çıkarım Terazisi ve Öğrenme Günlüğü.
+                Ölçüsüz Cetvel, Pergel ile Yarıçap & Eşit Parça Kesme, Gönye ile Tek Dikme ve Paralel Raylar.
               </p>
             </div>
 

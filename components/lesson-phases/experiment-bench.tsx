@@ -15,7 +15,11 @@ import {
   Zap,
   HelpCircle,
   Layers,
-  Compass
+  Compass,
+  Move,
+  Check,
+  Target,
+  Sliders
 } from 'lucide-react';
 
 export function ExperimentBench() {
@@ -23,53 +27,180 @@ export function ExperimentBench() {
 
   const [activeExp, setActiveExp] = useState<1 | 2 | 3>(1);
 
-  // Exp 1: Measurability State
-  const [exp1SelectedObject, setExp1SelectedObject] = useState<'line' | 'ray' | 'segment' | null>(null);
-  const [exp1Tested, setExp1Tested] = useState<{ line: boolean; ray: boolean; segment: boolean }>({
-    line: false,
-    ray: false,
-    segment: false
-  });
+  // ==========================================
+  // EXP 1: Straightedge & Two Points (Ölçüsüz Cetvel)
+  // ==========================================
+  const [exp1PtA, setExp1PtA] = useState({ x: 120, y: 160 });
+  const [exp1PtB, setExp1PtB] = useState({ x: 440, y: 240 });
+  const [exp1LineDrawn, setExp1LineDrawn] = useState(false);
+  const [exp1TriedSecond, setExp1TriedSecond] = useState(false);
   const [exp1Completed, setExp1Completed] = useState(false);
 
-  // Exp 2: Angle Creation State
-  const [exp2Angle, setExp2Angle] = useState(60);
+  // ==========================================
+  // EXP 2: Compass (Pergel ile Çember, Işın & Açı)
+  // ==========================================
+  const [exp2Mode, setExp2Mode] = useState<'circle' | 'ray' | 'angle'>('circle');
+  const [exp2Radius, setExp2Radius] = useState(90);
+  // Circle points
+  const [exp2CirclePoints, setExp2CirclePoints] = useState<Array<{ id: string; label: string; deg: number }>>([
+    { id: 'p1', label: 'A', deg: 30 },
+    { id: 'p2', label: 'B', deg: 120 }
+  ]);
+  // Ray steps
+  const [exp2RaySteps, setExp2RaySteps] = useState(1);
+  // Angle arm cut
+  const [exp2AngleCut, setExp2AngleCut] = useState(false);
   const [exp2Completed, setExp2Completed] = useState(false);
 
-  // Exp 3: Parallel Perpendicular State
-  const [exp3Distance, setExp3Distance] = useState(140);
-  const [exp3Height, setExp3Height] = useState(160);
+  // ==========================================
+  // EXP 3: Set Square & Parallel Lines (Gönye & Paralellik - OB2)
+  // ==========================================
+  const [exp3PerpPoint, setExp3PerpPoint] = useState({ x: 260, y: 80 });
+  const [exp3PerpDrawn, setExp3PerpDrawn] = useState(false);
+  const [exp3ParallelDistance, setExp3ParallelDistance] = useState(120);
+  const [exp3ParallelDrawn, setExp3ParallelDrawn] = useState(false);
   const [exp3Completed, setExp3Completed] = useState(false);
 
-  const handleTestExp1 = (type: 'line' | 'ray' | 'segment') => {
-    playSound('click');
-    setExp1SelectedObject(type);
-    const nextTested = { ...exp1Tested, [type]: true };
-    setExp1Tested(nextTested);
+  // Dragging point tracking across experiment benches
+  const [draggingPoint, setDraggingPoint] = useState<'exp1A' | 'exp1B' | 'exp3P' | null>(null);
 
-    if (nextTested.line && nextTested.ray && nextTested.segment && !exp1Completed) {
+  const handleStartDrag = (pointKey: 'exp1A' | 'exp1B' | 'exp3P', e: React.PointerEvent) => {
+    e.stopPropagation();
+    try {
+      (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    } catch (_) {}
+    setDraggingPoint(pointKey);
+    playSound('select');
+  };
+
+  const handleSvgPointerMove = (e: React.PointerEvent<SVGSVGElement>, svgWidth = 600, svgHeight = 320) => {
+    if (!draggingPoint) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const rawX = e.clientX - rect.left;
+    const rawY = e.clientY - rect.top;
+
+    const scaleX = svgWidth / rect.width;
+    const scaleY = svgHeight / rect.height;
+
+    const x = Math.round(rawX * scaleX);
+    const y = Math.round(rawY * scaleY);
+
+    if (draggingPoint === 'exp1A') {
+      setExp1PtA({
+        x: Math.max(50, Math.min(550, x)),
+        y: Math.max(40, Math.min(280, y))
+      });
+    } else if (draggingPoint === 'exp1B') {
+      setExp1PtB({
+        x: Math.max(50, Math.min(550, x)),
+        y: Math.max(40, Math.min(280, y))
+      });
+    } else if (draggingPoint === 'exp3P') {
+      setExp3PerpPoint({
+        x: Math.max(80, Math.min(520, x)),
+        y: Math.max(40, Math.min(195, y)) // Keep P above base line at y=240
+      });
+    }
+  };
+
+  const handleEndDrag = (e: React.PointerEvent) => {
+    if (draggingPoint) {
+      try {
+        (e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
+      } catch (_) {}
+      setDraggingPoint(null);
+    }
+  };
+
+  // Handlers for Exp 1
+  const handleExp1DrawLine = () => {
+    playSound('select');
+    setExp1LineDrawn(true);
+    if (!exp1Completed && exp1TriedSecond) {
       setExp1Completed(true);
       playSound('success');
       addPoints(25);
     }
   };
 
-  const handleSliderExp2 = (val: number) => {
-    setExp2Angle(val);
-    if (!exp2Completed && (val === 90 || val > 120)) {
+  const handleExp1TrySecond = () => {
+    playSound('click');
+    setExp1TriedSecond(true);
+    if (!exp1Completed && exp1LineDrawn) {
+      setExp1Completed(true);
+      playSound('success');
+      addPoints(25);
+    }
+  };
+
+  // Handlers for Exp 2
+  const handleAddCirclePoint = () => {
+    playSound('select');
+    const labels = ['C', 'D', 'E', 'F'];
+    const nextLabel = labels[exp2CirclePoints.length - 2] || 'K';
+    const nextDeg = (exp2CirclePoints.length * 75 + 45) % 360;
+    setExp2CirclePoints((prev) => [...prev, { id: `pt-${Date.now()}`, label: nextLabel, deg: nextDeg }]);
+
+    if (!exp2Completed) {
       setExp2Completed(true);
       playSound('success');
       addPoints(25);
     }
   };
 
-  const handleSliderExp3 = (val: number) => {
-    setExp3Distance(val);
+  const handleStepRay = () => {
+    playSound('select');
+    const nextSteps = exp2RaySteps >= 4 ? 1 : exp2RaySteps + 1;
+    setExp2RaySteps(nextSteps);
+    if (!exp2Completed && nextSteps >= 3) {
+      setExp2Completed(true);
+      playSound('success');
+      addPoints(25);
+    }
+  };
+
+  const handleCutAngle = () => {
+    playSound('select');
+    setExp2AngleCut(!exp2AngleCut);
+    if (!exp2Completed) {
+      setExp2Completed(true);
+      playSound('success');
+      addPoints(25);
+    }
+  };
+
+  // Handlers for Exp 3
+  const handleDrawPerp = () => {
+    playSound('select');
+    setExp3PerpDrawn(true);
+  };
+
+  const handleDrawParallel = () => {
+    playSound('select');
+    setExp3ParallelDrawn(true);
     if (!exp3Completed) {
       setExp3Completed(true);
       playSound('success');
       addPoints(25);
     }
+  };
+
+  const handleClearExp3 = () => {
+    playSound('click');
+    setExp3PerpDrawn(false);
+    setExp3ParallelDrawn(false);
+    setExp3PerpPoint({ x: 260, y: 80 });
+    setExp3ParallelDistance(120);
+  };
+
+  const handleClearExp1 = () => {
+    playSound('click');
+    setExp1LineDrawn(false);
+    setExp1TriedSecond(false);
+    setExp1PtA({ x: 120, y: 160 });
+    setExp1PtB({ x: 440, y: 240 });
   };
 
   return (
@@ -96,7 +227,7 @@ export function ExperimentBench() {
             </div>
             <div>
               <div className="text-xs font-black text-slate-900">1. Deney Masası</div>
-              <div className="text-[11px] text-slate-500">Ölçülebilirlik Hipotezi</div>
+              <div className="text-[11px] text-slate-500">Ölçüsüz Cetvel & İki Nokta</div>
             </div>
           </div>
           {exp1Completed && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
@@ -115,12 +246,12 @@ export function ExperimentBench() {
           }`}
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black">
+            <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black">
               2
             </div>
             <div>
               <div className="text-xs font-black text-slate-900">2. Deney Masası</div>
-              <div className="text-[11px] text-slate-500">Açı ve Doğrultu Oluşumu</div>
+              <div className="text-[11px] text-slate-500">Pergel ile Eşit Parça Kesme</div>
             </div>
           </div>
           {exp2Completed && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
@@ -139,12 +270,12 @@ export function ExperimentBench() {
           }`}
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black">
+            <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black">
               3
             </div>
             <div>
               <div className="text-xs font-black text-slate-900">3. Deney Masası</div>
-              <div className="text-[11px] text-slate-500">Çifte Dikme & Paralellik</div>
+              <div className="text-[11px] text-slate-500">Gönye, Dikme & Paralel Raylar</div>
             </div>
           </div>
           {exp3Completed && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
@@ -152,327 +283,569 @@ export function ExperimentBench() {
 
       </div>
 
-      {/* EXPERIMENT 1: MEASURABILITY & BOUNDS */}
+      {/* ======================================================== */}
+      {/* 1. DENEY MASASI: ÖLÇÜSÜZ CETVEL VE İKİ NOKTADAN TEK DOĞRU */}
+      {/* ======================================================== */}
       {activeExp === 1 && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-lg space-y-6 animate-in fade-in duration-200">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6 animate-in fade-in">
           
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-extrabold text-teal-700 uppercase">1. Kritik Deney</span>
-              <h3 className="text-xl font-black text-slate-900">Ölçülebilirlik & Sınırlılık Çıkarımı</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Aşağıdaki 3 geometrik modelin üzerine cetveli koyarak hangisinin uzunluğunun ölçülebildiğini test ediniz.
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-xs font-black text-teal-600 uppercase tracking-wider">
+                Aksiyomatik Geometri Deneyi
+              </span>
+              <h3 className="text-xl font-black text-slate-900">
+                Ölçüsüz Cetvel ile İki Noktadan Geçen Doğru
+              </h3>
+              <p className="text-xs text-slate-500 max-w-xl">
+                A ve B noktalarını serbestçe sürükleyin. Ölçüsüz cetveli bu iki noktaya hizalayın ve aralarından kaç tane farklı düz doğru geçebileceğini test edin.
               </p>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-              <Ruler className="w-4 h-4 text-teal-600" />
-              <span>Test Edilen: {Object.values(exp1Tested).filter(Boolean).length} / 3</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleExp1DrawLine}
+                className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              >
+                <Ruler className="w-4 h-4" />
+                <span>Ölçüsüz Cetveli Hizala & Çiz</span>
+              </button>
+
+              <button
+                onClick={handleExp1TrySecond}
+                className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              >
+                <span>2. Bir Düz Doğru Dene?</span>
+              </button>
+
+              <button
+                onClick={handleClearExp1}
+                className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                title="Çizimleri ve noktaları sıfırla"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                <span>Ekranı Temizle</span>
+              </button>
             </div>
           </div>
 
-          {/* Interactive Visual Canvas */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-            {/* Object 1: DOĞRU */}
-            <div
-              onClick={() => handleTestExp1('line')}
-              className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 text-center flex flex-col justify-between space-y-4 ${
-                exp1SelectedObject === 'line'
-                  ? 'bg-slate-900 text-white ring-2 ring-teal-400 border-slate-900 shadow-lg scale-102'
-                  : 'bg-slate-50 border-slate-200 hover:border-teal-300'
-              }`}
+          {/* Interactive SVG Canvas */}
+          <div className="relative bg-slate-900 rounded-3xl overflow-hidden min-h-[340px] flex items-center justify-center p-4">
+            <svg
+              className="w-full h-[320px] select-none touch-none math-grid-bg opacity-90"
+              viewBox="0 0 600 320"
+              onPointerMove={(e) => handleSvgPointerMove(e, 600, 320)}
+              onPointerUp={handleEndDrag}
+              onPointerLeave={handleEndDrag}
             >
-              <div className="font-extrabold text-sm">↔️ DOĞRU (AB)</div>
-              
-              {/* SVG Graphic */}
-              <div className="h-28 bg-slate-950 rounded-xl flex items-center justify-center p-2 relative overflow-hidden">
-                <svg className="w-full h-full" viewBox="0 0 200 80">
-                  <line x1="20" y1="40" x2="180" y2="40" stroke="#f59e0b" strokeWidth="4" />
-                  <polygon points="10,40 25,33 25,47" fill="#f59e0b" />
-                  <polygon points="190,40 175,33 175,47" fill="#f59e0b" />
-                  <circle cx="60" cy="40" r="4" fill="#ffffff" />
-                  <circle cx="140" cy="40" r="4" fill="#ffffff" />
-                  <text fill="#ffffff" fontSize="11" fontWeight="bold" x="60" y="28" textAnchor="middle">A</text>
-                  <text fill="#ffffff" fontSize="11" fontWeight="bold" x="140" y="28" textAnchor="middle">B</text>
-                </svg>
-              </div>
+              {/* Top Hint Text */}
+              <text x="300" y="22" fill="#94a3b8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                💡 A ve B noktalarını istediğiniz yere sürükleyip bırakabilirsiniz.
+              </text>
 
-              {exp1Tested.line ? (
-                <div className="p-2 rounded-xl bg-rose-500/20 text-rose-300 text-xs font-black border border-rose-400/30">
-                  Cetvel Sonucu: ∞ (Sonsuz / Ölçülemez)
-                </div>
-              ) : (
-                <button className="py-2 px-3 rounded-xl bg-teal-600 text-white text-xs font-bold">
-                  Cetvelle Test Et 📏
-                </button>
+              {/* Straight Line through A and B */}
+              {exp1LineDrawn && (() => {
+                const dx = exp1PtB.x - exp1PtA.x;
+                const dy = exp1PtB.y - exp1PtA.y;
+                const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                const ext1X = exp1PtA.x - (dx / len) * 260;
+                const ext1Y = exp1PtA.y - (dy / len) * 260;
+                const ext2X = exp1PtB.x + (dx / len) * 260;
+                const ext2Y = exp1PtB.y + (dy / len) * 260;
+
+                return (
+                  <g className="animate-in fade-in duration-300">
+                    <line
+                      x1={ext1X}
+                      y1={ext1Y}
+                      x2={ext2X}
+                      y2={ext2Y}
+                      stroke="#10b396"
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                    />
+                    <text x={Math.min(520, Math.max(80, ext2X - 20))} y={Math.min(290, Math.max(35, ext2Y - 10))} fill="#10b396" fontSize="12" fontWeight="bold">
+                      AB Doğrusu ↔
+                    </text>
+                  </g>
+                );
+              })()}
+
+              {/* Attempted second line animation */}
+              {exp1TriedSecond && (
+                <g className="animate-pulse">
+                  <path
+                    d={`M ${exp1PtA.x - 120} ${exp1PtA.y - 40} Q ${(exp1PtA.x + exp1PtB.x) / 2} ${
+                      (exp1PtA.y + exp1PtB.y) / 2 - 50
+                    } ${exp1PtB.x + 120} ${exp1PtB.y + 40}`}
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="3"
+                    strokeDasharray="6,4"
+                  />
+                  <text
+                    x={(exp1PtA.x + exp1PtB.x) / 2}
+                    y={(exp1PtA.y + exp1PtB.y) / 2 - 60}
+                    fill="#f59e0b"
+                    fontSize="11"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                  >
+                    ⚠️ Düz çizgi eğrilemez! İki noktadan 2. bir düz doğru geçemez.
+                  </text>
+                </g>
               )}
-            </div>
 
-            {/* Object 2: IŞIN */}
-            <div
-              onClick={() => handleTestExp1('ray')}
-              className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 text-center flex flex-col justify-between space-y-4 ${
-                exp1SelectedObject === 'ray'
-                  ? 'bg-slate-900 text-white ring-2 ring-teal-400 border-slate-900 shadow-lg scale-102'
-                  : 'bg-slate-50 border-slate-200 hover:border-teal-300'
-              }`}
-            >
-              <div className="font-extrabold text-sm">🔦 IŞIN [AB</div>
-              
-              {/* SVG Graphic */}
-              <div className="h-28 bg-slate-950 rounded-xl flex items-center justify-center p-2 relative overflow-hidden">
-                <svg className="w-full h-full" viewBox="0 0 200 80">
-                  <circle cx="35" cy="40" r="6" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" />
-                  <line x1="35" y1="40" x2="175" y2="40" stroke="#38bdf8" strokeWidth="4" />
-                  <polygon points="185,40 170,33 170,47" fill="#38bdf8" />
-                  <circle cx="120" cy="40" r="4" fill="#ffffff" />
-                  <text fill="#38bdf8" fontSize="11" fontWeight="bold" x="35" y="26" textAnchor="middle">[A</text>
-                  <text fill="#ffffff" fontSize="11" fontWeight="bold" x="120" y="26" textAnchor="middle">B</text>
-                </svg>
-              </div>
+              {/* Point A (Draggable) */}
+              <g
+                transform={`translate(${exp1PtA.x}, ${exp1PtA.y})`}
+                className="cursor-grab active:cursor-grabbing"
+                onPointerDown={(e) => handleStartDrag('exp1A', e)}
+              >
+                <circle cx="0" cy="0" r="24" fill="#f59e0b" fillOpacity={draggingPoint === 'exp1A' ? '0.35' : '0.15'} className="animate-pulse" />
+                <circle cx="0" cy="0" r="11" fill="#f59e0b" stroke="#ffffff" strokeWidth="3" />
+                <text x="0" y="-16" fill="#ffffff" fontSize="13" fontWeight="900" textAnchor="middle">
+                  A Noktası
+                </text>
+                <text x="0" y="24" fill="#fbbf24" fontSize="10" fontWeight="bold" textAnchor="middle">
+                  ✋ Sürükle
+                </text>
+              </g>
 
-              {exp1Tested.ray ? (
-                <div className="p-2 rounded-xl bg-rose-500/20 text-rose-300 text-xs font-black border border-rose-400/30">
-                  Cetvel Sonucu: ∞ (Sonsuz / Ölçülemez)
-                </div>
-              ) : (
-                <button className="py-2 px-3 rounded-xl bg-teal-600 text-white text-xs font-bold">
-                  Cetvelle Test Et 📏
-                </button>
-              )}
-            </div>
-
-            {/* Object 3: DOĞRU PARÇASI */}
-            <div
-              onClick={() => handleTestExp1('segment')}
-              className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 text-center flex flex-col justify-between space-y-4 ${
-                exp1SelectedObject === 'segment'
-                  ? 'bg-slate-900 text-white ring-2 ring-teal-400 border-slate-900 shadow-lg scale-102'
-                  : 'bg-slate-50 border-slate-200 hover:border-teal-300'
-              }`}
-            >
-              <div className="font-extrabold text-sm">📏 DOĞRU PARÇASI [AB]</div>
-              
-              {/* SVG Graphic */}
-              <div className="h-28 bg-slate-950 rounded-xl flex items-center justify-center p-2 relative overflow-hidden">
-                <svg className="w-full h-full" viewBox="0 0 200 80">
-                  <circle cx="40" cy="40" r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
-                  <circle cx="160" cy="40" r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
-                  <line x1="40" y1="40" x2="160" y2="40" stroke="#10b396" strokeWidth="5" />
-                  <text fill="#5ee7cc" fontSize="11" fontWeight="bold" x="40" y="26" textAnchor="middle">[A]</text>
-                  <text fill="#5ee7cc" fontSize="11" fontWeight="bold" x="160" y="26" textAnchor="middle">[B]</text>
-                </svg>
-              </div>
-
-              {exp1Tested.segment ? (
-                <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-black border border-emerald-400/30">
-                  Cetvel Sonucu: Net 8 cm ✅
-                </div>
-              ) : (
-                <button className="py-2 px-3 rounded-xl bg-teal-600 text-white text-xs font-bold">
-                  Cetvelle Test Et 📏
-                </button>
-              )}
-            </div>
-
+              {/* Point B (Draggable) */}
+              <g
+                transform={`translate(${exp1PtB.x}, ${exp1PtB.y})`}
+                className="cursor-grab active:cursor-grabbing"
+                onPointerDown={(e) => handleStartDrag('exp1B', e)}
+              >
+                <circle cx="0" cy="0" r="24" fill="#0284c7" fillOpacity={draggingPoint === 'exp1B' ? '0.35' : '0.15'} className="animate-pulse" />
+                <circle cx="0" cy="0" r="11" fill="#0284c7" stroke="#ffffff" strokeWidth="3" />
+                <text x="0" y="-16" fill="#ffffff" fontSize="13" fontWeight="900" textAnchor="middle">
+                  B Noktası
+                </text>
+                <text x="0" y="24" fill="#38bdf8" fontSize="10" fontWeight="bold" textAnchor="middle">
+                  ✋ Sürükle
+                </text>
+              </g>
+            </svg>
           </div>
 
-          {/* Opened Deduction Card */}
-          {exp1Completed && (
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-lg space-y-2 animate-in zoom-in-95">
-              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-teal-200">
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>1. Deney Mantıksal Çıkarım Kartı:</span>
-              </div>
-              <p className="text-sm sm:text-base font-bold leading-relaxed">
-                "Doğru parçasının her iki ucu da sınırlandırıldığı için uzunluğu cetvelle tam olarak ölçülebilir (|AB| = 8 cm). Doğru ve ışın ise sonsuza uzandığı için kesin bir uzunluğa sahip olamaz!"
+          {/* Maarif Deduction Card */}
+          <div className="bg-teal-50 border-2 border-teal-300 p-5 rounded-2xl flex items-start gap-4">
+            <Sparkles className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <h4 className="font-black text-teal-950 text-sm">
+                💡 Maarif Çıkarımı 1: İki Nokta — Tek Doğru İlkesi
+              </h4>
+              <p className="text-xs text-teal-900 leading-relaxed">
+                Ölçüsüz düz bir cetvel ile düzlemde alınan herhangi farklı iki noktadan (A ve B) <strong>yalnız ve yalnız 1 tane düz doğru</strong> çizilebilir.
               </p>
             </div>
-          )}
+          </div>
 
         </div>
       )}
 
-      {/* EXPERIMENT 2: ANGLE AND DIRECTION CREATION */}
+      {/* ======================================================== */}
+      {/* 2. DENEY MASASI: PERGEL İLE ÇEMBER VE EŞİT PARÇA KESME   */}
+      {/* ======================================================== */}
       {activeExp === 2 && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-lg space-y-6 animate-in fade-in duration-200">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6 animate-in fade-in">
           
-          <div className="border-b border-slate-100 pb-4">
-            <span className="text-xs font-extrabold text-indigo-700 uppercase">2. Kritik Deney</span>
-            <h3 className="text-xl font-black text-slate-900">Açı ve Doğrultu İnşası Masası</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Aşağıdaki sürgüyü kaydırarak iki ışının başlangıç noktası (O) birleştiğinde oluşan açıyı inceleyiniz.
-            </p>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-xs font-black text-teal-600 uppercase tracking-wider">
+                Pergel ile Geometrik İnşa
+              </span>
+              <h3 className="text-xl font-black text-slate-900">
+                Pergel ile Çember Yarıçapı ve Eşit Parça Kesme
+              </h3>
+              <p className="text-xs text-slate-500 max-w-xl">
+                Pergel açıklığını (r yarıçapı) kullanarak çemberin tüm yarıçaplarının eşitliğini inceleyin; bir ışının veya açının kollarından eşit parçalar kesin.
+              </p>
+            </div>
+
+            {/* Sub-mode selector */}
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+              <button
+                onClick={() => setExp2Mode('circle')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  exp2Mode === 'circle' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Çember (r)
+              </button>
+              <button
+                onClick={() => setExp2Mode('ray')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  exp2Mode === 'ray' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Işında Parça Kes
+              </button>
+              <button
+                onClick={() => setExp2Mode('angle')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  exp2Mode === 'angle' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Açı Kolu Kes
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            
-            {/* Interactive SVG Angle Simulator */}
-            <div className="lg:col-span-7 bg-slate-950 rounded-2xl p-4 h-[300px] flex items-center justify-center relative overflow-hidden shadow-inner">
-              <svg className="w-full h-full" viewBox="0 0 360 260">
-                {/* Fixed Ray [OA */}
-                <line x1="180" y1="200" x2="330" y2="200" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" />
-                <polygon points="340,200 325,193 325,207" fill="#38bdf8" />
-                <circle cx="280" cy="200" r="4" fill="#ffffff" />
-                <text fill="#38bdf8" fontSize="12" fontWeight="900" x="280" y="222" textAnchor="middle">A</text>
+          {/* Interactive SVG Canvas */}
+          <div className="relative bg-slate-900 rounded-3xl overflow-hidden min-h-[360px] flex items-center justify-center p-4">
+            <svg className="w-full h-[340px] select-none touch-none math-grid-bg opacity-95">
+              
+              {/* MODE A: CIRCLE RADIUS EQUALITY */}
+              {exp2Mode === 'circle' && (
+                <g transform="translate(300, 170)">
+                  {/* Circle Body */}
+                  <circle cx="0" cy="0" r={exp2Radius} fill="#0284c7" fillOpacity="0.12" stroke="#0284c7" strokeWidth="3" />
+                  {/* Center O */}
+                  <circle cx="0" cy="0" r="7" fill="#f59e0b" stroke="#ffffff" strokeWidth="2.5" />
+                  <text x="0" y="-12" fill="#f59e0b" fontSize="12" fontWeight="900" textAnchor="middle">
+                    Merkez (O)
+                  </text>
 
-                {/* Rotating Ray [OB */}
-                {(() => {
-                  const rad = (exp2Angle * Math.PI) / 180;
-                  const endX = 180 + 150 * Math.cos(-rad);
-                  const endY = 200 + 150 * Math.sin(-rad);
-                  const tipX = 180 + 160 * Math.cos(-rad);
-                  const tipY = 200 + 160 * Math.sin(-rad);
+                  {/* Radii lines to circumference points */}
+                  {exp2CirclePoints.map((pt) => {
+                    const rad = (pt.deg * Math.PI) / 180;
+                    const px = exp2Radius * Math.cos(rad);
+                    const py = exp2Radius * Math.sin(rad);
 
-                  return (
-                    <>
-                      <line x1="180" y1="200" x2={endX} y2={endY} stroke="#fde047" strokeWidth="4" strokeLinecap="round" />
-                      <circle cx={180 + 110 * Math.cos(-rad)} cy={200 + 110 * Math.sin(-rad)} r="4" fill="#ffffff" />
-                      <text fill="#fde047" fontSize="12" fontWeight="900" x={180 + 110 * Math.cos(-rad) - 10} y={200 + 110 * Math.sin(-rad) - 10}>B</text>
+                    return (
+                      <g key={pt.id}>
+                        <line x1="0" y1="0" x2={px} y2={py} stroke="#10b396" strokeWidth="3" />
+                        <circle cx={px} cy={py} r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
+                        <text x={px * 1.18} y={py * 1.18 + 4} fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          {pt.label} (r=8 cm)
+                        </text>
+                      </g>
+                    );
+                  })}
+                </g>
+              )}
 
-                      {/* Arc */}
+              {/* MODE B: RAY STEP CUTTING */}
+              {exp2Mode === 'ray' && (
+                <g transform="translate(100, 170)">
+                  {/* Base Ray Line */}
+                  <line x1="0" y1="0" x2="440" y2="0" stroke="#0284c7" strokeWidth="4.5" strokeLinecap="round" />
+                  <polygon points="440,0 426,-6 426,6" fill="#0284c7" />
+                  <circle cx="0" cy="0" r="7" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" />
+                  <text x="0" y="-14" fill="#f59e0b" fontSize="12" fontWeight="bold" textAnchor="middle">
+                    [O Başlangıç
+                  </text>
+
+                  {/* Steps with Compass Arcs */}
+                  {[1, 2, 3, 4].slice(0, exp2RaySteps).map((step) => {
+                    const stepX = step * 85;
+                    const label = ['A', 'B', 'C', 'D'][step - 1];
+
+                    return (
+                      <g key={step} className="animate-in zoom-in">
+                        {/* Compass tick arc */}
+                        <path
+                          d={`M ${stepX - 10} -20 A 25 25 0 0 1 ${stepX + 10} 20`}
+                          fill="none"
+                          stroke="#f59e0b"
+                          strokeWidth="2.5"
+                          strokeDasharray="4,2"
+                        />
+                        <circle cx={stepX} cy="0" r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
+                        <text x={stepX} y="-26" fill="#10b396" fontSize="11" fontWeight="black" textAnchor="middle">
+                          {label} (Adım {step})
+                        </text>
+                        {/* Segment measure badge */}
+                        <text x={stepX - 42} y="22" fill="#38bdf8" fontSize="10" fontWeight="bold" textAnchor="middle">
+                          = r (Eşit)
+                        </text>
+                      </g>
+                    );
+                  })}
+                </g>
+              )}
+
+              {/* MODE C: ANGLE ARM CUTTING */}
+              {exp2Mode === 'angle' && (
+                <g transform="translate(160, 200)">
+                  {/* Base Arm */}
+                  <line x1="0" y1="0" x2="300" y2="0" stroke="#0284c7" strokeWidth="4" />
+                  {/* Top Arm at 50 deg */}
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2={300 * Math.cos((-50 * Math.PI) / 180)}
+                    y2={300 * Math.sin((-50 * Math.PI) / 180)}
+                    stroke="#0284c7"
+                    strokeWidth="4"
+                  />
+                  <circle cx="0" cy="0" r="7" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" />
+                  <text x="0" y="24" fill="#f59e0b" fontSize="12" fontWeight="bold" textAnchor="middle">
+                    Köşe O
+                  </text>
+
+                  {/* Compass Arc cutting both arms */}
+                  {exp2AngleCut && (
+                    <g className="animate-in fade-in duration-300">
                       <path
-                        d={`M 220 200 A 40 40 0 0 0 ${180 + 40 * Math.cos(-rad)} ${200 + 40 * Math.sin(-rad)}`}
+                        d={`M ${140} 0 A 140 140 0 0 0 ${140 * Math.cos((-50 * Math.PI) / 180)} ${
+                          140 * Math.sin((-50 * Math.PI) / 180)
+                        }`}
                         fill="none"
-                        stroke="#ec4899"
-                        strokeWidth="3"
+                        stroke="#f59e0b"
+                        strokeWidth="3.5"
+                        strokeDasharray="6,3"
                       />
-                    </>
-                  );
-                })()}
+                      {/* Point P1 on arm 1 */}
+                      <circle cx="140" cy="0" r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
+                      <text x="140" y="20" fill="#10b396" fontSize="11" fontWeight="bold" textAnchor="middle">
+                        A (|OA| = r)
+                      </text>
 
-                {/* Common Origin O */}
-                <circle cx="180" cy="200" r="7" fill="#f59e0b" stroke="#ffffff" strokeWidth="2.5" />
-                <text fill="#ffffff" fontSize="14" fontWeight="900" x="180" y="235" textAnchor="middle">Ortak Başlangıç (O)</text>
+                      {/* Point P2 on arm 2 */}
+                      <circle
+                        cx={140 * Math.cos((-50 * Math.PI) / 180)}
+                        cy={140 * Math.sin((-50 * Math.PI) / 180)}
+                        r="6"
+                        fill="#10b396"
+                        stroke="#ffffff"
+                        strokeWidth="2"
+                      />
+                      <text
+                        x={140 * Math.cos((-50 * Math.PI) / 180) - 10}
+                        y={140 * Math.sin((-50 * Math.PI) / 180) - 12}
+                        fill="#10b396"
+                        fontSize="11"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                      >
+                        B (|OB| = r)
+                      </text>
+                    </g>
+                  )}
+                </g>
+              )}
 
-                {/* Degree Display */}
-                <rect x="135" y="20" width="90" height="32" rx="8" fill="#1e1b4b" stroke="#4f46e5" />
-                <text fill="#a5b4fc" fontSize="14" fontWeight="900" x="180" y="42" textAnchor="middle">
-                  ∠AOB = {exp2Angle}°
-                </text>
-              </svg>
+            </svg>
+          </div>
+
+          {/* Action buttons per mode */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="text-xs text-slate-600 font-bold">
+              {exp2Mode === 'circle' && '🔵 Çember üzerindeki tüm noktaların merkeze uzaklığı yarıçap (r) kadardır.'}
+              {exp2Mode === 'ray' && '🔦 Pergel açıklığını bozmadan ışın üzerinde eşit doğru parçaları kesilir.'}
+              {exp2Mode === 'angle' && '📐 Pergel açının köşesine batırılarak her iki koldan eşit parça (|OA|=|OB|) kesilir.'}
             </div>
 
-            {/* Angle Controls & Classification */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 flex justify-between">
-                  <span>Açı Derecesi (Açıklık):</span>
-                  <span className="text-indigo-600 font-black">{exp2Angle}°</span>
-                </label>
-                <input
-                  type="range"
-                  min="15"
-                  max="165"
-                  step="5"
-                  value={exp2Angle}
-                  onChange={(e) => handleSliderExp2(Number(e.target.value))}
-                  className="w-full accent-indigo-600 h-2 bg-slate-200 rounded-lg cursor-pointer"
-                />
-              </div>
+            {exp2Mode === 'circle' && (
+              <button
+                onClick={handleAddCirclePoint}
+                className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-xs"
+              >
+                + Çember Üzerine Yeni Nokta Ekle (r Testi)
+              </button>
+            )}
 
-              {/* Angle Type Card */}
-              <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 space-y-1">
-                <div className="text-xs font-extrabold text-indigo-900 uppercase">Açı Çeşidi:</div>
-                <div className="text-lg font-black text-indigo-700">
-                  {exp2Angle < 90 ? '📐 Dar Açı (< 90°)' : exp2Angle === 90 ? '🎯 Dik Açı (= 90°)' : '🌟 Geniş Açı (> 90°)'}
-                </div>
-              </div>
+            {exp2Mode === 'ray' && (
+              <button
+                onClick={handleStepRay}
+                className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-xs"
+              >
+                🧭 Pergel ile Bir Sonraki Eşit Parçayı Kes ({exp2RaySteps}/4)
+              </button>
+            )}
 
-              {/* Deduction */}
-              <div className="p-4 rounded-2xl bg-slate-900 text-white text-xs space-y-1">
-                <div className="font-black text-indigo-300">💡 2. Çıkarım İlkesi:</div>
-                <p className="text-slate-300">
-                  Başlangıç noktaları aynı olan iki ışının birleşmesi bir açı oluşturur. Işınların yönü açının ölçüsünü belirler.
-                </p>
-              </div>
+            {exp2Mode === 'angle' && (
+              <button
+                onClick={handleCutAngle}
+                className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-xs"
+              >
+                📐 Pergelle İki Kolu da Kes ({exp2AngleCut ? 'Kolları Temizle' : 'Kolları Eşitle'})
+              </button>
+            )}
+          </div>
 
+          {/* Maarif Deduction Card */}
+          <div className="bg-teal-50 border-2 border-teal-300 p-5 rounded-2xl flex items-start gap-4">
+            <Sparkles className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <h4 className="font-black text-teal-950 text-sm">
+                💡 Maarif Çıkarımı 2 & 3: Pergelin Rolü ve Eşit Mesafeler
+              </h4>
+              <p className="text-xs text-teal-900 leading-relaxed">
+                Pergel, sabit açıklığı sayesinde <strong>eşit yarıçaplı çemberler çizmek</strong> ve bir ışın veya açının kollarından <strong>yan yana eşit uzunlukta doğru parçaları kesmek</strong> için temel inşa aletidir.
+              </p>
             </div>
-
           </div>
 
         </div>
       )}
 
-      {/* EXPERIMENT 3: DOUBLE PERPENDICULAR & PARALLELISM */}
+      {/* ======================================================== */}
+      {/* 3. DENEY MASASI: GÖNYE İLE DİKME VE PARALEL RAYLAR (OB2)  */}
+      {/* ======================================================== */}
       {activeExp === 3 && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-lg space-y-6 animate-in fade-in duration-200">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6 animate-in fade-in">
           
-          <div className="border-b border-slate-100 pb-4">
-            <span className="text-xs font-extrabold text-purple-700 uppercase">3. Kritik Deney</span>
-            <h3 className="text-xl font-black text-slate-900">Çifte Dikme ve Paralellik Çıkarımı</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Taban doğrusuna indirilen iki dikme arasındaki mesafeyi değiştirin ve hiçbir zaman kesişmediklerini gözlemleyin.
-            </p>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-xs font-black text-teal-600 uppercase tracking-wider">
+                Dinamik Geometri Yazılımı (OB2)
+              </span>
+              <h3 className="text-xl font-black text-slate-900">
+                Gönye ile Dikme ve Paralel Doğrular (d₁ ∥ d₂)
+              </h3>
+              <p className="text-xs text-slate-500 max-w-xl">
+                Taban doğrusuna dışarıdaki bir noktadan gönye ile tek dikme indirin; eşit uzaklıktaki noktaları birleştirip paralel rayları simüle edin.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleDrawPerp}
+                className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              >
+                <span>Gönyeyle Tek Dikme İndir (⊥)</span>
+              </button>
+
+              <button
+                onClick={handleDrawParallel}
+                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              >
+                <span>Paralel Doğruyu İnşa Et (∥)</span>
+              </button>
+
+              <button
+                onClick={handleClearExp3}
+                className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                title="Çizimleri ve ayarları sıfırla"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                <span>Ekranı Temizle</span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            
-            {/* Interactive SVG Simulator */}
-            <div className="lg:col-span-7 bg-slate-950 rounded-2xl p-4 h-[300px] flex items-center justify-center relative overflow-hidden shadow-inner">
-              <svg className="w-full h-full" viewBox="0 0 360 260">
-                {/* Base ground line */}
-                <line x1="20" y1="210" x2="340" y2="210" stroke="#64748b" strokeWidth="4" />
-                <text fill="#94a3b8" fontSize="11" fontWeight="bold" x="345" y="214">Taban (t)</text>
+          {/* Distance Slider (Dinamik Mesafe) */}
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex items-center justify-between gap-4">
+            <span className="text-xs font-bold text-slate-700 flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-teal-600" />
+              <span>Paralel Doğrular Arası Dik Mesafe (h):</span>
+            </span>
+            <div className="flex items-center gap-3 flex-1 max-w-xs">
+              <input
+                type="range"
+                min="60"
+                max="160"
+                value={exp3ParallelDistance}
+                onChange={(e) => setExp3ParallelDistance(Number(e.target.value))}
+                className="w-full accent-teal-600 cursor-pointer"
+              />
+              <span className="font-mono font-black text-xs text-teal-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                {exp3ParallelDistance} px ({Math.round(exp3ParallelDistance / 10)} cm)
+              </span>
+            </div>
+          </div>
 
-                {/* Left Perpendicular d1 */}
-                <line x1="100" y1="210" x2="100" y2={210 - exp3Height} stroke="#10b396" strokeWidth="4" />
-                <polygon points={`100,${195 - exp3Height} 94,${210 - exp3Height} 106,${210 - exp3Height}`} fill="#10b396" />
-                <rect x="100" y="194" width="16" height="16" fill="none" stroke="#f59e0b" strokeWidth="1.5" />
-                <circle cx="108" cy="202" r="2" fill="#f59e0b" />
-                <text fill="#10b396" fontSize="12" fontWeight="900" x="100" y="235" textAnchor="middle">d1 ⊥ t</text>
+          {/* Interactive SVG Canvas */}
+          <div className="relative bg-slate-900 rounded-3xl overflow-hidden min-h-[360px] flex items-center justify-center p-4">
+            <svg
+              className="w-full h-[340px] select-none touch-none math-grid-bg opacity-95"
+              viewBox="0 0 600 340"
+              onPointerMove={(e) => handleSvgPointerMove(e, 600, 340)}
+              onPointerUp={handleEndDrag}
+              onPointerLeave={handleEndDrag}
+            >
+              {/* Dragging hint */}
+              <text x="300" y="22" fill="#94a3b8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                💡 Dışarıdaki P noktasını istediğiniz yere sürükleyerek dikme ve paralelliği test edin.
+              </text>
+              
+              {/* Base Line d1 (Taban Doğrusu) */}
+              <line x1="50" y1="240" x2="550" y2="240" stroke="#0284c7" strokeWidth="5" strokeLinecap="round" />
+              <text x="555" y="245" fill="#0284c7" fontSize="13" fontWeight="900">
+                d₁ (Taban)
+              </text>
 
-                {/* Right Perpendicular d2 (dynamic distance) */}
-                <line x1={100 + exp3Distance} y1="210" x2={100 + exp3Distance} y2={210 - exp3Height} stroke="#10b396" strokeWidth="4" />
-                <polygon points={`${100 + exp3Distance},${195 - exp3Height} ${94 + exp3Distance},${210 - exp3Height} ${106 + exp3Distance},${210 - exp3Height}`} fill="#10b396" />
-                <rect x={100 + exp3Distance} y="194" width="16" height="16" fill="none" stroke="#f59e0b" strokeWidth="1.5" />
-                <circle cx={108 + exp3Distance} cy="202" r="2" fill="#f59e0b" />
-                <text fill="#10b396" fontSize="12" fontWeight="900" x={100 + exp3Distance} y="235" textAnchor="middle">d2 ⊥ t</text>
+              {/* Perpendicular Line from P to d1 */}
+              {exp3PerpDrawn && (
+                <g className="animate-in fade-in duration-300">
+                  <line x1={exp3PerpPoint.x} y1={exp3PerpPoint.y} x2={exp3PerpPoint.x} y2="240" stroke="#f59e0b" strokeWidth="3.5" />
+                  {/* Right Angle Square at base */}
+                  <rect x={exp3PerpPoint.x} y="222" width="18" height="18" fill="#f59e0b" fillOpacity="0.3" stroke="#f59e0b" strokeWidth="1.5" />
+                  <circle cx={exp3PerpPoint.x + 9} cy="231" r="2.5" fill="#f59e0b" />
+                  <text x={exp3PerpPoint.x + 12} y={(exp3PerpPoint.y + 240) / 2} fill="#f59e0b" fontSize="11" fontWeight="bold">
+                    Tek Dikme (90°)
+                  </text>
+                </g>
+              )}
 
-                {/* Constant Distance Indicator */}
-                <line x1="100" y1="80" x2={100 + exp3Distance} y2="80" stroke="#38bdf8" strokeWidth="2" strokeDasharray="3,3" />
-                <rect x={100 + exp3Distance / 2 - 40} y="65" width="80" height="24" rx="6" fill="#0369a1" />
-                <text fill="#e0f2fe" fontSize="11" fontWeight="900" x={100 + exp3Distance / 2} y="81" textAnchor="middle">
-                  Mesafe Sabit
+              {/* Point P (Draggable Dış Nokta) */}
+              <g
+                transform={`translate(${exp3PerpPoint.x}, ${exp3PerpPoint.y})`}
+                className="cursor-grab active:cursor-grabbing"
+                onPointerDown={(e) => handleStartDrag('exp3P', e)}
+              >
+                <circle cx="0" cy="0" r="22" fill="#f59e0b" fillOpacity={draggingPoint === 'exp3P' ? '0.35' : '0.15'} className="animate-pulse" />
+                <circle cx="0" cy="0" r="9" fill="#f59e0b" stroke="#ffffff" strokeWidth="2.5" />
+                <text x="0" y="-14" fill="#ffffff" fontSize="12" fontWeight="900" textAnchor="middle">
+                  P (Dış Nokta)
                 </text>
-              </svg>
+                <text x="0" y="22" fill="#fde047" fontSize="9" fontWeight="bold" textAnchor="middle">
+                  ✋ Sürükle
+                </text>
+              </g>
+
+              {/* Parallel Line d2 at distance exp3ParallelDistance */}
+              {exp3ParallelDrawn && (() => {
+                const parallelY = 240 - exp3ParallelDistance;
+                return (
+                  <g className="animate-in slide-in-from-top-2 duration-300">
+                    {/* Parallel Line d2 */}
+                    <line x1="60" y1={parallelY} x2="540" y2={parallelY} stroke="#10b396" strokeWidth="5" strokeLinecap="round" />
+                    <text x="548" y={parallelY + 5} fill="#10b396" fontSize="13" fontWeight="900">
+                      d₂ (Paralel)
+                    </text>
+
+                    {/* 3 Equidistant Perpendicular Height Markers */}
+                    {[140, 300, 460].map((xPos, idx) => (
+                      <g key={xPos}>
+                        <line x1={xPos} y1={parallelY} x2={xPos} y2="240" stroke="#38bdf8" strokeWidth="2" strokeDasharray="5,3" />
+                        {/* Right Angle Square */}
+                        <rect x={xPos} y="224" width="14" height="14" fill="#38bdf8" fillOpacity="0.2" stroke="#38bdf8" strokeWidth="1" />
+                        <circle cx={xPos + 7} cy="231" r="2" fill="#38bdf8" />
+                        <circle cx={xPos} cy={parallelY} r="5" fill="#10b396" stroke="#ffffff" strokeWidth="1.5" />
+                        <text x={xPos + 8} y={(parallelY + 240) / 2 + 4} fill="#38bdf8" fontSize="10" fontWeight="bold">
+                          h={Math.round(exp3ParallelDistance / 10)} cm
+                        </text>
+                      </g>
+                    ))}
+
+                    {/* Train track sleepers simulation */}
+                    <text x="300" y={parallelY - 14} fill="#10b396" fontSize="12" fontWeight="black" textAnchor="middle">
+                      🚂 Tren Rayları Modeli: d₁ ∥ d₂ (Kesişmez)
+                    </text>
+                  </g>
+                );
+              })()}
+
+            </svg>
+          </div>
+
+          {/* Maarif Deduction Card */}
+          <div className="bg-teal-50 border-2 border-teal-300 p-5 rounded-2xl flex items-start gap-4">
+            <Sparkles className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <h4 className="font-black text-teal-950 text-sm">
+                💡 Maarif Çıkarımı 4 & 5: Tek Dikme ve Paralel Doğrular (d₁ ∥ d₂)
+              </h4>
+              <p className="text-xs text-teal-900 leading-relaxed">
+                Bir doğruya dışındaki sabit bir noktadan <strong>yalnız 1 dikme</strong> çizilebilir. Bir doğruya eşit dik uzaklıktaki tüm noktaların birleşimi ise ilk doğruya <strong>paralel bir doğru (d₁ ∥ d₂)</strong> oluşturur. Tren rayları gibi hiçbir zaman kesişmezler.
+              </p>
             </div>
-
-            {/* Controls */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 flex justify-between">
-                  <span>Dikmeler Arası Mesafe:</span>
-                  <span className="text-purple-600 font-black">{exp3Distance} px</span>
-                </label>
-                <input
-                  type="range"
-                  min="60"
-                  max="200"
-                  step="5"
-                  value={exp3Distance}
-                  onChange={(e) => handleSliderExp3(Number(e.target.value))}
-                  className="w-full accent-purple-600 h-2 bg-slate-200 rounded-lg cursor-pointer"
-                />
-              </div>
-
-              <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 space-y-1">
-                <div className="text-xs font-extrabold text-purple-900 uppercase">İlişki Durumu:</div>
-                <div className="text-lg font-black text-purple-700">
-                  d1 ∥ d2 (Birbirine Paralel & Kesişmez)
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-900 text-white text-xs space-y-1">
-                <div className="font-black text-purple-300">💡 3. Çıkarım İlkesi:</div>
-                <p className="text-slate-300">
-                  Aynı taban doğrusuna 90° dik açı yapan iki doğru asla kesişmez; aralarındaki mesafe sonsuza kadar sabit kalır (Paralel doğrular).
-                </p>
-              </div>
-
-            </div>
-
           </div>
 
         </div>

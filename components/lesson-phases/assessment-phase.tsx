@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { AssessmentPhaseData, AssessmentQuestion } from '@/types';
 import { useApp } from '@/lib/store';
 import confetti from 'canvas-confetti';
+import { SelfAssessmentRubricComponent } from '@/components/lesson-phases/self-assessment-rubric';
 import {
   FileCheck2,
   Sparkles,
@@ -21,7 +22,9 @@ import {
   ArrowLeft,
   Zap,
   BookCheck,
-  Check
+  Check,
+  ClipboardCheck,
+  BookOpen
 } from 'lucide-react';
 
 interface AssessmentPhaseProps {
@@ -36,8 +39,10 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
     playSound,
     unlockBadge,
     addPoints,
+    selectedOutcome
   } = useApp();
 
+  const [activeAssessmentTab, setActiveAssessmentTab] = useState<'test' | 'rubric' | 'journal'>('test');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({});
@@ -169,45 +174,154 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
         </div>
       </div>
 
-      {/* QUESTION NAVIGATOR PILLS (1, 2, 3, 4, 5, 6, 7, 8) */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs font-bold text-slate-400 mr-2">Sorular:</span>
-          {questions.map((q, idx) => {
-            const isSelected = currentQuestionIndex === idx;
-            const isAns = submitted[q.id];
-            const isCor = selectedAnswers[q.id] === q.correctOptionIndex;
+      {/* Mode Navigation Tabs */}
+      <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex flex-wrap items-center gap-1.5">
+        <button
+          onClick={() => {
+            playSound('click');
+            setActiveAssessmentTab('test');
+          }}
+          className={`flex-1 min-w-[180px] py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
+            activeAssessmentTab === 'test'
+              ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+          }`}
+        >
+          <FileCheck2 className="w-4 h-4" />
+          <span>1. Kazanım Testi (8 Soru)</span>
+        </button>
 
-            let pillStyle = 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200';
+        <button
+          onClick={() => {
+            playSound('click');
+            setActiveAssessmentTab('rubric');
+          }}
+          className={`flex-1 min-w-[180px] py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
+            activeAssessmentTab === 'rubric'
+              ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+          }`}
+        >
+          <ClipboardCheck className="w-4 h-4" />
+          <span>2. Öz Değerlendirme Formu (Rubrik)</span>
+        </button>
 
-            if (isSelected) {
-              pillStyle = 'bg-teal-600 text-white font-black ring-2 ring-teal-400 shadow-md scale-105';
-            } else if (isAns) {
-              pillStyle = isCor
-                ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
-                : 'bg-rose-100 text-rose-900 border-rose-300 font-bold';
-            }
-
-            return (
-              <button
-                key={q.id}
-                onClick={() => {
-                  playSound('select');
-                  setCurrentQuestionIndex(idx);
-                  setIsTestFinished(false);
-                }}
-                className={`w-9 h-9 rounded-xl text-xs flex items-center justify-center border transition-all duration-150 ${pillStyle}`}
-              >
-                {idx + 1}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="text-xs font-extrabold text-slate-600">
-          Çözülen: <span className="text-teal-700">{answeredCount} / {questions.length}</span>
-        </div>
+        <button
+          onClick={() => {
+            playSound('click');
+            setActiveAssessmentTab('journal');
+          }}
+          className={`flex-1 min-w-[180px] py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
+            activeAssessmentTab === 'journal'
+              ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+          }`}
+        >
+          <BookOpen className="w-4 h-4" />
+          <span>3. Öğrenme Günlüğü & Yansıtma</span>
+        </button>
       </div>
+
+      {/* TAB 2: SELF ASSESSMENT RUBRIC FORM */}
+      {activeAssessmentTab === 'rubric' && (
+        <SelfAssessmentRubricComponent
+          outcomeId={selectedOutcome?.id}
+          outcomeTitle={selectedOutcome?.title}
+          outcomeCode={selectedOutcome?.code}
+        />
+      )}
+
+      {/* TAB 3: LEARNING JOURNAL & REFLECTION */}
+      {activeAssessmentTab === 'journal' && (
+        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-md space-y-6 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2 text-xs font-black text-teal-900 uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-teal-600" />
+            <span>Öğrenme Günlüğü & Yansıtma (SDB1.3: Öz Yansıtma)</span>
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-xl font-black text-slate-900">
+              Bugünkü Dersten Ne Öğrendim?
+            </h3>
+            <p className="text-xs text-slate-500">
+              Ders sonunda kendi çıkarımlarınızı ve en çok dikkatinizi çeken matematiksel kuralı yazınız.
+            </p>
+          </div>
+
+          <div className="bg-teal-50/70 p-5 rounded-2xl border border-teal-200 space-y-3">
+            <p className="text-xs sm:text-sm font-bold text-slate-800">
+              "{data.reflectionPrompt || 'Bugün öğrendiğim en şaşırtıcı geometrik özellik ve çıkarım şuydu:'}"
+            </p>
+            <textarea
+              placeholder="Örnek: Açının kollarının uzatılmasının açıyı kesinlikle büyütmediğini ve iletkiyi doğru yönden okumanın önemini keşfettim..."
+              rows={4}
+              className="w-full p-4 rounded-2xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none text-xs sm:text-sm text-slate-800 bg-white shadow-xs resize-none"
+            />
+            <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+              <span className="text-[11px] text-slate-500 font-medium">
+                💡 Bu cümle öğrenci gelişim panosuna kaydedilecektir.
+              </span>
+              <button
+                onClick={() => {
+                  playSound('success');
+                  unlockBadge('maarif-genius');
+                  addPoints(30);
+                  try {
+                    confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+                  } catch (e) {}
+                }}
+                className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              >
+                <Award className="w-4 h-4" />
+                <span>Günlüğü Kaydet (+30 XP)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1: 8 BLOOM QUESTIONS TEST */}
+      {activeAssessmentTab === 'test' && (
+        <>
+          {/* QUESTION NAVIGATOR PILLS (1, 2, 3, 4, 5, 6, 7, 8) */}
+          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs font-bold text-slate-400 mr-2">Sorular:</span>
+              {questions.map((q, idx) => {
+                const isSelected = currentQuestionIndex === idx;
+                const isAns = submitted[q.id];
+                const isCor = selectedAnswers[q.id] === q.correctOptionIndex;
+
+                let pillStyle = 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200';
+
+                if (isSelected) {
+                  pillStyle = 'bg-teal-600 text-white font-black ring-2 ring-teal-400 shadow-md scale-105';
+                } else if (isAns) {
+                  pillStyle = isCor
+                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                    : 'bg-rose-100 text-rose-900 border-rose-300 font-bold';
+                }
+
+                return (
+                  <button
+                    key={q.id}
+                    onClick={() => {
+                      playSound('select');
+                      setCurrentQuestionIndex(idx);
+                      setIsTestFinished(false);
+                    }}
+                    className={`w-9 h-9 rounded-xl text-xs flex items-center justify-center border transition-all duration-150 ${pillStyle}`}
+                  >
+                    {idx + 1}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="text-xs font-extrabold text-slate-600">
+              Çözülen: <span className="text-teal-700">{answeredCount} / {questions.length}</span>
+            </div>
+          </div>
 
       {/* MAIN SINGLE-QUESTION CARD VIEW */}
       {!isTestFinished ? (
@@ -403,6 +517,32 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
             </div>
           </div>
 
+          {/* Next Step Call To Action: Fill Self Assessment Rubric Form */}
+          <div className="bg-gradient-to-r from-teal-500/10 via-emerald-500/10 to-teal-500/10 border-2 border-teal-400/40 p-6 rounded-3xl text-teal-950 flex flex-col sm:flex-row items-center justify-between gap-4 text-left shadow-sm">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase tracking-wider">
+                <ClipboardCheck className="w-3.5 h-3.5 text-teal-700" />
+                <span>Sıradaki Maarif Adımı</span>
+              </div>
+              <h4 className="text-base font-black text-slate-900">
+                Öğrenci Öz Değerlendirme Formu'nu Doldur
+              </h4>
+              <p className="text-xs text-slate-600 max-w-md">
+                Kazanım hedeflerinizi 4 kademeli dereceli rubrik üzerinden değerlendirin ve ekstra +50 XP kazanın!
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                playSound('select');
+                setActiveAssessmentTab('rubric');
+              }}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center justify-center gap-2 shrink-0 active:scale-95 cursor-pointer"
+            >
+              <ClipboardCheck className="w-4 h-4" />
+              <span>Öz Değerlendirmeye Geç ➔</span>
+            </button>
+          </div>
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <button
               onClick={() => {
@@ -410,14 +550,14 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
                 setIsTestFinished(false);
                 setCurrentQuestionIndex(0);
               }}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 transition-all flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Soruları Tekrar İncele</span>
             </button>
 
             <button
               onClick={resetTest}
-              className="w-full sm:w-auto px-7 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-7 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Testi Baştan Çöz</span>
@@ -425,6 +565,8 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
           </div>
 
         </div>
+      )}
+        </>
       )}
 
     </div>

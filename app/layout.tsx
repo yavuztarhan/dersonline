@@ -7,7 +7,7 @@ import { Navbar } from '@/components/navbar';
 import { RandomStudentPickerModal } from '@/components/random-student-picker';
 
 export const metadata: Metadata = {
-  title: 'Maarif Akademi – Kademeli Akıllı Tahta ve İnteraktif Matematik Platformu',
+  title: 'Maarif Akademi – Kademeli Akıllı Tahta ve İnteraktif Dersler Platformu',
   description:
     'Türkiye Yüzyılı Maarif Modeli müfredatına tam uyumlu, akıllı tahta öğretmen sunum ve interaktif öğrenci ders platformu.',
 };

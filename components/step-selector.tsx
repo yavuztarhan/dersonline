@@ -23,8 +23,11 @@ import {
   Tv,
   FileCheck,
   Award,
-  ArrowLeft
+  ArrowLeft,
+  FileText,
+  Download
 } from 'lucide-react';
+import { LessonPlanModal } from '@/components/lesson-plan-modal';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   GraduationCap: <GraduationCap className="w-8 h-8" />,
@@ -39,6 +42,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 export function StepSelector() {
   const router = useRouter();
+  const [planModalOutcome, setPlanModalOutcome] = useState<Outcome | null>(null);
   const {
     role,
     playSound,
@@ -482,17 +486,30 @@ export function StepSelector() {
                           </p>
                         </div>
 
-                        {/* Maarif Modeli Tags */}
-                        <div className="mt-4 pt-3 border-t border-slate-100/80 flex flex-wrap items-center gap-1.5 text-[11px]">
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">
-                            4 Fazlı Ders Odası
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold">
-                            İnteraktif Lab
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold">
-                            Bulmaca & Sınav
-                          </span>
+                        {/* Maarif Modeli Tags & Action Button */}
+                        <div className="mt-4 pt-3 border-t border-slate-100/80 flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">
+                              4 Fazlı Ders Odası
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold">
+                              İnteraktif Lab
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              playSound('select');
+                              setPlanModalOutcome(outcome);
+                            }}
+                            className="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                            title="Bu kazanımın resmi Maarif Modeli Günlük Planını PDF olarak indir"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-teal-600" />
+                            <span>Plan İndir (PDF)</span>
+                          </button>
                         </div>
                       </div>
                     );
@@ -522,18 +539,39 @@ export function StepSelector() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    playSound('select');
+                    setPlanModalOutcome(selectedOutcome);
+                  }}
+                  className="w-full sm:w-auto px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  <FileText className="w-4 h-4 text-teal-400" />
+                  <span>Ders Planı (PDF)</span>
+                </button>
+
                 <button
                   onClick={handleLaunchLesson}
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-base shadow-lg shadow-teal-500/25 transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-sm shadow-lg shadow-teal-500/25 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Play className="w-5 h-5 fill-slate-950" />
-                  <span>Dersi Başlat / Akıllı Tahtaya Yansıt</span>
+                  <span>Dersi Başlat</span>
                 </button>
               </div>
             </div>
           )}
         </div>
+      )}
+
+      {/* Lesson Plan PDF Modal */}
+      {planModalOutcome && (
+        <LessonPlanModal
+          isOpen={!!planModalOutcome}
+          onClose={() => setPlanModalOutcome(null)}
+          outcome={planModalOutcome}
+        />
       )}
 
     </div>

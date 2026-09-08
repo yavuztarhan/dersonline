@@ -46,6 +46,7 @@ model TeacherProfile {
   district         String        // İlçe
   school           String        // Okul Adı
   branch           String        @default("Matematik") // Branş
+  principalName    String?       // Okul Müdürü Adı Soyadı
   status           TeacherStatus @default(PENDING_EMAIL)
   verificationCode String?       // 6 haneli e-posta güvenlik kodu
   verifiedAt       DateTime?
@@ -130,4 +131,32 @@ model OutcomeProgress {
   completedAt    DateTime @default(now())
 
   @@map("outcome_progresses")
+}
+
+model SelfAssessmentSubmission {
+  id               String   @id @default(cuid())
+  studentId        String?
+  studentName      String
+  studentNumber    String?
+  gradeLevel       Int      @default(5)
+  classSection     String   // 5-A, 5-B, 5-C, 5-D
+  school           String?
+  teacherId        String?
+  outcomeId        String   // MAT.5.3.3
+  outcomeCode      String   // MAT.5.3.3
+  outcomeTitle     String
+  ratings          Json     // { "c1": 4, "c2": 3, "c3": 4, ... }
+  totalScore       Int
+  maxScore         Int      @default(20)
+  percentage       Int
+  performanceLevel String   // "Mükemmel", "Başarılı", "Orta", "Geliştirilmeli"
+  studentNote      String?
+  teacherFeedback  String?
+  submittedAt      DateTime @default(now())
+
+  student          StudentProfile? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@index([outcomeCode, classSection])
+  @@index([classSection])
+  @@map("self_assessment_submissions")
 }

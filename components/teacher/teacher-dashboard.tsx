@@ -5,6 +5,9 @@ import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import Link from 'next/link';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { getOutcomeById } from '@/lib/curriculum-data';
+import { LessonPlanModal } from '@/components/lesson-plan-modal';
+import { TeacherRubricAnalytics } from '@/components/teacher/teacher-rubric-analytics';
 import {
   School,
   MapPin,
@@ -21,12 +24,17 @@ import {
   MonitorPlay,
   TrendingUp,
   BarChart2,
-  Calendar
+  Calendar,
+  FileText,
+  Download,
+  ClipboardCheck
 } from 'lucide-react';
 
 export function TeacherDashboard() {
   const { currentUser, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
+  const [activePlanOutcome, setActivePlanOutcome] = useState<any>(null);
+  const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'plans'>('analytics');
 
   // If current user is teacher
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
@@ -195,286 +203,465 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* Main Grid: Classrooms & Outcomes */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left Column: Sınıf & Öğrenci Yönetimi (2 cols) */}
-        <div className="lg:col-span-2 space-y-6">
+      {/* Tab Navigation Pill Bar */}
+      <div className="flex items-center gap-2 p-1.5 bg-slate-150 bg-slate-200/60 rounded-2xl border border-slate-300/60 overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
+            setActiveSection('analytics');
+          }}
+          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            activeSection === 'analytics'
+              ? 'bg-white text-teal-900 shadow-md border border-teal-200'
+              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+          }`}
+        >
+          <ClipboardCheck className="w-4 h-4 text-teal-600" />
+          <span>Öz Değerlendirme Rubrik Raporları</span>
+          <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase tracking-wider">
+            Yeni
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
+            setActiveSection('students');
+          }}
+          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            activeSection === 'students'
+              ? 'bg-white text-teal-900 shadow-md border border-teal-200'
+              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+          }`}
+        >
+          <Users className="w-4 h-4 text-teal-600" />
+          <span>Sınıfım & Öğrenci Listesi</span>
+          <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
+            {classStudents.length} Öğrenci
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
+            setActiveSection('plans');
+          }}
+          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            activeSection === 'plans'
+              ? 'bg-white text-teal-900 shadow-md border border-teal-200'
+              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+          }`}
+        >
+          <BookOpen className="w-4 h-4 text-teal-600" />
+          <span>Ders Planları & Akıllı Tahta Akışları</span>
+        </button>
+      </div>
+
+      {/* SECTION 1: RUBRIC ANALYTICS & REPORTS */}
+      {activeSection === 'analytics' && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <TeacherRubricAnalytics
+            teacherClasses={teacherClasses}
+            teacherSchool={teacher?.school}
+          />
+        </div>
+      )}
+
+      {/* SECTION 2: CLASS & STUDENT MANAGEMENT */}
+      {activeSection === 'students' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in duration-300">
           
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+          {/* Left Column: Sınıf & Öğrenci Yönetimi (2 cols) */}
+          <div className="lg:col-span-2 space-y-6">
             
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                  <Users className="w-5 h-5 text-teal-600" />
-                  <span>Sınıfım ve Öğrenci Listesi</span>
-                </h3>
-                <p className="text-xs text-slate-500">
-                  {teacher?.school ? `📍 ${teacher.school} bünyesindeki kayıtlı öğrencileriniz` : 'Öğrencilerinizin başarı ve puan durumu.'}
-                </p>
-              </div>
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+              
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-teal-600" />
+                    <span>Sınıfım ve Öğrenci Listesi</span>
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {teacher?.school ? `📍 ${teacher.school} bünyesindeki kayıtlı öğrencileriniz` : 'Öğrencilerinizin başarı ve puan durumu.'}
+                  </p>
+                </div>
 
-              <div className="flex items-center gap-2 flex-wrap">
-                {/* Dynamic Class Selector */}
-                <div className="flex items-center bg-slate-100 p-1 rounded-xl flex-wrap gap-1">
-                  {teacherClasses.map((cls: string) => (
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Dynamic Class Selector */}
+                  <div className="flex items-center bg-slate-100 p-1 rounded-xl flex-wrap gap-1">
+                    {teacherClasses.map((cls: string) => (
+                      <button
+                        key={cls}
+                        onClick={() => setSelectedClass(cls)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                          selectedClass === cls
+                            ? 'bg-teal-600 text-white shadow-xs'
+                            : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {cls}
+                      </button>
+                    ))}
+
+                    {/* Sınıf Ekle Butonu */}
                     <button
-                      key={cls}
-                      onClick={() => setSelectedClass(cls)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
-                        selectedClass === cls
-                          ? 'bg-teal-600 text-white shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
+                      onClick={() => setShowAddClassModal(true)}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-teal-700 hover:bg-teal-100/70 transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Yeni Sınıf / Şube Ekle"
                     >
-                      {cls}
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Sınıf Ekle</span>
                     </button>
-                  ))}
+                  </div>
 
-                  {/* Sınıf Ekle Butonu */}
                   <button
-                    onClick={() => setShowAddClassModal(true)}
-                    className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-teal-700 hover:bg-teal-100/70 transition-colors flex items-center gap-1 cursor-pointer"
-                    title="Yeni Sınıf / Şube Ekle"
+                    onClick={() => {
+                      setNewStudentClass(selectedClass);
+                      setShowAddModal(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold border border-teal-200 transition-colors flex items-center gap-1 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Sınıf Ekle</span>
+                    <span>Öğrenci Ekle</span>
                   </button>
                 </div>
-
-                <button
-                  onClick={() => {
-                    setNewStudentClass(selectedClass);
-                    setShowAddModal(true);
-                  }}
-                  className="px-3.5 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold border border-teal-200 transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Öğrenci Ekle</span>
-                </button>
               </div>
-            </div>
 
-            {/* Students Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-400 uppercase font-black tracking-wider text-[10px] border-b border-slate-200">
-                    <th className="py-2.5 px-3">No</th>
-                    <th className="py-2.5 px-3">Öğrenci Adı</th>
-                    <th className="py-2.5 px-3">Okul</th>
-                    <th className="py-2.5 px-3">Puan (XP)</th>
-                    <th className="py-2.5 px-3">İlerleme</th>
-                    <th className="py-2.5 px-3 text-right">İşlem</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {classStudents.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-8 text-center text-slate-400">
-                        <div className="space-y-2">
-                          <div className="text-2xl">🎓</div>
-                          <p className="font-bold text-xs text-slate-600">
-                            {selectedClass} şubesinde henüz kayıtlı öğrenci bulunmuyor.
-                          </p>
-                          <p className="text-[11px] text-slate-400">
-                            Yukarıdaki &quot;Öğrenci Ekle&quot; butonuna basarak sınıfınıza öğrenci tanımlayabilirsiniz.
-                          </p>
-                        </div>
-                      </td>
+              {/* Students Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs text-slate-700">
+                  <thead>
+                    <tr className="bg-slate-50 text-slate-400 uppercase font-black tracking-wider text-[10px] border-b border-slate-200">
+                      <th className="py-2.5 px-3">No</th>
+                      <th className="py-2.5 px-3">Öğrenci Adı</th>
+                      <th className="py-2.5 px-3">Okul</th>
+                      <th className="py-2.5 px-3">Puan (XP)</th>
+                      <th className="py-2.5 px-3">İlerleme</th>
+                      <th className="py-2.5 px-3 text-right">İşlem</th>
                     </tr>
-                  ) : (
-                    classStudents.map((stu) => (
-                      <tr key={stu.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-3 px-3 font-mono font-black text-slate-900">#{stu.studentNumber}</td>
-                        <td className="py-3 px-3">
-                          <div className="font-bold text-slate-900">{stu.name}</div>
-                          <div className="text-[10px] text-slate-400">{stu.classSection} Şubesi</div>
-                        </td>
-                        <td className="py-3 px-3 text-[11px] text-slate-600 truncate max-w-[140px]">
-                          {stu.school || teacher?.school}
-                        </td>
-                        <td className="py-3 px-3 font-black text-amber-600">+{stu.points} XP</td>
-                        <td className="py-3 px-3">
-                          <div className="w-24 bg-slate-100 h-2 rounded-full overflow-hidden">
-                            <div
-                              className="bg-teal-500 h-full rounded-full"
-                              style={{ width: `${Math.min(100, (stu.points / 500) * 100)}%` }}
-                            />
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {classStudents.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-8 text-center text-slate-400">
+                          <div className="space-y-2">
+                            <div className="text-2xl">🎓</div>
+                            <p className="font-bold text-xs text-slate-600">
+                              {selectedClass} şubesinde henüz kayıtlı öğrenci bulunmuyor.
+                            </p>
+                            <p className="text-[11px] text-slate-400">
+                              Yukarıdaki &quot;Öğrenci Ekle&quot; butonuna basarak sınıfınıza öğrenci tanımlayabilirsiniz.
+                            </p>
                           </div>
                         </td>
-                        <td className="py-3 px-3 text-right">
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteStudent(stu.id, stu.name)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                            title="Öğrenciyi Sil"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-          </div>
-
-          {/* SINIF EKLE MODAL */}
-          {showAddClassModal && (
-            <div className="p-5 rounded-3xl bg-teal-950 text-white space-y-4 animate-in fade-in border border-teal-800 shadow-xl">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-black text-teal-300">Yeni Sınıf / Şube Tanımla</h4>
-                <button
-                  onClick={() => setShowAddClassModal(false)}
-                  className="text-xs text-slate-400 hover:text-white"
-                >
-                  ✕ Kapat
-                </button>
+                    ) : (
+                      classStudents.map((stu) => (
+                        <tr key={stu.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-3 px-3 font-mono font-black text-slate-900">#{stu.studentNumber}</td>
+                          <td className="py-3 px-3">
+                            <div className="font-bold text-slate-900">{stu.name}</div>
+                            <div className="text-[10px] text-slate-400">{stu.classSection} Şubesi</div>
+                          </td>
+                          <td className="py-3 px-3 text-[11px] text-slate-600 truncate max-w-[140px]">
+                            {stu.school || teacher?.school}
+                          </td>
+                          <td className="py-3 px-3 font-black text-amber-600">+{stu.points} XP</td>
+                          <td className="py-3 px-3">
+                            <div className="w-24 bg-slate-100 h-2 rounded-full overflow-hidden">
+                              <div
+                                className="bg-teal-500 h-full rounded-full"
+                                style={{ width: `${Math.min(100, (stu.points / 500) * 100)}%` }}
+                              />
+                            </div>
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteStudent(stu.id, stu.name)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                              title="Öğrenciyi Sil"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
 
-              <form onSubmit={handleAddClass} className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="text"
-                  required
-                  placeholder="Sınıf Adı (Örn: 5-C, 6-A, 7-B)"
-                  value={newClassNameInput}
-                  onChange={(e) => setNewClassNameInput(e.target.value)}
-                  className="flex-1 p-2.5 rounded-xl bg-slate-800 border border-teal-700 text-xs text-white outline-none focus:border-teal-400 uppercase font-bold"
-                />
-                <button
-                  type="submit"
-                  className="py-2.5 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Sınıfı Ekle</span>
-                </button>
-              </form>
             </div>
-          )}
 
-          {/* ADD STUDENT MODAL */}
-          {showAddModal && (
-            <div className="p-5 rounded-3xl bg-slate-900 text-white space-y-4 animate-in fade-in border border-slate-800 shadow-xl">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-black text-teal-300">Yeni Öğrenci Tanımla</h4>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="text-xs text-slate-400 hover:text-white"
-                >
-                  ✕ Kapat
-                </button>
-              </div>
-
-              <form onSubmit={handleAddStudent} className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                <input
-                  type="text"
-                  required
-                  placeholder="Okul No (Örn: 105)"
-                  value={newStudentNumber}
-                  onChange={(e) => setNewStudentNumber(e.target.value)}
-                  className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
-                />
-                <input
-                  type="text"
-                  required
-                  placeholder="Ad Soyad (Örn: Beren Kurt)"
-                  value={newStudentName}
-                  onChange={(e) => setNewStudentName(e.target.value)}
-                  className="sm:col-span-2 p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
-                />
-                <select
-                  value={newStudentClass}
-                  onChange={(e) => setNewStudentClass(e.target.value)}
-                  className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
-                >
-                  {teacherClasses.map((cls: string) => (
-                    <option key={cls} value={cls}>
-                      {cls}
-                    </option>
-                  ))}
-                </select>
-
-                <div className="sm:col-span-4 flex items-center justify-end gap-2 pt-1">
+            {/* SINIF EKLE MODAL */}
+            {showAddClassModal && (
+              <div className="p-5 rounded-3xl bg-teal-950 text-white space-y-4 animate-in fade-in border border-teal-800 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-black text-teal-300">Yeni Sınıf / Şube Tanımla</h4>
                   <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold"
+                    onClick={() => setShowAddClassModal(false)}
+                    className="text-xs text-slate-400 hover:text-white"
                   >
-                    Vazgeç
-                  </button>
-                  <button
-                    type="submit"
-                    className="py-2 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Öğrenciyi Kaydet</span>
+                    ✕ Kapat
                   </button>
                 </div>
-              </form>
-            </div>
-          )}
 
-        </div>
+                <form onSubmit={handleAddClass} className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Sınıf Adı (Örn: 5-C, 6-A, 7-B)"
+                    value={newClassNameInput}
+                    onChange={(e) => setNewClassNameInput(e.target.value)}
+                    className="flex-1 p-2.5 rounded-xl bg-slate-800 border border-teal-700 text-xs text-white outline-none focus:border-teal-400 uppercase font-bold"
+                  />
+                  <button
+                    type="submit"
+                    className="py-2.5 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Sınıfı Ekle</span>
+                  </button>
+                </form>
+              </div>
+            )}
 
-        {/* Right Column: Active Curriculum Outcomes */}
-        <div className="space-y-6">
-          
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
-            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-teal-600" />
-              <span>Ders Planı & Kazanımlar</span>
-            </h3>
+            {/* ADD STUDENT MODAL */}
+            {showAddModal && (
+              <div className="p-5 rounded-3xl bg-slate-900 text-white space-y-4 animate-in fade-in border border-slate-800 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-black text-teal-300">Yeni Öğrenci Tanımla</h4>
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    className="text-xs text-slate-400 hover:text-white"
+                  >
+                    ✕ Kapat
+                  </button>
+                </div>
 
-            {/* Outcome 1 Card */}
-            <Link
-              href="/lesson/MAT.5.3.1"
-              className="p-4 rounded-2xl bg-teal-50/50 border-2 border-teal-200 hover:border-teal-400 transition-all flex flex-col justify-between block space-y-2 group"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black px-2 py-0.5 rounded bg-teal-600 text-white">
-                  MAT.5.3.1 (1. Hafta)
-                </span>
-                <span className="text-xs text-teal-800 font-bold group-hover:translate-x-1 transition-transform">
-                  Derse Git ➔
-                </span>
-              </div>
-              <div className="font-extrabold text-xs text-slate-900">
-                Temel Geometrik Çizimler ve Sembolik Gösterimler
-              </div>
-              <div className="text-[11px] text-slate-500">
-                4 Aşama: Hikaye, Çizim Atölyesi, Kelime Avı, 8 Soru Test
-              </div>
-            </Link>
+                <form onSubmit={handleAddStudent} className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Okul No (Örn: 105)"
+                    value={newStudentNumber}
+                    onChange={(e) => setNewStudentNumber(e.target.value)}
+                    className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
+                  />
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ad Soyad (Örn: Beren Kurt)"
+                    value={newStudentName}
+                    onChange={(e) => setNewStudentName(e.target.value)}
+                    className="sm:col-span-2 p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
+                  />
+                  <select
+                    value={newStudentClass}
+                    onChange={(e) => setNewStudentClass(e.target.value)}
+                    className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
+                  >
+                    {teacherClasses.map((cls: string) => (
+                      <option key={cls} value={cls}>
+                        {cls}
+                      </option>
+                    ))}
+                  </select>
 
-            {/* Outcome 2 Card */}
-            <Link
-              href="/lesson/MAT.5.3.2"
-              className="p-4 rounded-2xl bg-indigo-50/50 border-2 border-indigo-200 hover:border-indigo-400 transition-all flex flex-col justify-between block space-y-2 group"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black px-2 py-0.5 rounded bg-indigo-600 text-white">
-                  MAT.5.3.2 (2. Hafta)
-                </span>
-                <span className="text-xs text-indigo-800 font-bold group-hover:translate-x-1 transition-transform">
-                  Derse Git ➔
-                </span>
+                  <div className="sm:col-span-4 flex items-center justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      className="py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold"
+                    >
+                      Vazgeç
+                    </button>
+                    <button
+                      type="submit"
+                      className="py-2 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Öğrenciyi Kaydet</span>
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div className="font-extrabold text-xs text-slate-900">
-                Geometrinin İzinde: Çıkarım ve Keşif Atölyesi
-              </div>
-              <div className="text-[11px] text-slate-500">
-                Selimiye Planı, 3 Deney Masası, Çıkarım Terazisi, Öğrenme Günlüğü
-              </div>
-            </Link>
+            )}
 
           </div>
 
-        </div>
+          {/* Right Column: Quick info & stats */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <BarChart2 className="w-4 h-4 text-teal-600" />
+                <span>Sınıf İstatistikleri</span>
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-2xl bg-teal-50 border border-teal-100 text-center">
+                  <div className="text-xl font-black text-teal-800">{classStudents.length}</div>
+                  <div className="text-[11px] font-bold text-teal-600">{selectedClass} Mevcudu</div>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-100 text-center">
+                  <div className="text-xl font-black text-indigo-800">{teacherClasses.length}</div>
+                  <div className="text-[11px] font-bold text-indigo-600">Toplam Şube</div>
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
+                <div className="font-bold text-slate-900">💡 Hızlı İpuçları</div>
+                <p>
+                  Öğrenciler dersin 4. Aşamasındaki &quot;Öz Değerlendirme Formunu&quot; doldurduklarında sonuçlar anında Rubrik Raporları sekmesine yansır.
+                </p>
+              </div>
+            </div>
+          </div>
 
-      </div>
+        </div>
+      )}
+
+      {/* SECTION 3: LESSON PLANS & CURRICULUM */}
+      {activeSection === 'plans' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-300">
+          
+          {/* Outcome 1 Card */}
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-teal-600 text-white">
+                  MAT.5.3.1 (1. Hafta)
+                </span>
+                <Link
+                  href="/lesson/MAT.5.3.1"
+                  className="text-xs text-teal-800 font-bold hover:underline flex items-center gap-1"
+                >
+                  <span>Derse Git</span>
+                  <span>➔</span>
+                </Link>
+              </div>
+              <div className="font-black text-sm text-slate-900">
+                Temel Geometrik Çizimler ve Sembolik Gösterimler
+              </div>
+              <div className="text-xs text-slate-500">
+                4 Aşama: Hikaye, Çizim Atölyesi, Kelime Avı, 8 Soru Test, Rubrik Öz Değerlendirme
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const out = getOutcomeById('MAT.5.3.1');
+                  if (out) {
+                    playSound('select');
+                    setActivePlanOutcome(out);
+                  }
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <FileText className="w-4 h-4 text-teal-600" />
+                <span>Günlük Planı İndir (PDF)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Outcome 2 Card */}
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-indigo-600 text-white">
+                  MAT.5.3.2 (2. Hafta)
+                </span>
+                <Link
+                  href="/lesson/MAT.5.3.2"
+                  className="text-xs text-indigo-800 font-bold hover:underline flex items-center gap-1"
+                >
+                  <span>Derse Git</span>
+                  <span>➔</span>
+                </Link>
+              </div>
+              <div className="font-black text-sm text-slate-900">
+                Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye
+              </div>
+              <div className="text-xs text-slate-500">
+                Ölçüsüz Cetvel, Pergel ile Eşit Parçalar, Gönye ile Tek Dikme & Paralellik
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const out = getOutcomeById('MAT.5.3.2');
+                  if (out) {
+                    playSound('select');
+                    setActivePlanOutcome(out);
+                  }
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <FileText className="w-4 h-4 text-indigo-600" />
+                <span>Günlük Planı İndir (PDF)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Outcome 3 Card: MAT.5.3.3 */}
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-amber-600 text-white">
+                  MAT.5.3.3 (3. Hafta)
+                </span>
+                <Link
+                  href="/lesson/MAT.5.3.3"
+                  className="text-xs text-amber-800 font-bold hover:underline flex items-center gap-1"
+                >
+                  <span>Derse Git</span>
+                  <span>➔</span>
+                </Link>
+              </div>
+              <div className="font-black text-sm text-slate-900">
+                Açı Çeşitleri, İletki ile Ölçüm & Radar Simülasyonu
+              </div>
+              <div className="text-xs text-slate-500">
+                İnteraktif Açı Laboratuvarı, Açı Radarı Oyunu, 5 Düzeyli Öz Değerlendirme Rubriği
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const out = getOutcomeById('MAT.5.3.3');
+                  if (out) {
+                    playSound('select');
+                    setActivePlanOutcome(out);
+                  }
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <FileText className="w-4 h-4 text-amber-600" />
+                <span>Günlük Planı İndir (PDF)</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* Lesson Plan PDF Modal */}
+      {activePlanOutcome && (
+        <LessonPlanModal
+          isOpen={!!activePlanOutcome}
+          onClose={() => setActivePlanOutcome(null)}
+          outcome={activePlanOutcome}
+        />
+      )}
 
     </div>
   );

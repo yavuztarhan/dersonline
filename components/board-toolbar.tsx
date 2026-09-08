@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
-import { LessonPhaseId } from '@/types';
+import { LessonPhaseId, Outcome } from '@/types';
+import { getOutcomeById } from '@/lib/curriculum-data';
+import { LessonPlanModal } from '@/components/lesson-plan-modal';
 import {
   PenTool,
   Highlighter,
@@ -22,7 +24,9 @@ import {
   CheckCircle2,
   Eye,
   EyeOff,
-  Palette
+  Palette,
+  FileText,
+  Download
 } from 'lucide-react';
 
 interface BoardToolbarProps {
@@ -30,6 +34,7 @@ interface BoardToolbarProps {
   onSelectPhase: (phase: LessonPhaseId) => void;
   outcomeCode: string;
   outcomeTitle: string;
+  outcome?: Outcome;
 }
 
 const PHASES: Array<{ id: LessonPhaseId; number: number; label: string; icon: string }> = [
@@ -46,6 +51,7 @@ export function BoardToolbar({
   onSelectPhase,
   outcomeCode,
   outcomeTitle,
+  outcome
 }: BoardToolbarProps) {
   const {
     role,
@@ -68,6 +74,9 @@ export function BoardToolbar({
     isFullscreen,
     toggleFullscreen,
   } = useApp();
+
+  const targetOutcome = outcome || getOutcomeById(outcomeCode);
+  const [planModalOpen, setPlanModalOpen] = useState(false);
 
   // 40:00 Countdown Timer
   const [timeLeft, setTimeLeft] = useState(40 * 60);
@@ -140,14 +149,14 @@ export function BoardToolbar({
               </span>
               <button
                 onClick={toggleTimer}
-                className="p-1 hover:bg-slate-800 rounded-lg text-amber-300 transition-colors"
+                className="p-1 hover:bg-slate-800 rounded-lg text-amber-300 transition-colors cursor-pointer"
                 title={timerRunning ? 'Durdur' : 'Başlat'}
               >
                 {timerRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3 fill-amber-300" />}
               </button>
               <button
                 onClick={resetTimer}
-                className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+                className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors cursor-pointer"
                 title="Sıfırla"
               >
                 <RotateCcw className="w-3 h-3" />
@@ -155,30 +164,49 @@ export function BoardToolbar({
             </div>
           </div>
 
-          {/* 4 Phases Stepper Buttons */}
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto max-w-full">
-            {PHASES.map((phase) => {
-              const isActive = currentPhase === phase.id;
-              return (
-                <button
-                  key={phase.id}
-                  onClick={() => {
-                    playSound('select');
-                    onSelectPhase(phase.id);
-                  }}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all ${
-                    isActive
-                      ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20 scale-102'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                  }`}
-                >
-                  <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">
-                    {phase.number}
-                  </span>
-                  <span>{phase.label}</span>
-                </button>
-              );
-            })}
+          {/* Right Actions: 4 Phases Stepper & Lesson Plan PDF Button */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* 4 Phases Stepper Buttons */}
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto max-w-full">
+              {PHASES.map((phase) => {
+                const isActive = currentPhase === phase.id;
+                return (
+                  <button
+                    key={phase.id}
+                    onClick={() => {
+                      playSound('select');
+                      onSelectPhase(phase.id);
+                    }}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20 scale-102'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                    }`}
+                  >
+                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">
+                      {phase.number}
+                    </span>
+                    <span>{phase.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Günlük Ders Planı İndir (PDF) Button */}
+            {targetOutcome && (
+              <button
+                onClick={() => {
+                  playSound('select');
+                  setPlanModalOpen(true);
+                }}
+                className="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
+                title="Bu dersin Maarif Modeli Günlük Planını PDF olarak indir"
+              >
+                <FileText className="w-4 h-4 text-teal-600" />
+                <span className="hidden sm:inline">Ders Planı (PDF)</span>
+                <span className="sm:hidden">Plan</span>
+              </button>
+            )}
           </div>
 
         </div>
@@ -352,6 +380,20 @@ export function BoardToolbar({
             <BookOpen className="w-5 h-5" />
           </button>
 
+          {/* Günlük Ders Planı PDF Trigger */}
+          {targetOutcome && (
+            <button
+              onClick={() => {
+                playSound('select');
+                setPlanModalOpen(true);
+              }}
+              className="p-3 rounded-2xl hover:bg-slate-800 text-teal-300 hover:text-teal-200 transition-colors"
+              title="Resmi Günlük Ders Planı (PDF İndir)"
+            >
+              <FileText className="w-5 h-5" />
+            </button>
+          )}
+
           {/* Teacher Answer Key Toggle */}
           {role === 'teacher' && (
             <button
@@ -370,6 +412,15 @@ export function BoardToolbar({
 
         </div>
       </div>
+
+      {/* Lesson Plan PDF Modal */}
+      {targetOutcome && (
+        <LessonPlanModal
+          isOpen={planModalOpen}
+          onClose={() => setPlanModalOpen(false)}
+          outcome={targetOutcome}
+        />
+      )}
     </>
   );
 }
