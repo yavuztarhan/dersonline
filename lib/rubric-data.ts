@@ -1,6 +1,70 @@
 import { SelfAssessmentRubric } from '@/types';
 
 export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
+  'MAT.5.3.4': {
+    id: 'rubric-mat-5-3-4',
+    outcomeId: 'MAT.5.3.4',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Doğruların Durumları ve Açı Çıkarımları',
+    description:
+      'Düzlemde iki veya üç doğrunun durumları, ters, komşu, tümler, bütünler açılar ve geometrik çıkarım yapma becerilerinizi dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Doğruların Durumlarını Tanıma (Kesişen, Paralel, Dik, Kesen)',
+        category: 'Kavramsal Anlama & Sınıflandırma',
+        levelDescriptions: {
+          1: 'Kesişen, paralel, dik ve kesen doğruların özelliklerini ve aralarındaki farkları karıştırıyorum.',
+          2: 'Paralel ve dik doğruları ayırt ediyorum fakat kesen (transversal) doğrunun oluşturduğu açıları açıklamakta zorlanıyorum.',
+          3: 'Kesişen, dik, paralel, çakışık ve kesen doğruları doğru tanımlıyor; paralel doğruların açı oluşturmadığını biliyorum.',
+          4: 'Düzlemde iki ve üç doğrunun tüm durumlarını eksiksiz sınıflandırıp modelleyebiliyor, kesişim noktaları ve açı oluşumunu tam açıklıyorum.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Ters Açıların Eşitliğini Keşfetme ve Uygulama',
+        category: 'Geometrik Çıkarım & Aksiyom',
+        levelDescriptions: {
+          1: 'Kesişen iki doğrudan oluşan karşılıklı açıların (ters açılar) eşit olduğunu hatırlamakta zorlanıyorum.',
+          2: 'Ters açıların eşit olduğunu biliyorum fakat eğik kesişen doğrularda ters açı çiftlerini belirlemekte tereddüt ediyorum.',
+          3: 'Kesişen iki doğrudan oluşan karşılıklı açıların ters açılar olduğunu ve ölçülerinin daima eşit (a = c, b = d) olduğunu gösteriyorum.',
+          4: 'Ters açıların eşitliğini dinamik geometri yazılımında (OB2) ve problem durumlarında hatasız uygulayıp kanıtlayabiliyorum.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Tümler, Bütünler ve Komşu Açı İlişkilerini Çözümleme',
+        category: 'Matematiksel Muhakeme & Hesaplama',
+        levelDescriptions: {
+          1: 'Tümler (90°) ve bütünler (180°) açıların derece toplamlarını birbirine karıştırıyorum.',
+          2: 'Tümler ve bütünler açı toplamlarını biliyorum ancak komşu tümler ve komşu bütünler açıları şekilde ayırt etmekte zorlanıyorum.',
+          3: 'Ölçüleri toplamı 90° olan açıları tümler, 180° olanları bütünler olarak adlandırıyor ve doğru üzerindeki komşu bütünler açıları hesaplıyorum.',
+          4: 'Tümler ve bütünler açı ilişkilerini cebirsel ve geometrik modellerle hatasız çözümlüyor, komşu açıların iç bölgelerinin ayrık olduğunu gerekçelendiriyorum.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Üç Doğrunun Durumları ve Açı Önermeleri (OB2 & MAB3)',
+        category: 'Tablo Temsili & Önerme Geliştirme',
+        levelDescriptions: {
+          1: 'Üç doğrunun kesişiminde oluşan açıları saymakta ve tabloya kaydetmekte zorlanıyorum.',
+          2: 'Üç doğrunun durumlarını gözlemliyorum fakat açı çeşitlerine dair genel bir önerme kurmakta desteğe ihtiyaç duyuyorum.',
+          3: 'Üç doğrunun tek noktada kesişimi veya paralel-kesen durumlarında oluşan açıları tablo temsili (MAB3) üzerinde listeleyip önermeler sunabiliyorum.',
+          4: 'İki ve üç doğru için geliştirdiğim açı önermelerini üçten fazla doğrunun durumlarına genelleştirebiliyor ve mantıksal gerekçeler sunuyorum.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Öz Düzenleme ve Mantıksal Çıkarım (SDB1.2 - SDB3.3)',
+        category: 'Süreç Becerileri & Yansıtma',
+        levelDescriptions: {
+          1: 'Açı ölçümü ve tablo doldurma aşamalarında rastgele tahminler yapıyor, kontrol etmiyorum.',
+          2: 'Hata yaptığımda ipucu ile düzeltiyorum ancak nedenini matematiksel olarak açıklamakta zorlanıyorum.',
+          3: 'Açıölçer ve dinamik laboratuvar araçlarıyla ölçümlerimi sabırla kontrol ediyor, varsayımlarımı ölçüm sonuçlarıyla sınıyorum.',
+          4: 'Kendi öğrenme sürecimi eleştirel değerlendiriyor, geometrik varsayımlarımı kanıtlayıp öğrenme günlüğüne derinlikli çıkarımlar aktarıyorum.'
+        }
+      }
+    ]
+  },
   'MAT.5.3.3': {
     id: 'rubric-mat-5-3-3',
     outcomeId: 'MAT.5.3.3',

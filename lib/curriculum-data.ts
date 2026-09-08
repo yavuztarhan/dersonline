@@ -1004,6 +1004,381 @@ export const CURRICULUM_DATA: Grade[] = [
                         ]
                       }
                     }
+                  },
+                  {
+                    id: 'MAT.5.3.4',
+                    code: 'MAT.5.3.4',
+                    title: 'Düzlemde İki veya Üç Doğrunun Birbirine Göre Durumuna Bağlı Olarak Oluşabilecek Açılara Dair Çıkarım Yapabilme',
+                    shortTitle: 'Doğruların Durumları ve Açı Çıkarımları: Ters, Komşu, Tümler, Bütünler',
+                    description: 'Düzlemde iki veya üç doğrunun birbirine göre durumlarını (kesişen, dik, paralel, çakışık ve kesen doğrular) inceler; oluşan açıları (ters, komşu, tümler, bütünler, komşu tümler, komşu bütünler) açıölçer ve dinamik geometri yazılımı (OB2) ile ölçüp tablo temsili (MAB3) üzerinde listeleyerek aksiyomatik çıkarımlarda bulunur.',
+                    gradeId: 'grade-5',
+                    subjectId: 'mat-5',
+                    unitId: 'unit-5-geo',
+                    topicId: 'topic-5-geo-2',
+                    durationMinutes: 40,
+                    pedagogyGuide: {
+                      maarifSDBs: [
+                        'SDB1.2: Öz Düzenleme (Açıölçer ile ölçüm yaparken zıt yönlü açıları ve komşu bütünler açı toplamını sabırla kontrol etme)',
+                        'SDB2.2: İş Birliği ve Akran Öğrenmesi (İki ve üç doğrunun kesişim durumlarını eşleştirip tablo temsili üzerinde doğrulama)',
+                        'SDB3.3: Mantıksal Çıkarım ve Geometrik Varsayım Doğrulama (İki doğrunun kesişiminde ters açı eşitliğini ve toplamın 180° olduğunu aksiyomlaştırma)'
+                      ],
+                      processComponents: [
+                        'a) Düzlemde iki veya üç doğrunun birbirine göre durumuna bağlı olarak oluşabilecek açılara dair varsayımlarda bulunur.',
+                        'b) Açıölçer / dinamik geometri (OB2) yardımıyla ölçme yaparak doğruların oluşturduğu açıları çeşitlerine ve ilişkilerine göre tablo temsili (MAB3) üzerinde listeler.',
+                        'c) Doğruların oluşturduğu açılara yönelik varsayımlarını ölçme sonuçlarıyla karşılaştırır.',
+                        'ç) Doğruladığı varsayımlara yönelik önermeler (2 dar-2 geniş veya 4 dik açı, ters açı eşitliği, paralel doğruların açı oluşturmaması vb.) sunar.',
+                        'd) Sunduğu önermelerin, üçten fazla doğrunun birbirine göre durumuna bağlı oluşabilecek açıların incelenmesine katkısına dair gerekçe sunar.'
+                      ],
+                      learningGoals: [
+                        'Düzlemde yalnız bir ortak noktası bulunan doğruları "Kesişen Doğrular", dik açı oluşturanları "Dik Doğrular (d₁ ⊥ d₂)", ortak noktası bulunmayanları "Paralel Doğrular (d₁ ∥ d₂)", tüm noktaları ortak olanları "Çakışık Doğrular" olarak adlandırır.',
+                        'İki doğruyu farklı birer noktada kesen üçüncü bir doğruyu "Kesen (Transversal)" olarak tanımlar.',
+                        'İki doğrunun kesişiminde karşılıklı duran açıların "Ters Açılar" olduğunu ve ölçülerinin daima birbirine eşit olduğunu (a = c, b = d) keşfeder.',
+                        'Ortak bir kolu ve ortak köşesi olan açıları "Komşu Açılar", ölçüleri toplamı 90° olanları "Tümler Açılar", ölçüleri toplamı 180° olanları "Bütünler Açılar" olarak tanımlar.',
+                        'Bir doğru üzerindeki komşu iki açının "Komşu Bütünler Açılar" olduğunu ve toplamlarının daima 180° ettiğini çıkarır.',
+                        'Paralel doğruların hiçbir noktada kesişmediği için açı oluşturmadığını ifade eder.',
+                        'Üç doğrunun tek noktada kesişiminde (2 geniş-4 dar açı, 2 dik-4 dar açı veya 6 dar açı) açı ilişkilerini modeller.'
+                      ],
+                      teacherTips: [
+                        'Sınıfta makas veya açılır-kapanır cetveller kullanarak iki doğrunun kesişimini somutlaştırınız; makasın ağzı açıldıkça arkadaki ters açının da aynı oranda büyüdüğünü fark ettiriniz.',
+                        'Dinamik geometri yazılımında (OB2) doğruların eğimini değiştirerek ters açıların eşitliğinin ve komşu bütünler açı toplamının (180°) hiç bozulmadığını tablo üzerinde listeletiniz (MAB3).',
+                        'Tren rayları veya köprü halatları örneğiyle paralel doğruların neden açı oluşturmadığını vurgulayınız.'
+                      ],
+                      misconceptions: [
+                        'Ters açıların sadece dik kesişen doğrularda eşit olacağını düşünmek (Eğik kesişimlerde de ters açılar daima eşittir).',
+                        'Tümler açı (90°) ile Bütünler açıyı (180°) birbiriyle karıştırmak.',
+                        'Komşu açıların iç bölgelerinin kesişebileceğini sanmak (Komşu açıların iç bölgeleri daima ayrıktır).',
+                        'Paralel doğruların uzatıldığında ileride bir yerde açı oluşturabileceğini zannetmek.'
+                      ],
+                      keyQuestions: [
+                        'Bir kavşakta kesişen iki yoldan birindeki açı 70° ise, tam karşısındaki ters açı kaç derecedir? Yanındaki komşu açı kaç derecedir?',
+                        'Neden paralel iki doğru arasında hiçbir zaman açı ölçülemez?',
+                        'Üç doğru aynı noktada kesiştiğinde en fazla kaç farklı açı meydana gelir?'
+                      ]
+                    },
+                    phases: {
+                      story: {
+                        title: 'Boğaziçi Köprüleri ve Şehir Planlama: Doğruların Gizli Açıları',
+                        character: {
+                          name: 'Şehir Plancısı Selim & Mimar Sinan',
+                          role: 'Şehir ve Geometri Mimarları',
+                          avatar: '🌉'
+                        },
+                        scenario: 'Mimar Sinan ve Genç Şehir Plancısı Selim, büyük bir metropolün köprü halatlarını, kesişen ana arter kavşaklarını ve viyadük ayaklarını planlıyorlar. Sinan Usta masaya parşömenleri seriyor: "Doğruların kesiştiği her kavşakta ters açılar, komşu bütünler açılar ve paralel köprü kirişleri saklıdır. Bu açıları doğru çözen mimar, şehrin dengesini kurar!"',
+                        realLifeConnection: 'Asma köprülerin taşıyıcı çelik halatları paralel doğrular oluştururken; viyadük makaslarındaki kesişen çelik kirişler ters açılarla yükü eşit dağıtır. Trafik kavşaklarındaki dönüş açıları komşu bütünler açılarla hesaplanır.',
+                        reflectionQuestion: 'Kesişen iki caddenin oluşturduğu açılardan biri 50° ise, karşı taraftaki ters açı ve bitişiğindeki komşu bütünler açı kaçar derecedir?',
+                        keyTakeaway: 'Kesişen doğruların oluşturduğu zıt yönlü ters açılar daima eşittir; bir doğru üzerindeki komşu bütünler açıların toplamı ise daima 180° eder!',
+                        pages: [
+                          {
+                            id: 'p4-1',
+                            pageNumber: 1,
+                            chapterTitle: '1. Bölüm: Kavşaktaki Karşılaşma',
+                            conceptTitle: 'Kesişen Doğrular ve Ters Açılar',
+                            conceptBadge: 'Ters Açılar (Eşit)',
+                            symbolicCode: 'a = c  ve  b = d',
+                            narrativeText: 'Selim harita üzerinde iki ana caddenin (d₁ ve d₂ doğruları) tek bir O noktasında kesiştiğini gördü. Sinan Usta açıölçeri masaya koydu.',
+                            characterDialogue: {
+                              speaker: 'Mimar Sinan',
+                              text: 'Evlat, kesişen iki doğru 4 farklı açı oluşturur. Karşılıklı duran bu zıt açılara TERS AÇILAR deriz. Açıölçerle ölç bakalım: Karşılıklı açıların ölçüleri birbirine daima eşittir (a = c ve b = d)!'
+                            },
+                            visualScene: {
+                              type: 'intersecting-lines',
+                              caption: 'Kesişen d₁ ve d₂ doğrularında karşılıklı duran ters açılar birbirine eşittir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Doğruları döndürerek ters açıların (a ve c) eşit kaldığını test edin!',
+                              actionLabel: 'Ters Açıları Ölç & Doğrula 📐',
+                              feedbackRevealed: 'Harika çıkarım! İki doğrunun kesişiminde oluşan karşılıklı ters açıların ölçüleri daima eşittir (a = c).'
+                            },
+                            mathTakeaway: 'Çıkarım 1: Kesişen iki doğrunun oluşturduğu zıt yönlü açılara ters açılar denir ve ters açıların ölçüleri birbirine eşittir (a = c, b = d).'
+                          },
+                          {
+                            id: 'p4-2',
+                            pageNumber: 2,
+                            chapterTitle: '2. Bölüm: Yan Yana Duran Açılar',
+                            conceptTitle: 'Komşu Açılar ve Komşu Bütünler Açılar',
+                            conceptBadge: 'Bütünler Açılar (180°)',
+                            symbolicCode: 'a + b = 180°',
+                            narrativeText: 'Sinan Usta doğru boyunca yan yana duran a ve b açılarını işaret etti. Bu iki açının birer kolu ve köşesi ortaktı.',
+                            characterDialogue: {
+                              speaker: 'Şehir Plancısı Selim',
+                              text: 'Ustam, bu iki açının köşesi ve ortadaki kolu ortak; iç bölgeleri ise tamamen ayrı! Üstelik ikisi birleştiğinde dümdüz 180°lik bir doğru oluşturuyor!'
+                            },
+                            visualScene: {
+                              type: 'supplementary-angles',
+                              caption: 'Bir doğru üzerinde yan yana duran komşu bütünler açıların toplamı 180°dir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Komşu açıları inceleyin ve toplamlarının 180° olduğunu doğrulayın!',
+                              actionLabel: 'Bütünler Açıyı Hesapla ➕',
+                              feedbackRevealed: 'Mükemmel! Bir doğru üzerinde komşu olan açıların toplamı daima 180° eder (Komşu Bütünler Açılar).'
+                            },
+                            mathTakeaway: 'Çıkarım 2: Ortak bir kolu ve köşesi olan açılara komşu açılar; ölçüleri toplamı 180° olan açılara ise bütünler açılar denir.'
+                          },
+                          {
+                            id: 'p4-3',
+                            pageNumber: 3,
+                            chapterTitle: '3. Bölüm: Diklik ve Köşe Sırrı',
+                            conceptTitle: 'Dik Kesişen Doğrular ve Tümler Açılar',
+                            conceptBadge: 'Dik Doğrular (⊥) & Tümler (90°)',
+                            symbolicCode: 'd₁ ⊥ d₂ (x + y = 90°)',
+                            narrativeText: 'Köprü ayaklarının temele tam 90° dik inmesi gerekiyordu. İki doğru dik kesiştiğinde etrafındaki tüm açılar 90° oluyordu.',
+                            characterDialogue: {
+                              speaker: 'Mimar Sinan',
+                              text: 'Birbirini 90° ile kesen doğrulara DİK DOĞRULAR (d₁ ⊥ d₂) denir. Dik açıyı ikiye böldüğümüzde ise toplamı 90° eden TÜMLER AÇILAR (x + y = 90°) doğar!'
+                            },
+                            visualScene: {
+                              type: 'perpendicular-complementary',
+                              caption: 'Dik kesişen doğrular 4 adet 90°lik dik açı oluşturur; toplamı 90° olan açılar tümlerdir.'
+                            },
+                            interactiveAction: {
+                              prompt: '90°lik dik açıyı iki parçaya bölerek tümler açıları keşfedin!',
+                              actionLabel: 'Tümler Açıyı Böl 📐',
+                              feedbackRevealed: 'Doğrulandı! Ölçüleri toplamı 90° olan iki açıya tümler açılar denir (x + y = 90°).'
+                            },
+                            mathTakeaway: 'Çıkarım 3: Dik kesişen doğrular 4 adet dik açı oluşturur. Ölçüleri toplamı 90° olan iki açı tümler açıdır.'
+                          },
+                          {
+                            id: 'p4-4',
+                            pageNumber: 4,
+                            chapterTitle: '4. Bölüm: Asla Kesişmeyen Köprü Halatları',
+                            conceptTitle: 'Paralel Doğrular ve Açı Oluşmama İlkesi',
+                            conceptBadge: 'Paralel Doğrular (∥)',
+                            symbolicCode: 'd₁ ∥ d₂ (Ortak Nokta Yok)',
+                            narrativeText: 'Asma köprünün devasa çelik taşıyıcı halatları gökyüzüne doğru yan yana uzanıyordu. Aralarındaki mesafe her noktada 15 metreydi.',
+                            characterDialogue: {
+                              speaker: 'Şehir Plancısı Selim',
+                              text: 'Bu iki halat sonsuza kadar uzasa bile asla birbirine değmez ve kesişmez! Kesişmedikleri için aralarında hiçbir açı oluşmaz; bunlar PARALEL DOĞRULARDIR (d₁ ∥ d₂)!'
+                            },
+                            visualScene: {
+                              type: 'parallel-lines-noangle',
+                              caption: 'Aynı düzlemde ortak noktası bulunmayan paralel doğrular açı oluşturmaz.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Paralel doğruları uzatarak aralarındaki mesafenin hep sabit kaldığını test edin!',
+                              actionLabel: 'Paralelliği İncele ⏸️',
+                              feedbackRevealed: 'Harika çıkarım! Ortak noktası bulunmayan paralel doğrular (d₁ ∥ d₂) hiçbir zaman açı oluşturmaz.'
+                            },
+                            mathTakeaway: 'Çıkarım 4: Düzlemde ortak noktası bulunmayan doğrular paralel doğrulardır ve aralarında açı oluşmaz.'
+                          },
+                          {
+                            id: 'p4-5',
+                            pageNumber: 5,
+                            chapterTitle: '5. Bölüm: İki Paraleli Kesen Üçüncü Doğru',
+                            conceptTitle: 'Kesen Doğru (Transversal) ve Üç Doğrunun Kesişimi',
+                            conceptBadge: 'Kesen Doğru (Transversal)',
+                            symbolicCode: 'd₃ Keseni (8 Açı Modeli)',
+                            narrativeText: 'Son olarak Selim, paralel iki demiryolu hattını verev kesen üçüncü bir bağlantı yolu (d₃ keseni) çizdi.',
+                            characterDialogue: {
+                              speaker: 'Mimar Sinan & Selim',
+                              text: 'İki doğruyu farklı noktalarda kesen bu üçüncü doğruya KESEN denir! Kesen doğru paralel hatlar üzerinde 8 farklı açı oluşturur ve yöndeş/ters açılar birebir eşleşir!'
+                            },
+                            visualScene: {
+                              type: 'transversal-angles',
+                              caption: 'İki paralel doğruyu kesen üçüncü bir doğru (kesen) 8 açı oluşturur.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Kesen doğruyu hareket ettirerek oluşan 8 açının özelliklerini inceleyin!',
+                              actionLabel: 'Kesen Doğruyu İncele 🌐',
+                              feedbackRevealed: 'Mükemmel! Kesen doğru sayesinde paralel hatlar üzerinde eş ve bütünler açı grupları meydana gelir.'
+                            },
+                            mathTakeaway: 'Çıkarım 5: İki doğruyu farklı noktalarda kesen üçüncü doğruya kesen denir; kesen doğru paralel doğrular üzerinde yöndeş, ters ve bütünler açı ilişkileri kurar.'
+                          }
+                        ]
+                      },
+                      lab: {
+                        title: 'Dinamik Doğru ve Açı İnşa Masası (OB2 & MAB3 Tablo Temsili)',
+                        toolType: 'experiment-bench',
+                        instructions: 'Açıölçer ve dinamik doğru sürükleme araçları ile iki ve üç doğrunun durumlarını inceleyin; açı ölçüm tablosunu (MAB3) doldurarak çıkarımlarınızı doğrulayınız.',
+                        taskGoal: 'Kesişen doğrular, dik doğrular ve paralel-kesen doğru deneylerini tamamlayıp açı çıkarım kartlarını açınız.',
+                        interactiveTips: [
+                          '1. Deney (Kesişen İki Doğru): Doğruları döndürün; karşılıklı ters açıların daima eşit kaldığını ve komşu açıların toplamının 180° olduğunu tabloda inceleyin.',
+                          '2. Deney (Dik Doğrular & Tümler Açılar): Doğruları 90° dik konuma getirin; 4 dik açıyı ve toplamı 90° olan komşu tümler açıları gözlemleyin.',
+                          '3. Deney (İki Paralel ve Bir Kesen): Kesen doğrunun açısını değiştirerek paralel doğrular üzerinde oluşan 8 açıyı karşılaştırın (OB2).'
+                        ],
+                        presetObjects: []
+                      },
+                      puzzle: {
+                        title: 'Açı İlişkileri ve Çıkarım Bulmacaları',
+                        instructions: 'Ters, komşu, tümler, bütünler açıları ve doğruların birbirine göre durumlarını eşleştirme, kelime avı ve hızlı test ile pekiştirin.',
+                        items: [
+                          {
+                            id: 'pz-4-1',
+                            concept: 'Ters Açılar',
+                            symbol: 'a = c  ve  b = d',
+                            definition: 'Kesişen iki doğrunun oluşturduğu, karşılıklı ve zıt yönlü, ölçüleri daima eşit olan açılardır.',
+                            visualType: 'angle'
+                          },
+                          {
+                            id: 'pz-4-2',
+                            concept: 'Komşu Bütünler Açılar',
+                            symbol: 'a + b = 180°',
+                            definition: 'Bir doğru üzerinde yan yana duran, ortak köşesi ve ortak bir kolu olan, toplamı 180° eden açılardır.',
+                            visualType: 'angle'
+                          },
+                          {
+                            id: 'pz-4-3',
+                            concept: 'Tümler Açılar',
+                            symbol: 'x + y = 90°',
+                            definition: 'Ölçüleri toplamı 90° (dik açı) olan iki açıdır.',
+                            visualType: 'angle'
+                          },
+                          {
+                            id: 'pz-4-4',
+                            concept: 'Bütünler Açılar',
+                            symbol: 'k + m = 180°',
+                            definition: 'Ölçüleri toplamı 180° (doğru açı) olan iki açıdır.',
+                            visualType: 'angle'
+                          },
+                          {
+                            id: 'pz-4-5',
+                            concept: 'Dik Doğrular',
+                            symbol: 'd₁ ⊥ d₂ (90°)',
+                            definition: 'Birbirini 90°lik dik açı oluşturacak şekilde kesen doğrulardır.',
+                            visualType: 'line'
+                          },
+                          {
+                            id: 'pz-4-6',
+                            concept: 'Paralel Doğrular',
+                            symbol: 'd₁ ∥ d₂ (Açı = 0° / Yok)',
+                            definition: 'Aynı düzlemde bulunan, hiçbir ortak noktası olmayan ve bu nedenle açı oluşturmayan doğrulardır.',
+                            visualType: 'line'
+                          },
+                          {
+                            id: 'pz-4-7',
+                            concept: 'Kesen Doğru (Transversal)',
+                            symbol: 'd₃ (Kesen)',
+                            definition: 'Düzlemdeki iki veya daha fazla doğruyu farklı noktalardan kesen üçüncü doğrudur.',
+                            visualType: 'line'
+                          },
+                          {
+                            id: 'pz-4-8',
+                            concept: 'Çakışık Doğrular',
+                            symbol: 'd₁ ≡ d₂ (Tüm Noktalar Ortak)',
+                            definition: 'Düzlemde tüm noktaları ortak olan ve üst üste gelen tek bir doğru gibi görünen doğrulardır.',
+                            visualType: 'line'
+                          }
+                        ]
+                      },
+                      assessment: {
+                        title: 'Doğruların Durumları ve Açı Çıkarımları Süreç Değerlendirmesi',
+                        instructions: 'İki ve üç doğrunun durumlarına, ters, komşu, tümler ve bütünler açılara yönelik 8 soruyu dikkatle yanıtlayınız.',
+                        reflectionPrompt: 'Bugün iki ve üç doğrunun kesişiminde öğrendiğim en önemli açı kuralı (ters açı eşitliği, komşu bütünler açı toplamı vb.) şuydu:',
+                        questions: [
+                          {
+                            id: 'q-4-1',
+                            questionText: 'Düzlemde kesişen iki doğrunun oluşturduğu açılardan birinin ölçüsü 65° olarak verilmiştir. Bu açının TERS AÇISI olan açının ölçüsü kaç derecedir?',
+                            options: [
+                              'A) 25°',
+                              'B) 65°',
+                              'C) 115°',
+                              'D) 180°'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Kesişen iki doğrunun oluşturduğu ters açıların ölçüleri daima birbirine eşittir. Bu nedenle 65°lik açının ters açısı da 65°dir.',
+                            bloomLevel: 'Kavrama & Çıkarım',
+                            context: 'Kesişen İki Yol Kavşağı'
+                          },
+                          {
+                            id: 'q-4-2',
+                            questionText: 'Bir doğru üzerinde yan yana duran iki KOMŞU BÜTÜNLER açıdan birinin ölçüsü 110°dir. Diğer komşu açının ölçüsü kaç derecedir?',
+                            options: [
+                              'A) 70°',
+                              'B) 80°',
+                              'C) 90°',
+                              'D) 110°'
+                            ],
+                            correctOptionIndex: 0,
+                            explanation: 'Komşu bütünler açıların ölçüleri toplamı daima 180° (doğru açı) eder. Buradan: 180° - 110° = 70° bulunur.',
+                            bloomLevel: 'Uygulama',
+                            context: 'Doğrusal Viyadük Açıklığı'
+                          },
+                          {
+                            id: 'q-4-3',
+                            questionText: 'Ölçüsü 35° olan bir açının TÜMLERİ olan açı kaç derecedir?',
+                            options: [
+                              'A) 45°',
+                              'B) 55°',
+                              'C) 65°',
+                              'D) 145°'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Tümler iki açının ölçüleri toplamı 90°dir. 90° - 35° = 55° olarak hesaplanır.',
+                            bloomLevel: 'Bilgi & Hesaplama',
+                            context: 'Gönye ve Diklik Çizimi'
+                          },
+                          {
+                            id: 'q-4-4',
+                            questionText: 'Düzlemdeki d₁ ve d₂ doğruları hakkında "Aralarında hiçbir ortak nokta yoktur ve hiçbir açı oluşturmazlar" bilgisi veriliyor. Bu iki doğru için aşağıdakilerden hangisi söylenebilir?',
+                            options: [
+                              'A) d₁ ve d₂ dik doğrulardır (d₁ ⊥ d₂)',
+                              'B) d₁ ve d₂ paralel doğrulardır (d₁ ∥ d₂)',
+                              'C) d₁ ve d₂ çakışık doğrulardır',
+                              'D) d₁ doğrusu d₂ doğrusunun kesenidir'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Aynı düzlemde hiçbir ortak noktası bulunmayan ve kesişmeyen doğrular PARALEL DOĞRULARDIR (d₁ ∥ d₂) ve açı oluşturmazlar.',
+                            bloomLevel: 'Analiz & Akıl Yürütme',
+                            context: 'Tren Rayları Modeli'
+                          },
+                          {
+                            id: 'q-4-5',
+                            questionText: 'İki doğru birbirini DİK olarak (d₁ ⊥ d₂) kestiğinde kesişim noktasında oluşan 4 açının özellikleri hakkında hangisi DOĞRUDUR?',
+                            options: [
+                              'A) İki dar açı ve iki geniş açı oluşur.',
+                              'B) 4 açının tamamı 90°lik dik açıdır.',
+                              'C) Karşılıklı açılar eşit değildir.',
+                              'D) Açılardan biri 45°, diğeri 135°dir.'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Dik kesişen doğruların oluşturduğu 4 açının her biri tam olarak 90°lik dik açıdır ve hepsi birbirine eştir.',
+                            bloomLevel: 'Kavrama',
+                            context: 'Şehir Izgara Planı'
+                          },
+                          {
+                            id: 'q-4-6',
+                            questionText: 'Düzlemde iki paralel doğruyu (d₁ ∥ d₂) farklı iki noktadan kesen üçüncü bir d₃ doğrusuna ne ad verilir?',
+                            options: [
+                              'A) Kesen (Transversal)',
+                              'B) Dikme',
+                              'C) Işın',
+                              'D) Çakışık doğru'
+                            ],
+                            correctOptionIndex: 0,
+                            explanation: 'İki doğruyu farklı birer noktada kesen üçüncü doğruya bu iki doğrunun "KESENİ" adı verilir.',
+                            bloomLevel: 'Bilgi & Tanım',
+                            context: 'Köprü Bağlantı Kirişi'
+                          },
+                          {
+                            id: 'q-4-7',
+                            questionText: 'Aşağıdaki önermelerden hangisi her zaman YANLIŞTIR?',
+                            options: [
+                              'A) Kesişen iki doğrunun oluşturduğu ters açılar birbirine eştir.',
+                              'B) Komşu bütünler iki açının ölçüleri toplamı 180°dir.',
+                              'C) Paralel iki doğru uzatıldıkça aralarındaki açı 90° olur.',
+                              'D) Tümler iki açının toplamı dik açıya (90°) eşittir.'
+                            ],
+                            correctOptionIndex: 2,
+                            explanation: 'Paralel doğrular nereye kadar uzatılırsa uzatılsın asla kesişmez ve aralarında açı oluşmaz. C şıkkı kesinlikle yanlıştır.',
+                            bloomLevel: 'Değerlendirme & Mantıksal Çıkarım',
+                            context: 'Aksiyom ve Teorem Testi'
+                          },
+                          {
+                            id: 'q-4-8',
+                            questionText: 'Üç doğrunun tek bir O noktasında kesiştiği bir durumda etrafta toplam 6 açı meydana gelmektedir. Bu açılardan karşılıklı olan 3 çift için hangisi kesinlikle doğrudur?',
+                            options: [
+                              'A) Karşılıklı açılar (ters açılar) çiftler halinde birbirine eşittir.',
+                              'B) 6 açının tamamı mutlaka dik açıdır.',
+                              'C) 6 açının toplamı 180° eder.',
+                              'D) Karşılıklı açıların toplamı 90° eder.'
+                            ],
+                            correctOptionIndex: 0,
+                            explanation: 'Üç doğru tek noktada kesiştiğinde oluşan 6 açıdan karşılıklı duran 3 çiftin her biri ters açıdır ve karşılıklı açıların ölçüleri çiftler halinde birbirine eşittir (toplamları 360°dir).',
+                            bloomLevel: 'Sentez & Üst Düzey Çıkarım',
+                            context: 'Yıldız Kavşak Geometrisi'
+                          }
+                        ]
+                      }
+                    }
                   }
                 ]
               }

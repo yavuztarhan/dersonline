@@ -163,6 +163,52 @@ const MAT_5_3_3_CLUES: WordClue[] = [
   }
 ];
 
+// 4. MAT.5.3.4 Clues (Doğruların Durumları ve Açı Çıkarımları)
+const MAT_5_3_4_CLUES: WordClue[] = [
+  {
+    id: 'mat4-c1',
+    question: 'Kesişen iki doğrunun oluşturduğu, karşılıklı ve ölçüleri birbirine daima eşit olan açılara ne denir?',
+    word: 'TERSAÇI',
+    hint: '7 Harfli • a = c, b = d',
+    color: '#10b396'
+  },
+  {
+    id: 'mat4-c2',
+    question: 'Ölçüleri toplamı 90° (dik açı) olan iki açıya ne ad verilir?',
+    word: 'TÜMLER',
+    hint: '6 Harfli • x + y = 90°',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat4-c3',
+    question: 'Ölçüleri toplamı 180° (doğru açı) olan iki açıya ne ad verilir?',
+    word: 'BÜTÜNLER',
+    hint: '8 Harfli • a + b = 180°',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat4-c4',
+    question: 'Bir köşesi ve bir kolu ortak olup iç bölgeleri ayrık olan yan yana açılara ne denir?',
+    word: 'KOMŞU',
+    hint: '5 Harfli • Yan yana açılar',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat4-c5',
+    question: 'İki veya daha fazla doğruyu farklı noktalarda kesen üçüncü doğruya ne ad verilir?',
+    word: 'KESEN',
+    hint: '5 Harfli • Transversal doğru',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat4-c6',
+    question: 'Aynı düzlemde bulunan ve uzatıldığında hiçbir zaman kesişmeyip açı oluşturmayan doğrulara ne denir?',
+    word: 'PARALEL',
+    hint: '7 Harfli • Sembolü (∥)',
+    color: '#ef4444'
+  }
+];
+
 const TURKISH_CHARS = [
   'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
   'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
@@ -180,23 +226,20 @@ interface PlacedWord {
   cells: CellPos[];
 }
 
-const GRID_SIZE = 12;
+const GRID_SIZE = 11;
 
-function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
+function generateWordGrid(clues: WordClue[], size = GRID_SIZE): { grid: string[][]; placed: PlacedWord[] } {
   const directions = [
-    { dr: 0, dc: 1 },
-    { dr: 0, dc: -1 },
-    { dr: 1, dc: 0 },
-    { dr: -1, dc: 0 },
-    { dr: 1, dc: 1 },
-    { dr: -1, dc: 1 },
-    { dr: 1, dc: -1 },
-    { dr: -1, dc: -1 }
+    { dr: 0, dc: 1 }, // Horizontal right
+    { dr: 1, dc: 0 }, // Vertical down
+    { dr: 1, dc: 1 }, // Diagonal down-right
+    { dr: 0, dc: -1 }, // Horizontal left
+    { dr: -1, dc: 0 } // Vertical up
   ];
 
   const sortedClues = [...clues].sort((a, b) => b.word.length - a.word.length);
 
-  for (let attempt = 0; attempt < 250; attempt++) {
+  for (let attempt = 0; attempt < 50; attempt++) {
     const grid: string[][] = Array.from({ length: size }, () => Array(size).fill(''));
     const placed: PlacedWord[] = [];
     let allPlaced = true;
@@ -250,7 +293,8 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
       }
     }
 
-    if (allPlaced) {
+    if (allPlaced && placed.length === clues.length) {
+      // Fill blanks with random Turkish letters
       for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
           if (grid[r][c] === '') {
@@ -271,10 +315,13 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE) {
 export function WordSearchGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
+  const isLinesAnglesTopic = selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4');
   const isAngleTopic = selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3');
   const isSelimiyeTopic = selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2');
 
-  const activeClues = isAngleTopic
+  const activeClues = isLinesAnglesTopic
+    ? MAT_5_3_4_CLUES
+    : isAngleTopic
     ? MAT_5_3_3_CLUES
     : isSelimiyeTopic
     ? MAT_5_3_2_CLUES

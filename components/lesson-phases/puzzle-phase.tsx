@@ -154,10 +154,14 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     }
   };
 
+  const isLinesAnglesTopic =
+    selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4');
+
   const isAngleTopic =
-    data.title?.toLowerCase().includes('açı') ||
-    data.title?.toLowerCase().includes('iletki') ||
-    selectedOutcome?.id === 'MAT.5.3.3';
+    !isLinesAnglesTopic &&
+    (data.title?.toLowerCase().includes('iletki') ||
+      selectedOutcome?.id === 'MAT.5.3.3' ||
+      (data.title?.toLowerCase().includes('açı') && !data.title?.toLowerCase().includes('doğru')));
 
   const isConstructionTopic =
     selectedOutcome?.id === 'MAT.5.3.2' ||
@@ -208,9 +212,15 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   baseGamesList.push(
     {
       id: 'matching',
-      title: isAngleTopic ? 'Açı Çeşitleri & İletki Eşleştirme' : 'Kavram & Sembol Eşleştirme',
+      title: isLinesAnglesTopic
+        ? 'Doğrular & Açı Çıkarımları Eşleştirme'
+        : isAngleTopic
+        ? 'Açı Çeşitleri & İletki Eşleştirme'
+        : 'Kavram & Sembol Eşleştirme',
       tagline: 'Geometrik Modelleri Tanı',
-      description: isAngleTopic
+      description: isLinesAnglesTopic
+        ? 'Ters, komşu, tümler, bütünler açıları ve doğruların durumlarını sembol ve tanımlarıyla eşleştirin.'
+        : isAngleTopic
         ? 'Açı çeşitleri, ışın ve köşe kavramlarını görsel modelleri ve sembolik formülleriyle eşleştir.'
         : 'Geometrik kavramları görsel modelleri, tanımları ve sembolik gösterimleriyle eşleştirin.',
       icon: <Puzzle className="w-8 h-8" />,

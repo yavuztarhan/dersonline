@@ -122,13 +122,50 @@ const MAT_5_3_3_TF: TFQuestion[] = [
   }
 ];
 
+// 4. MAT.5.3.4 (Doğruların Durumları ve Açı Çıkarımları)
+const MAT_5_3_4_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat4-1',
+    statement: 'Kesişen iki doğrunun oluşturduğu karşılıklı zıt yönlü ters açıların ölçüleri daima birbirine eşittir.',
+    isTrue: true,
+    explanation: 'Doğrular hangi açıyla kesişirse kesişsin, karşılıklı duran ters açıların ölçüleri kesinlikle eşittir (a = c, b = d).'
+  },
+  {
+    id: 'tf-mat4-2',
+    statement: 'Ölçüleri toplamı 90° olan iki açıya Bütünler Açılar denir.',
+    isTrue: false,
+    explanation: 'Ölçüleri toplamı 90° olan açılara TÜMLER açılar; 180° olanlara ise BÜTÜNLER açılar denir.'
+  },
+  {
+    id: 'tf-mat4-3',
+    statement: 'Bir doğru üzerinde yan yana duran ve ortak bir kolu olan komşu bütünler açıların toplamı daima 180°dir.',
+    isTrue: true,
+    explanation: 'Bir doğru üzerindeki komşu iki açı bir doğru açıyı tamamladığı için toplamları daima 180° eder.'
+  },
+  {
+    id: 'tf-mat4-4',
+    statement: 'Aynı düzlemde bulunan paralel iki doğru uzatıldığında ileride bir noktada kesişerek dar açı oluşturur.',
+    isTrue: false,
+    explanation: 'Paralel doğruların hiçbir ortak noktası yoktur; sonsuza uzatılsalar bile asla kesişmez ve açı oluşturmazlar.'
+  },
+  {
+    id: 'tf-mat4-5',
+    statement: 'Düzlemde iki veya daha fazla doğruyu farklı noktalarda kesen üçüncü bir doğruya kesen (transversal) denir.',
+    isTrue: true,
+    explanation: 'İki paralel doğruyu kesen üçüncü doğruya kesen denir ve paralel hatlar üzerinde yöndeş, ters ve eş açılar meydana getirir.'
+  }
+];
+
 export function TrueFalseGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
+  const isLinesAnglesTopic = selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4');
   const isAngleTopic = selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3');
   const isSelimiyeTopic = selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2');
 
-  const questions = isAngleTopic
+  const questions = isLinesAnglesTopic
+    ? MAT_5_3_4_TF
+    : isAngleTopic
     ? MAT_5_3_3_TF
     : isSelimiyeTopic
     ? MAT_5_3_2_TF
