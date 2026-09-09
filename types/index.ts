@@ -63,7 +63,16 @@ export interface GeometryToolState {
 
 export interface LabPhaseData {
   title: string;
-  toolType: 'geometry-canvas' | 'angle-protractor' | 'number-line' | 'fraction-wall' | 'experiment-bench';
+  toolType:
+    | 'geometry-canvas'
+    | 'angle-protractor'
+    | 'number-line'
+    | 'fraction-wall'
+    | 'experiment-bench'
+    | 'factors-multiples-bench'
+    | 'divisibility-bench'
+    | 'prime-factors-bench'
+    | 'common-multiples-divisors-bench';
   instructions: string;
   taskGoal: string;
   interactiveTips: string[];

@@ -500,6 +500,234 @@ const MAT_6_1_1_PAIRS: MemoryPair[] = [
   }
 ];
 
+// 7. MAT.6.1.2: Bölünebilme Kriterleri (6. Sınıf)
+const MAT_6_1_2_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat62-p1',
+    concept: '2 İLE BÖLÜNEBİLME',
+    symbol: 'Sonu: 0, 2, 4, 6, 8',
+    badge: '🔢 Çift Sayılar',
+    definition: 'Birler basamağı çift olan tüm doğal sayılar 2 ile kalansız bölünür.',
+    example: '4.856 sayısının son basamağı 6 (çift) olduğu için 2\'ye tam bölünür.',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat62-p2',
+    concept: '3 İLE BÖLÜNEBİLME',
+    symbol: '∑ Rakamlar = 3k',
+    badge: '➕ Rakamlar Toplamı',
+    definition: 'Rakamları toplamı 3 veya 3\'ün katı olan doğal sayılar 3 ile kalansız bölünür.',
+    example: '7.413 ⟹ 7+4+1+3 = 15 (3\'ün katı), 3\'e tam bölünür.',
+    color: '#10b396'
+  },
+  {
+    id: 'mat62-p3',
+    concept: '4 İLE BÖLÜNEBİLME',
+    symbol: 'Son 2 Basamak = 4k',
+    badge: '🎯 Son İki Basamak',
+    definition: 'Son iki basamağı 00 veya 4\'ün katı (04, 08, 12... 96) olan sayılar 4 ile tam bölünür.',
+    example: '125.836 sayısında son iki basamak 36 (4×9) olduğundan 4\'e tam bölünür.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat62-p4',
+    concept: '5 İLE BÖLÜNEBİLME',
+    symbol: 'Sonu: 0 veya 5',
+    badge: '🖐️ 5\'in Katları',
+    definition: 'Birler basamağı 0 veya 5 olan tüm doğal sayılar 5 ile kalansız bölünür.',
+    example: '8.345 (sonu 5) ve 9.210 (sonu 0) sayıları 5\'e kalansız bölünür.',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat62-p5',
+    concept: '6 İLE BÖLÜNEBİLME',
+    symbol: '2 ∩ 3 = 6',
+    badge: '⚡ Çift & 3\'ün Katı',
+    definition: 'Hem 2 ile (çift) hem de 3 ile (rakamlar toplamı 3k) bölünebilen sayılar 6 ile tam bölünür.',
+    example: '4.512 sayısı çifttir ve rakamlar toplamı 12\'dir; 6\'ya tam bölünür.',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat62-p6',
+    concept: '9 İLE BÖLÜNEBİLME',
+    symbol: '∑ Rakamlar = 9k',
+    badge: '🌟 9\'un Katı',
+    definition: 'Rakamları toplamı 9 veya 9\'un katı olan tüm doğal sayılar 9 ile kalansız bölünür.',
+    example: '5.418 ⟹ 5+4+1+8 = 18 (9\'un katı), 9\'a tam bölünür.',
+    color: '#ef4444'
+  },
+  {
+    id: 'mat62-p7',
+    concept: '10 İLE BÖLÜNEBİLME',
+    symbol: 'Sonu: 0',
+    badge: '🔟 Birler: 0',
+    definition: 'Birler basamağı 0 olan sayılar 10 ile kalansız bölünür; son basamak kalanı verir.',
+    example: '7.850 sayısı 10\'a tam bölünür; 7.854\'ün 10\'a bölümünden kalan 4\'tür.',
+    color: '#6366f1'
+  },
+  {
+    id: 'mat62-p8',
+    concept: 'BASAMAK ÇÖZÜMLEMESİ',
+    symbol: '100 = 99 + 1',
+    badge: '📐 Mantıksal İspat',
+    definition: 'Yüzlük ve onluklar 99 ve 9\'un katı olduğundan 3 ve 9\'da sadece rakamlar toplamı kalır.',
+    example: '423 = 4×(99+1) + 2×(9+1) + 3 = 9k + (4+2+3).',
+    color: '#14b8a6'
+  }
+];
+
+// 8. MAT.6.1.3: Asal Sayılar ve Asal Çarpanlar (6. Sınıf)
+const MAT_6_1_3_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat63-p1',
+    concept: 'ASAL SAYI TANIMI',
+    symbol: 'P = {2, 3, 5, 7...}',
+    badge: '🏛️ Bölünemez Yapı Taşı',
+    definition: 'Sadece 1\'e ve kendisine kalansız bölünebilen 1\'den büyük doğal sayılara asal sayı denir.',
+    example: '13 sayısı sadece 1 ve 13\'e bölünür, dolayısıyla asaldır.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat63-p2',
+    concept: 'EN KÜÇÜK ASAL SAYI',
+    symbol: '2',
+    badge: '👑 Yegâne Çift Asal',
+    definition: 'En küçük asal sayı 2\'dir ve 2 haricindeki tüm asal sayılar tektir.',
+    example: '2\'den büyük çift sayılar 2\'ye bölündüğü için asal olamaz.',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat63-p3',
+    concept: '1 SAYISININ DURUMU',
+    symbol: '1 ∉ Asal',
+    badge: '❌ Asal Değildir',
+    definition: '1 sayısı sadece 1 pozitif böleni olduğu için (2 bölen kuralını sağlamaz) asal değildir.',
+    example: 'Asal sayıların tam 2 farklı pozitif böleni olmak zorundadır.',
+    color: '#ef4444'
+  },
+  {
+    id: 'mat63-p4',
+    concept: 'ERATOSTHENES KALBURU',
+    symbol: '1-100 Arası: 25 Asal',
+    badge: '🌾 Antik Elek',
+    definition: '1\'i ve asalların katlarını eleyerek 1-100 arasındaki 25 asal sayıyı bulan yöntemdir.',
+    example: '2, 3, 5, 7 katları elendiğinde 1-100 arası tüm asallar parlar.',
+    color: '#10b396'
+  },
+  {
+    id: 'mat63-p5',
+    concept: 'ASAL ÇARPAN AĞACI',
+    symbol: 'Dallanma Modeli',
+    badge: '🌳 Çarpan Ağacı',
+    definition: 'Bileşik bir sayının dallara ayrılarak en altta asal yapraklara ulaşıldığı görsel modeldir.',
+    example: '36 ⟹ 2 × 18 ⟹ 2 × 2 × 9 ⟹ 2 × 2 × 3 × 3 = 2² · 3².',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat63-p6',
+    concept: 'BÖLEN LİSTESİ ALGORİTMASI',
+    symbol: 'A | 2, B | 3...',
+    badge: '⚡ Dikey Çizgi',
+    definition: 'Bir sayının dikey çizgi boyunca sırayla asal sayılara bölünerek 1\'e ulaşıldığı yöntemdir.',
+    example: '72 | 2, 36 | 2, 18 | 2, 9 | 3, 3 | 3, 1  ⟹  72 = 2³ · 3².',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat63-p7',
+    concept: 'ARİTMETİĞİN TEMEL TEOREMİ',
+    symbol: 'A = 2ᵃ · 3ᵇ · 5ᶜ',
+    badge: '📜 Benzersiz Kod',
+    definition: '1\'den büyük her doğal sayı asal sayıların çarpımı olarak tek bir şekilde yazılabilir.',
+    example: '60 = 2² · 3 · 5 (Asal çarpanları: 2, 3, 5).',
+    color: '#6366f1'
+  },
+  {
+    id: 'mat63-p8',
+    concept: 'KRİPTOGRAFİ & RSA',
+    symbol: 'P₁ × P₂ = Şifre',
+    badge: '🔐 Siber Kalkan',
+    definition: 'İki dev asal sayının çarpımının çarpanlarına ayrılamamasıyla banka şifreleri korunur.',
+    example: 'Asal sayılar günümüz siber güvenliğinin temelidir.',
+    color: '#14b8a6'
+  }
+];
+
+// 9. MAT.6.1.4: Ortak Kat ve Ortak Bölen (6. Sınıf)
+const MAT_6_1_4_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat64-p1',
+    concept: 'ORTAK BÖLEN',
+    symbol: 'A ∩ B (Bölenler)',
+    badge: '📦 Eşit Paylaşım',
+    definition: 'İki veya daha fazla doğal sayıyı aynı anda kalansız bölebilen sayılar kümesidir.',
+    example: '24 ve 36\'nın ortak bölenleri: {1, 2, 3, 4, 6, 12}.',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat64-p2',
+    concept: 'ORTAK KAT',
+    symbol: 'A ∩ B (Katlar)',
+    badge: '⏱️ Periyodik Buluşma',
+    definition: 'İki veya daha fazla doğal sayının katları arasında ortak olan sayılardır.',
+    example: '6 ve 8\'in ortak katları: 24, 48, 72, 96...',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat64-p3',
+    concept: 'ARALARINDA ASAL SAYILAR',
+    symbol: 'Ortak Bölen = {1}',
+    badge: '🤝 Tek Ortak: 1',
+    definition: '1\'den başka pozitif ortak böleni olmayan iki doğal sayıdır (örn: 8 ve 15).',
+    example: '8 ve 15 asal değildir ancak ortak bölenleri sadece 1 olduğu için aralarında asaldır.',
+    color: '#10b396'
+  },
+  {
+    id: 'mat64-p4',
+    concept: 'EN KÜÇÜK ORTAK KAT',
+    symbol: 'İlk Ortak Kat',
+    badge: '🎯 İlk Çakışma',
+    definition: 'İki sayının pozitif ortak katlarının en küçüğüdür; diğer ortak katlar bunun katıdır.',
+    example: '15 ve 20\'nin ilk ortak katı 60\'tır (60, 120, 180...).',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat64-p5',
+    concept: 'EŞİT ARALIK & FİDAN DİKİMİ',
+    symbol: 'Mesafe = Ortak Bölen',
+    badge: '🌱 Yeşil Vatan',
+    definition: 'Yol kenarlarına eşit aralıklarla fidan dikme problemlerinde ortak bölenler kullanılır.',
+    example: '30 m ve 45 m kenarlara en az fidan için 15 m aralık seçilir.',
+    color: '#14b8a6'
+  },
+  {
+    id: 'mat64-p6',
+    concept: 'SEFERLER & NÖBETLER',
+    symbol: 'Zaman = Ortak Kat',
+    badge: '🚌 Sefer Koordinasyonu',
+    definition: 'Farklı aralıklarla kalkan araçların aynı anda hareket ettiği saatler ortak katla bulunur.',
+    example: '20 dk ve 25 dk kalkan vapurlar 100 dk sonra birlikte kalkar.',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat64-p7',
+    concept: 'ARDIŞIK SAYILARIN ASALLIĞI',
+    symbol: '(n, n+1) = Aralarında Asal',
+    badge: '🔢 Ardışık Kural',
+    definition: 'Ardışık iki doğal sayı (örneğin 14 ve 15) daima aralarında asaldır.',
+    example: 'Farkları 1 olduğu için 1\'den büyük ortak bölenleri olamaz.',
+    color: '#6366f1'
+  },
+  {
+    id: 'mat64-p8',
+    concept: 'MERHAMET & ADİL PAYLAŞIM',
+    symbol: 'D9 Değeri',
+    badge: '🐾 Barınak Seferberliği',
+    definition: 'Sokak hayvanlarına kuru ve yaş mamaları eşit kaplara paylaştırma erdemidir.',
+    example: '24 kg ve 36 kg mama 12 kg\'lık paketlerle en az kapta dağıtılır.',
+    color: '#ef4444'
+  }
+];
+
 // Helper to resolve pairs and topic info
 function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTitle?: string): { code: string; title: string; pairs: MemoryPair[] } {
   const id = outcomeId || '';
@@ -507,7 +735,31 @@ function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTi
   const title = (outcomeTitle || '').toLowerCase();
 
   // 1. Direct ID / Code Check (Exact topic matching)
-  if (id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpan') || title.includes('kat')) {
+  if (id === 'MAT.6.1.4' || code.includes('6.1.4') || title.includes('ortak kat') || title.includes('ortak bölen')) {
+    return {
+      code: 'MAT.6.1.4',
+      title: 'Ortak Kat ve Ortak Bölen',
+      pairs: MAT_6_1_4_PAIRS
+    };
+  }
+
+  if (id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal')) {
+    return {
+      code: 'MAT.6.1.3',
+      title: 'Asal Sayılar ve Asal Çarpanlar',
+      pairs: MAT_6_1_3_PAIRS
+    };
+  }
+
+  if (id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme')) {
+    return {
+      code: 'MAT.6.1.2',
+      title: 'Bölünebilme Kriterleri (2, 3, 4, 5, 6, 9, 10)',
+      pairs: MAT_6_1_2_PAIRS
+    };
+  }
+
+  if (id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları')) {
     return {
       code: 'MAT.6.1.1',
       title: 'Bir Doğal Sayının Çarpanları ve Katları',

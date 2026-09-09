@@ -255,6 +255,144 @@ const MAT_6_1_1_CLUES: WordClue[] = [
   }
 ];
 
+// 6. MAT.6.1.2 Clues (6. Sınıf: Bölünebilme Kriterleri)
+const MAT_6_1_2_CLUES: WordClue[] = [
+  {
+    id: 'mat62-c1',
+    question: '2 ile kalansız bölünebilen sayıların birler basamağındaki (0, 2, 4, 6, 8) rakam türüne ne denir?',
+    word: 'ÇİFT',
+    hint: '4 Harfli • 2\'nin katı sayılar',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat62-c2',
+    question: 'Bir sayının basamaklarındaki değerlerin sayısal konumuna ne ad verilir?',
+    word: 'BASAMAK',
+    hint: '7 Harfli • Birler, onlar, yüzler',
+    color: '#10b396'
+  },
+  {
+    id: 'mat62-c3',
+    question: '3 ve 9 ile bölünebilmede incelenen tüm rakamların bir araya getirilme işlemine ne denir?',
+    word: 'TOPLAM',
+    hint: '6 Harfli • Rakamlar toplamı kuralı',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat62-c4',
+    question: 'Bir bölme işleminde bölünen sayı tam paylaştırılamadığında artan miktara ne denir?',
+    word: 'KALAN',
+    hint: '5 Harfli • Kalansız bölmede sıfırdır',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat62-c5',
+    question: 'Bir sayının başka bir sayıya tam bölünüp bölünmediğini belirleyen matematiksel kurala ne denir?',
+    word: 'KRİTER',
+    hint: '6 Harfli • Bölünebilme kuralı',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat62-c6',
+    question: 'Hem 2 ile hem de 5 ile kalansız bölünebilen sayıların tam olarak bölündüğü sayı hangisidir?',
+    word: 'ONLUK',
+    hint: '5 Harfli • Sonu 0 ile biter',
+    color: '#ef4444'
+  }
+];
+
+// 7. MAT.6.1.3 Clues (6. Sınıf: Asal Sayılar ve Asal Çarpanlar)
+const MAT_6_1_3_CLUES: WordClue[] = [
+  {
+    id: 'mat63-c1',
+    question: 'Sadece 1\'e ve kendisine kalansız bölünebilen 1\'den büyük doğal sayılara ne denir?',
+    word: 'ASAL',
+    hint: '4 Harfli • Sayıların bölünemez yapı taşı',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat63-c2',
+    question: 'Antik Yunan matematikçisi Eratosthenes\'in asal sayıları bulmak için geliştirdiği eleğe ne ad verilir?',
+    word: 'KALBUR',
+    hint: '6 Harfli • Eratosthenes eleği',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat63-c3',
+    question: 'Bileşik sayıları dallara ayırarak en alttaki asal yapraklara ulaştıran modele ne denir?',
+    word: 'AĞAÇ',
+    hint: '4 Harfli • Çarpan ağacı',
+    color: '#10b396'
+  },
+  {
+    id: 'mat63-c4',
+    question: 'Asal çarpan algoritmasında dikey çizginin sağına yazılan dikey sayı dizisine ne denir?',
+    word: 'BÖLEN',
+    hint: '5 Harfli • Asal bölen listesi',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat63-c5',
+    question: 'Asal çarpanların kuvvetler biçiminde (örn: 2³ · 3²) çarpım olarak yazılmasına ne ad verilir?',
+    word: 'ÜSLÜ',
+    hint: '4 Harfli • Kuvvet gösterimi',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat63-c6',
+    question: 'Büyük asal sayıların çarpımıyla oluşturulan kırılması imkânsız dijital şifreleme bilimine ne denir?',
+    word: 'KRİPTO',
+    hint: '6 Harfli • Siber güvenlik kalkanı',
+    color: '#ef4444'
+  }
+];
+
+// 8. MAT.6.1.4 Clues (6. Sınıf: Ortak Kat ve Ortak Bölen)
+const MAT_6_1_4_CLUES: WordClue[] = [
+  {
+    id: 'mat64-c1',
+    question: 'İki veya daha fazla doğal sayının her ikisinde de bulunan bölen veya katlara ne denir?',
+    word: 'ORTAK',
+    hint: '5 Harfli • Kesişim elemanları',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat64-c2',
+    question: 'İki sayıyı aynı anda kalansız bölen ve eşit paketleme sağlayan sayılara ne ad verilir?',
+    word: 'BÖLEN',
+    hint: '5 Harfli • Eşit parça boyutu',
+    color: '#10b396'
+  },
+  {
+    id: 'mat64-c3',
+    question: 'İki sayının ritmik sayma basamaklarında aynı ana denk gelen çakışma sayılarına ne denir?',
+    word: 'KAT',
+    hint: '3 Harfli • Periyodik sefer durağı',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat64-c4',
+    question: '1\'den başka hiçbir pozitif ortak böleni olmayan iki sayının arasındaki duruma ne denir?',
+    word: 'ASALLIK',
+    hint: '7 Harfli • Aralarında asallık',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat64-c5',
+    question: 'Düzenli aralıklarla tekrarlanan nöbet ve otobüs sefer sürelerine ne ad verilir?',
+    word: 'PERİYOT',
+    hint: '7 Harfli • Ritmik döngü',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat64-c6',
+    question: 'Sokak hayvanlarına eşit mama paylaştırma bağlamında öne çıkan temel ahlaki değere ne denir?',
+    word: 'MERHAMET',
+    hint: '8 Harfli • D9 Maarif erdemi',
+    color: '#ef4444'
+  }
+];
+
 const TURKISH_CHARS = [
   'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
   'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
@@ -361,19 +499,26 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE): { grid: string[]
 export function WordSearchGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
-  const isFactorsTopic =
-    selectedOutcome?.id === 'MAT.6.1.1' ||
-    selectedOutcome?.code?.includes('6.1.1') ||
-    selectedOutcome?.title?.toLowerCase().includes('çarpan') ||
-    selectedOutcome?.title?.toLowerCase().includes('kat');
-  const isLinesAnglesTopic =
-    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4'));
-  const isAngleTopic =
-    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3'));
-  const isSelimiyeTopic =
-    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2'));
+  const id = selectedOutcome?.id || '';
+  const code = selectedOutcome?.code || '';
+  const title = (selectedOutcome?.title || '').toLowerCase();
 
-  const activeClues = isFactorsTopic
+  const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
+  const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
+  const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
+  const isMat614 = id === 'MAT.6.1.4' || code.includes('6.1.4') || title.includes('ortak kat') || title.includes('ortak bölen');
+
+  const isLinesAnglesTopic = id === 'MAT.5.3.4' || code.includes('5.3.4');
+  const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
+  const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
+
+  const activeClues = isMat614
+    ? MAT_6_1_4_CLUES
+    : isMat613
+    ? MAT_6_1_3_CLUES
+    : isMat612
+    ? MAT_6_1_2_CLUES
+    : isMat611
     ? MAT_6_1_1_CLUES
     : isLinesAnglesTopic
     ? MAT_5_3_4_CLUES

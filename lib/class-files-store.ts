@@ -2784,6 +2784,611 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  // =========================================================================
+  // 6. SINIF: MAT.6.1.2 BÖLÜNEBİLME KRİTERLERİ ETKİNLİK KAĞITLARI
+  // =========================================================================
+  {
+    id: 'file-activity-mat-6-1-2-lastdigit',
+    title: 'Etkinlik 1: "Son Basamak Dedektifi (2, 5, 10 Kriterleri)" (MAT.6.1.2)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.2',
+    outcomeTitle: 'Bölünebilme Kriterlerini Doğal Sayıların Özellikleri ile İlişkilendirebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Basamak Analiz Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 295,
+    tags: ['Etkinlik Kağıdı', 'Bölünebilme', 'Son Basamak', '2-5-10 Kriterleri', 'MAT.6.1.2', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #0284c7; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 10px; border-radius: 12px; border: 1px solid #bae6fd;">
+    <div style="display: inline-block; background: #0284c7; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🔍 BASAMAK ANALİZİ (6. SINIF - MAT.6.1.2)
+    </div>
+    <h2 style="color: #0369a1; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      SON BASAMAK DEDEKTİFİ: 2, 5 VE 10 İLE BÖLÜNEBİLME
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Birler basamağının özelliklerine bakarak kalansız bölünebilme ve kalan bulma kurallarını uygulayınız.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #0284c7; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #0369a1; margin-bottom: 6px;">
+      A BÖLÜMÜ: Son Basamak İnceleme Tablosu (40 Puan)
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center;">
+      <thead>
+        <tr style="background: #f0f9ff; color: #0369a1; border-bottom: 2px solid #bae6fd;">
+          <th style="padding: 6px; border: 1px solid #e2e8f0;">Sayı</th>
+          <th style="padding: 6px; border: 1px solid #e2e8f0;">Birler Basamağı</th>
+          <th style="padding: 6px; border: 1px solid #e2e8f0;">2 ile Bölünür mü?</th>
+          <th style="padding: 6px; border: 1px solid #e2e8f0;">5 ile Bölünür mü?</th>
+          <th style="padding: 6px; border: 1px solid #e2e8f0;">10 ile Bölünür mü?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 6px; border: 1px solid #e2e8f0; font-weight: 800;">4.870</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">0</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0; color: #16a34a; font-weight: 700;">EVET</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0; color: #16a34a; font-weight: 700;">EVET</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0; color: #16a34a; font-weight: 700;">EVET</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; border: 1px solid #e2e8f0; font-weight: 800;">7.325</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">5</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">( ..... )</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">( ..... )</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">( ..... )</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; border: 1px solid #e2e8f0; font-weight: 800;">6.148</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">8</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">( ..... )</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">( ..... )</td>
+          <td style="padding: 6px; border: 1px solid #e2e8f0;">( ..... )</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="border: 2px solid #0284c7; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #0369a1; margin-bottom: 6px;">
+      B BÖLÜMÜ: Eksik Basamak ve Kalan Problemleri (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>1. Soru:</strong> Dört basamaklı <strong>3.54A</strong> sayısı 2 ile kalansız bölünebilen bir doğal sayıdır. A yerine yazılabilecek rakamların toplamı kaçtır?<br/>
+      A = { 0, 2, 4, 6, 8 } ⟹ Toplam = <strong>( ..... )</strong><br/><br/>
+      <strong>2. Soru:</strong> Beş basamaklı <strong>82.71B</strong> sayısı 5 ile bölündüğünde 3 kalanını veren tek bir doğal sayıdır. Buna göre B rakamı kaçtır?<br/>
+      B yerine 3 veya 8 gelebilir. Tek sayı şartı olduğundan B = <strong>( ..... )</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; font-size: 10px; color: #0369a1; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Tablo (40P) + Problemler (60P) = 100 Puan. (MAT.6.1.2)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-6-1-2-sumdigits',
+    title: 'Etkinlik 2: "Rakamlar Toplamı ve 10\'luk Ayrıştırma (3 ve 9 Kriterleri)" (MAT.6.1.2)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.2',
+    outcomeTitle: 'Bölünebilme Kriterlerini Doğal Sayıların Özellikleri ile İlişkilendirebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Basamak Analiz Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 300,
+    tags: ['Etkinlik Kağıdı', 'Bölünebilme', 'Rakamlar Toplamı', '3 ve 9 Kriterleri', 'MAT.6.1.2', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f5f3ff, #ede9fe); padding: 10px; border-radius: 12px; border: 1px solid #ddd6fe;">
+    <div style="display: inline-block; background: #8b5cf6; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🧮 10'LUK AYRIŞTIRMA & İSPAT (6. SINIF - MAT.6.1.2)
+    </div>
+    <h2 style="color: #6d28d9; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      RAKAMLAR TOPLAMI: 3 VE 9 İLE BÖLÜNEBİLME
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      100=99+1 ve 10=9+1 açılımı üzerinden rakamlar toplamı kuralını ispatlayıp uygulayınız.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #8b5cf6; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #6d28d9; margin-bottom: 6px;">
+      A BÖLÜMÜ: Rakamlar Toplamı ve Bölünebilme Analizi (40 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>432 Sayısı:</strong> 4 + 3 + 2 = 9 ⟹ 3'e TAM BÖLÜNÜR, 9'a TAM BÖLÜNÜR.<br/>
+      <strong>7.125 Sayısı:</strong> 7 + 1 + 2 + 5 = 15 ⟹ 3'e ( ..... ), 9 ile bölündüğünde kalan ( ..... )<br/>
+      <strong>9.468 Sayısı:</strong> 9 + 4 + 6 + 8 = 27 ⟹ 3'e ( ..... ), 9'a ( ..... )
+    </div>
+  </div>
+
+  <div style="border: 2px solid #8b5cf6; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #6d28d9; margin-bottom: 6px;">
+      B BÖLÜMÜ: Gizli Rakam ve Kasa Problemleri (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>1. Soru:</strong> Dört basamaklı <strong>5.A24</strong> sayısı 9 ile kalansız bölünebilmektedir. Buna göre A rakamı kaçtır?<br/>
+      5 + A + 2 + 4 = 11 + A ⟹ 11 + A = 18 ⟹ A = <strong>( ..... )</strong><br/><br/>
+      <strong>2. Soru:</strong> Dört basamaklı <strong>4.2B1</strong> sayısının 3 ile kalansız bölünebilmesi için B yerine gelebilecek EN BÜYÜK rakam kaçtır?<br/>
+      4 + 2 + B + 1 = 7 + B ⟹ B ∈ {2, 5, 8} ⟹ En Büyük B = <strong>( ..... )</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; font-size: 10px; color: #6d28d9; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Analiz (40P) + Problemler (60P) = 100 Puan. (MAT.6.1.2)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-6-1-2-composite',
+    title: 'Etkinlik 3: "Birleşik Kriterler ve Kasa Şifresi (4 ve 6 Kriterleri)" (MAT.6.1.2)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.2',
+    outcomeTitle: 'Bölünebilme Kriterlerini Doğal Sayıların Özellikleri ile İlişkilendirebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Basamak Analiz Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 305,
+    tags: ['Etkinlik Kağıdı', 'Bölünebilme', '4 ve 6 Kriterleri', 'Kasa Şifresi', 'MAT.6.1.2', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #059669; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 10px; border-radius: 12px; border: 1px solid #a7f3d0;">
+    <div style="display: inline-block; background: #059669; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🔐 BİRLEŞİK KRİTERLER (6. SINIF - MAT.6.1.2)
+    </div>
+    <h2 style="color: #047857; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      BİRLEŞİK KRİTERLER: 4 VE 6 İLE BÖLÜNEBİLME
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Son iki basamak analizi ve hem 2 hem 3 şartlarını birleştirerek şifreli görevleri tamamlayınız.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #059669; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #047857; margin-bottom: 6px;">
+      A BÖLÜMÜ: 4 ve 6 İle Bölünebilme Kriter Kontrolü (40 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>7.324 Sayısı:</strong> Son iki basamak: 24 (4'ün katı) ⟹ 4'e TAM BÖLÜNÜR.<br/>
+      <strong>5.812 Sayısı:</strong> Son iki basamak 12 (4'ün katı) ⟹ 4'e ( ..... ); Rakamlar toplamı: 16 (3'ün katı değil) ⟹ 6'ya ( ..... )<br/>
+      <strong>4.875 Sayısı:</strong> Tek sayı olduğundan 6'ya ( ..... )
+    </div>
+  </div>
+
+  <div style="border: 2px solid #059669; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #047857; margin-bottom: 6px;">
+      B BÖLÜMÜ: Kasa Şifresi Çözme Görevi (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>Kasa Görevi:</strong> Dört basamaklı <strong>2.A7B</strong> sayısı hem 5'e hem de 6'ya kalansız bölünebilen bir doğal sayıdır. Buna göre A rakamı en çok kaç olabilir?<br/>
+      1. 5 ile bölünebilmesi ve 6 ile bölünmesi için çift olması gerektiğinden <strong>B = 0</strong>'dır.<br/>
+      2. 2 + A + 7 + 0 = 9 + A ⟹ 3'ün katı olmalı: A ∈ {0, 3, 6, 9}<br/>
+      3. A'nın alabileceği EN BÜYÜK değer = <strong>( ..... )</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; font-size: 10px; color: #047857; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Kriterler (40P) + Kasa Görevi (60P) = 100 Puan. (MAT.6.1.2)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  // =========================================================================
+  // 6. SINIF: MAT.6.1.3 ASAL SAYILAR VE ASAL ÇARPANLAR ETKİNLİK KAĞITLARI
+  // =========================================================================
+  {
+    id: 'file-activity-mat-6-1-3-sieve',
+    title: 'Etkinlik 1: "Eratosthenes Asal Kalburu (1-100 Asal Sayı Keşfi)" (MAT.6.1.3)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.3',
+    outcomeTitle: 'Asal Sayıları ve Asal Çarpanları Belirleyebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Asallık Laboratuvarı',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 310,
+    tags: ['Etkinlik Kağıdı', 'Asal Sayılar', 'Eratosthenes Kalburu', '1-100 Asallar', 'MAT.6.1.3', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #d97706; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #fffbeb, #fef3c7); padding: 10px; border-radius: 12px; border: 1px solid #fde68a;">
+    <div style="display: inline-block; background: #d97706; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🛡️ ASAL SAYI KALBURU (6. SINIF - MAT.6.1.3)
+    </div>
+    <h2 style="color: #b45309; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      ERATOSTHENES KALBURU VE 1-100 ASAL SAYILARI
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      1'den 100'e kadar olan sayılarda asal olmayanları eleyerek 25 asal sayıyı belirleyiniz.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #d97706; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #b45309; margin-bottom: 6px;">
+      A BÖLÜMÜ: Kalbur Eleme Adımları ve İlk 10 Asal (40 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      1. 1 sayısı asal sayı DEĞİLDİR (çünkü sadece 1 pozitif böleni vardır).<br/>
+      2. 2 tek ÇİFT asal sayıdır. 2'nin 2 dışındaki tüm katları elenir.<br/>
+      3. 50'den küçük ilk 10 asal sayıyı yazınız:<br/>
+      <strong>{ 2, 3, 5, 7, 11, 13, 17, 19, ( ..... ), ( ..... ) }</strong>
+    </div>
+  </div>
+
+  <div style="border: 2px solid #d97706; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #b45309; margin-bottom: 6px;">
+      B BÖLÜMÜ: Asal Sayı Kavramı ve Doğru-Yanlış Analizi (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>1. İfade:</strong> Bütün tek sayılar asal sayıdır. ⟹ <strong>( YANLIŞ - Örn: 9, 15, 21 )</strong><br/>
+      <strong>2. İfade:</strong> İki basamaklı en küçük asal sayı <strong>( ..... )</strong>'dir.<br/>
+      <strong>3. İfade:</strong> İki basamaklı en büyük asal sayı <strong>( ..... )</strong>'dir.<br/>
+      <strong>4. Soru:</strong> 1 ile 100 arasında toplam kaç tane asal sayı vardır? ⟹ <strong>( ..... ) Adet</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 10px; color: #b45309; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Kalbur (40P) + Analiz (60P) = 100 Puan. (MAT.6.1.3)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-6-1-3-tree-algorithm',
+    title: 'Etkinlik 2: "Çarpan Ağacı ve Asal Çarpan Algoritması" (MAT.6.1.3)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.3',
+    outcomeTitle: 'Asal Sayıları ve Asal Çarpanları Belirleyebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Asallık Laboratuvarı',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 315,
+    tags: ['Etkinlik Kağıdı', 'Çarpan Ağacı', 'Bölme Algoritması', 'Üslü Gösterim', 'MAT.6.1.3', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #059669; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 10px; border-radius: 12px; border: 1px solid #a7f3d0;">
+    <div style="display: inline-block; background: #059669; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🌳 ÇARPAN AĞACI & ALGORİTMA (6. SINIF - MAT.6.1.3)
+    </div>
+    <h2 style="color: #047857; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      ASAL ÇARPANLARA AYIRMA VE ÜSLÜ GÖSTERİM
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Çarpan ağacı ve bölme algoritması yöntemleriyle sayıları asal çarpanlarının çarpımı şeklinde ifade ediniz.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #059669; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #047857; margin-bottom: 6px;">
+      A BÖLÜMÜ: Çarpan Ağacı Modeli (40 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>60 Sayısı İçin:</strong><br/>
+      60 = 6 × 10 ⟹ (2 × 3) × (2 × 5) ⟹ <strong>60 = 2² · 3 · 5</strong><br/>
+      Asal çarpanları: <strong>{ 2, 3, 5 }</strong> (3 farklı asal çarpan)<br/><br/>
+      <strong>84 Sayısı İçin Çarpan Ağacını Tamamlayınız:</strong><br/>
+      84 = 4 × 21 ⟹ ( ..... × ..... ) × ( ..... × ..... ) ⟹ <strong>84 = 2² · ( ..... ) · ( ..... )</strong>
+    </div>
+  </div>
+
+  <div style="border: 2px solid #059669; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #047857; margin-bottom: 6px;">
+      B BÖLÜMÜ: Bölme Çizgisi Algoritması (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>72 Sayısı İçin:</strong> 72 | 2 ⟹ 36 | 2 ⟹ 18 | 2 ⟹ 9 | 3 ⟹ 3 | 3 ⟹ 1 ⟹ <strong>72 = 2³ · 3²</strong><br/><br/>
+      <strong>120 Sayısı İçin Algoritmayı Uygulayınız:</strong><br/>
+      120 sayısının asal çarpanlarına ayrılmış üslü biçimi = <strong>2^(.....) · 3^(.....) · 5^(.....)</strong><br/>
+      120 sayısının asal çarpanlarının toplamı = 2 + 3 + 5 = <strong>( ..... )</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; font-size: 10px; color: #047857; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Ağaç (40P) + Algoritma (60P) = 100 Puan. (MAT.6.1.3)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-6-1-3-crypto',
+    title: 'Etkinlik 3: "Asal Şifreleme ve Kripto Kasa Görevi" (MAT.6.1.3)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.3',
+    outcomeTitle: 'Asal Sayıları ve Asal Çarpanları Belirleyebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Asallık Laboratuvarı',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 320,
+    tags: ['Etkinlik Kağıdı', 'Kriptografi', 'Asal Şifreleme', 'Problem Çözme', 'MAT.6.1.3', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #7c3aed; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f5f3ff, #ede9fe); padding: 10px; border-radius: 12px; border: 1px solid #ddd6fe;">
+    <div style="display: inline-block; background: #7c3aed; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🔐 KRİPTOGRAFİ LABORATUVARI (6. SINIF - MAT.6.1.3)
+    </div>
+    <h2 style="color: #6d28d9; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      ASAL ŞİFRELEME VE KRİPTO KASA GÖREVİ
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      İki asal sayının çarpımı ile oluşturulan güvenlik kodlarını asal çarpanlarına ayırarak çözünüz.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #7c3aed; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #6d28d9; margin-bottom: 6px;">
+      A BÖLÜMÜ: Kripto Şifre Çözme Tablosu (40 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>Kasa 1 Kodu:</strong> 221 ⟹ Asal Anahtarlar: <strong>13 × 17</strong><br/>
+      <strong>Kasa 2 Kodu:</strong> 119 ⟹ Asal Anahtarlar: <strong>7 × ( ..... )</strong><br/>
+      <strong>Kasa 3 Kodu:</strong> 323 ⟹ Asal Anahtarlar: <strong>17 × ( ..... )</strong>
+    </div>
+  </div>
+
+  <div style="border: 2px solid #7c3aed; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #6d28d9; margin-bottom: 6px;">
+      B BÖLÜMÜ: Asal Çarpanlı Gerçek Hayat Problemleri (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>Problem 1:</strong> Bir yardım deposundaki kolilerin üzerinde yazan sayı 180'dir. Bu sayının asal çarpanlarının toplamı olan yaşındaki gönüllü öğrenci depoda görev almaktadır. Bu öğrenci kaç yaşındadır?<br/>
+      180 = 2² · 3² · 5 ⟹ Asal Çarpanlar: { 2, 3, 5 } ⟹ Yaş = 2 + 3 + 5 = <strong>( ..... )</strong><br/><br/>
+      <strong>Problem 2:</strong> Bir dijital kasanın şifresi, 90 sayısının asal çarpanlarının küçükten büyüğe sırasıyla üsleri yazılarak oluşturulmuştur (90 = 2^a · 3^b · 5^c ⟹ Şifre abc). Kasa şifresi kaçtır?<br/>
+      90 = 2¹ · 3² · 5¹ ⟹ Şifre = <strong>( ..... )</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; font-size: 10px; color: #6d28d9; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Kasa (40P) + Problemler (60P) = 100 Puan. (MAT.6.1.3)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  // =========================================================================
+  // 6. SINIF: MAT.6.1.4 ORTAK BÖLEN VE ORTAK KAT ETKİNLİK KAĞITLARI
+  // =========================================================================
+  {
+    id: 'file-activity-mat-6-1-4-common-divisors',
+    title: 'Etkinlik 1: "Zeytinyağı ve Nar Ekşisi Ortak Bidonlama (Ortak Bölenler)" (MAT.6.1.4)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.4',
+    outcomeTitle: 'Doğal Sayıların Ortak Bölenleri ile Ortak Katlarını Belirleyebilme ve Problem Çözebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Paylaşım Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 310,
+    tags: ['Etkinlik Kağıdı', 'Ortak Bölenler', 'Paylaşım', 'Bidonlama', 'MAT.6.1.4', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); padding: 10px; border-radius: 12px; border: 1px solid #99f6e4;">
+    <div style="display: inline-block; background: #0d9488; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🛢️ ORTAK BÖLENLER KÜMESİ (6. SINIF - MAT.6.1.4)
+    </div>
+    <h2 style="color: #0f766e; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      ZEYTİNYAĞI VE NAR EKŞİSİ ORTAK BİDONLAMA
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      İki farklı sayının bölen kümelerini listeleyip kesişim kümesini (ortak bölenleri) bulunuz.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #0d9488; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #0f766e; margin-bottom: 6px;">
+      A BÖLÜMÜ: Bölen Kümeleri ve Kesişim Analizi (40 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      24 Litre Zeytinyağının Bölenleri: <strong>A = { 1, 2, 3, 4, 6, 8, 12, 24 }</strong><br/>
+      36 Litre Nar Ekşisinin Bölenleri: <strong>B = { 1, 2, 3, 4, 6, 9, 12, 18, 36 }</strong><br/>
+      Her İki Sıvı İçin Kullanılabilecek Ortak Kap Hacimleri (A ∩ B):<br/>
+      <strong>A ∩ B = { ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ) }</strong> Litre
+    </div>
+  </div>
+
+  <div style="border: 2px solid #0d9488; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #0f766e; margin-bottom: 6px;">
+      B BÖLÜMÜ: Eşit Paylaştırma ve En Büyük Kap Problemi (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>1. Soru:</strong> Zeytinyağı ve nar ekşisi hiç artmayacak ve birbirine karışmayacak şekilde EN BÜYÜK hacimli eşit bidonlara doldurulacaktır. Bir bidon kaç litre olmalıdır?<br/>
+      Ortak bölenlerin en büyüğü = <strong>( ..... ) Litre</strong><br/><br/>
+      <strong>2. Soru:</strong> Bu iş için TOPLAM kaç adet bidon kullanılır?<br/>
+      Zeytinyağı için: 24 ÷ 12 = 2 bidon<br/>
+      Nar ekşisi için: 36 ÷ 12 = 3 bidon<br/>
+      Toplam = 2 + 3 = <strong>( ..... ) Adet Bidon</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; font-size: 10px; color: #0f766e; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Kümeler (40P) + Problemler (60P) = 100 Puan. (MAT.6.1.4)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-6-1-4-common-multiples',
+    title: 'Etkinlik 2: "Periyodik Seferler ve Durak Buluşması (Ortak Katlar)" (MAT.6.1.4)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.4',
+    outcomeTitle: 'Doğal Sayıların Ortak Bölenleri ile Ortak Katlarını Belirleyebilme ve Problem Çözebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Paylaşım Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 315,
+    tags: ['Etkinlik Kağıdı', 'Ortak Katlar', 'Periyodik Olaylar', 'Sayı Doğrusu', 'MAT.6.1.4', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #0284c7; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 10px; border-radius: 12px; border: 1px solid #bae6fd;">
+    <div style="display: inline-block; background: #0284c7; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🚌 PERİYODİK ORTAK KATLAR (6. SINIF - MAT.6.1.4)
+    </div>
+    <h2 style="color: #0369a1; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      PERİYODİK SEFERLER VE DURAK BULUŞMASI
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Ritmik olarak tekrarlanan periyotların ortak katlarını sayı doğrusu üzerinde belirleyiniz.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #0284c7; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #0369a1; margin-bottom: 6px;">
+      A BÖLÜMÜ: Ortak Katlar Tablosu (40 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      A Otobüsü: Her 6 dakikada bir sefer yapıyor (6, 12, 18, 24, 30, 36, 42, 48, 54, 60...)<br/>
+      B Otobüsü: Her 8 dakikada bir sefer yapıyor (8, 16, 24, 32, 40, 48, 56, 64, 72...)<br/>
+      İki otobüsün ilk 3 ortak kalkış dakikalarını yazınız:<br/>
+      <strong>1. Buluşma: ( ..... ). dk | 2. Buluşma: ( ..... ). dk | 3. Buluşma: ( ..... ). dk</strong>
+    </div>
+  </div>
+
+  <div style="border: 2px solid #0284c7; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #0369a1; margin-bottom: 6px;">
+      B BÖLÜMÜ: Periyodik Problem Çözme (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>1. Soru:</strong> İki hemşireden biri 4 günde bir, diğeri 6 günde bir nöbet tutmaktadır. Birlikte ilk nöbetlerini tuttuktan sonra EN AZ kaç gün sonra tekrar birlikte nöbet tutarlar?<br/>
+      4'ün katları: 4, 8, 12, 16... | 6'nın katları: 6, 12, 18...<br/>
+      Birlikte nöbet = <strong>( ..... ) Gün Sonra</strong><br/><br/>
+      <strong>2. Soru:</strong> Bir limandaki iki deniz fenerinden biri 15 saniyede, diğeri 20 saniyede bir yanıp sönmektedir. Birlikte yandıktan sonra 2 dakika (120 saniye) içinde kaç kez daha birlikte yanarlar?<br/>
+      Ortak kat: 60 saniye ⟹ 120 saniye içinde = 120 ÷ 60 = <strong>( ..... ) Kez Daha</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; font-size: 10px; color: #0369a1; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Katlar (40P) + Problemler (60P) = 100 Puan. (MAT.6.1.4)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-6-1-4-coprime-garden',
+    title: 'Etkinlik 3: "Merhamet Bahçesi ve Aralarında Asallık Testi" (MAT.6.1.4)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.4',
+    outcomeTitle: 'Doğal Sayıların Ortak Bölenleri ile Ortak Katlarını Belirleyebilme ve Problem Çözebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve Paylaşım Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 320,
+    tags: ['Etkinlik Kağıdı', 'Aralarında Asallık', 'Bahçe Parselleme', 'Ortak Bölen', 'MAT.6.1.4', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <div style="text-align: center; border-bottom: 2px solid #059669; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 10px; border-radius: 12px; border: 1px solid #a7f3d0;">
+    <div style="display: inline-block; background: #059669; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🌱 ARALARINDA ASALLIK & MERHAMET BAHÇESİ (6. SINIF - MAT.6.1.4)
+    </div>
+    <h2 style="color: #047857; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      MERHAMET BAHÇESİ VE ARALARINDA ASALLIK TESTİ
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      1'den başka ortak böleni olmayan sayı çiftlerini keşfederek bahçe parselleme ve ağaçlandırma problemlerini çözünüz.
+    </p>
+  </div>
+
+  <div style="border: 2px solid #059669; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #047857; margin-bottom: 6px;">
+      A BÖLÜMÜ: Aralarında Asallık Test Tablosu (40 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>8 ve 15:</strong> 8'in bölenleri {1,2,4,8}, 15'in bölenleri {1,3,5,15} ⟹ Ortak bölen: {1} ⟹ <strong>ARALARINDA ASALDIR.</strong><br/>
+      <strong>9 ve 21:</strong> Ortak bölenleri {1, 3} ⟹ <strong>( ARALARINDA ASAL DEĞİLDİR )</strong><br/>
+      <strong>14 ve 25:</strong> 14'ün bölenleri {1,2,7,14}, 25'in bölenleri {1,5,25} ⟹ <strong>( ..... )</strong><br/>
+      <strong>12 ve 35:</strong> Ortak böleni yalnızca 1 olduğundan ⟹ <strong>( ..... )</strong>
+    </div>
+  </div>
+
+  <div style="border: 2px solid #059669; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="font-size: 12px; font-weight: 900; color: #047857; margin-bottom: 6px;">
+      B BÖLÜMÜ: Merhamet Bahçesi Ağaç Dikim Problemi (60 Puan)
+    </div>
+    <div style="font-size: 11px; line-height: 1.6; color: #334155;">
+      <strong>Problem:</strong> Kenar uzunlukları 40 metre ve 60 metre olan dikdörtgen şeklindeki Merhamet Bahçesi'nin etrafına köşelere de gelmek şartıyla eşit aralıklarla fidan dikilecektir.<br/>
+      1. İki fidan arasındaki mesafe kaç farklı tam sayı değeri alabilir? (40 ve 60'ın ortak bölenleri: 1, 2, 4, 5, 10, 20) ⟹ <strong>( ..... ) Farklı Değer</strong><br/>
+      2. En az sayıda fidan kullanmak için fidanlar kaçar metre aralıkla dikilmelidir? ⟹ <strong>( ..... ) Metre</strong><br/>
+      3. Bu durumda toplam kaç adet fidan gerekir? (Çevre = 200m ⟹ 200 ÷ 20) = <strong>( ..... ) Adet Fidan</strong>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; font-size: 10px; color: #047857; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Test (40P) + Bahçe Problemi (60P) = 100 Puan. (MAT.6.1.4)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 

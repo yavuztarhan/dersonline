@@ -6,6 +6,11 @@ import { useApp } from '@/lib/store';
 import { ExperimentBench } from '@/components/lesson-phases/experiment-bench';
 import { LinesAnglesBench } from '@/components/lesson-phases/lines-angles-bench';
 import { FactorsMultiplesBench } from '@/components/lesson-phases/factors-multiples-bench';
+import {
+  DivisibilityBench,
+  PrimeFactorsBench,
+  CommonMultiplesDivisorsBench
+} from '@/components/lesson-phases/mat6-lab-benches';
 import confetti from 'canvas-confetti';
 import {
   Shapes,
@@ -93,13 +98,35 @@ function getAngleType(deg: number): { type: 'sifir' | 'dar' | 'dik' | 'genis' | 
 export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const { playSound, unlockBadge, addPoints, selectedOutcome } = useApp();
 
+  const isDivisibilityOutcome =
+    selectedOutcome?.id === 'MAT.6.1.2' ||
+    selectedOutcome?.code?.includes('6.1.2') ||
+    data.toolType === 'divisibility-bench';
+
+  const isPrimeFactorsOutcome =
+    selectedOutcome?.id === 'MAT.6.1.3' ||
+    selectedOutcome?.code?.includes('6.1.3') ||
+    data.toolType === 'prime-factors-bench';
+
+  const isCommonMultiplesDivisorsOutcome =
+    selectedOutcome?.id === 'MAT.6.1.4' ||
+    selectedOutcome?.code?.includes('6.1.4') ||
+    data.toolType === 'common-multiples-divisors-bench';
+
   const isFactorsMultiplesOutcome =
-    selectedOutcome?.id === 'MAT.6.1.1' ||
-    selectedOutcome?.code?.includes('6.1.1') ||
-    data.title.toLowerCase().includes('çarpan') ||
-    data.title.toLowerCase().includes('katlar');
+    !isDivisibilityOutcome &&
+    !isPrimeFactorsOutcome &&
+    !isCommonMultiplesDivisorsOutcome &&
+    (selectedOutcome?.id === 'MAT.6.1.1' ||
+      selectedOutcome?.code?.includes('6.1.1') ||
+      data.toolType === 'factors-multiples-bench' ||
+      data.title.toLowerCase().includes('çarpan') ||
+      data.title.toLowerCase().includes('katlar'));
 
   const isLinesAnglesOutcome =
+    !isDivisibilityOutcome &&
+    !isPrimeFactorsOutcome &&
+    !isCommonMultiplesDivisorsOutcome &&
     !isFactorsMultiplesOutcome &&
     (selectedOutcome?.id === 'MAT.5.3.4' ||
       selectedOutcome?.code?.includes('5.3.4') ||
@@ -107,11 +134,17 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       data.title.toLowerCase().includes('kesişen'));
 
   const isExperimentBench =
+    !isDivisibilityOutcome &&
+    !isPrimeFactorsOutcome &&
+    !isCommonMultiplesDivisorsOutcome &&
     !isFactorsMultiplesOutcome &&
     !isLinesAnglesOutcome &&
     (data.toolType === 'experiment-bench' || selectedOutcome?.id === 'MAT.5.3.2');
 
   const isAngleTopic =
+    !isDivisibilityOutcome &&
+    !isPrimeFactorsOutcome &&
+    !isCommonMultiplesDivisorsOutcome &&
     !isFactorsMultiplesOutcome &&
     !isLinesAnglesOutcome &&
     (selectedOutcome?.id === 'MAT.5.3.3' ||
@@ -854,6 +887,138 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       </g>
     );
   };
+
+  // ==========================================
+  // OUTCOME: MAT.6.1.2 (DIVISIBILITY CRITERIA BENCH)
+  // ==========================================
+  if (isDivisibilityOutcome) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold uppercase tracking-wider mb-2">
+              <FlaskConical className="w-3.5 h-3.5 text-teal-600" />
+              <span>2. Aşama: Bölünebilme Dedektifi ve Basamak Analiz Laboratuvarı (MAT.6.1.2)</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-900">{data.title}</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Etkileşimli bölünebilme paneli, 3 ve 9 basamak ayrıştırma ispat laboratuvarı ve eksik basamak bulucu ile bölünebilme kurallarını keşfedin!
+            </p>
+          </div>
+        </div>
+
+        {/* Divisibility Interactive Lab Bench */}
+        <DivisibilityBench />
+
+        {/* Jump to Phase 3 */}
+        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-slate-600 font-bold">
+            <CheckCircle2 className="w-4 h-4 text-teal-600" />
+            <span>Atölye çalışmalarını tamamladıktan sonra 3. Aşama Oyunlar Arenası&apos;na geçebilirsiniz.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              playSound('select');
+              onNextPhase();
+            }}
+            className="px-6 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+          >
+            <span>3. Aşama: Oyunlar Arenası</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // OUTCOME: MAT.6.1.3 (PRIME NUMBERS & PRIME FACTORS BENCH)
+  // ==========================================
+  if (isPrimeFactorsOutcome) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold uppercase tracking-wider mb-2">
+              <FlaskConical className="w-3.5 h-3.5 text-teal-600" />
+              <span>2. Aşama: Asal Sayı Kalburu ve Çarpan Algoritması Laboratuvarı (MAT.6.1.3)</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-900">{data.title}</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Eratosthenes kalburu (1-100), dinamik çarpan ağacı ve asal çarpanlar algoritması ile sayıların asal yapı taşlarını keşfedin!
+            </p>
+          </div>
+        </div>
+
+        {/* Prime Factors Interactive Lab Bench */}
+        <PrimeFactorsBench />
+
+        {/* Jump to Phase 3 */}
+        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-slate-600 font-bold">
+            <CheckCircle2 className="w-4 h-4 text-teal-600" />
+            <span>Atölye çalışmalarını tamamladıktan sonra 3. Aşama Oyunlar Arenası&apos;na geçebilirsiniz.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              playSound('select');
+              onNextPhase();
+            }}
+            className="px-6 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+          >
+            <span>3. Aşama: Oyunlar Arenası</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // OUTCOME: MAT.6.1.4 (COMMON MULTIPLES & COMMON DIVISORS BENCH)
+  // ==========================================
+  if (isCommonMultiplesDivisorsOutcome) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold uppercase tracking-wider mb-2">
+              <FlaskConical className="w-3.5 h-3.5 text-teal-600" />
+              <span>2. Aşama: Ortak Bölen Venn Şeması ve Periyodik Kat Doğrusu Laboratuvarı (MAT.6.1.4)</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-900">{data.title}</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Venn şemalı ortak bölen alanı, çift sayı doğrusunda periyodik ortak katlar ve aralarında asallık dedektörü ile ortak özellikleri keşfedin!
+            </p>
+          </div>
+        </div>
+
+        {/* Common Multiples & Divisors Interactive Lab Bench */}
+        <CommonMultiplesDivisorsBench />
+
+        {/* Jump to Phase 3 */}
+        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-slate-600 font-bold">
+            <CheckCircle2 className="w-4 h-4 text-teal-600" />
+            <span>Atölye çalışmalarını tamamladıktan sonra 3. Aşama Oyunlar Arenası&apos;na geçebilirsiniz.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              playSound('select');
+              onNextPhase();
+            }}
+            className="px-6 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+          >
+            <span>3. Aşama: Oyunlar Arenası</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // 0. OUTCOME: MAT.6.1.1 (FACTORS & MULTIPLES BENCH)

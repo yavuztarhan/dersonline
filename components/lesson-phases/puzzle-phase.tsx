@@ -172,17 +172,42 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     }
   };
 
+  const isDivisibilityTopic =
+    selectedOutcome?.id === 'MAT.6.1.2' ||
+    selectedOutcome?.code?.includes('6.1.2') ||
+    data.title?.toLowerCase().includes('bölünebilme');
+
+  const isPrimeFactorsTopic =
+    selectedOutcome?.id === 'MAT.6.1.3' ||
+    selectedOutcome?.code?.includes('6.1.3') ||
+    data.title?.toLowerCase().includes('asal');
+
+  const isCommonTopic =
+    selectedOutcome?.id === 'MAT.6.1.4' ||
+    selectedOutcome?.code?.includes('6.1.4') ||
+    data.title?.toLowerCase().includes('ortak bölen') ||
+    data.title?.toLowerCase().includes('ortak kat');
+
   const isFactorsMultiplesTopic =
-    selectedOutcome?.id === 'MAT.6.1.1' ||
-    selectedOutcome?.code?.includes('6.1.1') ||
-    data.title?.toLowerCase().includes('çarpan') ||
-    data.title?.toLowerCase().includes('katlar');
+    !isDivisibilityTopic &&
+    !isPrimeFactorsTopic &&
+    !isCommonTopic &&
+    (selectedOutcome?.id === 'MAT.6.1.1' ||
+      selectedOutcome?.code?.includes('6.1.1') ||
+      data.title?.toLowerCase().includes('çarpan') ||
+      data.title?.toLowerCase().includes('katlar'));
 
   const isLinesAnglesTopic =
+    !isDivisibilityTopic &&
+    !isPrimeFactorsTopic &&
+    !isCommonTopic &&
     !isFactorsMultiplesTopic &&
     (selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4'));
 
   const isAngleTopic =
+    !isDivisibilityTopic &&
+    !isPrimeFactorsTopic &&
+    !isCommonTopic &&
     !isFactorsMultiplesTopic &&
     !isLinesAnglesTopic &&
     (data.title?.toLowerCase().includes('iletki') ||
@@ -190,6 +215,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
       (data.title?.toLowerCase().includes('açı') && !data.title?.toLowerCase().includes('doğru')));
 
   const isConstructionTopic =
+    !isDivisibilityTopic &&
+    !isPrimeFactorsTopic &&
+    !isCommonTopic &&
     !isFactorsMultiplesTopic &&
     !isLinesAnglesTopic &&
     !isAngleTopic &&
@@ -212,7 +240,106 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     reward: string;
   }> = [];
 
-  if (isFactorsMultiplesTopic) {
+  if (isDivisibilityTopic) {
+    baseGamesList.push(
+      {
+        id: 'kolilemefactory',
+        title: 'Bölünebilme Lazer Tasnifi: Kural Eşleme',
+        tagline: 'Son Basamak & Rakam Toplamı',
+        description: 'Banttan gelen sayıların 2, 3, 4, 5, 6, 9 ve 10 bölünebilme kriterlerini hızla analiz et, doğru lazer kapısına yönlendir!',
+        icon: <Package className="w-8 h-8" />,
+        badge: '4 Seviye • Hızlı Kriter',
+        gradient: 'from-sky-500 via-blue-600 to-indigo-800',
+        reward: '+130 XP & Bölünebilme Dedektifi'
+      },
+      {
+        id: 'frogjump',
+        title: 'Kalan Avcısı Kurbağa: Basamak Parkuru',
+        tagline: 'Kalan Bulma & Zıplama',
+        description: 'Kurbağayı kalansız bölünen nilüferlere zıplat! Kalanlı sayılardan kaç, altın kriter böceklerini topla.',
+        icon: <Activity className="w-8 h-8" />,
+        badge: '4 Seviye • 3 Can',
+        gradient: 'from-cyan-500 via-teal-600 to-emerald-800',
+        reward: '+150 XP & Nilüfer Dedektifi'
+      },
+      {
+        id: 'rainbowvault',
+        title: 'Gizli Rakam Kasası: Eksik Basamak',
+        tagline: 'Kasa Kilidi & Kriter Çözücü',
+        description: 'Sayılardaki gizli A ve B rakamlarını bölünebilme kurallarına göre hesapla, çelik kasa kilidini aç!',
+        icon: <Sparkles className="w-8 h-8" />,
+        badge: '4 Kasa • Şifre Çözücü',
+        gradient: 'from-purple-600 via-indigo-600 to-pink-600',
+        reward: '+140 XP & Kasa Ustası'
+      }
+    );
+  } else if (isPrimeFactorsTopic) {
+    baseGamesList.push(
+      {
+        id: 'kolilemefactory',
+        title: 'Asal Çarpan Fabrikası: Ağaç & Algoritma',
+        tagline: 'Asal Yapı Taşları',
+        description: 'Gelen sayıları asal çarpanlarına ayır, çarpan ağacını ve bölme merdivenini eksiksiz tamamla!',
+        icon: <Package className="w-8 h-8" />,
+        badge: '4 Seviye • Asal Bloklar',
+        gradient: 'from-amber-500 via-orange-600 to-amber-800',
+        reward: '+130 XP & Asal Mimarı'
+      },
+      {
+        id: 'frogjump',
+        title: 'Eratosthenes Asal Parkuru',
+        tagline: 'Asal Nilüferler',
+        description: 'Kurbağayı yalnızca asal sayılara zıplat! 1 ve bileşik sayılardan kaçarak kalburu tamamla.',
+        icon: <Activity className="w-8 h-8" />,
+        badge: '4 Seviye • 1-100 Kalbur',
+        gradient: 'from-emerald-500 via-teal-600 to-cyan-800',
+        reward: '+150 XP & Asal Şampiyonu'
+      },
+      {
+        id: 'rainbowvault',
+        title: 'Kripto Asal Kasa: RSA Şifresi',
+        tagline: 'Asal Anahtar Çözme',
+        description: 'İki asal sayının çarpımıyla kilitlenen şifreli kasaları asal çarpanlarını bularak çöz!',
+        icon: <Sparkles className="w-8 h-8" />,
+        badge: '4 Kasa • Kripto Kod',
+        gradient: 'from-purple-600 via-indigo-600 to-pink-600',
+        reward: '+140 XP & Kripto Uzmanı'
+      }
+    );
+  } else if (isCommonTopic) {
+    baseGamesList.push(
+      {
+        id: 'kolilemefactory',
+        title: 'Merhamet Paylaşım Fabrikası: Ortak Bölen',
+        tagline: 'Eşit Kap & Bidonlama',
+        description: 'Zeytinyağı ve nar ekşisini hiç artmayacak şekilde ortak eşit bidonlara dağıt, firesiz lojistiği sağla!',
+        icon: <Package className="w-8 h-8" />,
+        badge: '4 Seviye • Ortak Bölen',
+        gradient: 'from-teal-500 via-emerald-600 to-slate-800',
+        reward: '+130 XP & Paylaşım Ustası'
+      },
+      {
+        id: 'frogjump',
+        title: 'Ortak Durak Parkuru: Periyodik Katlar',
+        tagline: 'Çift Sayı Doğrusu',
+        description: 'Farklı periyotlarla sefer yapan otobüslerin ve fenerlerin ortak buluşma anlarını yakala!',
+        icon: <Activity className="w-8 h-8" />,
+        badge: '4 Seviye • Ritmik Buluşma',
+        gradient: 'from-blue-500 via-cyan-600 to-indigo-800',
+        reward: '+150 XP & Periyot Kaptanı'
+      },
+      {
+        id: 'rainbowvault',
+        title: 'Aralarında Asallık Kasası',
+        tagline: 'Ortak Böleni 1 Olan Çiftler',
+        description: 'Aralarında asal sayı çiftlerini tespit et, 1 ortak bölen mührünü vurarak gizli hazineyi aç!',
+        icon: <Sparkles className="w-8 h-8" />,
+        badge: '4 Kasa • Altın Mühür',
+        gradient: 'from-amber-600 via-purple-600 to-rose-600',
+        reward: '+140 XP & Asallık Dedektifi'
+      }
+    );
+  } else if (isFactorsMultiplesTopic) {
     baseGamesList.push(
       {
         id: 'kolilemefactory',
@@ -289,11 +416,23 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   baseGamesList.push(
     {
       id: 'memorycards',
-      title: isFactorsMultiplesTopic
+      title: isDivisibilityTopic
+        ? 'Bölünebilme Kuralları Hafıza Kartları'
+        : isPrimeFactorsTopic
+        ? 'Asal Sayılar ve Çarpanlar Hafıza Kartları'
+        : isCommonTopic
+        ? 'Ortak Bölen & Kat Hafıza Kartları'
+        : isFactorsMultiplesTopic
         ? 'Çarpanlar & Katlar Hafıza Kartları'
         : 'Kavram & Tanım Hafıza Kartları',
       tagline: 'Kavramsal Eşleştirme & Bellek',
-      description: isFactorsMultiplesTopic
+      description: isDivisibilityTopic
+        ? '2, 3, 4, 5, 6, 9, 10 bölünebilme kuralları ve basamak kavramlarını tanımlarıyla eşleştir.'
+        : isPrimeFactorsTopic
+        ? 'Asal sayı, kalbur, çarpan ağacı ve algoritma kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
+        : isCommonTopic
+        ? 'Ortak bölen, ortak kat, periyot ve aralarında asallık kavramlarını eşleştir.'
+        : isFactorsMultiplesTopic
         ? 'Çarpan, kat, bölen, tam kare ve gökkuşağı kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
         : 'Bir kartta kavramın adı & sembolü, diğerinde tanımı! Kartları çevirerek geometrik kavram-tanım çiftlerini hafızanda eşleştir.',
       icon: <Layers className="w-8 h-8" />,
@@ -303,15 +442,29 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'matching',
-      title: isFactorsMultiplesTopic
+      title: isDivisibilityTopic
+        ? 'Bölünebilme Kriterleri Eşleştirme'
+        : isPrimeFactorsTopic
+        ? 'Asal Çarpanlar & Ağaç Eşleştirme'
+        : isCommonTopic
+        ? 'Ortak Bölen & Kat Eşleştirme'
+        : isFactorsMultiplesTopic
         ? 'Çarpanlar & Katlar Eşleştirme'
         : isLinesAnglesTopic
         ? 'Doğrular & Açı Çıkarımları Eşleştirme'
         : isAngleTopic
         ? 'Açı Çeşitleri & İletki Eşleştirme'
         : 'Kavram & Sembol Eşleştirme',
-      tagline: isFactorsMultiplesTopic ? 'Matematiksel Modelleri Tanı' : 'Geometrik Modelleri Tanı',
-      description: isFactorsMultiplesTopic
+      tagline: isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic
+        ? 'Matematiksel Modelleri Tanı'
+        : 'Geometrik Modelleri Tanı',
+      description: isDivisibilityTopic
+        ? 'Bölünebilme kurallarını, basamak modellerini ve kalan formüllerini eşleştirin.'
+        : isPrimeFactorsTopic
+        ? 'Asal sayı kalburu, çarpan ağacı ve üslü gösterimleri tanımlarıyla eşleştirin.'
+        : isCommonTopic
+        ? 'Ortak bölen kümeleri, ortak kat doğruları ve aralarında asallık kurallarını eşleştirin.'
+        : isFactorsMultiplesTopic
         ? 'Çarpan, kat, alan ve gökkuşağı kavramlarını sembol ve tanımlarıyla eşleştirin.'
         : isLinesAnglesTopic
         ? 'Ters, komşu, tümler, bütünler açıları ve doğruların durumlarını sembol ve tanımlarıyla eşleştirin.'
@@ -325,9 +478,23 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'wordsearch',
-      title: isFactorsMultiplesTopic ? 'Çarpan & Kat Kelime Avı' : 'Matematiksel Kelime Avı',
+      title: isDivisibilityTopic
+        ? 'Bölünebilme Kelime Avı'
+        : isPrimeFactorsTopic
+        ? 'Asal Sayılar Kelime Avı'
+        : isCommonTopic
+        ? 'Ortak Kat & Bölen Kelime Avı'
+        : isFactorsMultiplesTopic
+        ? 'Çarpan & Kat Kelime Avı'
+        : 'Matematiksel Kelime Avı',
       tagline: 'Soru Odaklı Akıl Yürütme',
-      description: isFactorsMultiplesTopic
+      description: isDivisibilityTopic
+        ? 'İpuçlarını oku, gizli bölünebilme, basamak ve kalan kavramlarını bulmaca ızgarasında yakala!'
+        : isPrimeFactorsTopic
+        ? 'İpuçlarını oku, asal sayı, kalbur, çarpan ağacı ve üslü gösterim kavramlarını yakala!'
+        : isCommonTopic
+        ? 'İpuçlarını oku, ortak bölen, ortak kat, periyot ve aralarında asallık terimlerini yakala!'
+        : isFactorsMultiplesTopic
         ? 'İpuçlarını oku, gizli çarpan, kat, bölen ve gökkuşağı kavramlarını bulmaca ızgarasında yakala!'
         : 'Soruları ve ipuçlarını oku, gizli geometrik kavramları dinamik bulmaca ızgarasında bulup yakala!',
       icon: <Search className="w-8 h-8" />,
@@ -337,9 +504,23 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'truefalse',
-      title: isFactorsMultiplesTopic ? 'Çarpanlar & Katlar D/Y Testi' : 'Hızlı Doğru / Yanlış Testi',
+      title: isDivisibilityTopic
+        ? 'Bölünebilme Hızlı D/Y Testi'
+        : isPrimeFactorsTopic
+        ? 'Asal Sayılar Hızlı D/Y Testi'
+        : isCommonTopic
+        ? 'Ortak Bölen & Kat Hızlı D/Y Testi'
+        : isFactorsMultiplesTopic
+        ? 'Çarpanlar & Katlar D/Y Testi'
+        : 'Hızlı Doğru / Yanlış Testi',
       tagline: 'Hız ve Kavramsal Refleks',
-      description: isFactorsMultiplesTopic
+      description: isDivisibilityTopic
+        ? 'Bölünebilme kriterleri önermelerini hızla değerlendir, matematiksel gerekçelerini öğren!'
+        : isPrimeFactorsTopic
+        ? 'Asal sayılar ve çarpan önermelerini hızlıca değerlendir, pedagojik gerekçeleri öğren!'
+        : isCommonTopic
+        ? 'Ortak kat, ortak bölen ve aralarında asallık önermelerini hızla değerlendir!'
+        : isFactorsMultiplesTopic
         ? 'Çarpan ve kat önermelerini hızlıca değerlendir, matematiksel gerekçelerini öğren ve puanları topla!'
         : 'Geometrik önermeleri hızlıca değerlendir, pedagojik gerekçelerini öğren ve puanları topla!',
       icon: <Zap className="w-8 h-8" />,

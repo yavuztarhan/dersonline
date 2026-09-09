@@ -1588,3 +1588,1743 @@ export function RainbowCipherActivityView() {
     </div>
   );
 }
+
+/* ========================================================================= */
+/* 4. ETKİNLİK: SON BASAMAK DEDEKTİFİ - 2, 5, 10 (MAT.6.1.2)                 */
+/* ========================================================================= */
+export function LastDigitActivityView() {
+  const { playSound, addPoints, unlockBadge, role, showAnswers } = useApp();
+
+  const [answers, setAnswers] = useState({
+    t1_div2: '',
+    t1_div5: '',
+    t1_div10: '',
+    t2_div2: '',
+    t2_div5: '',
+    t2_div10: '',
+    p1_sum: '',
+    p2_b_digit: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    // Section A (40 pts)
+    if (answers.t1_div2.toLowerCase().includes('hayir') || answers.t1_div2.toLowerCase() === 'h') earned += 7;
+    if (answers.t1_div5.toLowerCase().includes('evet') || answers.t1_div5.toLowerCase() === 'e') earned += 7;
+    if (answers.t1_div10.toLowerCase().includes('hayir') || answers.t1_div10.toLowerCase() === 'h') earned += 6;
+    if (answers.t2_div2.toLowerCase().includes('evet') || answers.t2_div2.toLowerCase() === 'e') earned += 7;
+    if (answers.t2_div5.toLowerCase().includes('hayir') || answers.t2_div5.toLowerCase() === 'h') earned += 7;
+    if (answers.t2_div10.toLowerCase().includes('hayir') || answers.t2_div10.toLowerCase() === 'h') earned += 6;
+
+    // Section B (60 pts)
+    if (answers.p1_sum.trim() === '20') earned += 30; // 0+2+4+6+8 = 20
+    if (answers.p2_b_digit.trim() === '3') earned += 30; // tek sayı olduğundan 3
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('divisibility-expert');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      t1_div2: '',
+      t1_div5: '',
+      t1_div10: '',
+      t2_div2: '',
+      t2_div5: '',
+      t2_div10: '',
+      p1_sum: '',
+      p2_b_digit: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-sky-100 dark:border-sky-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-300 text-xs font-black uppercase">
+          🔍 MAT.6.1.2 Etkinlik 1
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Son Basamak Dedektifi (2, 5 ve 10 ile Bölünebilme)
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          Sayının birler basamağına bakarak kalansız bölünebilme ve kalan özelliklerini belirleyiniz.
+        </p>
+      </div>
+
+      {/* A BÖLÜMÜ: Tablo */}
+      <div className="p-4 rounded-2xl bg-sky-50/50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 space-y-3">
+        <h4 className="text-xs font-black text-sky-900 dark:text-sky-300 uppercase">
+          A Bölümü: Son Basamak İnceleme Tablosu (40 Puan)
+        </h4>
+        <table className="w-full text-xs text-left border-collapse">
+          <thead>
+            <tr className="border-b border-sky-200 dark:border-sky-800 text-slate-700 dark:text-slate-300 font-bold">
+              <th className="p-2">Sayı</th>
+              <th className="p-2">Birler Bas.</th>
+              <th className="p-2">2 ile Bölünür mü?</th>
+              <th className="p-2">5 ile Bölünür mü?</th>
+              <th className="p-2">10 ile Bölünür mü?</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-sky-100 dark:divide-sky-900/40">
+            <tr>
+              <td className="p-2 font-bold">7.325</td>
+              <td className="p-2 font-mono text-amber-600 font-bold">5</td>
+              <td className="p-2">
+                <input
+                  type="text"
+                  placeholder="Evet/Hayır"
+                  value={answers.t1_div2}
+                  onChange={(e) => setAnswers({ ...answers, t1_div2: e.target.value })}
+                  className="w-24 p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-center font-bold"
+                />
+              </td>
+              <td className="p-2">
+                <input
+                  type="text"
+                  placeholder="Evet/Hayır"
+                  value={answers.t1_div5}
+                  onChange={(e) => setAnswers({ ...answers, t1_div5: e.target.value })}
+                  className="w-24 p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-center font-bold"
+                />
+              </td>
+              <td className="p-2">
+                <input
+                  type="text"
+                  placeholder="Evet/Hayır"
+                  value={answers.t1_div10}
+                  onChange={(e) => setAnswers({ ...answers, t1_div10: e.target.value })}
+                  className="w-24 p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-center font-bold"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="p-2 font-bold">6.148</td>
+              <td className="p-2 font-mono text-amber-600 font-bold">8</td>
+              <td className="p-2">
+                <input
+                  type="text"
+                  placeholder="Evet/Hayır"
+                  value={answers.t2_div2}
+                  onChange={(e) => setAnswers({ ...answers, t2_div2: e.target.value })}
+                  className="w-24 p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-center font-bold"
+                />
+              </td>
+              <td className="p-2">
+                <input
+                  type="text"
+                  placeholder="Evet/Hayır"
+                  value={answers.t2_div5}
+                  onChange={(e) => setAnswers({ ...answers, t2_div5: e.target.value })}
+                  className="w-24 p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-center font-bold"
+                />
+              </td>
+              <td className="p-2">
+                <input
+                  type="text"
+                  placeholder="Evet/Hayır"
+                  value={answers.t2_div10}
+                  onChange={(e) => setAnswers({ ...answers, t2_div10: e.target.value })}
+                  className="w-24 p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-center font-bold"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* B BÖLÜMÜ: Problemler */}
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: Eksik Basamak ve Kalan Problemleri (60 Puan)
+        </h4>
+
+        <div className="text-xs space-y-2">
+          <p className="font-semibold text-slate-700 dark:text-slate-300">
+            <strong>1. Soru:</strong> Dört basamaklı <span className="font-mono font-bold text-sky-600">3.54A</span> sayısı 2 ile kalansız bölünebilen bir doğal sayıdır. A yerine gelebilecek tüm rakamların toplamı kaçtır?
+          </p>
+          <div className="flex items-center gap-2">
+            <span>A rakamları toplamı =</span>
+            <input
+              type="text"
+              placeholder="Toplam"
+              value={answers.p1_sum}
+              onChange={(e) => setAnswers({ ...answers, p1_sum: e.target.value })}
+              className="w-24 p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold text-center"
+            />
+          </div>
+        </div>
+
+        <div className="text-xs space-y-2">
+          <p className="font-semibold text-slate-700 dark:text-slate-300">
+            <strong>2. Soru:</strong> Beş basamaklı <span className="font-mono font-bold text-sky-600">82.71B</span> sayısı 5 ile bölündüğünde 3 kalanını veren <u>tek bir doğal sayıdır</u>. Buna göre B rakamı kaçtır?
+          </p>
+          <div className="flex items-center gap-2">
+            <span>B =</span>
+            <input
+              type="text"
+              placeholder="Rakam"
+              value={answers.p2_b_digit}
+              onChange={(e) => setAnswers({ ...answers, p2_b_digit: e.target.value })}
+              className="w-24 p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold text-center"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Kontrol Butonları & Skor */}
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-sky-50 dark:bg-sky-950/60 border border-sky-200 text-xs font-black text-sky-900 dark:text-sky-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-sky-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• 7.325: 2 ile Hayır, 5 ile Evet, 10 ile Hayır</div>
+          <div>• 6.148: 2 ile Evet, 5 ile Hayır, 10 ile Hayır</div>
+          <div>• 1. Soru: A ∈ {'{0, 2, 4, 6, 8}'} ⟹ Toplam = 0 + 2 + 4 + 6 + 8 = 20</div>
+          <div>• 2. Soru: 5 ile bölündüğünde 3 kalanı için son basamak 3 veya 8 olmalıdır. Tek sayı istendiğinden B = 3'tür.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 5. ETKİNLİK: RAKAMLAR TOPLAMI - 3 VE 9 (MAT.6.1.2)                        */
+/* ========================================================================= */
+export function SumDigitsActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  const [answers, setAnswers] = useState({
+    sum7125: '',
+    div3_7125: '',
+    rem9_7125: '',
+    sum9468: '',
+    div3_9468: '',
+    div9_9468: '',
+    digitA: '',
+    maxB: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    if (answers.sum7125.trim() === '15') earned += 7;
+    if (answers.div3_7125.toLowerCase().includes('evet') || answers.div3_7125.toLowerCase() === 'e') earned += 7;
+    if (answers.rem9_7125.trim() === '6') earned += 6;
+    if (answers.sum9468.trim() === '27') earned += 7;
+    if (answers.div3_9468.toLowerCase().includes('evet') || answers.div3_9468.toLowerCase() === 'e') earned += 7;
+    if (answers.div9_9468.toLowerCase().includes('evet') || answers.div9_9468.toLowerCase() === 'e') earned += 6;
+
+    if (answers.digitA.trim() === '7') earned += 30; // 5+A+2+4=11+A => 18 => A=7
+    if (answers.maxB.trim() === '8') earned += 30; // 4+2+B+1=7+B => B in {2,5,8} => Max=8
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('divisibility-expert');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      sum7125: '',
+      div3_7125: '',
+      rem9_7125: '',
+      sum9468: '',
+      div3_9468: '',
+      div9_9468: '',
+      digitA: '',
+      maxB: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-purple-100 dark:border-purple-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-300 text-xs font-black uppercase">
+          🧮 MAT.6.1.2 Etkinlik 2
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Rakamlar Toplamı ve 10'luk Taban Ayrıştırması (3 ve 9 Kriterleri)
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          100=99+1 ve 10=9+1 ispat modeliyle rakamlar toplamı kuralını uygulayınız.
+        </p>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 space-y-3">
+        <h4 className="text-xs font-black text-purple-900 dark:text-purple-300 uppercase">
+          A Bölümü: Rakamlar Toplamı Analizi (40 Puan)
+        </h4>
+        <div className="space-y-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2 p-2 bg-white dark:bg-slate-800 rounded-xl border border-purple-100 dark:border-purple-900">
+            <span className="font-bold">7.125 Sayısı:</span>
+            <span>Rakamlar Toplamı:</span>
+            <input
+              type="text"
+              placeholder="Toplam"
+              value={answers.sum7125}
+              onChange={(e) => setAnswers({ ...answers, sum7125: e.target.value })}
+              className="w-16 p-1 rounded-lg border text-center font-bold"
+            />
+            <span>3 ile bölünür mü?</span>
+            <input
+              type="text"
+              placeholder="Evet/Hayır"
+              value={answers.div3_7125}
+              onChange={(e) => setAnswers({ ...answers, div3_7125: e.target.value })}
+              className="w-20 p-1 rounded-lg border text-center font-bold"
+            />
+            <span>9 ile bölümünden kalan:</span>
+            <input
+              type="text"
+              placeholder="Kalan"
+              value={answers.rem9_7125}
+              onChange={(e) => setAnswers({ ...answers, rem9_7125: e.target.value })}
+              className="w-16 p-1 rounded-lg border text-center font-bold"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 p-2 bg-white dark:bg-slate-800 rounded-xl border border-purple-100 dark:border-purple-900">
+            <span className="font-bold">9.468 Sayısı:</span>
+            <span>Rakamlar Toplamı:</span>
+            <input
+              type="text"
+              placeholder="Toplam"
+              value={answers.sum9468}
+              onChange={(e) => setAnswers({ ...answers, sum9468: e.target.value })}
+              className="w-16 p-1 rounded-lg border text-center font-bold"
+            />
+            <span>3 ile bölünür mü?</span>
+            <input
+              type="text"
+              placeholder="Evet/Hayır"
+              value={answers.div3_9468}
+              onChange={(e) => setAnswers({ ...answers, div3_9468: e.target.value })}
+              className="w-20 p-1 rounded-lg border text-center font-bold"
+            />
+            <span>9 ile bölünür mü?</span>
+            <input
+              type="text"
+              placeholder="Evet/Hayır"
+              value={answers.div9_9468}
+              onChange={(e) => setAnswers({ ...answers, div9_9468: e.target.value })}
+              className="w-20 p-1 rounded-lg border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: Gizli Rakam ve Kasa Problemleri (60 Puan)
+        </h4>
+
+        <div className="text-xs space-y-2">
+          <p className="font-semibold text-slate-700 dark:text-slate-300">
+            <strong>1. Soru:</strong> Dört basamaklı <span className="font-mono font-bold text-purple-600">5.A24</span> sayısı 9 ile kalansız bölünebilmektedir. Buna göre A rakamı kaçtır?
+          </p>
+          <div className="flex items-center gap-2">
+            <span>A =</span>
+            <input
+              type="text"
+              placeholder="Rakam"
+              value={answers.digitA}
+              onChange={(e) => setAnswers({ ...answers, digitA: e.target.value })}
+              className="w-24 p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold text-center"
+            />
+          </div>
+        </div>
+
+        <div className="text-xs space-y-2">
+          <p className="font-semibold text-slate-700 dark:text-slate-300">
+            <strong>2. Soru:</strong> Dört basamaklı <span className="font-mono font-bold text-purple-600">4.2B1</span> sayısının 3 ile kalansız bölünebilmesi için B yerine gelebilecek <u>EN BÜYÜK</u> rakam kaçtır?
+          </p>
+          <div className="flex items-center gap-2">
+            <span>En Büyük B =</span>
+            <input
+              type="text"
+              placeholder="Rakam"
+              value={answers.maxB}
+              onChange={(e) => setAnswers({ ...answers, maxB: e.target.value })}
+              className="w-24 p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold text-center"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 text-xs font-black text-purple-900 dark:text-purple-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-purple-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• 7.125: Rakamlar toplamı 15. 3'e tam bölünür (Evet). 9 ile bölümünden kalan: 6 (15 - 9 = 6).</div>
+          <div>• 9.468: Rakamlar toplamı 27. 3'e tam bölünür (Evet), 9'a tam bölünür (Evet).</div>
+          <div>• 1. Soru: 5 + A + 2 + 4 = 11 + A ⟹ 9'un katı olması için 11 + A = 18 ⟹ A = 7'dir.</div>
+          <div>• 2. Soru: 4 + 2 + B + 1 = 7 + B ⟹ B ∈ {'{2, 5, 8}'} ⟹ En büyük değer B = 8'dir.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 6. ETKİNLİK: BİRLEŞİK KRİTERLER VE KASA ŞİFRESİ (MAT.6.1.2)               */
+/* ========================================================================= */
+export function CompositeCriteriaActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  const [answers, setAnswers] = useState({
+    div4_5812: '',
+    div6_5812: '',
+    div6_4875: '',
+    safe_digitB: '',
+    safe_maxA: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    if (answers.div4_5812.toLowerCase().includes('evet') || answers.div4_5812.toLowerCase() === 'e') earned += 15;
+    if (answers.div6_5812.toLowerCase().includes('hayir') || answers.div6_5812.toLowerCase() === 'h') earned += 15;
+    if (answers.div6_4875.toLowerCase().includes('hayir') || answers.div6_4875.toLowerCase() === 'h') earned += 10;
+
+    if (answers.safe_digitB.trim() === '0') earned += 30; // 5 ve 6 için son basamak 0
+    if (answers.safe_maxA.trim() === '9') earned += 30; // 2+A+7+0=9+A => Max A = 9
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('divisibility-expert');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      div4_5812: '',
+      div6_5812: '',
+      div6_4875: '',
+      safe_digitB: '',
+      safe_maxA: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-emerald-100 dark:border-emerald-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-black uppercase">
+          🔐 MAT.6.1.2 Etkinlik 3
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Birleşik Kriterler ve Dört Basamaklı Kasa Şifresi (4 ve 6 Kriterleri)
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          Son iki basamak analizi ve hem 2 hem 3 şartlarını birleştirerek kasa görevini tamamlayınız.
+        </p>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 space-y-3">
+        <h4 className="text-xs font-black text-emerald-900 dark:text-emerald-300 uppercase">
+          A Bölümü: 4 ve 6 Kriter Kontrolü (40 Puan)
+        </h4>
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span>5.812 sayısı 4 ile bölünür mü? (Son iki basamak: 12) ⟹</span>
+            <input
+              type="text"
+              placeholder="Evet/Hayır"
+              value={answers.div4_5812}
+              onChange={(e) => setAnswers({ ...answers, div4_5812: e.target.value })}
+              className="w-24 p-1 rounded-lg border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>5.812 sayısı 6 ile bölünür mü? (Rakamlar toplamı: 16) ⟹</span>
+            <input
+              type="text"
+              placeholder="Evet/Hayır"
+              value={answers.div6_5812}
+              onChange={(e) => setAnswers({ ...answers, div6_5812: e.target.value })}
+              className="w-24 p-1 rounded-lg border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>4.875 sayısı 6 ile bölünür mü? (Tek sayı) ⟹</span>
+            <input
+              type="text"
+              placeholder="Evet/Hayır"
+              value={answers.div6_4875}
+              onChange={(e) => setAnswers({ ...answers, div6_4875: e.target.value })}
+              className="w-24 p-1 rounded-lg border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: Kasa Şifresi Çözme Görevi (60 Puan)
+        </h4>
+        <div className="text-xs space-y-3">
+          <p className="font-semibold text-slate-700 dark:text-slate-300">
+            Dört basamaklı <span className="font-mono font-bold text-emerald-600">2.A7B</span> sayısı hem 5'e hem de 6'ya kalansız bölünebilen bir doğal sayıdır.
+          </p>
+          <div className="flex items-center gap-2">
+            <span>1. Hem 5 hem 6 ile bölünmesi için son basamak B =</span>
+            <input
+              type="text"
+              placeholder="B"
+              value={answers.safe_digitB}
+              onChange={(e) => setAnswers({ ...answers, safe_digitB: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>2. 3'e kalansız bölünmesi için A'nın alabileceği EN BÜYÜK değer =</span>
+            <input
+              type="text"
+              placeholder="Max A"
+              value={answers.safe_maxA}
+              onChange={(e) => setAnswers({ ...answers, safe_maxA: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 text-xs font-black text-emerald-900 dark:text-emerald-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-emerald-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• 5.812: 12 sayısı 4'e tam bölünür (Evet). Rakamlar toplamı 16, 3'ün katı olmadığından 6'ya bölünmez (Hayır).</div>
+          <div>• 4.875: Tek sayı olduğundan 6'ya bölünemez (Hayır).</div>
+          <div>• B = 0 (5 için 0 veya 5 olmalı, 6 için çift olmalı ⟹ B = 0).</div>
+          <div>• 2 + A + 7 + 0 = 9 + A ⟹ A ∈ {'{0, 3, 6, 9}'} ⟹ En büyük A = 9'dur.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 7. ETKİNLİK: ERATOSTHENES KALBURU (MAT.6.1.3)                             */
+/* ========================================================================= */
+export function EratosthenesSieveActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  const [answers, setAnswers] = useState({
+    prime9th: '',
+    prime10th: '',
+    min2digit: '',
+    max2digit: '',
+    totalPrimes100: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    if (answers.prime9th.trim() === '23') earned += 20;
+    if (answers.prime10th.trim() === '29') earned += 20;
+    if (answers.min2digit.trim() === '11') earned += 20;
+    if (answers.max2digit.trim() === '97') earned += 20;
+    if (answers.totalPrimes100.trim() === '25') earned += 20;
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('prime-master');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      prime9th: '',
+      prime10th: '',
+      min2digit: '',
+      max2digit: '',
+      totalPrimes100: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-amber-100 dark:border-amber-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-black uppercase">
+          🛡️ MAT.6.1.3 Etkinlik 1
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Eratosthenes Asal Kalburu (1-100 Asal Sayı Keşfi)
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          1'den 100'e kadar olan sayılarda kalbur eleme tekniğiyle asal sayıları keşfediniz.
+        </p>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 space-y-3">
+        <h4 className="text-xs font-black text-amber-900 dark:text-amber-300 uppercase">
+          A Bölümü: İlk 10 Asal Sayı Listesi (40 Puan)
+        </h4>
+        <div className="text-xs space-y-2">
+          <p className="text-slate-700 dark:text-slate-300">
+            50'den küçük ilk 10 asal sayı: <span className="font-mono font-bold">2, 3, 5, 7, 11, 13, 17, 19</span> ve sıradaki iki asal sayı:
+          </p>
+          <div className="flex items-center gap-3">
+            <span>9. Asal Sayı:</span>
+            <input
+              type="text"
+              placeholder="Sayı"
+              value={answers.prime9th}
+              onChange={(e) => setAnswers({ ...answers, prime9th: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+            <span>10. Asal Sayı:</span>
+            <input
+              type="text"
+              placeholder="Sayı"
+              value={answers.prime10th}
+              onChange={(e) => setAnswers({ ...answers, prime10th: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: 1-100 Asal Sayı Özellikleri (60 Puan)
+        </h4>
+        <div className="text-xs space-y-3">
+          <div className="flex items-center gap-2">
+            <span>İki basamaklı EN KÜÇÜK asal sayı =</span>
+            <input
+              type="text"
+              placeholder="Sayı"
+              value={answers.min2digit}
+              onChange={(e) => setAnswers({ ...answers, min2digit: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>İki basamaklı EN BÜYÜK asal sayı =</span>
+            <input
+              type="text"
+              placeholder="Sayı"
+              value={answers.max2digit}
+              onChange={(e) => setAnswers({ ...answers, max2digit: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>1 ile 100 arasında TOPLAM kaç tane asal sayı vardır? ⟹</span>
+            <input
+              type="text"
+              placeholder="Adet"
+              value={answers.totalPrimes100}
+              onChange={(e) => setAnswers({ ...answers, totalPrimes100: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 text-xs font-black text-amber-900 dark:text-amber-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-amber-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• 9. Asal: 23, 10. Asal: 29</div>
+          <div>• İki basamaklı en küçük asal: 11</div>
+          <div>• İki basamaklı en büyük asal: 97</div>
+          <div>• 1-100 arasındaki toplam asal sayı: 25 Adettir.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 8. ETKİNLİK: ÇARPAN AĞACI & ALGORİTMA (MAT.6.1.3)                          */
+/* ========================================================================= */
+export function FactorTreeAlgorithmActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  const [answers, setAnswers] = useState({
+    tree84_p1: '',
+    tree84_p2: '',
+    pow120_2: '',
+    pow120_3: '',
+    pow120_5: '',
+    sumPrimes120: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    if (answers.tree84_p1.trim() === '3' || answers.tree84_p1.trim() === '7') earned += 20;
+    if (answers.tree84_p2.trim() === '7' || answers.tree84_p2.trim() === '3') earned += 20;
+
+    if (answers.pow120_2.trim() === '3') earned += 20; // 2^3
+    if (answers.pow120_3.trim() === '1') earned += 15; // 3^1
+    if (answers.pow120_5.trim() === '1') earned += 15; // 5^1
+    if (answers.sumPrimes120.trim() === '10') earned += 10; // 2+3+5=10
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('prime-master');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      tree84_p1: '',
+      tree84_p2: '',
+      pow120_2: '',
+      pow120_3: '',
+      pow120_5: '',
+      sumPrimes120: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-teal-100 dark:border-teal-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300 text-xs font-black uppercase">
+          🌳 MAT.6.1.3 Etkinlik 2
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Çarpan Ağacı ve Asal Çarpan Algoritması
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          Sayıları asal çarpanlarına ayırarak üslü biçimde ifade ediniz.
+        </p>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-teal-50/50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 space-y-3">
+        <h4 className="text-xs font-black text-teal-900 dark:text-teal-300 uppercase">
+          A Bölümü: 84 Sayısının Çarpan Ağacı (40 Puan)
+        </h4>
+        <div className="text-xs space-y-2">
+          <p className="text-slate-700 dark:text-slate-300">
+            84 = 4 × 21 ⟹ (2 × 2) × (3 × 7) ⟹ <span className="font-mono font-bold">84 = 2² · A · B</span>
+          </p>
+          <div className="flex items-center gap-3">
+            <span>A =</span>
+            <input
+              type="text"
+              placeholder="Asal 1"
+              value={answers.tree84_p1}
+              onChange={(e) => setAnswers({ ...answers, tree84_p1: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+            <span>B =</span>
+            <input
+              type="text"
+              placeholder="Asal 2"
+              value={answers.tree84_p2}
+              onChange={(e) => setAnswers({ ...answers, tree84_p2: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: 120 Sayısının Bölme Algoritması (60 Puan)
+        </h4>
+        <div className="text-xs space-y-3">
+          <p className="text-slate-700 dark:text-slate-300">
+            120 sayısını bölme çizgisiyle asal çarpanlarına ayırınız: 120 = 2^x · 3^y · 5^z
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <span>2'nin üssü (x) =</span>
+            <input
+              type="text"
+              placeholder="x"
+              value={answers.pow120_2}
+              onChange={(e) => setAnswers({ ...answers, pow120_2: e.target.value })}
+              className="w-16 p-1.5 rounded-xl border text-center font-bold"
+            />
+            <span>3'ün üssü (y) =</span>
+            <input
+              type="text"
+              placeholder="y"
+              value={answers.pow120_3}
+              onChange={(e) => setAnswers({ ...answers, pow120_3: e.target.value })}
+              className="w-16 p-1.5 rounded-xl border text-center font-bold"
+            />
+            <span>5'in üssü (z) =</span>
+            <input
+              type="text"
+              placeholder="z"
+              value={answers.pow120_5}
+              onChange={(e) => setAnswers({ ...answers, pow120_5: e.target.value })}
+              className="w-16 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <span>120 sayısının farklı asal çarpanlarının toplamı (2 + 3 + 5) =</span>
+            <input
+              type="text"
+              placeholder="Toplam"
+              value={answers.sumPrimes120}
+              onChange={(e) => setAnswers({ ...answers, sumPrimes120: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 text-xs font-black text-teal-900 dark:text-teal-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-teal-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• 84 = 2² · 3 · 7 (A = 3, B = 7)</div>
+          <div>• 120 = 2³ · 3¹ · 5¹ (x = 3, y = 1, z = 1)</div>
+          <div>• Farklı asal çarpanlar: 2, 3, 5 ⟹ Toplam = 2 + 3 + 5 = 10</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 9. ETKİNLİK: ASAL ŞİFRELEME & KRİPTO KASA (MAT.6.1.3)                      */
+/* ========================================================================= */
+export function PrimeCryptoActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  const [answers, setAnswers] = useState({
+    kasa119: '',
+    kasa323: '',
+    ageVolunteer: '',
+    safeCode90: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    if (answers.kasa119.trim() === '17') earned += 20; // 119 = 7 * 17
+    if (answers.kasa323.trim() === '19') earned += 20; // 323 = 17 * 19
+
+    if (answers.ageVolunteer.trim() === '10') earned += 30; // 180 = 2^2*3^2*5 => 2+3+5=10
+    if (answers.safeCode90.trim() === '121') earned += 30; // 90 = 2^1 * 3^2 * 5^1 => 121
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('prime-master');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      kasa119: '',
+      kasa323: '',
+      ageVolunteer: '',
+      safeCode90: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-purple-100 dark:border-purple-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-300 text-xs font-black uppercase">
+          🔐 MAT.6.1.3 Etkinlik 3
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Asal Şifreleme ve Kripto Kasa Görevi
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          İki asal sayının çarpımıyla oluşan güvenlik kodlarını asal çarpanlarına ayırarak çözünüz.
+        </p>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 space-y-3">
+        <h4 className="text-xs font-black text-purple-900 dark:text-purple-300 uppercase">
+          A Bölümü: Kripto Şifre Çözme Tablosu (40 Puan)
+        </h4>
+        <div className="text-xs space-y-2">
+          <div className="flex items-center gap-2">
+            <span>119 Kodu: 7 × </span>
+            <input
+              type="text"
+              placeholder="Asal"
+              value={answers.kasa119}
+              onChange={(e) => setAnswers({ ...answers, kasa119: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>323 Kodu: 17 × </span>
+            <input
+              type="text"
+              placeholder="Asal"
+              value={answers.kasa323}
+              onChange={(e) => setAnswers({ ...answers, kasa323: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: Asal Çarpanlı Gerçek Hayat Problemleri (60 Puan)
+        </h4>
+        <div className="text-xs space-y-3">
+          <div>
+            <p className="font-semibold text-slate-700 dark:text-slate-300">
+              <strong>1. Problem:</strong> 180 sayısının farklı asal çarpanlarının toplamı kadar yaşındaki gönüllü öğrencinin yaşı kaçtır?
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span>Öğrencinin Yaşı =</span>
+              <input
+                type="text"
+                placeholder="Yaş"
+                value={answers.ageVolunteer}
+                onChange={(e) => setAnswers({ ...answers, ageVolunteer: e.target.value })}
+                className="w-20 p-1.5 rounded-xl border text-center font-bold"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="font-semibold text-slate-700 dark:text-slate-300">
+              <strong>2. Problem:</strong> 90 = 2^a · 3^b · 5^c eşitliğinde üslerin sırasıyla yan yana yazılmasıyla oluşan 3 basamaklı kasa şifresi (abc) kaçtır?
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span>Şifre (abc) =</span>
+              <input
+                type="text"
+                placeholder="abc"
+                value={answers.safeCode90}
+                onChange={(e) => setAnswers({ ...answers, safeCode90: e.target.value })}
+                className="w-24 p-1.5 rounded-xl border text-center font-bold"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 text-xs font-black text-purple-900 dark:text-purple-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-purple-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• 119 = 7 × 17</div>
+          <div>• 323 = 17 × 19</div>
+          <div>• 180 = 2² · 3² · 5 ⟹ Asal çarpanlar: 2, 3, 5 ⟹ Yaş = 2 + 3 + 5 = 10</div>
+          <div>• 90 = 2¹ · 3² · 5¹ ⟹ a=1, b=2, c=1 ⟹ Şifre = 121</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 10. ETKİNLİK: ORTAK BÖLENLER & BİDONLAMA (MAT.6.1.4)                       */
+/* ========================================================================= */
+export function CommonDivisorsActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  const [answers, setAnswers] = useState({
+    commonList: '',
+    maxCapacity: '',
+    totalCans: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    const cleanList = answers.commonList.replace(/\s+/g, '');
+    if (cleanList.includes('1,2,3,4,6,12') || cleanList.includes('12,6,4,3,2,1')) earned += 40;
+    else if (cleanList.includes('12')) earned += 20;
+
+    if (answers.maxCapacity.trim() === '12') earned += 30;
+    if (answers.totalCans.trim() === '5') earned += 30; // 24/12=2, 36/12=3 => 2+3=5
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('common-master');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      commonList: '',
+      maxCapacity: '',
+      totalCans: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-teal-100 dark:border-teal-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300 text-xs font-black uppercase">
+          🛢️ MAT.6.1.4 Etkinlik 1
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Zeytinyağı ve Nar Ekşisi Ortak Bidonlama (Ortak Bölenler)
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          24 Litre ve 36 Litre sıvıların ortak bölenler kümesini ve en uygun bidonlama hacmini bulunuz.
+        </p>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-teal-50/50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 space-y-3">
+        <h4 className="text-xs font-black text-teal-900 dark:text-teal-300 uppercase">
+          A Bölümü: Ortak Bölenler Kümesi (40 Puan)
+        </h4>
+        <div className="text-xs space-y-2">
+          <p className="text-slate-700 dark:text-slate-300">
+            24'ün bölenleri: {'{1, 2, 3, 4, 6, 8, 12, 24}'} | 36'nın bölenleri: {'{1, 2, 3, 4, 6, 9, 12, 18, 36}'}
+          </p>
+          <div className="flex items-center gap-2">
+            <span>Ortak Bölenler (Virgülle ayırarak yazınız):</span>
+            <input
+              type="text"
+              placeholder="1, 2, 3, 4, 6, 12"
+              value={answers.commonList}
+              onChange={(e) => setAnswers({ ...answers, commonList: e.target.value })}
+              className="w-48 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: Eşit Paylaştırma ve En Büyük Kap Problemi (60 Puan)
+        </h4>
+        <div className="text-xs space-y-3">
+          <div className="flex items-center gap-2">
+            <span>1. Hiç artmayacak şekilde EN BÜYÜK bidon kaç litre olmalıdır? =</span>
+            <input
+              type="text"
+              placeholder="Litre"
+              value={answers.maxCapacity}
+              onChange={(e) => setAnswers({ ...answers, maxCapacity: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>2. Bu durumda kullanılacak TOPLAM bidon sayısı =</span>
+            <input
+              type="text"
+              placeholder="Adet"
+              value={answers.totalCans}
+              onChange={(e) => setAnswers({ ...answers, totalCans: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 text-xs font-black text-teal-900 dark:text-teal-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-teal-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• Ortak Bölenler: 1, 2, 3, 4, 6, 12</div>
+          <div>• En Büyük Bidon Hacmi: 12 Litre</div>
+          <div>• Toplam Bidon: (24 ÷ 12) + (36 ÷ 12) = 2 + 3 = 5 Adet Bidon</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 11. ETKİNLİK: PERİYODİK SEFERLER & ORTAK KATLAR (MAT.6.1.4)               */
+/* ========================================================================= */
+export function CommonMultiplesActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  const [answers, setAnswers] = useState({
+    stop1: '',
+    stop2: '',
+    stop3: '',
+    nurseDays: '',
+    lighthouseCount: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    if (answers.stop1.trim() === '24') earned += 15;
+    if (answers.stop2.trim() === '48') earned += 15;
+    if (answers.stop3.trim() === '72') earned += 10;
+
+    if (answers.nurseDays.trim() === '12') earned += 30; // 4 ve 6 ortak katı = 12
+    if (answers.lighthouseCount.trim() === '2') earned += 30; // 15 ve 20 ortak katı = 60s, 120s / 60s = 2 kez
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('common-master');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      stop1: '',
+      stop2: '',
+      stop3: '',
+      nurseDays: '',
+      lighthouseCount: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-sky-100 dark:border-sky-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-300 text-xs font-black uppercase">
+          🚌 MAT.6.1.4 Etkinlik 2
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Periyodik Seferler ve Durak Buluşması (Ortak Katlar)
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          Ritmik olarak tekrarlanan periyotların ortak katlarını belirleyiniz.
+        </p>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-sky-50/50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 space-y-3">
+        <h4 className="text-xs font-black text-sky-900 dark:text-sky-300 uppercase">
+          A Bölümü: Otobüs Kalkış Anları (40 Puan)
+        </h4>
+        <div className="text-xs space-y-2">
+          <p className="text-slate-700 dark:text-slate-300">
+            A Otobüsü her 6 dakikada, B Otobüsü her 8 dakikada bir hareket etmektedir. İlk 3 ortak hareket dakikası:
+          </p>
+          <div className="flex items-center gap-3">
+            <span>1. Buluşma:</span>
+            <input
+              type="text"
+              placeholder="dk"
+              value={answers.stop1}
+              onChange={(e) => setAnswers({ ...answers, stop1: e.target.value })}
+              className="w-16 p-1.5 rounded-xl border text-center font-bold"
+            />
+            <span>2. Buluşma:</span>
+            <input
+              type="text"
+              placeholder="dk"
+              value={answers.stop2}
+              onChange={(e) => setAnswers({ ...answers, stop2: e.target.value })}
+              className="w-16 p-1.5 rounded-xl border text-center font-bold"
+            />
+            <span>3. Buluşma:</span>
+            <input
+              type="text"
+              placeholder="dk"
+              value={answers.stop3}
+              onChange={(e) => setAnswers({ ...answers, stop3: e.target.value })}
+              className="w-16 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: Periyodik Problem Çözme (60 Puan)
+        </h4>
+        <div className="text-xs space-y-3">
+          <div className="flex items-center gap-2">
+            <span>1. 4 günde bir ve 6 günde bir nöbet tutan iki hemşire kaç gün sonra tekrar birlikte nöbet tutar? =</span>
+            <input
+              type="text"
+              placeholder="Gün"
+              value={answers.nurseDays}
+              onChange={(e) => setAnswers({ ...answers, nurseDays: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>2. 15 sn ve 20 sn aralıklarla yanan iki fener 2 dakika (120 sn) içinde kaç kez daha birlikte yanar? =</span>
+            <input
+              type="text"
+              placeholder="Kez"
+              value={answers.lighthouseCount}
+              onChange={(e) => setAnswers({ ...answers, lighthouseCount: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-sky-50 dark:bg-sky-950/60 border border-sky-200 text-xs font-black text-sky-900 dark:text-sky-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-sky-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• Otobüs Ortak Kalkış: 24. dk, 48. dk, 72. dk</div>
+          <div>• Hemşire Birlikte Nöbet: 4 ve 6'nın ortak katı = 12 Gün Sonra</div>
+          <div>• Fenerler: 15 ve 20'nin ortak katı = 60 saniye. 120 ÷ 60 = 2 kez daha birlikte yanarlar.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 12. ETKİNLİK: ARALARINDA ASALLIK & MERHAMET BAHÇESİ (MAT.6.1.4)            */
+/* ========================================================================= */
+export function CoprimeGardenActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  const [answers, setAnswers] = useState({
+    coprime14_25: '',
+    coprime12_35: '',
+    treeIntervalsCount: '',
+    treeBestInterval: '',
+    treeTotalCount: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  const handleCheck = () => {
+    let earned = 0;
+    if (answers.coprime14_25.toLowerCase().includes('evet') || answers.coprime14_25.toLowerCase().includes('aralarinda asal')) earned += 20;
+    if (answers.coprime12_35.toLowerCase().includes('evet') || answers.coprime12_35.toLowerCase().includes('aralarinda asal')) earned += 20;
+
+    if (answers.treeIntervalsCount.trim() === '6') earned += 20; // 1,2,4,5,10,20 => 6 adet
+    if (answers.treeBestInterval.trim() === '20') earned += 20; // 20m
+    if (answers.treeTotalCount.trim() === '10') earned += 20; // Çevre=200m => 200/20=10
+
+    setScore(earned);
+    setIsChecked(true);
+
+    if (earned >= 70) {
+      playSound('success');
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+      addPoints(earned);
+      unlockBadge('common-master');
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    setAnswers({
+      coprime14_25: '',
+      coprime12_35: '',
+      treeIntervalsCount: '',
+      treeBestInterval: '',
+      treeTotalCount: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="border-b border-emerald-100 dark:border-emerald-950 pb-4">
+        <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-black uppercase">
+          🌱 MAT.6.1.4 Etkinlik 3
+        </span>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+          Merhamet Bahçesi ve Aralarında Asallık Testi
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          1'den başka ortak böleni olmayan sayıları keşfederek bahçe ağaçlandırma problemini çözünüz.
+        </p>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 space-y-3">
+        <h4 className="text-xs font-black text-emerald-900 dark:text-emerald-300 uppercase">
+          A Bölümü: Aralarında Asallık Testi (40 Puan)
+        </h4>
+        <div className="text-xs space-y-2">
+          <div className="flex items-center gap-2">
+            <span>14 ve 25 sayıları aralarında asal mıdır? ⟹</span>
+            <input
+              type="text"
+              placeholder="Evet/Hayır"
+              value={answers.coprime14_25}
+              onChange={(e) => setAnswers({ ...answers, coprime14_25: e.target.value })}
+              className="w-24 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>12 ve 35 sayıları aralarında asal mıdır? ⟹</span>
+            <input
+              type="text"
+              placeholder="Evet/Hayır"
+              value={answers.coprime12_35}
+              onChange={(e) => setAnswers({ ...answers, coprime12_35: e.target.value })}
+              className="w-24 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase">
+          B Bölümü: 40m × 60m Merhamet Bahçesi Ağaç Dikimi (60 Puan)
+        </h4>
+        <div className="text-xs space-y-3">
+          <div className="flex items-center gap-2">
+            <span>1. İki fidan arasındaki mesafe kaç farklı tam sayı değeri alabilir? (Ortak bölen sayısı) =</span>
+            <input
+              type="text"
+              placeholder="Adet"
+              value={answers.treeIntervalsCount}
+              onChange={(e) => setAnswers({ ...answers, treeIntervalsCount: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>2. En az fidan için aralık kaç metre olmalıdır? =</span>
+            <input
+              type="text"
+              placeholder="Metre"
+              value={answers.treeBestInterval}
+              onChange={(e) => setAnswers({ ...answers, treeBestInterval: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>3. Bu durumda toplam kaç adet fidan gerekir? (Çevre 200m) =</span>
+            <input
+              type="text"
+              placeholder="Adet"
+              value={answers.treeTotalCount}
+              onChange={(e) => setAnswers({ ...answers, treeTotalCount: e.target.value })}
+              className="w-20 p-1.5 rounded-xl border text-center font-bold"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md transition-all active:scale-95"
+          >
+            Kontrol Et (100P)
+          </button>
+          <button
+            type="button"
+            onClick={() => setRevealSolutions(!revealSolutions)}
+            className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
+          >
+            {revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster'}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all"
+            title="Sıfırla"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isChecked && (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 text-xs font-black text-emerald-900 dark:text-emerald-300 animate-in fade-in">
+            <Award className="w-4 h-4 text-emerald-600" />
+            <span>Puanınız: {score} / 100</span>
+          </div>
+        )}
+      </div>
+
+      {revealSolutions && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-xs space-y-1.5 animate-in fade-in text-slate-800 dark:text-slate-200">
+          <div className="font-black text-amber-900 dark:text-amber-300 uppercase">🔑 Çözüm Anahtarı:</div>
+          <div>• 14 ve 25: Ortak bölenleri yalnızca 1 olduğundan Aralarında Asaldır (Evet).</div>
+          <div>• 12 ve 35: Ortak bölenleri yalnızca 1 olduğundan Aralarında Asaldır (Evet).</div>
+          <div>• 40 ve 60'ın ortak bölenleri: 1, 2, 4, 5, 10, 20 ⟹ 6 farklı mesafe.</div>
+          <div>• En az fidan için en büyük aralık: 20 metre.</div>
+          <div>• Toplam fidan: Çevre ÷ Aralık = 200 ÷ 20 = 10 Adet Fidan.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+

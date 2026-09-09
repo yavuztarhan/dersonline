@@ -72,6 +72,219 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk5', text: 'Günlük hayatta paylaştırma ve paketleme problemlerinde çarpanlardan yararlanabiliyorum.' }
     ]
   },
+  'MAT.6.1.2': {
+    id: 'rubric-mat-6-1-2',
+    outcomeId: 'MAT.6.1.2',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Bölünebilme Kriterleri (2, 3, 4, 5, 6, 9, 10)',
+    description:
+      'Doğal sayıların basamak değerlerini ve katlarını inceleyerek 2, 3, 4, 5, 6, 9 ve 10 ile kalansız bölünebilme kriterlerine ilişkin çıkarım yapma ve pratik karar verme becerilerinizi değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Son Basamak Kriterlerini Uygulama (2, 5 ve 10 ile Bölünebilme)',
+        category: 'Kavramsal Anlama & Son Basamak',
+        levelDescriptions: {
+          1: '2, 5 ve 10 ile bölünebilmede birler basamağına bakılması gerektiğini karıştırıyorum.',
+          2: 'Çift sayıların 2\'ye, sonu 0 ve 5 olanların 5\'e bölündüğünü biliyorum ancak 10 ile kalan ilişkisinde zorlanıyorum.',
+          3: 'Birler basamağını inceleyerek bir sayının 2, 5 ve 10 ile tam bölünüp bölünmediğini ve kalanını doğru bulabiliyorum.',
+          4: 'Birler basamağı 0 olan sayıların 2, 5 ve 10\'un ortak katı olduğunu basamak değerleriyle tam açıklayıp genelliyorum.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Rakamlar Toplamı Kuralı ve Basamak Çözümleme (3 ve 9 ile Bölünebilme)',
+        category: 'Matematiksel Muhakeme & Basamak Toplamı',
+        levelDescriptions: {
+          1: '3 ve 9 ile bölünebilmede rakamları toplamak yerine birler basamağına bakma hatasına düşüyorum.',
+          2: 'Rakamları toplayarak 3\'ün katı olup olmadığını buluyorum fakat 9 ile bölünebilme ve kalan bulmada zorlanıyorum.',
+          3: 'Rakamları toplamı 3\'ün katı olanların 3\'e, 9\'un katı olanların 9\'a bölündüğünü ve kalanı hatasız hesaplıyorum.',
+          4: '100=99+1 basamak açılımı üzerinden 3 ve 9 kurallarının mantıksal ispatını yapıp 9\'a bölünenin 3\'e de bölüneceğini kanıtlıyorum.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Son İki Basamak ve Çift Kriter Muhakemesi (4 ve 6 ile Bölünebilme)',
+        category: 'Analiz & Çoklu Kriter',
+        levelDescriptions: {
+          1: '4 ile bölünebilmede son iki basamağa, 6 ile bölünebilmede hem 2 hem 3 şartına bakmayı unutuyorum.',
+          2: '4 ve 6 kurallarını hatırlıyorum ancak bilinmeyen basamaklı sorularda tüm değerleri bulmakta zorlanıyorum.',
+          3: 'Son iki basamağı 00 veya 4\'ün katı olanları 4\'e; hem çift hem rakamlar toplamı 3k olanları 6\'ya doğru çözümlüyorum.',
+          4: 'Yüzlüklerin 4\'e bölündüğünü gerekçelendirip 6 ile bölünebilen hiçbir sayının tek olamayacağını matematiksel olarak izah ediyorum.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Problem Durumlarında Pratik Bölünebilme ve Algoritmik Çıkarım',
+        category: 'Uygulama & Problem Çözme',
+        levelDescriptions: {
+          1: 'Problem durumlarında bölme işlemi yapmadan kural uygulayarak pratik karar vermekte zorlanıyorum.',
+          2: 'Basit paketleme ve basamak bulma sorularında ipucuyla kuralları uygulayabiliyorum.',
+          3: 'Günlük hayat problemlerinde (koli, oturma düzeni, şifre) bölünebilme kurallarını bağımsız ve doğru kullanıyorum.',
+          4: 'T.C. kimlik veya barkod algoritmalarında bölünebilme mantığını modelleyip alternatif stratejiler üretiyorum.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Öz Düzenleme ve Öğrenme Sorumluluğu (SDB1.2 - SDB3.3)',
+        category: 'Süreç Becerileri & Yansıtma',
+        levelDescriptions: {
+          1: 'Bölünebilme adımlarında rastgele tahminler yapıyor, kontrollerimi yapmıyorum.',
+          2: 'Hata yaptığımda öğretmenim uyardığında düzeltiyorum ancak nedenini açıklamakta zorlanıyorum.',
+          3: 'Bölünebilme kurallarını adım adım kontrol ediyor, basamak toplama ve son basamak hatalarımı fark edip düzeltiyorum.',
+          4: 'Kendi öğrenme sürecimi eleştirel değerlendiriyor, bölünebilme çıkarımlarımı öğrenme günlüğüne derinlikli aktarıyorum.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Birler basamağı çift olan sayıların 2 ile, 0 veya 5 olanların 5 ile tam bölündüğünü biliyorum.' },
+      { id: 'chk2', text: 'Bir sayının 3 veya 9 ile bölünebilmesi için rakamları toplamına bakılması gerektiğini anladım.' },
+      { id: 'chk3', text: 'Yüzlükler 4\'e tam bölündüğü için 4 kuralında sadece son iki basamağın incelendiğini kavradım.' },
+      { id: 'chk4', text: 'Bir sayının 6 ile bölünebilmesi için hem çift hem de 3\'ün katı olması gerektiğini biliyorum.' },
+      { id: 'chk5', text: 'Bölme işlemi yapmadan bölünebilme kurallarıyla günlük hayatta pratik kararlar alabiliyorum.' }
+    ]
+  },
+  'MAT.6.1.3': {
+    id: 'rubric-mat-6-1-3',
+    outcomeId: 'MAT.6.1.3',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Asal Sayılar ve Asal Çarpanlar',
+    description:
+      'Asal sayı kavramını anlama, Eratosthenes kalburunu deneyimleme, asal çarpan ağacı ve algoritması ile sayıları çözümleme becerilerinizi dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Asal Sayı Kavramı ve 1-100 Arası Asallar (Eratosthenes Kalburu)',
+        category: 'Kavramsal Anlama & Sınıflandırma',
+        levelDescriptions: {
+          1: '1\'in neden asal olmadığını ve asal sayıların sadece 2 böleni olduğunu karıştırıyorum.',
+          2: 'Küçük asal sayıları tanıyorum fakat iki basamaklı tek sayıların (örn: 51, 91) asallığında tereddüt ediyorum.',
+          3: '1 ile 100 arasındaki 25 asal sayıyı Eratosthenes kalburu mantığıyla doğru tespit edip sınıflandırıyorum.',
+          4: '2\'nin yegâne çift asal olduğunu ve tüm bileşik sayıların asalların çarpımı olduğunu matematiksel olarak açıklıyorum.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Asal Çarpan Ağacı ile Sayıların Çözümlenmesi',
+        category: 'Görsel Modelleme & Ayrıştırma',
+        levelDescriptions: {
+          1: 'Çarpan ağacında dalları ayırırken asal olmayan sayılarda takılıyor, yaprakları tamamlayamıyorum.',
+          2: 'Ağaç dallarını oluşturuyorum ancak en alt satırdaki asal yaprakları eksik yazabiliyorum.',
+          3: 'Bileşik sayıları asal çarpan ağacı modeliyle adım adım dallandırıp asal yapraklara ulaşıyorum.',
+          4: 'Farklı dallanmaların (örn: 24 = 2×12 veya 4×6) en altta daima aynı asal yaprakları verdiğini genelliyorum.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Asal Çarpan Algoritması (Bölen Listesi) ve Üslü Gösterim',
+        category: 'Algoritmik Düşünme & Sembolik Temsil',
+        levelDescriptions: {
+          1: 'Bölen listesinde asal olmayan sayılara (örn: 4, 6) bölme hatası yapıyorum.',
+          2: 'Dikey çizgide bölme işlemlerini yapabiliyorum fakat üslü ifade biçiminde yazarken üsleri karıştırıyorum.',
+          3: 'Bir sayıyı en küçük asaldan başlayarak 1\'e kadar bölüyor ve üslü gösterimini hatasız yazıyorum.',
+          4: 'Asal çarpanların üsleri ile sayının toplam çarpan sayısı arasındaki bağlantıyı fark edip derinlikli yorumluyorum.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Gerçek Yaşam, Kriptografi ve Problem Çözme',
+        category: 'Uygulama & Disiplinler Arası',
+        levelDescriptions: {
+          1: 'Asal sayıların günlük hayat ve şifrelemedeki rolünü kavramakta zorlanıyorum.',
+          2: 'Asal çarpanlarla ilgili basit problemleri çözebiliyorum.',
+          3: 'Asal sayı özelliklerini alan, çevre ve şifreleme problemlerinde doğru modelleyip çözüyorum.',
+          4: 'RSA şifreleme ve dijital güvenlikte iki büyük asalın çarpım gücünü kavrayıp yeni problem senaryoları kurguluyorum.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Öz Düzenleme ve Öğrenme Sorumluluğu (SDB1.2 - SDB3.3)',
+        category: 'Süreç Becerileri & Yansıtma',
+        levelDescriptions: {
+          1: 'Asal sayı testlerinde acele ediyor, bölünebilme kontrollerini yapmadan karar veriyorum.',
+          2: 'Hata yaptığımda ipucu ile düzeltiyorum ancak neden asal olmadığını açıklamada zorlanıyorum.',
+          3: 'Bölen listesi ve kalbur adımlarını sabırla kontrol ediyor, işlem hatalarımı kendi başıma düzeltiyorum.',
+          4: 'Kendi öğrenme hedeflerimi belirliyor, asal sayılarla ilgili çıkarımlarımı öğrenme günlüğüme özgün şekilde yansıtıyorum.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: '1 sayısının asal olmadığını, en küçük ve tek çift asal sayının 2 olduğunu biliyorum.' },
+      { id: 'chk2', text: 'Eratosthenes kalburunu kullanarak 1-100 arasındaki asal sayıları tespit edebiliyorum.' },
+      { id: 'chk3', text: 'Bileşik bir doğal sayıyı çarpan ağacı yöntemiyle asal yapraklarına ayırabiliyorum.' },
+      { id: 'chk4', text: 'Bölen listesi algoritmasını kullanarak bir sayıyı asal çarpanlarının üslü çarpımı şeklinde yazabiliyorum.' },
+      { id: 'chk5', text: 'Asal sayıların siber güvenlik ve şifreleme sistemlerindeki önemini kavradım.' }
+    ]
+  },
+  'MAT.6.1.4': {
+    id: 'rubric-mat-6-1-4',
+    outcomeId: 'MAT.6.1.4',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Ortak Kat ve Ortak Bölen',
+    description:
+      'İki doğal sayının ortak bölen ve ortak katlarını problem bağlamlarında inceleme, modellerle temsil etme ve aralarında asallığı yorumlama becerilerinizi değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'İki Sayının Ortak Bölenlerini Belirleme ve Modelleme',
+        category: 'Kavramsal Anlama & Kesişim Kümesi',
+        levelDescriptions: {
+          1: 'İki sayının bölenlerini ayrı ayrı bulurken zorlanıyor, ortak olanları belirleyemiyorum.',
+          2: 'Küçük sayıların ortak bölenlerini buluyorum fakat büyük sayılarda bazı ortak bölenleri atlıyorum.',
+          3: 'İki doğal sayının tüm bölenlerini listeleyip kesişim kümesindeki ortak bölenleri eksiksiz bulabiliyorum.',
+          4: 'Ortak bölenler kümesini Venn şeması ve alan ızgarası ile modelleyip en büyük ortak bölenin mantığını açıklıyorum.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'İki Sayının Ortak Katlarını Çift Sayı Doğrusunda İnceleme',
+        category: 'Örüntü & Sayı Doğrusu Temsili',
+        levelDescriptions: {
+          1: 'Ortak katları bulurken ritmik saymada işlem hatası yapıyor, ortak noktaları kaçırıyorum.',
+          2: 'İlk ortak katı bulabiliyorum ancak ardışık ortak katların kuralını genellemekte desteğe ihtiyaç duyuyorum.',
+          3: 'Çift sayı doğrusu ve tablo üzerinde iki sayının katlarını eşleştirerek istenen aralıktaki ortak katları eksiksiz listeliyorum.',
+          4: 'Ortak katların en küçük ortak katın katları şeklinde sonsuza kadar devam ettiğini çift sayı doğrusunda kanıtlıyorum.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Aralarında Asal Sayıların Mantığını Kavrama',
+        category: 'Matematiksel Muhakeme & Çıkarım',
+        levelDescriptions: {
+          1: 'Aralarında asal olabilmek için sayıların tek tek asal olması gerektiğini zannediyorum.',
+          2: '1\'den başka ortak böleni olmadığını fark ediyorum ancak aralarında asal sayı çiftlerini belirlerken tereddüt ediyorum.',
+          3: 'Kendileri asal olmasa bile ortak böleni yalnızca 1 olan sayıların (örn: 8 ve 15) aralarında asal olduğunu biliyorum.',
+          4: 'Ardışık sayıların daima aralarında asal olduğunu matematiksel olarak gerekçelendirip özgün örneklerle açıklıyorum.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Gerçek Yaşam Problemleri (Merhamet, Paylaşım, Periyot)',
+        category: 'Problem Çözme & Değerler',
+        levelDescriptions: {
+          1: 'Verilen problemde ortak bölen mi yoksa ortak kat mı kullanacağıma karar vermekte zorlanıyorum.',
+          2: 'Eşit aralıklı fidan dikimi veya ortak sefer problemlerini öğretmenimin yönlendirmesiyle çözebiliyorum.',
+          3: 'Sokak hayvanlarına eşit paketleme, tarla sulama ve ortak nöbet problemlerini bağımsız olarak doğru modelliyorum.',
+          4: 'Çoklu stratejiler kullanarak problem bağlamlarını optimize ediyor (en az paket, en az fidan) ve gerekçelendiriyorum.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Öz Düzenleme ve Sosyal Farkındalık (SDB2.3 - D9 Merhamet)',
+        category: 'Süreç Becerileri & Yansıtma',
+        levelDescriptions: {
+          1: 'Problem çözümlerinde ve grup paylaşımlarında iş birliği yapmakta zorlanıyorum.',
+          2: 'Hatalarımı fark ettiğimde düzeltiyorum ancak grup tartışmalarına katkım sınırlı kalıyor.',
+          3: 'Yardımlaşma ve merhamet bağlamlı problemlerde matematiksel modellerimi özenle kuruyor ve kontrol ediyorum.',
+          4: 'Kendi öğrenme sürecimi eleştirel değerlendiriyor, merhamet ve tasarruf değerleriyle matematiği harmanlayıp günlüğüme yansıtıyorum.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'İki doğal sayıyı aynı anda kalansız bölen sayıların "ortak bölenler" olduğunu biliyorum.' },
+      { id: 'chk2', text: 'İki sayının ortak katlarının en küçük ortak katın katları şeklinde devam ettiğini anladım.' },
+      { id: 'chk3', text: '1\'den başka ortak böleni olmayan iki sayının "aralarında asal" olduğunu kavradım.' },
+      { id: 'chk4', text: 'Sokak hayvanlarına eşit mama paketleme ve fidan dikme problemlerinde ortak bölenleri kullanabiliyorum.' },
+      { id: 'chk5', text: 'Periyodik otobüs seferleri ve nöbet problemlerinde ortak katlarla doğru hesaplama yapabiliyorum.' }
+    ]
+  },
   'MAT.5.3.4': {
     id: 'rubric-mat-5-3-4',
     outcomeId: 'MAT.5.3.4',

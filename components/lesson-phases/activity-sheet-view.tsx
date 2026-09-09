@@ -14,7 +14,16 @@ import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
 import {
   AreaModelsActivityView,
   RhythmicJumpsActivityView,
-  RainbowCipherActivityView
+  RainbowCipherActivityView,
+  LastDigitActivityView,
+  SumDigitsActivityView,
+  CompositeCriteriaActivityView,
+  EratosthenesSieveActivityView,
+  FactorTreeAlgorithmActivityView,
+  PrimeCryptoActivityView,
+  CommonDivisorsActivityView,
+  CommonMultiplesActivityView,
+  CoprimeGardenActivityView
 } from './mat6-activity-sheets';
 import confetti from 'canvas-confetti';
 import {
@@ -96,10 +105,73 @@ export function ActivitySheetView({
     fileRecord?.id?.includes('rainbow-cipher') ||
     fileRecord?.title?.includes('Gökkuşağı Şifresi');
 
+  // MAT.6.1.2 Activities
+  const isLastDigitActivity =
+    selectedSheetId.includes('lastdigit') ||
+    fileRecord?.id?.includes('lastdigit') ||
+    fileRecord?.title?.includes('Son Basamak');
+
+  const isSumDigitsActivity =
+    selectedSheetId.includes('sumdigits') ||
+    fileRecord?.id?.includes('sumdigits') ||
+    fileRecord?.title?.includes('Rakamlar Toplamı');
+
+  const isCompositeCriteriaActivity =
+    selectedSheetId.includes('composite') ||
+    fileRecord?.id?.includes('composite') ||
+    fileRecord?.title?.includes('Birleşik Kriterler');
+
+  // MAT.6.1.3 Activities
+  const isSieveActivity =
+    selectedSheetId.includes('sieve') ||
+    fileRecord?.id?.includes('sieve') ||
+    fileRecord?.title?.includes('Eratosthenes');
+
+  const isTreeAlgorithmActivity =
+    selectedSheetId.includes('tree-algorithm') ||
+    fileRecord?.id?.includes('tree-algorithm') ||
+    fileRecord?.title?.includes('Çarpan Ağacı');
+
+  const isPrimeCryptoActivity =
+    selectedSheetId.includes('crypto') ||
+    fileRecord?.id?.includes('crypto') ||
+    fileRecord?.title?.includes('Asal Şifreleme');
+
+  // MAT.6.1.4 Activities
+  const isCommonDivisorsActivity =
+    selectedSheetId.includes('common-divisors') ||
+    fileRecord?.id?.includes('common-divisors') ||
+    fileRecord?.title?.includes('Ortak Bidonlama') ||
+    fileRecord?.title?.includes('Ortak Bölenler');
+
+  const isCommonMultiplesActivity =
+    selectedSheetId.includes('common-multiples') ||
+    fileRecord?.id?.includes('common-multiples') ||
+    fileRecord?.title?.includes('Periyodik Seferler') ||
+    fileRecord?.title?.includes('Ortak Katlar');
+
+  const isCoprimeGardenActivity =
+    selectedSheetId.includes('coprime-garden') ||
+    fileRecord?.id?.includes('coprime-garden') ||
+    fileRecord?.title?.includes('Aralarında Asallık') ||
+    fileRecord?.title?.includes('Merhamet Bahçesi');
+
+  const isMat6Activity =
+    isAreaModelsActivity ||
+    isRhythmicJumpsActivity ||
+    isRainbowCipherActivity ||
+    isLastDigitActivity ||
+    isSumDigitsActivity ||
+    isCompositeCriteriaActivity ||
+    isSieveActivity ||
+    isTreeAlgorithmActivity ||
+    isPrimeCryptoActivity ||
+    isCommonDivisorsActivity ||
+    isCommonMultiplesActivity ||
+    isCoprimeGardenActivity;
+
   const isTableHypothesisActivity =
-    !isAreaModelsActivity &&
-    !isRhythmicJumpsActivity &&
-    !isRainbowCipherActivity &&
+    !isMat6Activity &&
     (selectedSheetId.includes('table-hypothesis') ||
       fileRecord?.id?.includes('table-hypothesis') ||
       fileRecord?.title?.includes('Varsayım ve Tablo'));
@@ -1638,13 +1710,31 @@ export function ActivitySheetView({
 
       </div>
 
-      {/* 2. BODY CONTENT: MAT.6.1.1 ACTIVITIES OR 5TH GRADE WORKSHOPS */}
+      {/* 2. BODY CONTENT: MAT.6 ACTIVITIES OR 5TH GRADE WORKSHOPS */}
       {isAreaModelsActivity ? (
         <AreaModelsActivityView />
       ) : isRhythmicJumpsActivity ? (
         <RhythmicJumpsActivityView />
       ) : isRainbowCipherActivity ? (
         <RainbowCipherActivityView />
+      ) : isLastDigitActivity ? (
+        <LastDigitActivityView />
+      ) : isSumDigitsActivity ? (
+        <SumDigitsActivityView />
+      ) : isCompositeCriteriaActivity ? (
+        <CompositeCriteriaActivityView />
+      ) : isSieveActivity ? (
+        <EratosthenesSieveActivityView />
+      ) : isTreeAlgorithmActivity ? (
+        <FactorTreeAlgorithmActivityView />
+      ) : isPrimeCryptoActivity ? (
+        <PrimeCryptoActivityView />
+      ) : isCommonDivisorsActivity ? (
+        <CommonDivisorsActivityView />
+      ) : isCommonMultiplesActivity ? (
+        <CommonMultiplesActivityView />
+      ) : isCoprimeGardenActivity ? (
+        <CoprimeGardenActivityView />
       ) : isRailwayActivity ? (
         /* ========================================================================= */
         /* BÜYÜK GÖREV: "TREN RAYI MÜHENDİSLİĞİ" (PARALEL DOĞRU İNŞASI - MAT.5.3.2)  */

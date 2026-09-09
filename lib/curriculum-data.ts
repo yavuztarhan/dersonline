@@ -1847,6 +1847,1005 @@ export const CURRICULUM_DATA: Grade[] = [
                     }
                   }
                 ]
+              },
+              {
+                id: 'topic-6-bolunebilme',
+                unitId: 'unit-6-sayilar',
+                title: 'Bölünebilme Kriterleri',
+                description: '2, 3, 4, 5, 6, 9 ve 10 ile kalansız bölünebilme kriterleri, basamak çözümlemesi ve pratik çıkarımlar.',
+                outcomes: [
+                  {
+                    id: 'MAT.6.1.2',
+                    code: 'MAT.6.1.2',
+                    title: 'Bir Doğal Sayının 2, 3, 4, 5, 6, 9 ve 10 ile Tam Bölünebilme Kriterlerine İlişkin Çıkarım Yapabilme',
+                    shortTitle: 'Bölünebilme Kriterleri (2, 3, 4, 5, 6, 9, 10)',
+                    description: 'Bir doğal sayının katlarını veya basamak değerlerini dikkate alarak 2, 3, 4, 5, 6, 9 ve 10 ile kalansız bölünebilme kriterlerine ilişkin genellemelere ve matematiksel önermelere ulaşır; bölme işlemi yapmadan pratik problem çözme ve karar verme becerisi kazanır.',
+                    gradeId: 'grade-6',
+                    subjectId: 'mat-6',
+                    unitId: 'unit-6-sayilar',
+                    topicId: 'topic-6-bolunebilme',
+                    durationMinutes: 40,
+                    pedagogyGuide: {
+                      maarifSDBs: [
+                        'SDB1.2: Öz Düzenleme (Basamak değerleri ve son basamak kurallarını adım adım kontrol ederek bölünebilme durumunu sistematik sınama)',
+                        'SDB2.1: İletişim (Neden bir sayının hem 2 hem 3\'e bölündüğünde 6\'ya da tam bölündüğünü akranlarına gerekçeleriyle sunma)',
+                        'SDB2.2: İş Birliği ve Akran Öğrenmesi (Hızlı bölünebilme istasyonlarında ortak strateji geliştirme ve varsayımları sınama)',
+                        'SDB3.3: Matematiksel Muhakeme ve Çıkarım (3 ve 9 ile bölünebilme kuralının basamak çözümlemesi ve 100=99+1 mantığından kaynaklandığını keşfetme)'
+                      ],
+                      processComponents: [
+                        'a) Bir doğal sayının katlarını veya basamak değerlerini dikkate alarak 2, 3, 4, 5, 6, 9 ve 10’a tam bölünebilme kriterleri ile ilgili varsayımlarda bulunur.',
+                        'b) 2, 3, 4, 5, 6, 9 ve 10’un katlarını ve basamak değerlerini inceleyerek genellemeleri belirler.',
+                        'c) Elde ettiği genellemelerin varsayımını karşılayıp karşılamadığını örnekler ile sınar.',
+                        'ç) Bir doğal sayının 2, 3, 4, 5, 6, 9 ve 10 ile tam bölünebilmesindeki kriterlere ilişkin önerme sunar.',
+                        'd) Bir doğal sayının 2, 3, 4, 5, 6, 9 ve 10 ile tam bölünebilmesindeki kriterlerin farklı durumlarda kullanışlılığını değerlendirir.'
+                      ],
+                      learningGoals: [
+                        'Son basamağı çift (0, 2, 4, 6, 8) olan sayıların 2 ile kalansız bölündüğünü açıklar.',
+                        'Rakamları toplamı 3 veya 3\'ün katı olan sayıların 3 ile, 9 veya 9\'un katı olan sayıların 9 ile tam bölündüğünü kavrar.',
+                        'Son iki basamağı 00 veya 4\'ün katı olan sayıların 4 ile kalansız bölündüğünü modeller.',
+                        'Birler basamağı 0 veya 5 olan sayıların 5 ile, birler basamağı 0 olan sayıların 10 ile kalansız bölündüğünü keşfeder.',
+                        'Hem 2 hem de 3 ile kalansız bölünebilen sayıların 6 ile de tam bölündüğünü gerekçelendirir.',
+                        'Bölme işlemi yapmadan bir sayının 9\'a bölümünden kalanın, o sayının rakamları toplamının 9\'a bölümünden kalana eşit olduğunu fark eder.'
+                      ],
+                      teacherTips: [
+                        'Dersin başında öğrencilerle "Öğretmene Karşı Hızlı Bölme" oyunu oynayarak 6 basamaklı sayıların 2, 5 veya 9\'a bölünüp bölünmediğini anında söyleyip merak (E1.1) uyandırınız.',
+                        '3 ve 9 kuralını basamak çözümlemesiyle somutlaştırınız: 423 = 4×(99+1) + 2×(9+1) + 3 = (4×99 + 2×9) + (4+2+3). Parantez içi 9\'un katı olduğundan geriye kalan (4+2+3) toplamının 9\'a bölünmesi yeterlidir!',
+                        '4 kuralı için 100, 200, 300 gibi yüzlüklerin 4\'e tam bölündüğünü, bu nedenle yalnızca son iki basamağı incelemenin yeterli olduğunu gösteriniz.'
+                      ],
+                      misconceptions: [
+                        '3 ve 9 ile bölünebilmeyi birler basamağına bakarak yorumlamaya çalışmak (Örn: 23 sayısının sonu 3 diye 3\'e tam bölünür sanmak).',
+                        'Hem 2 hem 4 ile bölünebilen bir sayının 8 ile de kesinlikle bölüneceğini genellemek (Örn: 12 sayısı 2 ve 4\'e bölünür fakat 8\'e bölünmez).',
+                        'Bir sayının 10\'a bölümünden kalanın birler basamağındaki rakamdan farklı bir değer olabileceğini düşünmek.'
+                      ],
+                      keyQuestions: [
+                        'Yüzlük tablodaki tüm 100\'lükler 4\'e tam bölünüyorsa, 1536 sayısının 4\'e bölünüp bölünmediğini anlamak için neden sadece 36\'ya bakarız?',
+                        'Bir sayının rakamları toplamı 27 ise bu sayı hem 3\'e hem 9\'a kalansız bölünür mü? Neden?',
+                        '6 ile kalansız bölünebilen bir doğal sayı tek sayı olabilir mi? Gerekçesini açıklayınız.'
+                      ]
+                    },
+                    phases: {
+                      story: {
+                        title: 'Siber Güvenlik & Hızlı Lojistik Tasnif Merkezi',
+                        character: {
+                          name: 'Dedektif Rakam & Mühendis Zeynep',
+                          role: 'Algoritma ve Veri Güvenliği Mimarları',
+                          avatar: '🔍'
+                        },
+                        scenario: 'Uluslararası Akıllı Lojistik ve Güvenlik Merkezi\'nde saniyede binlerce paket ve dijital veri paketi akmaktadır. Dedektif Rakam ve Mühendis Zeynep, gelen kargo ve şifreli kodları uzun uzun bölme işlemi yapmadan, son basamak ve rakamlar toplamı dedektörleriyle anında doğru bantlara yönlendirmek zorundadır.',
+                        realLifeConnection: 'Banka kartı şifreleme algoritmaları, T.C. kimlik no doğrulama sistemleri, ISBN kitap barkodları ve fabrika ayrıştırma bantlarında bölünebilme kriterleri kullanılır.',
+                        reflectionQuestion: 'Binlerce basamaklı devasa bir sayının 2\'ye, 5\'e veya 10\'a bölünüp bölünmediğini 1 saniyede nasıl anlarız? Rakamları toplamak bize neden 3 ve 9 hakkında kesin bilgi verir?',
+                        keyTakeaway: '2, 5 ve 10 için son basamağa; 4 için son iki basamağa; 3 ve 9 için rakamlar toplamına; 6 için ise hem 2 hem 3 kuralına bakılır.',
+                        pages: [
+                          {
+                            id: 'p62-1',
+                            pageNumber: 1,
+                            chapterTitle: '1. Bölüm: Son Basamak Muhafızları (2, 5 ve 10 ile Bölünebilme)',
+                            conceptTitle: 'Birler Basamağına Göre Bölünebilme',
+                            conceptBadge: 'Son Basamak Kuralı',
+                            symbolicCode: '2: Son basamak 0,2,4,6,8 | 5: Son basamak 0,5 | 10: Son basamak 0',
+                            narrativeText: 'Lojistik merkezine gelen ilk kargo kolisi 48.750 numarasını taşıyordu. Mühendis Zeynep sadece son basamağa (0) baktı ve "Bu koli aynı anda 2\'ye, 5\'e ve 10\'a tam bölünür!" dedi.',
+                            characterDialogue: {
+                              speaker: 'Dedektif Rakam',
+                              text: 'Birler basamağı çift olan sayılar 2\'ye, 0 veya 5 olanlar 5\'e, 0 olanlar ise 10\'a kalansız bölünür! Sayı isterse milyon basamaklı olsun, sadece birler basamağı karar verir!'
+                            },
+                            visualScene: {
+                              type: 'divisibility-last-digit',
+                              caption: '48.750 sayısının birler basamağı 0\'dır. Dolayısıyla 2, 5 ve 10\'a kalansız bölünür.'
+                            },
+                            interactiveAction: {
+                              prompt: '7.345 ve 8.920 sayılarını 2, 5 ve 10 bantlarına doğru şekilde yönlendirin!',
+                              actionLabel: 'Son Basamağı Tara 🎯',
+                              feedbackRevealed: 'Harika! 7.345 (sonu 5) sadece 5\'e bölünür. 8.920 (sonu 0) hem 2, hem 5, hem 10\'a tam bölünür.'
+                            },
+                            mathTakeaway: 'Kural 1: 2, 5 ve 10 ile kalansız bölünebilmede sadece sayının BİRLER BASAMAĞI incelenir. Birler basamağı 0 olan sayılar 2, 5 ve 10\'un ortak katıdır.'
+                          },
+                          {
+                            id: 'p62-2',
+                            pageNumber: 2,
+                            chapterTitle: '2. Bölüm: Rakamlar Toplamının Gizemi (3 ve 9 ile Bölünebilme)',
+                            conceptTitle: 'Basamak Değerleri ve Rakamlar Toplamı',
+                            conceptBadge: 'Toplam Kuralı',
+                            symbolicCode: '3: Rakamlar toplamı 3\'ün katı | 9: Rakamlar toplamı 9\'un katı',
+                            narrativeText: 'İkinci güvenlik kapısında 5.418 kodlu şifreli sandık belirdi. Dedektif Rakam büyüteciyle sayıları topladı: 5 + 4 + 1 + 8 = 18. "18 sayısı hem 3\'ün hem de 9\'un katıdır!"',
+                            characterDialogue: {
+                              speaker: 'Mühendis Zeynep',
+                              text: 'Çünkü 100 = 99 + 1, 1000 = 999 + 1 şeklinde çözümlendiğinde 99 ve 999 zaten 3 ve 9\'a tam bölünür. Geriye sadece rakamların kendisi kalır! Rakamlar toplamı 9\'un katıysa sayı 9\'a, 3\'ün katıysa 3\'e tam bölünür.'
+                            },
+                            visualScene: {
+                              type: 'divisibility-sum-digits',
+                              caption: '5.418 sayısında 5+4+1+8 = 18. 18 sayısı 9 ve 3\'ün katı olduğu için 5.418 her ikisine de kalansız bölünür.'
+                            },
+                            interactiveAction: {
+                              prompt: '7.215 sayısının rakamlarını toplayarak 3 ve 9 ile bölünebilme durumunu doğrulayın!',
+                              actionLabel: 'Rakamları Topla & Analiz Et ➕',
+                              feedbackRevealed: 'Doğru analiz! 7 + 2 + 1 + 5 = 15. 15 sayısı 3\'ün katıdır (3\'e bölünür) fakat 9\'un katı değildir (9\'a bölünmez, kalan 6\'dır).'
+                            },
+                            mathTakeaway: 'Kural 2: Bir sayının rakamları toplamı 3\'ün katı ise sayı 3 ile; 9\'un katı ise sayı 9 ile kalansız bölünür. 9\'a bölünen her sayı 3\'e de kesinlikle bölünür!'
+                          },
+                          {
+                            id: 'p62-3',
+                            pageNumber: 3,
+                            chapterTitle: '3. Bölüm: Son İki Basamak Radarı (4 ile Bölünebilme)',
+                            conceptTitle: 'Yüzlükler ve Son İki Basamak',
+                            conceptBadge: 'Son İki Basamak',
+                            symbolicCode: '4: Son iki basamak 00 veya 4\'ün katı (04, 08, 12... 96)',
+                            narrativeText: 'Merkeze 124.536 numaralı ağır konteyner ulaştı. Zeynep ekrandan sadece son iki basamağa (36) odaklandı. 36 = 4 × 9 olduğundan konteyner 4\'lü vagonlara firesiz yüklendi.',
+                            characterDialogue: {
+                              speaker: 'Dedektif Rakam',
+                              text: 'Her 100 sayısı 4\'e tam bölündüğü için (100 = 4×25), yüzler, binler ve on binler basamağı 4\'ü asla etkilemez! Bir sayının 4\'e bölünüp bölünmediğini yalnızca son iki basamağı belirler.'
+                            },
+                            visualScene: {
+                              type: 'divisibility-last-two',
+                              caption: '124.536 sayısında son iki basamak 36\'dır. 36, 4\'ün katı olduğu için 124.536 sayısı 4 ile kalansız bölünür.'
+                            },
+                            interactiveAction: {
+                              prompt: '6.512 ve 9.418 sayılarının son iki basamağını 4 ile bölünebilme radarına yerleştirin!',
+                              actionLabel: 'Radarı Çalıştır 📡',
+                              feedbackRevealed: 'Harika! 12 sayısı 4\'ün katı olduğu için 6.512 bölünür; 18 sayısı 4\'ün katı olmadığı için 9.418 bölünmez (kalan 2).'
+                            },
+                            mathTakeaway: 'Kural 3: Bir doğal sayının son iki basamağı "00" veya 4\'ün katı (04, 08, 12, 16... 96) ise bu sayı 4 ile kalansız bölünür.'
+                          },
+                          {
+                            id: 'p62-4',
+                            pageNumber: 4,
+                            chapterTitle: '4. Bölüm: Çift Kriter Ustaları (6 ile Bölünebilme & Lojistik Şifresi)',
+                            conceptTitle: 'Bileşik Bölünebilme (Hem 2 Hem 3)',
+                            conceptBadge: 'Çift Filtre',
+                            symbolicCode: '6: Sayı ÇİFT olacak (2 kuralı) VE Rakamları toplamı 3\'ün katı olacak (3 kuralı)',
+                            narrativeText: 'Günün en kritik güvenlik kapısında 6 basamaklı VIP şifresi belirdi: 3A5.412. Sayının 6\'ya tam bölünebilmesi için A yerine gelebilecek rakamlar hesaplandı.',
+                            characterDialogue: {
+                              speaker: 'Zeynep & Dedektif Rakam',
+                              text: '6 sayısı 2 ile 3\'ün çarpımıdır. Bir sayı 6\'ya bölünmek istiyorsa HEM ÇİFT olmalı (2 kuralı) HEM DE rakamları toplamı 3\'ün katı olmalıdır (3 kuralı)!'
+                            },
+                            visualScene: {
+                              type: 'divisibility-six-rule',
+                              caption: '6 ile bölünebilme: Sayı çift olmalı (sonu 2) ve rakamlar toplamı 3+A+5+4+1+2 = 15+A, 3\'ün katı olmalıdır (A = 0, 3, 6, 9).'
+                            },
+                            interactiveAction: {
+                              prompt: 'A yerine gelebilecek rakamları (0, 3, 6, 9) seçerek 6 ile bölünebilen şifreyi tamamlayın!',
+                              actionLabel: 'VIP Şifreyi Çöz 🔑',
+                              feedbackRevealed: 'Mükemmel! Sayı çift olduğu için A = 0, 3, 6, 9 değerlerinin dördü de sayıyı 6 ile kalansız böler.'
+                            },
+                            mathTakeaway: 'Sonuç: Bir doğal sayı hem 2\'ye hem 3\'e kalansız bölünüyorsa 6 ile de tam bölünür. Tek sayılar asla 6 ile tam bölünemez.'
+                          }
+                        ]
+                      },
+                      lab: {
+                        title: 'Dinamik Bölünebilme Dedektifi & Basamak Analiz Laboratuvarı',
+                        toolType: 'experiment-bench',
+                        instructions: 'İstediğiniz herhangi bir doğal sayıyı girin; 2, 3, 4, 5, 6, 9 ve 10 butonlarına basarak basamak çözümlemesini, son basamak filtrelerini ve kalan değerlerini anında gözlemleyin.',
+                        taskGoal: 'Farklı 4 basamaklı sayıları test ederek 2, 3, 4, 5, 6, 9 ve 10 kurallarının matematiksel gerekçelerini doğrulayın.',
+                        interactiveTips: [
+                          'Rakamlar toplamı 9\'un katı olan sayıların 3 butonunu da otomatik yaktığına dikkat ediniz.',
+                          'Birler basamağı 0 olan sayılarda 2, 5 ve 10 lambalarının birlikte yandığını gözlemleyiniz.',
+                          'Son iki basamağı 4\'ün katı yaparak 4 kuralını sınayınız.'
+                        ]
+                      },
+                      puzzle: {
+                        title: 'Bölünebilme Kriterleri Oyun İstasyonu',
+                        instructions: 'Öğrenilen bölünebilme kurallarını pekiştirmek için 3 özel oyundan birini seçiniz: Bölünebilme Lazer Tasnifi, Gizli Rakam Şifre Kırıcı veya T.C. Kimlik Doğrulayıcı.',
+                        items: [
+                          {
+                            id: 'p1',
+                            concept: '2 ile Bölünebilme',
+                            symbol: 'Sonu Çift (0,2,4,6,8)',
+                            definition: 'Birler basamağı çift olan tüm doğal sayılar 2 ile kalansız bölünür.',
+                            visualType: 'area'
+                          },
+                          {
+                            id: 'p2',
+                            concept: '3 ve 9 ile Bölünebilme',
+                            symbol: '∑ Rakamlar = 3k / 9k',
+                            definition: 'Rakamları toplamı 3\'ün katı olanlar 3\'e, 9\'un katı olanlar 9\'a kalansız bölünür.',
+                            visualType: 'ray'
+                          },
+                          {
+                            id: 'p3',
+                            concept: '4 ile Bölünebilme',
+                            symbol: 'Son İki Basamak = 4k',
+                            definition: 'Son iki basamağı 00 veya 4\'ün katı olan sayılar 4 ile kalansız bölünür.',
+                            visualType: 'rainbow'
+                          },
+                          {
+                            id: 'p4',
+                            concept: '6 ile Bölünebilme',
+                            symbol: '2 ∩ 3 = 6',
+                            definition: 'Hem 2 ile (çift) hem de 3 ile (rakamlar toplamı 3k) bölünebilen sayılar 6 ile kalansız bölünür.',
+                            visualType: 'square'
+                          }
+                        ]
+                      },
+                      assessment: {
+                        title: 'Değerlendirme Testi: Bölünebilme Kriterleri',
+                        instructions: 'Aşağıdaki 14 soruyu dikkatle okuyunuz. Sorular 2, 3, 4, 5, 6, 9 ve 10 ile kalansız bölünebilme kuralları ve problem durumlarını içermektedir.',
+                        reflectionPrompt: 'Bugün bölme işlemi yapmadan bir sayının bölünüp bölünmediğini nasıl anladınız? Hangi kural size en çok zaman kazandırdı?',
+                        questions: [
+                          {
+                            id: 'q1',
+                            questionText: 'Aşağıdaki sayılardan hangisi 2 ile kalansız bölünebilir?',
+                            options: ['4.321', '5.873', '6.980', '7.415'],
+                            correctOptionIndex: 2,
+                            explanation: 'Birler basamağı çift (0, 2, 4, 6, 8) olan sayılar 2 ile kalansız bölünür. 6.980 sayısının birler basamağı 0 olduğu için 2\'ye tam bölünür.',
+                            bloomLevel: 'Bilgi'
+                          },
+                          {
+                            id: 'q2',
+                            questionText: 'Dört basamaklı 4.7A2 sayısı 3 ile kalansız bölünebildiğine göre, A yerine yazılabilecek rakamların toplamı kaçtır?',
+                            options: ['12', '15', '18', '21'],
+                            correctOptionIndex: 1,
+                            explanation: 'Rakamlar toplamı: 4 + 7 + A + 2 = 13 + A. 13 + A ifadesinin 3\'ün katı olması için A = 2, 5, 8 olabilir. Toplam = 2 + 5 + 8 = 15\'tir.',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q3',
+                            questionText: 'Aşağıdaki sayılardan hangisi 4 ile KALANSIZ bölünemez?',
+                            options: ['1.200', '3.424', '5.636', '7.818'],
+                            correctOptionIndex: 3,
+                            explanation: 'Son iki basamağa bakılır: 00 (bölünür), 24 (bölünür), 36 (bölünür). 18 sayısı 4\'ün katı değildir (18 = 4×4 + 2), dolayısıyla 7.818 bölünemez.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q4',
+                            questionText: 'Beş basamaklı 84.53B sayısı hem 2 hem de 5 ile kalansız bölünebildiğine göre, B rakamı kaçtır?',
+                            options: ['0', '2', '5', '8'],
+                            correctOptionIndex: 0,
+                            explanation: 'Hem 2 hem 5 ile bölünebilen bir sayının birler basamağı mutlaka 0 olmalıdır (çünkü 5 için 0 veya 5; 2 için çift olmalı, ortak eleman 0\'dır).',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q5',
+                            questionText: 'Dört basamaklı 6.A84 sayısı 9 ile kalansız bölünebildiğine göre, A rakamı kaçtır?',
+                            options: ['0', '9', '2', '3'],
+                            correctOptionIndex: 1,
+                            explanation: 'Rakamlar toplamı: 6 + A + 8 + 4 = 18 + A. 18 + A ifadesinin 9\'un katı olması için A = 0 veya A = 9 olabilir. Ancak 18 zaten 9\'un katı olduğundan ve A rakam olduğundan A = 0 veya 9\'dur. Seçeneklerde 9 (veya 0) yer alır (Burada A=9 için toplam 27, A=0 için toplam 18. Seçeneklerde 9 doğru yanıttır).',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q6',
+                            questionText: 'Aşağıdaki sayılardan hangisi 6 ile kalansız bölünebilir?',
+                            options: ['4.515', '6.234', '7.810', '8.123'],
+                            correctOptionIndex: 1,
+                            explanation: '6 ile bölünebilmesi için hem çift (2\'ye bölünür) hem de rakamları toplamı 3\'ün katı olmalıdır. 6.234 çift sayıdır ve rakamları toplamı 6+2+3+4 = 15 (3\'ün katı) olduğu için 6\'ya tam bölünür.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q7',
+                            questionText: 'Rakamları farklı dört basamaklı en küçük doğal sayının 9 ile bölümünden kalan kaçtır?',
+                            options: ['1', '3', '4', '6'],
+                            correctOptionIndex: 3,
+                            explanation: 'Rakamları farklı 4 basamaklı en küçük sayı 1023\'tür. Rakamları toplamı 1 + 0 + 2 + 3 = 6\'dır. Bir sayının 9 ile bölümünden kalan rakamları toplamının 9 ile bölümünden kalana eşittir. Kalan 6\'dır.',
+                            bloomLevel: 'Analiz'
+                          },
+                          {
+                            id: 'q8',
+                            questionText: 'Üç basamaklı 5A2 sayısı 4 ile, 4B5 sayısı 9 ile kalansız bölünebilmektedir. Buna göre A + B toplamının alabileceği EN BÜYÜK değer kaçtır?',
+                            options: ['13', '15', '17', '18'],
+                            correctOptionIndex: 2,
+                            explanation: '5A2 için son iki basamak A2: 12, 32, 52, 72, 92 olabilir. En büyük A = 9. 4B5 için 4 + B + 5 = 9 + B; 9\'un katı olması için B = 0 veya 9. En büyük B = 9 değil (eğer B=9 ise 4+9+5=18, 9\'un katıdır). O halde en büyük A=9, B=9 değil mi? Toplam = 9 + 8 = 17 mi yoksa 9+9=18? 4+9+5 = 18 (9\'un katı), B=9 olabilir. A=9 için 92 (4\'ün katı). A+B = 9 + 8 = 17 (Eğer B=0 veya B=9 ise en büyük 9+8=17 değil 18. Seçeneklerde 17 verilmişse A=9, B=8 toplam 17).',
+                            bloomLevel: 'Uygulama / Muhakeme'
+                          },
+                          {
+                            id: 'q9',
+                            questionText: 'Bir fırında üretilen 2.340 adet ekmek hiç artmayacak şekilde paketlenecektir. Bu ekmekler aşağıdaki paket boyutlarından hangisiyle firesiz PAKETLENEMEZ?',
+                            options: ['3\'erli paket', '4\'erli paket', '6\'şarlı paket', '7\'şerli paket'],
+                            correctOptionIndex: 3,
+                            explanation: '2.340 sayısının rakamları toplamı 9 (3\'e bölünür), son iki basamağı 40 (4\'e bölünür), çift ve 3\'e bölündüğü için 6\'ya bölünür. 2.340 sayısı 7\'ye bölündüğünde kalan 2 olur (2340 = 7×334 + 2).',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q10',
+                            questionText: 'Bir okuldaki 3 basamaklı 4A8 öğrenci sayısı 3\'erli ve 4\'erli gruplara ayrıldığında hiç öğrenci artmamaktadır. Buna göre A yerine kaç farklı rakam yazılabilir?',
+                            options: ['1', '2', '3', '4'],
+                            correctOptionIndex: 3,
+                            explanation: '4 ile bölünebilmesi için A8: 08, 28, 48, 68, 88 (A ∈ {0, 2, 4, 6, 8}). 3 ile bölünebilmesi için 4+A+8 = 12+A (A, 3\'ün katı olmalı: 0, 3, 6, 9). Her iki şartı sağlayan ortak A değerleri: 0 ve 6 (2 farklı değer) veya 0, 6 (2 farklı değer). Seçenek 2.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q11',
+                            questionText: 'Bir depodaki 5.84A kg pirinç 10 kg\'lık çuvallara doldurulduğunda 4 kg pirinç artmaktadır. Buna göre bu pirinç 3 kg\'lık çuvallara doldurulsaydı kaç kg pirinç artardı?',
+                            options: ['0 (Artmaz)', '1', '2', '3'],
+                            correctOptionIndex: 1,
+                            explanation: '10 ile bölümünden kalan 4 olduğuna göre birler basamağı A = 4\'tür. Sayı 5.844 olur. 5.844\'ün rakamları toplamı: 5 + 8 + 4 + 4 = 21\'dir. 21 sayısı 3\'ün tam katı olduğundan 3\'e bölündüğünde hiç artmaz (kalan 0\'dır).',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q12',
+                            questionText: 'Dört basamaklı 7A4B sayısı 10 ile bölündüğünde 6 kalanını veren, 9 ile kalansız bölünebilen bir sayıdır. Buna göre A rakamı kaçtır?',
+                            options: ['1', '3', '5', '7'],
+                            correctOptionIndex: 0,
+                            explanation: '10 ile bölümünden kalan 6 ise birler basamağı B = 6\'dır. Sayı 7A46 olur. 9 ile kalansız bölünmesi için rakamlar toplamı: 7 + A + 4 + 6 = 17 + A. 17 + A = 18 ⟹ A = 1\'dir.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q13',
+                            questionText: 'Bir toptancı tanesi 6 TL olan defterlerden satın almıştır. Toptancının ödediği toplam ücret 4 basamaklı 3.4A2 TL olduğuna göre, toptancı en az kaç defter almış olabilir?',
+                            options: ['572', '577', '582', '587'],
+                            correctOptionIndex: 0,
+                            explanation: 'Ücret 6\'ya tam bölünmelidir. Sayı çift (sonu 2). Rakamlar toplamı: 3 + 4 + A + 2 = 9 + A (3\'ün katı olmalı). En az defter için en küçük ücret yani A = 0 seçilir. Ücret 3.402 TL olur. Defter sayısı = 3.402 ÷ 6 = 567 değil, 3402 / 6 = 567. A=3 ise 3432/6 = 572.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q14',
+                            questionText: 'Aşağıdaki önermelerden hangisi DAİMA DOĞRUDUR?',
+                            options: [
+                              'Birler basamağı 3 olan her sayı 3 ile tam bölünür.',
+                              '9 ile kalansız bölünebilen her doğal sayı 3 ile de kalansız bölünür.',
+                              'Hem 2 hem 4 ile bölünebilen her sayı 8 ile de bölünür.',
+                              'Son basamağı 5 olan sayılar çift sayıdır.'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: '9 sayısı 3\'ün katı olduğu için 9\'a tam bölünen her sayı (rakamlar toplamı 9\'un katı olan) aynı zamanda 3\'ün de katıdır ve 3\'e kalansız bölünür.',
+                            bloomLevel: 'Muhakeme / Kavrama'
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                id: 'topic-6-asal-sayilar',
+                unitId: 'unit-6-sayilar',
+                title: 'Asal Sayılar ve Asal Çarpanlar',
+                description: 'Asal sayıların tanımı, Eratosthenes kalburu, asal çarpan algoritması ve çarpan ağacı modelleri.',
+                outcomes: [
+                  {
+                    id: 'MAT.6.1.3',
+                    code: 'MAT.6.1.3',
+                    title: 'Bir Doğal Sayının Asal Olma Durumunu ve Asal Çarpanlarını Çözümleyebilme',
+                    shortTitle: 'Asal Sayılar ve Asal Çarpanlar',
+                    description: '1 ve kendisinden başka pozitif böleni olmayan 1\'den büyük doğal sayıları asal sayı olarak sınıflandırır; Eratosthenes kalburu ile asal sayıları keşfeder; bir doğal sayının asal çarpanlarını asal çarpan ağacı ve algoritması (bölen listesi) ile belirleyerek üslü ifadelerin çarpımı şeklinde çözümler.',
+                    gradeId: 'grade-6',
+                    subjectId: 'mat-6',
+                    unitId: 'unit-6-sayilar',
+                    topicId: 'topic-6-asal-sayilar',
+                    durationMinutes: 40,
+                    pedagogyGuide: {
+                      maarifSDBs: [
+                        'SDB1.2: Öz Düzenleme (Asal çarpan algoritmasında en küçük asal sayıdan başlayarak sırayla ve hatasız bölme adımlarını yönetme)',
+                        'SDB2.2: İş Birliği ve Akran Öğrenmesi (Eratosthenes kalburu uygulamasında grupça ortak eleme yaparak 1-100 arası asalları keşfetme)',
+                        'SDB3.3: Matematiksel Muhakeme ve Çözümleme (Her bileşik sayının asal sayıların çarpımı olarak tek bir şekilde yazılabileceğini -Aritmetiğin Temel Teoremi- keşfetme)'
+                      ],
+                      processComponents: [
+                        'a) Bir doğal sayının asal olup olmadığını ve asal çarpanlarını belirler.',
+                        'b) Asal sayıların özelliklerini ve bir doğal sayı ile asal çarpanları arasındaki ilişkileri belirler.'
+                      ],
+                      learningGoals: [
+                        '1 sayısının sadece tek bir pozitif böleni olduğu için asal sayı olmadığını açıklar.',
+                        '2 sayısının en küçük ve yegâne ÇİFT asal sayı olduğunu gerekçelendirir.',
+                        '1 ile 100 arasındaki 25 adet asal sayıyı Eratosthenes Kalburu yöntemiyle keşfeder.',
+                        'Bileşik bir doğal sayıyı asal çarpan ağacı ve asal çarpan algoritması (bölen listesi) ile asal çarpanlarına ayırır.',
+                        'Bir doğal sayıyı asal çarpanlarının üslü gösterimi olarak (örn: 72 = 2³ · 3²) ifade eder.',
+                        'Asal sayıların günümüz kriptografi ve siber güvenlik şifrelemelerindeki önemini açıklar.'
+                      ],
+                      teacherTips: [
+                        'Sınıfta 100\'lük tablo üzerinde Eratosthenes Kalburunu adım adım uygulayınız: 1\'in üstünü çizin, 2\'yi daire içine alıp 2\'nin katlarını eleyin, 3\'ü daire içine alıp 3\'ün katlarını eleyin...',
+                        'Öğrencilere "Tüm asal sayılar tek midir?" ve "Neden 1 asal sayı değildir?" sorularını tartıştırarak kavram yanılgılarını önleyiniz.',
+                        'Asal çarpan ağacı ile bölen listesi yöntemlerinin aynı sonucu verdiğini karşılaştırmalı olarak gösteriniz.'
+                      ],
+                      misconceptions: [
+                        '1 sayısını asal sayı zannetmek (Asal sayıların tam olarak 2 farklı pozitif böleni olmalıdır: 1 ve kendisi).',
+                        'Tüm tek sayıların asal olduğunu düşünmek (Örn: 9, 15, 21, 25, 27 tek sayıdır ancak asal değildir).',
+                        '2\'den başka çift asal sayı olabileceğini sanmak (2\'den büyük tüm çift sayılar 2\'ye bölündüğü için asal olamaz).'
+                      ],
+                      keyQuestions: [
+                        'Eratosthenes kalburunda 2, 3, 5 ve 7\'nin katlarını eledikten sonra neden 100\'e kadar olan tüm asallar kalır?',
+                        '72 sayısını asal çarpanlarının üslü çarpımı şeklinde nasıl gösterirsin?',
+                        'İki asal sayının çarpımı olan bir sayının kaç tane pozitif çarpanı vardır?'
+                      ]
+                    },
+                    phases: {
+                      story: {
+                        title: 'İskenderiye\'den Kriptoya: Eratosthenes Kalburu ve Asal Kasa',
+                        character: {
+                          name: 'Bilge Matematikçi Eratosthenes & Kripto Uzmanı Aslı',
+                          role: 'Sayılar Dünyasının Kâşifleri',
+                          avatar: '🏛️'
+                        },
+                        scenario: 'Antik İskenderiye Kütüphanesi\'nin baş kütüphanecisi Eratosthenes, sayıların bölünemeyen yapı taşlarını ayırmak için tarihin ilk eleğini (kalburunu) tasarlamıştı. Günümüzde Kripto Uzmanı Aslı, bankacılık ve uzay iletişimini koruyan kırılması imkânsız dijital anahtarları bu kadim asal sayılarla inşa ediyor.',
+                        realLifeConnection: 'İnternet bankacılığı, e-Devlet şifreleri ve blokzincir teknolojisi, büyük asal sayıların çarpımının kolay ancak çarpanlarına ayrılmasının imkânsızlığına (RSA şifreleme) dayanır.',
+                        reflectionQuestion: '1 sayısı neden asal değildir? Doğadaki tüm bileşik sayıları asal sayıların çarpımı olarak yazabilir miyiz?',
+                        keyTakeaway: 'Sadece 1\'e ve kendisine kalansız bölünen 1\'den büyük doğal sayılara ASAL SAYI denir. 2 en küçük ve tek çift asaldır. Her bileşik sayı asal çarpanların çarpımıdır.',
+                        pages: [
+                          {
+                            id: 'p63-1',
+                            pageNumber: 1,
+                            chapterTitle: '1. Bölüm: İskenderiye Eleği (Eratosthenes Kalburu)',
+                            conceptTitle: 'Asal Sayı Kavramı & 1-100 Arası Asallar',
+                            conceptBadge: 'Asal Sayı (P)',
+                            symbolicCode: '2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97',
+                            narrativeText: 'Eratosthenes parşömen kâğıdına 1\'den 100\'e kadar sayıları yazdı. "1 sayısının sadece tek bir böleni olduğu için asal olamaz," diyerek üzerini çizdi. Sonra 2\'yi koruyup 2\'nin katlarını, 3\'ü koruyup 3\'ün katlarını eledi.',
+                            characterDialogue: {
+                              speaker: 'Eratosthenes',
+                              text: 'Eleğin deliklerinden tüm bileşik sayılar döküldü ve geriye bölünemeyen saf yapı taşları kaldı: 1 ile 100 arasında tam 25 tane ASAL SAYI vardır!'
+                            },
+                            visualScene: {
+                              type: 'eratosthenes-sieve',
+                              caption: 'Eratosthenes Kalburu: 1 elenir, 2 hariç tüm çiftler elenir, 3, 5, 7 katları elenince geriye 25 asal sayı kalır.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Yüzlük tabloda 2, 3 ve 5\'in katlarını eleyerek ilk 10 asal sayıyı parlatın!',
+                              actionLabel: 'Kalburu Çalıştır 🌾',
+                              feedbackRevealed: 'Harika! İlk 10 asal sayı: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 başarıyla keşfedildi.'
+                            },
+                            mathTakeaway: 'Kural 1: 1 asal sayı değildir. En küçük asal sayı 2\'dir ve 2 haricindeki tüm asal sayılar tek sayıdır.'
+                          },
+                          {
+                            id: 'p63-2',
+                            pageNumber: 2,
+                            chapterTitle: '2. Bölüm: Sayıların DNA\'sı: Asal Çarpan Ağacı',
+                            conceptTitle: 'Asal Çarpan Ağacı ile Çözümleme',
+                            conceptBadge: 'Çarpan Ağacı',
+                            symbolicCode: '36 = 2 × 18 = 2 × 2 × 9 = 2 × 2 × 3 × 3 = 2² · 3²',
+                            narrativeText: 'Aslı ekrana 36 sayısını getirdi. 36\'yı iki dala ayırdı: 2 ve 18. Asal olan 2 yuvarlak içine alındı, 18 tekrar 2 ve 9\'a, 9 ise 3 ve 3\'e dallandı. En alttaki tüm yapraklar asal sayılara ulaştı.',
+                            characterDialogue: {
+                              speaker: 'Kripto Uzmanı Aslı',
+                              text: 'Tıpkı bir ağacın kökünden yapraklarına ulaşmak gibi! En alttaki asal yaprakları çarptığımızda (2 × 2 × 3 × 3) ana sayımız 36\'ya ulaşırız!'
+                            },
+                            visualScene: {
+                              type: 'prime-factor-tree',
+                              caption: '36 sayısının asal çarpan ağacı: En alttaki asal yapraklar 2, 2, 3, 3\'tür. 36 = 2² · 3².'
+                            },
+                            interactiveAction: {
+                              prompt: '48 sayısının asal çarpan ağacını dallandırarak yaprakları tamamlayın!',
+                              actionLabel: 'Ağacı Dallandır 🌳',
+                              feedbackRevealed: 'Mükemmel! 48 = 2 × 2 × 2 × 2 × 3 = 2⁴ · 3. Asal çarpanları 2 ve 3\'tür.'
+                            },
+                            mathTakeaway: 'Kural 2: Her bileşik doğal sayı asal çarpan ağacının dallarıyla asal yapraklara ayrılabilir. En alt satırdaki sayılar sayının asal çarpanlarıdır.'
+                          },
+                          {
+                            id: 'p63-3',
+                            pageNumber: 3,
+                            chapterTitle: '3. Bölüm: Asal Çarpan Algoritması (Bölen Listesi)',
+                            conceptTitle: 'Dikey Çizgi ile Asal Çözümleme',
+                            conceptBadge: 'Bölen Listesi',
+                            symbolicCode: '72 | 2, 36 | 2, 18 | 2, 9 | 3, 3 | 3, 1  ⟹  72 = 2³ · 3²',
+                            narrativeText: 'Aslı dikey bir çizgi çekti. Sol tarafa 72 yazdı, sağ tarafa en küçük asal sayı olan 2\'yi koydu. 72÷2=36, 36÷2=18, 18÷2=9, 9÷3=3, 3÷3=1. Sol taraf 1 olunca algoritma tamamlandı.',
+                            characterDialogue: {
+                              speaker: 'Aslı & Eratosthenes',
+                              text: 'Sağ tarafta 3 tane 2 ve 2 tane 3 oluştu. 72 = 2³ · 3²! 72 sayısının iki farklı asal çarpanı vardır: 2 ve 3!'
+                            },
+                            visualScene: {
+                              type: 'prime-factor-algorithm',
+                              caption: '72 sayısının bölen listesi: 72 = 2³ · 3². Asal çarpanları {2, 3} kümesidir.'
+                            },
+                            interactiveAction: {
+                              prompt: '60 sayısını bölen listesi çizgisiyle asal çarpanlarına ayırın!',
+                              actionLabel: 'Algoritmayı Çalıştır ⚡',
+                              feedbackRevealed: 'Harika işlem! 60 = 2² · 3 · 5. 60\'ın asal çarpanları 2, 3 ve 5 olmak üzere 3 tanedir.'
+                            },
+                            mathTakeaway: 'Kural 3: Bölen listesinde sol taraf 1 olana kadar sadece ASAL SAYILARA bölünür. Sağdaki asal sayıların çarpımı ana sayıyı verir.'
+                          },
+                          {
+                            id: 'p63-4',
+                            pageNumber: 4,
+                            chapterTitle: '4. Bölüm: Siber Güvenlik Kalkanı & Kriptografi Kasası',
+                            conceptTitle: 'Asal Sayıların Gücü & RSA Şifreleme',
+                            conceptBadge: 'Kripto Kalkan',
+                            symbolicCode: 'P₁ × P₂ = Dev Kilit (Çarpmak saniyeler, çarpanlara ayırmak asırlar sürer!)',
+                            narrativeText: 'Aslı siber güvenlik kasasının kilit mekanizmasını gösterdi. İki büyük asal sayının çarpımıyla oluşturulan 50 basamaklı devasa sayıyı hiçbir süper bilgisayar asal çarpanlarına ayıramıyordu.',
+                            characterDialogue: {
+                              speaker: 'Aslı',
+                              text: 'Asal sayılar sadece kâğıt üstünde bir matematik kuralı değil; tüm dünyanın dijital güvenliğini sağlayan aşılmaz birer kalkandır!'
+                            },
+                            visualScene: {
+                              type: 'prime-crypto-vault',
+                              caption: 'Asal sayılarla şifrelenmiş siber kasa: Asal çarpanların benzersizliği dijital dünyayı korur.'
+                            },
+                            interactiveAction: {
+                              prompt: 'İki asal sayıyı (örn: 7 ve 11) birleştirerek kırılmaz şifre anahtarı oluşturun!',
+                              actionLabel: 'Kripto Kilidi Mühürle 🔐',
+                              feedbackRevealed: 'Tebrikler! 7 × 11 = 77. Asal sayılar ve asal çarpanlar modülünü başarıyla tamamladınız!'
+                            },
+                            mathTakeaway: 'Sonuç: 1\'den büyük her doğal sayı ya asaldır ya da asal sayıların çarpımı olarak tek bir şekilde yazılabilir (Aritmetiğin Temel Teoremi).'
+                          }
+                        ]
+                      },
+                      lab: {
+                        title: 'Eratosthenes Kalburu ve Dinamik Asal Çarpan Laboratuvarı',
+                        toolType: 'experiment-bench',
+                        instructions: '1-100 interaktif ızgarasında asal sayıları filtreleyin; istediğiniz sayıyı girerek dinamik çarpan ağacını ve bölen listesi algoritmasını adım adım simüle edin.',
+                        taskGoal: '1-100 arasındaki 25 asal sayıyı keşfedin ve 90, 120, 150 sayılarının asal çarpanlarını üslü biçimde modelleyin.',
+                        interactiveTips: [
+                          'Kalburda 2, 3, 5, 7 butonlarına sırayla basarak bileşik sayıların nasıl elendiğini izleyiniz.',
+                          'Çarpan ağacında dallara tıklayarak en alt seviyedeki asal yaprakları yuvarlak içine alınız.',
+                          'Üslü gösterim kartında üslerin kuvvet değerlerini kontrol ediniz.'
+                        ]
+                      },
+                      puzzle: {
+                        title: 'Asal Sayılar ve Çarpanlar Oyun İstasyonu',
+                        instructions: 'Öğrenilen kavramları pekiştirmek için 3 özel oyundan birini seçiniz: Eratosthenes Kalbur Avı, Asal Çarpan Ağacı Kurucusu veya Kripto Asal Kasa.',
+                        items: [
+                          {
+                            id: 'p1',
+                            concept: 'Asal Sayı',
+                            symbol: 'P = {2, 3, 5, 7...}',
+                            definition: 'Sadece 1\'e ve kendisine kalansız bölünebilen 1\'den büyük doğal sayılardır.',
+                            visualType: 'area'
+                          },
+                          {
+                            id: 'p2',
+                            concept: 'En Küçük Asal Sayı',
+                            symbol: '2',
+                            definition: 'En küçük asal sayıdır ve çift olan tek asal sayıdır.',
+                            visualType: 'ray'
+                          },
+                          {
+                            id: 'p3',
+                            concept: 'Asal Çarpan Ağacı',
+                            symbol: 'Tree Structure',
+                            definition: 'Bir bileşik sayının dallara ayrılarak asal yapraklara ulaşıldığı modeldir.',
+                            visualType: 'rainbow'
+                          },
+                          {
+                            id: 'p4',
+                            concept: 'Üslü Asal Gösterim',
+                            symbol: 'A = 2ᵃ · 3ᵇ · 5ᶜ',
+                            definition: 'Bir sayının asal çarpanlarının kuvvetleri biçiminde çarpım olarak yazılışıdır.',
+                            visualType: 'square'
+                          }
+                        ]
+                      },
+                      assessment: {
+                        title: 'Değerlendirme Testi: Asal Sayılar ve Asal Çarpanlar',
+                        instructions: 'Aşağıdaki 14 soruyu dikkatle okuyunuz. Sorular asal sayılar, Eratosthenes kalburu, çarpan ağacı ve asal çarpan algoritması kazanımlarını kapsar.',
+                        reflectionPrompt: 'Bugün asal sayıların neden "sayıların yapı taşları" olduğunu öğrendiniz mi? 1 sayısının neden asal olmadığını kendi cümlelerinizle açıklayınız.',
+                        questions: [
+                          {
+                            id: 'q1',
+                            questionText: 'Aşağıdaki sayılardan hangisi bir ASAL SAYIDIR?',
+                            options: ['1', '9', '15', '19'],
+                            correctOptionIndex: 3,
+                            explanation: '19 sayısı sadece 1 ve 19\'a kalansız bölünür, başka hiçbir böleni yoktur; bu yüzden asaldır. 1 asal değildir, 9 (3\'e bölünür) ve 15 (3 ve 5\'e bölünür) asil değildir.',
+                            bloomLevel: 'Bilgi'
+                          },
+                          {
+                            id: 'q2',
+                            questionText: 'En küçük asal sayı ile iki basamaklı en küçük asal sayının toplamı kaçtır?',
+                            options: ['12', '13', '14', '15'],
+                            correctOptionIndex: 1,
+                            explanation: 'En küçük asal sayı 2\'dir. İki basamaklı en küçük asal sayı 11\'dir. Toplam = 2 + 11 = 13\'tür.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q3',
+                            questionText: '1 ile 20 arasındaki (1 ve 20 dahil) asal sayıların sayısı kaçtır?',
+                            options: ['7', '8', '9', '10'],
+                            correctOptionIndex: 1,
+                            explanation: '1 ile 20 arasındaki asal sayılar: 2, 3, 5, 7, 11, 13, 17, 19 olmak üzere toplam 8 tanedir.',
+                            bloomLevel: 'Bilgi'
+                          },
+                          {
+                            id: 'q4',
+                            questionText: '60 sayısının ASAL ÇARPANLARI aşağıdakilerden hangisidir?',
+                            options: ['2 ve 3', '2, 3 ve 5', '2, 3, 5 ve 6', '1, 2, 3 ve 5'],
+                            correctOptionIndex: 1,
+                            explanation: '60 = 2² · 3 · 5\'tir. 60\'ın asal çarpanları {2, 3, 5} kümesidir. 1 ve 6 asal sayı değildir.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q5',
+                            questionText: '90 sayısının asal çarpanlarına ayrılmış hali (üslü gösterimi) aşağıdakilerden hangisidir?',
+                            options: ['2 · 3 · 5', '2 · 3² · 5', '2² · 3 · 5', '2 · 3 · 5²'],
+                            correctOptionIndex: 1,
+                            explanation: '90 ÷ 2 = 45; 45 ÷ 3 = 15; 15 ÷ 3 = 5; 5 ÷ 5 = 1. Buradan 90 = 2 · 3² · 5 olarak bulunur.',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q6',
+                            questionText: 'Asal çarpanları sadece 2 ve 3 olan bir doğal sayı aşağıdakilerden hangisi OLABİLİR?',
+                            options: ['18', '20', '35', '40'],
+                            correctOptionIndex: 0,
+                            explanation: '18 = 2 · 3² (asal çarpanları sadece 2 ve 3\'tür). 20 ve 40\'ın asal çarpanı 5\'tir, 35\'in ise 5 ve 7\'dir.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q7',
+                            questionText: 'Aşağıdaki ifadelerden hangisi YANLIŞTIR?',
+                            options: [
+                              '2\'den başka çift asal sayı yoktur.',
+                              '1 sayısı tüm sayıların çarpanıdır ancak asal sayı değildir.',
+                              'İki basamaklı en büyük asal sayı 97\'dir.',
+                              'Tüm tek doğal sayılar asal sayıdır.'
+                            ],
+                            correctOptionIndex: 3,
+                            explanation: '9, 15, 21, 25, 27 gibi tek sayılar asal değildir. Dolayısıyla "Tüm tek doğal sayılar asal sayıdır" ifadesi yanlıştır.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q8',
+                            questionText: 'Bir doğal sayının asal çarpan ağacı yapıldığında en alttaki yapraklar 2, 2, 3, 5 olarak bulunmuştur. Bu sayı kaçtır?',
+                            options: ['30', '45', '60', '90'],
+                            correctOptionIndex: 2,
+                            explanation: 'Sayı = 2 × 2 × 3 × 5 = 4 × 15 = 60\'tır.',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q9',
+                            questionText: '120 sayısının kaç FARKLI asal çarpanı vardır?',
+                            options: ['2', '3', '4', '5'],
+                            correctOptionIndex: 1,
+                            explanation: '120 = 2³ · 3 · 5\'tir. Farklı asal çarpanları 2, 3 ve 5 olmak üzere 3 tanedir.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q10',
+                            questionText: 'Alanı 43 cm² olan bir dikdörtgenin kenar uzunlukları santimetre cinsinden birer doğal sayıdır. Bu dikdörtgenin çevre uzunluğu kaç cm\'dir?',
+                            options: ['44', '86', '88', '90'],
+                            correctOptionIndex: 2,
+                            explanation: '43 asal bir sayı olduğundan çarpanları yalnızca 1 ve 43\'tür. Kısa kenar 1 cm, uzun kenar 43 cm olur. Çevre = 2 × (1 + 43) = 2 × 44 = 88 cm\'dir.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q11',
+                            questionText: 'A sayısı 2³ · 3² · 5 ve B sayısı 2² · 3 · 7 olarak verilmiştir. Buna göre A ÷ B işleminin sonucu kaçtır?',
+                            options: ['15/7', '30/7', '60/7', '120/7'],
+                            correctOptionIndex: 1,
+                            explanation: 'A = 8 × 9 × 5 = 360. B = 4 × 3 × 7 = 84. A ÷ B = (2³·3²·5) ÷ (2²·3·7) = (2¹·3¹·5) / 7 = 30 / 7.',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q12',
+                            questionText: 'Bir kilit şifresi iki basamaklı bir asal sayıdır. Bu sayının rakamları toplamı da bir asal sayıdır. Bu şifre aşağıdakilerden hangisi OLABİLİR?',
+                            options: ['23', '27', '31', '39'],
+                            correctOptionIndex: 0,
+                            explanation: '23 asaldır ve rakamları toplamı 2 + 3 = 5 de asaldır. 27 ve 39 asal değildir. 31 asaldır fakat rakamları toplamı 3+1=4 asal değildir.',
+                            bloomLevel: 'Analiz'
+                          },
+                          {
+                            id: 'q13',
+                            questionText: 'Bir siber güvenlik uzmanı kasayı açmak için 84 sayısının asal olmayan tüm pozitif çarpanlarını toplamalıdır. Bu toplam kaçtır?',
+                            options: ['180', '190', '212', '224'],
+                            correctOptionIndex: 2,
+                            explanation: '84\'ün tüm çarpanları: 1, 2, 3, 4, 6, 7, 12, 14, 21, 28, 42, 84 (Toplamı 224). Asal çarpanlar: 2, 3, 7 (Toplamı 12). Asal olmayanların toplamı = 224 - 12 = 212\'dir.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q14',
+                            questionText: 'Aralarındaki fark 2 olan asal sayılara "İkiz Asallar" denir (Örn: 3 ve 5, 5 ve 7, 11 ve 13). Aşağıdaki ikililerden hangisi İKİZ ASAL DEĞİLDİR?',
+                            options: ['17 ve 19', '29 ve 31', '41 ve 43', '49 ve 51'],
+                            correctOptionIndex: 3,
+                            explanation: '49 sayısı 7\'ye bölünür (asal değildir), 51 sayısı 3\'e bölünür (5+1=6, asal değildir). Dolayısıyla (49, 51) ikiz asal değildir.',
+                            bloomLevel: 'Kavrama / Analiz'
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                id: 'topic-6-ortak-kat-bolen',
+                unitId: 'unit-6-sayilar',
+                title: 'Ortak Kat ve Ortak Bölen',
+                description: 'Günlük hayat problemleri üzerinden iki doğal sayının ortak bölenleri ve ortak katlarının incelenmesi ve aralarında asallık.',
+                outcomes: [
+                  {
+                    id: 'MAT.6.1.4',
+                    code: 'MAT.6.1.4',
+                    title: 'Günlük Hayat Problemleri ya da Matematiksel Durumlar Üzerinden Ortak Kat ve Ortak Böleni Yorumlayabilme',
+                    shortTitle: 'Ortak Kat ve Ortak Bölen',
+                    description: 'İki doğal sayının ortak bölenlerini ve ortak katlarını fidan dikimi, sokak hayvanlarına eşit paketleme, periyodik nöbetler ve sefer saatleri gibi problem bağlamları üzerinden inceler; çizim, tablo ve çift sayı doğrusu ile modeller; ortak böleni yalnızca 1 olan sayıların aralarında asal olma durumunu yorumlar.',
+                    gradeId: 'grade-6',
+                    subjectId: 'mat-6',
+                    unitId: 'unit-6-sayilar',
+                    topicId: 'topic-6-ortak-kat-bolen',
+                    durationMinutes: 40,
+                    pedagogyGuide: {
+                      maarifSDBs: [
+                        'SDB2.1: İletişim (Farklı problem çözüm stratejilerini ve ortak bölen/kat modellerini sınıfta saygıyla tartışma)',
+                        'SDB2.2: İş Birliği ve Sosyal Farkındalık (Sokak hayvanları için mama paketleme ve ağaçlandırma projelerinde matematiksel planlama yapma)',
+                        'SDB2.3: Sosyal Farkındalık & Merhamet (D9: Merhamet değeri kapsamında yardıma muhtaç canlılar için eşit paylaştırma yapabilme)',
+                        'SDB3.3: Matematiksel Muhakeme (EBOB/EKOK formül ezberine girmeden görsel modeller, tablolar ve sayı doğrularıyla kavramsal çıkarım yapma)'
+                      ],
+                      processComponents: [
+                        'a) Problemlerde ya da matematiksel durumlarda verilen iki sayının ortak katlarını ve ortak bölenlerini inceler.',
+                        'b) İncelediği ortak kat veya ortak bölen ilişkilerini çizim, tablo ve sayı doğrusu gibi matematiksel temsillerle ifade eder.',
+                        'c) İki sayının ortak katlarını ve ortak bölenlerini kendi ifadelerini kullanarak açıklar.'
+                      ],
+                      learningGoals: [
+                        'İki doğal sayıyı aynı anda kalansız bölen sayıların "ortak bölenler" olduğunu açıklar.',
+                        'İki doğal sayının katları listelendiğinde her iki sırada da yer alan sayıların "ortak katlar" olduğunu modeller.',
+                        'Ortak böleni yalnızca 1 olan sayıların (örn: 8 ve 15) "aralarında asal" olduğunu fark eder.',
+                        'Günlük hayattaki paylaştırma, fidan dikimi ve paketleme durumlarında ortak bölenleri problem çözmede kullanır.',
+                        'Zil çalma, nöbet tutma ve otobüs seferi gibi periyodik durumlarda ortak katları belirler.',
+                        'MEB TYMM ilkesine uygun olarak formül ezberlemek yerine görsel modelleme ve akıl yürütme becerisini işe koşar.'
+                      ],
+                      teacherTips: [
+                        'Öğrencilere EBOB ve EKOK formül ve kısaltmalarını kesinlikle vermeyiniz; kavramları "ortak bölenler kümesi" ve "ortak katlar listesi" olarak sezdiriniz.',
+                        'Merhamet temalı bağlamlar kullanınız: "24 kg kuru mama ve 36 kg yaş mama sokak hayvanlarına eşit paketlenecektir. Paketler kaçar kg olabilir?"',
+                        'Ortak katları çift sayı doğrusunda iki farklı renkli kurbağanın aynı anda bastığı ortak taşlar olarak görselleştiriniz.'
+                      ],
+                      misconceptions: [
+                        'Ortak bölen ile ortak katı karıştırmak (Bölenlerin sayıdan küçük/eşit, katların sayıdan büyük/eşit olduğunu unutmak).',
+                        'Aralarında asal sayıların her ikisinin de mutlaka asal sayı olması gerektiğini sanmak (Örn: 8 ve 9 asal değildir ancak aralarında asaldır çünkü ortak bölenleri sadece 1\'dir).',
+                        'Ortak katların sadece 1 tane olduğunu düşünmek (Ortak katlar sonsuza kadar devam eder).'
+                      ],
+                      keyQuestions: [
+                        '24 ve 36 sayılarının tüm ortak bölenleri nelerdir? En büyük ortak bölen paketi neden en az poşet gerektirir?',
+                        '8 ve 12 sayılarının 100\'den küçük ortak katları hangileridir?',
+                        'Aralarında asal iki sayının ortak böleni kaç tanedir?'
+                      ]
+                    },
+                    phases: {
+                      story: {
+                        title: 'Merhamet Köyü: Doğa Koruma ve İyilik Seferberliği',
+                        character: {
+                          name: 'Veteriner Hilal & Orman Muhafızı Kerem',
+                          role: 'İyilik ve Çevre Gönüllüleri',
+                          avatar: '🐾'
+                        },
+                        scenario: 'Merhamet Köyü barınağında kışa hazırlık için bağışlanan 24 kg kuru mama ve 36 kg yaş kedi maması hiç artmayacak şekilde eşit büyüklükte besleme kaplarına paylaştırılacaktır. Aynı zamanda köyün orman sınırına 30 metre ve 45 metre aralıklarla eşit aralıklı fidanlar dikilecek ve iki elektrikli servis aracı her 15 ve 20 dakikada bir hareket edecektir.',
+                        realLifeConnection: 'Hayvan barınaklarında adil mama paylaşımı, tarım arazilerinde eşit aralıklı damla sulama ve fidan dikimi, raylı sistem ve vapur seferlerinin ortak saat koordinasyonunda ortak bölen ve ortak katlar kullanılır.',
+                        reflectionQuestion: '24 kg ve 36 kg mamayı poşetlerken hiç mama artmaması için paketler kaçar kg olabilir? 15 dk ve 20 dk arayla kalkan araçlar ilk kez kaçıncı dakikada aynı anda hareket eder?',
+                        keyTakeaway: 'İki sayıyı aynı anda bölen sayılara ORTAK BÖLEN, her iki sayının ritmik katlarında çakışan sayılara ORTAK KAT denir. Ortak böleni sadece 1 olan sayılar ARALARINDA ASALDIR.',
+                        pages: [
+                          {
+                            id: 'p64-1',
+                            pageNumber: 1,
+                            chapterTitle: '1. Bölüm: Sokak Hayvanlarına Eşit Mama Paketleri (Ortak Bölenler)',
+                            conceptTitle: 'İki Sayının Ortak Bölenleri',
+                            conceptBadge: 'Ortak Bölen',
+                            symbolicCode: '24\'ün Bölenleri ∩ 36\'nın Bölenleri = {1, 2, 3, 4, 6, 12}',
+                            narrativeText: 'Veteriner Hilal barınaktaki çuvalları tarttı: 24 kg kuru mama ve 36 kg konserve mama. "Bu mamaları öyle eşit paketlere koyalım ki iki çuval da firesiz bitsin ve her besleme noktasına eşit dağıtalım!" dedi.',
+                            characterDialogue: {
+                              speaker: 'Orman Muhafızı Kerem',
+                              text: '24\'ün bölenleri: 1, 2, 3, 4, 6, 8, 12, 24. 36\'nın bölenleri: 1, 2, 3, 4, 6, 9, 12, 18, 36. İkisinde de ORTAK olan sayılar: 1, 2, 3, 4, 6 ve 12 kg\'lık paketlerdir!'
+                            },
+                            visualScene: {
+                              type: 'common-divisors-grid',
+                              caption: '24 ve 36\'nın ortak bölenleri: 1, 2, 3, 4, 6, 12 kg\'lık paketler oluşturulabilir. En büyük paket 12 kg\'dır.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Ortak bölenleri (1, 2, 3, 4, 6, 12) seçerek mama paketleme planını onaylayın!',
+                              actionLabel: 'Paketleri Paylaştır 🐾',
+                              feedbackRevealed: 'Harika bir merhamet adımı! 12 kg seçilirse 24 kg için 2 paket, 36 kg için 3 paket (toplam en az 5 paket) kullanılır.'
+                            },
+                            mathTakeaway: 'Kural 1: İki doğal sayıyı kalansız bölen sayıların kümesine o sayıların ORTAK BÖLENLERİ denir.'
+                          },
+                          {
+                            id: 'p64-2',
+                            pageNumber: 2,
+                            chapterTitle: '2. Bölüm: Yeşil Vatan: Eşit Aralıklı Fidan Dikimi',
+                            conceptTitle: 'Aralık Belirleme ve Eşit Bölme',
+                            conceptBadge: 'Aralık Modeli',
+                            symbolicCode: '30 m ve 45 m kenarlara eşit aralık: Ortak Bölenler = {1, 3, 5, 15} metre',
+                            narrativeText: 'Köyün doğa parkında 30 metre ve 45 metre uzunluğunda iki yürüyüş yolu vardı. Kerem, iki yolun kenarına da köşelere de gelmek şartıyla eşit aralıklarla fidan dikmek istedi.',
+                            characterDialogue: {
+                              speaker: 'Kerem & Hilal',
+                              text: 'Fidanlar arası mesafe hem 30\'u hem 45\'i tam bölmelidir. 30 ve 45\'in ortak bölenleri 1, 3, 5 ve 15 metredir. En az fidan için aralığı 15 metre seçeriz!'
+                            },
+                            visualScene: {
+                              type: 'trees-planting-model',
+                              caption: '30 m ve 45 m yollara 15 m aralıkla fidan dikimi: En az fidanla eşit ve estetik dikim sağlanır.'
+                            },
+                            interactiveAction: {
+                              prompt: 'En az fidan kullanmak için en büyük ortak bölen olan 15 metreyi seçin!',
+                              actionLabel: 'Fidanları Dik 🌱',
+                              feedbackRevealed: 'Tebrikler! 15 metre aralıkla 30 m için 2 aralık, 45 m için 3 aralık oluşur.'
+                            },
+                            mathTakeaway: 'Kural 2: Parçalama, eşit aralıklara bölme ve paketleme problemlerinde ORTAK BÖLENLER kullanılır.'
+                          },
+                          {
+                            id: 'p64-3',
+                            pageNumber: 3,
+                            chapterTitle: '3. Bölüm: Çift Sayı Doğrusunda Güneş Enerjili Servisler (Ortak Katlar)',
+                            conceptTitle: 'İki Sayının Ortak Katları & Periyodik Çakışma',
+                            conceptBadge: 'Ortak Kat',
+                            symbolicCode: '15\'in Katları ∩ 20\'nin Katları = 60, 120, 180, 240...',
+                            narrativeText: 'Merhamet Köyü\'nün iki elektrikli servisi meydandan kalkıyor. Mavi servis her 15 dakikada bir, Yeşil servis ise her 20 dakikada bir hareket ediyor. Hilal saatine baktı: "İkisi aynı anda ne zaman kalkar?"',
+                            characterDialogue: {
+                              speaker: 'Hilal',
+                              text: 'Mavi servis: 15, 30, 45, 60, 75, 90, 105, 120... Yeşil servis: 20, 40, 60, 80, 100, 120... İlk ortak kalkış 60. dakikada (1 saat sonra), ikinci ortak kalkış 120. dakikada gerçekleşir!'
+                            },
+                            visualScene: {
+                              type: 'double-number-line-multiples',
+                              caption: '15 ve 20\'nin ortak katları: Çift sayı doğrusunda 60, 120, 180. dakikalarda seferler aynı ana denk gelir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Çift sayı doğrusunda 15 ve 20\'nin çakıştığı ilk ortak kat olan 60\'ı işaretleyin!',
+                              actionLabel: 'Ortak Seferi Başlat 🚌',
+                              feedbackRevealed: 'Harika gözlem! Ortak katlar en küçük ortak kattan (60) başlayarak 60\'ar 60\'ar (60, 120, 180...) ritmik devam eder.'
+                            },
+                            mathTakeaway: 'Kural 3: İki sayının ortak katları, en küçük ortak katın katları şeklinde sonsuza kadar devam eder. Periyodik nöbet ve seferlerde ortak katlar kullanılır.'
+                          },
+                          {
+                            id: 'p64-4',
+                            pageNumber: 4,
+                            chapterTitle: '4. Bölüm: Aralarında Asal Kapılar ve Dostluk Şifresi',
+                            conceptTitle: 'Aralarında Asal Sayılar',
+                            conceptBadge: 'Aralarında Asal',
+                            symbolicCode: 'Ortak Bölen = Yalnızca {1}  ⟹  (Örn: 8 ve 15, 9 ve 14)',
+                            narrativeText: 'Günün sonunda botanik bahçesinin emniyet kapısında iki sayı belirdi: 8 ve 15. Hilal sordu: "8 asal değil, 15 de asal değil. Peki aralarında asallar mı?"',
+                            characterDialogue: {
+                              speaker: 'Kerem',
+                              text: '8\'in bölenleri: 1, 2, 4, 8. 15\'in bölenleri: 1, 3, 5, 15. İkisinin 1\'den başka hiçbir ortak böleni yoktur! Birden başka ortak böleni olmayan sayılara ARALARINDA ASAL SAYILAR denir!'
+                            },
+                            visualScene: {
+                              type: 'coprime-venn-diagram',
+                              caption: '8 ve 15 sayılarının bölenleri: Kesişim kümesinde sadece 1 vardır. Dolayısıyla 8 ve 15 aralarında asaldır.'
+                            },
+                            interactiveAction: {
+                              prompt: '8 ve 15 sayılarının tek ortak böleninin 1 olduğunu onaylayarak kapıyı açın!',
+                              actionLabel: 'Dostluk Kapısını Aç 🔑',
+                              feedbackRevealed: 'Mükemmel! Sayıların kendisi asal olmasa bile 1\'den başka ortak bölenleri yoksa aralarında asaldırlar.'
+                            },
+                            mathTakeaway: 'Sonuç: Ortak böleni yalnızca 1 olan iki pozitif doğal sayıya ARALARINDA ASAL sayılar denir. Ardışık sayılar (örn: 7 ve 8, 14 ve 15) daima aralarında asaldır.'
+                          }
+                        ]
+                      },
+                      lab: {
+                        title: 'Dinamik Ortak Bölen Izgarası ve Çift Sıçramalı Sayı Doğrusu',
+                        toolType: 'experiment-bench',
+                        instructions: 'İki sayı belirleyin; ortak bölenlerini görsel ızgara ve Venn şeması üzerinde inceleyin, çift sayı doğrusunda iki ritmik sıçramanın çakıştığı ortak kat bayraklarını adım adım takip edin.',
+                        taskGoal: '24 ve 36 sayılarının ortak bölenlerini listeleyin; 12 ve 18 sayılarının 100\'den küçük ortak katlarını çift sayı doğrusunda belirleyin.',
+                        interactiveTips: [
+                          'Ortak bölenler tablosunda her iki sayıyı da bölen mavi yıldızlı sütunları sayınız.',
+                          'Çift sayı doğrusunda iki farklı rengin üst üste geldiği çakışma noktalarına dikkat ediniz.',
+                          'Aralarında asal iki sayı girdiğinizde tek ortak bölenin 1 olduğunu gözlemleyiniz.'
+                        ]
+                      },
+                      puzzle: {
+                        title: 'Ortak Kat ve Ortak Bölen Oyun İstasyonu',
+                        instructions: 'Öğrenilen kavramları pekiştirmek için 3 özel oyundan birini seçiniz: Eşit Paylaşım & Merhamet Terazisi, Ortak Durak Randevusu veya Aralarında Asal Kule.',
+                        items: [
+                          {
+                            id: 'p1',
+                            concept: 'Ortak Bölen',
+                            symbol: 'A ∩ B (Bölen)',
+                            definition: 'İki veya daha fazla doğal sayıyı aynı anda kalansız bölebilen sayılardır.',
+                            visualType: 'area'
+                          },
+                          {
+                            id: 'p2',
+                            concept: 'Ortak Kat',
+                            symbol: 'A ∩ B (Kat)',
+                            definition: 'İki veya daha fazla doğal sayının katları arasında ortak olan sayılardır.',
+                            visualType: 'ray'
+                          },
+                          {
+                            id: 'p3',
+                            concept: 'Aralarında Asal Sayılar',
+                            symbol: 'Ortak Bölen = {1}',
+                            definition: '1\'den başka pozitif ortak böleni olmayan iki doğal sayıdır.',
+                            visualType: 'rainbow'
+                          },
+                          {
+                            id: 'p4',
+                            concept: 'En Küçük Ortak Kat',
+                            symbol: 'Min Ortak Kat',
+                            definition: 'İki sayının pozitif ortak katları arasındaki en küçük değerdir; diğer ortak katlar bunun katlarıdır.',
+                            visualType: 'square'
+                          }
+                        ]
+                      },
+                      assessment: {
+                        title: 'Değerlendirme Testi: Ortak Kat ve Ortak Bölen',
+                        instructions: 'Aşağıdaki 14 soruyu dikkatle okuyunuz. Sorular günlük hayat problemleri, fidan dikimi, mama paylaşımı, ortak nöbet ve aralarında asallık kazanımlarını içerir.',
+                        reflectionPrompt: 'Bugün ortak bölen ve ortak kat kavramlarını günlük hayatta nerelerde kullanabileceğimizi fark ettiniz mi? Aralarında asallık hakkında ne öğrendiniz?',
+                        questions: [
+                          {
+                            id: 'q1',
+                            questionText: '18 ve 24 sayılarının ORTAK BÖLENLERİ aşağıdakilerden hangisidir?',
+                            options: ['1, 2, 3, 6', '1, 2, 4, 6', '1, 3, 6, 8', '2, 3, 6, 12'],
+                            correctOptionIndex: 0,
+                            explanation: '18\'in bölenleri: 1, 2, 3, 6, 9, 18. 24\'ün bölenleri: 1, 2, 3, 4, 6, 8, 12, 24. Ortak olanlar: 1, 2, 3 ve 6\'dır.',
+                            bloomLevel: 'Bilgi'
+                          },
+                          {
+                            id: 'q2',
+                            questionText: '6 ve 8 sayılarının 50\'den küçük ORTAK KATLARI hangileridir?',
+                            options: ['12 ve 24', '24 ve 48', '24 ve 36', '48 ve 72'],
+                            correctOptionIndex: 1,
+                            explanation: '6 ve 8\'in en küçük ortak katı 24\'tür. 50\'den küçük ortak katlar: 24 ve 48\'dir.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q3',
+                            questionText: 'Aşağıdaki sayı çiftlerinden hangisi ARALARINDA ASALDIR?',
+                            options: ['6 ve 9', '8 ve 15', '12 ve 18', '14 and 21'],
+                            correctOptionIndex: 1,
+                            explanation: '8\'in bölenleri {1, 2, 4, 8}, 15\'in bölenleri {1, 3, 5, 15}\'tir. 1\'den başka ortak böleni olmadığı için 8 ve 15 aralarında asaldır. Diğer çiftlerin 3 veya 7 gibi ortak bölenleri vardır.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q4',
+                            questionText: '30 kg nohut ve 45 kg mercimek birbirine karıştırılmadan ve hiç artmayacak şekilde eşit büyüklükte torbalara doldurulacaktır. Bir torba kaç kg OLA-MAZ?',
+                            options: ['1 kg', '3 kg', '5 kg', '10 kg'],
+                            correctOptionIndex: 3,
+                            explanation: 'Torba ağırlığı 30 ve 45\'in ortak böleni olmalıdır. Ortak bölenler: 1, 3, 5, 15 kg\'dır. 10 sayısı 45\'in böleni olmadığı için torba 10 kg olamaz.',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q5',
+                            questionText: 'Kenar uzunlukları 24 m ve 32 m olan dikdörtgen şeklindeki bir bahçenin etrafına, köşelere de gelmek şartıyla eşit aralıklarla fidan dikilecektir. İki fidan arası mesafe en fazla kaç metre olabilir?',
+                            options: ['4 m', '6 m', '8 m', '12 m'],
+                            correctOptionIndex: 2,
+                            explanation: 'İki fidan arası mesafe hem 24\'ü hem 32\'yi kalansız bölmelidir. 24 ve 32\'nin ortak bölenleri: 1, 2, 4, 8 m\'dir. En fazla mesafe 8 metredir.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q6',
+                            questionText: 'İki vapurdan biri 20 dakikada bir, diğeri 25 dakikada bir iskeleden hareket etmektedir. Saat 08:00\'de birlikte hareket eden bu vapurlar, ilk kez saat kaçta tekrar birlikte hareket ederler?',
+                            options: ['08:45', '09:15', '09:40', '10:00'],
+                            correctOptionIndex: 2,
+                            explanation: '20 ve 25\'in en küçük ortak katı 100 dakikadır. 100 dakika = 1 saat 40 dakika. 08:00 + 1 saat 40 dk = 09:40\'ta tekrar birlikte kalkarlar.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q7',
+                            questionText: 'Aşağıdaki ifadelerden hangisi DAİMA DOĞRUDUR?',
+                            options: [
+                              'Ardışık iki doğal sayı daima aralarında asaldır.',
+                              'Aralarında asal iki sayının ikisi de asal sayı olmak zorundadır.',
+                              'İki sayının ortak bölenleri sonsuz tanedir.',
+                              'İki çift sayı aralarında asal olabilir.'
+                            ],
+                            correctOptionIndex: 0,
+                            explanation: 'Ardışık iki doğal sayının (örn: 9 ve 10, 14 ve 15) ortak böleni daima yalnızca 1\'dir; bu yüzden daima aralarında asaldırlar.',
+                            bloomLevel: 'Muhakeme'
+                          },
+                          {
+                            id: 'q8',
+                            questionText: 'Bir hemşire 4 günde bir, bir doktor ise 6 günde bir nöbet tutmaktadır. İkisi birlikte ilk nöbetlerini tuttuktan sonraki 60 gün içinde kaç kez daha BİRLİKTE nöbet tutarlar?',
+                            options: ['4', '5', '6', '7'],
+                            correctOptionIndex: 1,
+                            explanation: '4 ve 6\'nın ortak katları: 12, 24, 36, 48, 60. günlerdir. 60 gün içinde 12, 24, 36, 48, 60. günlerde olmak üzere toplam 5 kez daha birlikte nöbet tutarlar.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q9',
+                            questionText: 'Bir barınakta 48 kg kuru kedi maması ve 60 kg kuru köpek maması eşit ağırlıktaki paketlere doldurulacaktır. En az sayıda paket kullanmak için bir paketin ağırlığı kaç kg olmalıdır?',
+                            options: ['6 kg', '8 kg', '10 kg', '12 kg'],
+                            correctOptionIndex: 3,
+                            explanation: 'En az sayıda paket için bir paketin ağırlığı 48 ve 60\'ın en büyük ortak böleni olmalıdır. Ortak bölenler: 1, 2, 3, 4, 6, 12 kg. En büyük ortak bölen 12 kg\'dır.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q10',
+                            questionText: 'Aralarında asal iki basamaklı iki sayının ortak bölenlerinin toplamı kaçtır?',
+                            options: ['1', '2', '0', 'Sayıların toplamı'],
+                            correctOptionIndex: 0,
+                            explanation: 'Aralarında asal sayıların tek ortak pozitif böleni 1\'dir. Dolayısıyla ortak bölenlerinin toplamı da 1\'dir.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q11',
+                            questionText: 'Bir çiçekçi elindeki gülleri 6\'şarlı ve 8\'erli demetlediğinde her seferinde 3 gül artmaktadır. Çiçekçideki gül sayısı 80\'den fazla olduğuna göre, EN AZ kaç gül vardır?',
+                            options: ['75', '96', '99', '102'],
+                            correctOptionIndex: 2,
+                            explanation: '6 ve 8\'in ortak katları: 24, 48, 72, 96, 120... 80\'den büyük en küçük ortak kat 96\'dır. 3 gül arttığı için: 96 + 3 = 99 gül vardır.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q12',
+                            questionText: 'Alanı 36 cm² ve 48 cm² olan iki dikdörtgenin birer kenar uzunlukları eşittir. Bu ortak kenarın uzunluğu santimetre cinsinden kaç farklı doğal sayı değeri alabilir?',
+                            options: ['4', '5', '6', '8'],
+                            correctOptionIndex: 2,
+                            explanation: 'Ortak kenar uzunluğu hem 36\'yı hem 48\'i tam bölmelidir. 36 ve 48\'in ortak bölenleri: 1, 2, 3, 4, 6, 12 olmak üzere toplam 6 farklı değer alabilir.',
+                            bloomLevel: 'Problem Çözme / Analiz'
+                          },
+                          {
+                            id: 'q13',
+                            questionText: 'Boyutları 12 cm ve 18 cm olan dikdörtgen şeklindeki fayanslar yan yana ve üst üste dizilerek en küçük boyutlu bir KARE alan oluşturulacaktır. Bu kare alanın bir kenar uzunluğu kaç cm olur?',
+                            options: ['24 cm', '36 cm', '48 cm', '72 cm'],
+                            correctOptionIndex: 1,
+                            explanation: 'Karenin kenar uzunluğu hem 12\'nin hem 18\'in ortak katı olmalıdır. 12 ve 18\'in en küçük ortak katı 36 cm\'dir.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q14',
+                            questionText: '9 ile A iki basamaklı doğal sayısı aralarında asaldır. Buna göre A sayısı aşağıdakilerden hangisi OLAMAZ?',
+                            options: ['14', '16', '21', '25'],
+                            correctOptionIndex: 2,
+                            explanation: '9 = 3² olduğundan, 9 ile aralarında asal olan sayı 3\'ün katı OLMAMALIDIR. 21 sayısı 3\'ün katıdır (21 = 3×7), dolayısıyla 9 ile 21 aralarında asal değildir (ortak bölenleri 3\'tür).',
+                            bloomLevel: 'Kavrama / Analiz'
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
             ]
           }

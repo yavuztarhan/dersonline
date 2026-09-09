@@ -202,22 +202,167 @@ const MAT_6_1_1_TF: TFQuestion[] = [
   }
 ];
 
+// 6. MAT.6.1.2 (6. Sınıf: Bölünebilme Kriterleri)
+const MAT_6_1_2_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat62-1',
+    statement: 'Birler basamağı çift (0, 2, 4, 6, 8) olan tüm doğal sayılar 2 ile kalansız bölünür.',
+    isTrue: true,
+    explanation: '2 ile kalansız bölünebilmede sadece sayının birler basamağının çift olup olmadığına bakılır.'
+  },
+  {
+    id: 'tf-mat62-2',
+    statement: 'Birler basamağı 3 olan her doğal sayı 3 ile kalansız bölünür.',
+    isTrue: false,
+    explanation: '3 ile bölünebilmede birler basamağına değil, tüm rakamların toplamına bakılır (örn: 13 ve 23 üçe bölünmez).'
+  },
+  {
+    id: 'tf-mat62-3',
+    statement: 'Rakamları toplamı 9 veya 9\'un katı olan tüm doğal sayılar 9 ile kalansız bölünür.',
+    isTrue: true,
+    explanation: 'Basamak çözümlemesinde yüzlükler ve onluklar 99 ve 9\'un katı olduğu için geriye sadece rakamlar toplamı kalır.'
+  },
+  {
+    id: 'tf-mat62-4',
+    statement: 'Yüzlükler 4\'e tam bölündüğü için, bir sayının 4\'e bölünüp bölünmediğini anlamak için sadece son iki basamağına bakılır.',
+    isTrue: true,
+    explanation: '100, 200, 300... sayıları 4\'e tam bölündüğünden sadece son iki basamağın 00 veya 4\'ün katı olması yeterlidir.'
+  },
+  {
+    id: 'tf-mat62-5',
+    statement: 'Hem 2 hem de 4 ile kalansız bölünebilen bir sayı daima 8 ile de tam bölünür.',
+    isTrue: false,
+    explanation: 'Örneğin 12 ve 20 sayıları hem 2\'ye hem 4\'e tam bölünür ancak 8\'e kalansız bölünemez.'
+  },
+  {
+    id: 'tf-mat62-6',
+    statement: 'Hem 2 ile (çift) hem de 3 ile (rakamlar toplamı 3k) bölünebilen tüm doğal sayılar 6 ile de tam bölünür.',
+    isTrue: true,
+    explanation: '6 sayısı 2 ve 3\'ün çarpımı olduğu için, her iki kuralı da sağlayan sayılar 6\'ya tam bölünür.'
+  },
+  {
+    id: 'tf-mat62-7',
+    statement: 'Bir sayının 10 ile bölümünden kalan daima o sayının birler basamağındaki rakama eşittir.',
+    isTrue: true,
+    explanation: 'Onluklar ve yüzlükler 10\'un katı olduğundan geriye kalan kısım daima birler basamağıdır.'
+  }
+];
+
+// 7. MAT.6.1.3 (6. Sınıf: Asal Sayılar ve Asal Çarpanlar)
+const MAT_6_1_3_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat63-1',
+    statement: '1 sayısı sadece 1 pozitif böleni olduğu için asal sayı DEĞİLDİR.',
+    isTrue: true,
+    explanation: 'Asal sayıların tanımı gereği 1 ve kendisi olmak üzere tam olarak 2 farklı pozitif böleni olmalıdır.'
+  },
+  {
+    id: 'tf-mat63-2',
+    statement: 'En küçük asal sayı 2\'dir ve 2 haricinde hiçbir çift asal sayı yoktur.',
+    isTrue: true,
+    explanation: '2\'den büyük tüm çift sayılar 2\'ye bölünebildiği için asal olamazlar. 2 yegâne çift asaldır.'
+  },
+  {
+    id: 'tf-mat63-3',
+    statement: 'Tüm tek doğal sayılar birer asal sayıdır.',
+    isTrue: false,
+    explanation: '9 (3×3), 15 (3×5), 21 (3×7), 25 (5×5), 27 (3×9) tek sayıdır ancak asal sayı değildir.'
+  },
+  {
+    id: 'tf-mat63-4',
+    statement: 'Eratosthenes Kalburu yöntemiyle 1 ile 100 arasında toplam 25 adet asal sayı bulunur.',
+    isTrue: true,
+    explanation: '1-100 arasında 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 olmak üzere 25 asal vardır.'
+  },
+  {
+    id: 'tf-mat63-5',
+    statement: '72 sayısının asal çarpan algoritması (bölen listesi) ile üslü gösterimi 2³ · 3² şeklindedir.',
+    isTrue: true,
+    explanation: '72 = 8 × 9 = 2³ · 3² ve asal çarpanları {2, 3} kümesidir.'
+  },
+  {
+    id: 'tf-mat63-6',
+    statement: 'Asal çarpan ağacında en alt seviyedeki tüm yapraklar birer asal sayıdır.',
+    isTrue: true,
+    explanation: 'Bileşik sayılar asal sayılara ulaşana kadar dallandırılır ve en altta asal sayılar kalır.'
+  },
+  {
+    id: 'tf-mat63-7',
+    statement: 'İki basamaklı en büyük asal sayı 99\'dur.',
+    isTrue: false,
+    explanation: '99 sayısı 3 ve 9\'a tam bölünür. İki basamaklı en büyük asal sayı 97\'dir.'
+  }
+];
+
+// 8. MAT.6.1.4 (6. Sınıf: Ortak Kat ve Ortak Bölen)
+const MAT_6_1_4_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat64-1',
+    statement: 'İki doğal sayının ortak bölenleri, her iki sayıyı da aynı anda kalansız bölebilen sayılardır.',
+    isTrue: true,
+    explanation: 'Ortak bölenler her iki sayının bölen listesindeki kesişim elemanlarıdır.'
+  },
+  {
+    id: 'tf-mat64-2',
+    statement: 'Ortak böleni yalnızca 1 olan pozitif doğal sayılara "aralarında asal" sayılar denir.',
+    isTrue: true,
+    explanation: '1\'den başka hiçbir ortak böleni olmayan sayılar aralarında asaldır (örn: 8 ve 15).'
+  },
+  {
+    id: 'tf-mat64-3',
+    statement: 'Aralarında asal olan iki sayının her ikisi de tek tek asal sayı olmak ZORUNDADIR.',
+    isTrue: false,
+    explanation: '8 ve 9 asal değildir ancak 1\'den başka ortak böleni olmadığı için aralarında asaldır.'
+  },
+  {
+    id: 'tf-mat64-4',
+    statement: 'İki sayının ortak katları, en küçük ortak kattan başlayarak ritmik olarak sonsuza kadar devam eder.',
+    isTrue: true,
+    explanation: 'Örneğin 6 ve 8\'in ortak katları 24, 48, 72, 96... şeklinde sonsuza kadar devam eder.'
+  },
+  {
+    id: 'tf-mat64-5',
+    statement: 'Eşit aralıklı fidan dikme ve mama paketleme gibi bölüştürme problemlerinde ortak bölenler kullanılır.',
+    isTrue: true,
+    explanation: 'Bütünü eşit parçalara ayırma ve paylaştırma durumlarında ortak bölenlerden yararlanılır.'
+  },
+  {
+    id: 'tf-mat64-6',
+    statement: 'Periyodik otobüs seferleri ve nöbetleşme gibi çakışma durumlarında ortak katlar kullanılır.',
+    isTrue: true,
+    explanation: 'Zamanın ritmik ilerlediği ve aynı ana denk gelen sefer saatleri ortak katlarla çözülür.'
+  },
+  {
+    id: 'tf-mat64-7',
+    statement: 'Ardışık iki doğal sayı (örneğin 14 ve 15) daima aralarında asaldır.',
+    isTrue: true,
+    explanation: 'Ardışık sayıların farkı 1 olduğu için 1\'den büyük hiçbir ortak böleni olamaz; daima aralarında asaldırlar.'
+  }
+];
+
 export function TrueFalseGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
-  const isFactorsTopic =
-    selectedOutcome?.id === 'MAT.6.1.1' ||
-    selectedOutcome?.code?.includes('6.1.1') ||
-    selectedOutcome?.title?.toLowerCase().includes('çarpan') ||
-    selectedOutcome?.title?.toLowerCase().includes('kat');
-  const isLinesAnglesTopic =
-    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4'));
-  const isAngleTopic =
-    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3'));
-  const isSelimiyeTopic =
-    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2'));
+  const id = selectedOutcome?.id || '';
+  const code = selectedOutcome?.code || '';
+  const title = (selectedOutcome?.title || '').toLowerCase();
 
-  const questions = isFactorsTopic
+  const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
+  const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
+  const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
+  const isMat614 = id === 'MAT.6.1.4' || code.includes('6.1.4') || title.includes('ortak kat') || title.includes('ortak bölen');
+
+  const isLinesAnglesTopic = id === 'MAT.5.3.4' || code.includes('5.3.4');
+  const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
+  const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
+
+  const questions = isMat614
+    ? MAT_6_1_4_TF
+    : isMat613
+    ? MAT_6_1_3_TF
+    : isMat612
+    ? MAT_6_1_2_TF
+    : isMat611
     ? MAT_6_1_1_TF
     : isLinesAnglesTopic
     ? MAT_5_3_4_TF

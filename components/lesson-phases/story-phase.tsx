@@ -53,6 +53,18 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [selectedMultipleIndex, setSelectedMultipleIndex] = useState(4); // 12x5 = 60
   const [dualityFlipped, setDualityFlipped] = useState(false);
 
+  // 6. Sınıf MAT.6.1.2 interactive states
+  const [selectedDivisibilityNumber, setSelectedDivisibilityNumber] = useState<number>(48750);
+  const [activeDivisibilityRule, setActiveDivisibilityRule] = useState<number>(3); // 2, 3, 4, 5, 6, 9, 10
+
+  // 6. Sınıf MAT.6.1.3 interactive states
+  const [sieveSelectedPrime, setSieveSelectedPrime] = useState<number>(2);
+  const [activeTreeStep, setActiveTreeStep] = useState<number>(2); // 0, 1, 2
+
+  // 6. Sınıf MAT.6.1.4 interactive states
+  const [selectedCommonNumberPair, setSelectedCommonNumberPair] = useState<[number, number]>([24, 36]);
+  const [activeMultipleStop, setActiveMultipleStop] = useState<number>(24);
+
   const pages: StorybookPage[] = data.pages || [
     {
       id: 'default-p1',
@@ -1471,6 +1483,620 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   </div>
                 )}
 
+                {/* SCENE: MAT.6.1.2 - SON BASAMAK TESTİ (2, 5, 10) */}
+                {currentPage.visualScene.type === 'divisibility-last-digit' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-amber-400">🔍 Test Sayısı Seç:</span>
+                      <div className="flex items-center gap-1">
+                        {[48750, 1235, 7322, 9995, 3428].map((num) => (
+                          <button
+                            key={num}
+                            onClick={() => {
+                              setSelectedDivisibilityNumber(num);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              selectedDivisibilityNumber === num
+                                ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      <div className="flex items-center gap-1 font-mono text-2xl font-black text-white bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800 shadow-inner">
+                        <span>{String(selectedDivisibilityNumber).slice(0, -1)}</span>
+                        <span className="bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg shadow-md animate-pulse">
+                          {String(selectedDivisibilityNumber).slice(-1)}
+                        </span>
+                        <span className="text-xs text-amber-400 ml-2 font-sans font-bold">← Son Basamak</span>
+                      </div>
+
+                      {(() => {
+                        const lastDigit = selectedDivisibilityNumber % 10;
+                        const div2 = lastDigit % 2 === 0;
+                        const div5 = lastDigit === 0 || lastDigit === 5;
+                        const div10 = lastDigit === 0;
+
+                        return (
+                          <div className="grid grid-cols-3 gap-2 w-full max-w-sm">
+                            <div className={`p-2 rounded-xl border text-center ${div2 ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-400'}`}>
+                              <div className="text-[10px] font-bold">2 ile Bölünme</div>
+                              <div className="text-xs font-black mt-0.5">{div2 ? '✓ Çift (Tam)' : '✗ Tek (Kalan: 1)'}</div>
+                            </div>
+                            <div className={`p-2 rounded-xl border text-center ${div5 ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-400'}`}>
+                              <div className="text-[10px] font-bold">5 ile Bölünme</div>
+                              <div className="text-xs font-black mt-0.5">{div5 ? '✓ 0 veya 5 (Tam)' : `✗ Kalan: ${lastDigit % 5}`}</div>
+                            </div>
+                            <div className={`p-2 rounded-xl border text-center ${div10 ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-400'}`}>
+                              <div className="text-[10px] font-bold">10 ile Bölünme</div>
+                              <div className="text-xs font-black mt-0.5">{div10 ? '✓ Son Bas: 0 (Tam)' : `✗ Kalan: ${lastDigit}`}</div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-amber-300 font-bold">💡 Püf Noktası:</span> 2, 5 ve 10 ile bölünebilmede sadece <span className="text-amber-400 font-bold">birler basamağı</span> belirleyicidir!
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.2 - RAKAMLAR TOPLAMI (3 VE 9 KURALI) */}
+                {currentPage.visualScene.type === 'divisibility-sum-digits' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-cyan-400">🔢 Sayı Modeli:</span>
+                      <div className="flex items-center gap-1">
+                        {[432, 819, 526, 783].map((num) => (
+                          <button
+                            key={num}
+                            onClick={() => {
+                              setSelectedDivisibilityNumber(num);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              selectedDivisibilityNumber === num
+                                ? 'bg-cyan-500 text-slate-950 shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      {(() => {
+                        const digits = String(selectedDivisibilityNumber).split('').map(Number);
+                        const sum = digits.reduce((a, b) => a + b, 0);
+                        const div3 = sum % 3 === 0;
+                        const div9 = sum % 9 === 0;
+
+                        return (
+                          <div className="space-y-2 text-center w-full max-w-sm">
+                            <div className="bg-slate-900 border border-slate-800 rounded-xl p-2">
+                              <div className="text-[10px] text-slate-400">10'luk Taban Ayrıştırması & Rakamlar Toplamı:</div>
+                              <div className="text-sm font-mono font-bold text-cyan-300 mt-1">
+                                {digits.join(' + ')} = <span className="text-amber-400 font-black text-base">{sum}</span>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className={`p-2 rounded-xl border ${div3 ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-400'}`}>
+                                <div className="text-[10px] font-bold">3 ile Bölünme</div>
+                                <div className="text-xs font-black mt-0.5">{sum} = 3×{Math.floor(sum/3)} {div3 ? '(Tam)' : `(Kalan: ${sum%3})`}</div>
+                              </div>
+                              <div className={`p-2 rounded-xl border ${div9 ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-400'}`}>
+                                <div className="text-[10px] font-bold">9 ile Bölünme</div>
+                                <div className="text-xs font-black mt-0.5">{sum} = 9×{Math.floor(sum/9)} {div9 ? '(Tam)' : `(Kalan: ${sum%9})`}</div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-cyan-300 font-bold">🧠 İspat:</span> 100=99+1 ve 10=9+1 olduğundan, kalanları yalnızca <span className="text-amber-400 font-bold">rakamların toplamı</span> belirler!
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.2 - SON İKİ BASAMAK (4 KURALI) */}
+                {currentPage.visualScene.type === 'divisibility-last-two' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-purple-400">🎯 4 ile Bölünme Testi:</span>
+                      <div className="flex items-center gap-1">
+                        {[7324, 5812, 9048, 1235, 6700].map((num) => (
+                          <button
+                            key={num}
+                            onClick={() => {
+                              setSelectedDivisibilityNumber(num);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              selectedDivisibilityNumber === num
+                                ? 'bg-purple-500 text-white shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      {(() => {
+                        const str = String(selectedDivisibilityNumber);
+                        const lastTwo = Number(str.slice(-2));
+                        const div4 = lastTwo % 4 === 0;
+
+                        return (
+                          <div className="space-y-2 text-center w-full max-w-sm">
+                            <div className="flex items-center justify-center gap-1 font-mono text-2xl font-black text-white bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
+                              <span className="text-slate-400">{str.slice(0, -2)}</span>
+                              <span className="bg-purple-600 text-white px-2 py-0.5 rounded-lg shadow-md animate-pulse">
+                                {str.slice(-2)}
+                              </span>
+                            </div>
+
+                            <div className={`p-3 rounded-xl border ${div4 ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-400'}`}>
+                              <div className="text-xs font-bold">Son İki Basamak: {lastTwo}</div>
+                              <div className="text-sm font-black mt-1">
+                                {div4 ? `✓ ${lastTwo} = 4 × ${lastTwo / 4} (4 ile Tam Bölünür)` : `✗ Kalan: ${lastTwo % 4}`}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-purple-300 font-bold">⚡ Neden?:</span> 100 sayısı 4'e tam bölündüğü için (100 = 4×25), yüzler ve binler basamağı kalanı etkilemez!
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.2 - BİRLEŞİK KRİTER (6 KURALI) */}
+                {currentPage.visualScene.type === 'divisibility-six-rule' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-emerald-400">⚙️ 6 ile Bölünme (2 & 3 Kuralı):</span>
+                      <div className="flex items-center gap-1">
+                        {[48750, 312, 524, 715, 846].map((num) => (
+                          <button
+                            key={num}
+                            onClick={() => {
+                              setSelectedDivisibilityNumber(num);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              selectedDivisibilityNumber === num
+                                ? 'bg-emerald-500 text-slate-950 shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      {(() => {
+                        const num = selectedDivisibilityNumber;
+                        const isEven = num % 2 === 0;
+                        const sum = String(num).split('').reduce((a, b) => a + Number(b), 0);
+                        const isDiv3 = sum % 3 === 0;
+                        const isDiv6 = isEven && isDiv3;
+
+                        return (
+                          <div className="space-y-2 w-full max-w-sm">
+                            <div className="grid grid-cols-2 gap-2 text-center">
+                              <div className={`p-2 rounded-xl border ${isEven ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-400'}`}>
+                                <div className="text-[10px] font-bold">1. Şart: Çift Sayı (2)</div>
+                                <div className="text-xs font-black mt-0.5">{isEven ? '✓ Sağlandı' : '✗ Tek Sayı'}</div>
+                              </div>
+                              <div className={`p-2 rounded-xl border ${isDiv3 ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-400'}`}>
+                                <div className="text-[10px] font-bold">2. Şart: Rakam Toplamı (3)</div>
+                                <div className="text-xs font-black mt-0.5">Top: {sum} {isDiv3 ? '✓ Sağlandı' : '✗'}</div>
+                              </div>
+                            </div>
+
+                            <div className={`p-2.5 rounded-xl border text-center ${isDiv6 ? 'bg-emerald-900/80 border-emerald-400 text-emerald-200' : 'bg-rose-900/60 border-rose-400 text-rose-200'}`}>
+                              <div className="text-xs font-black">
+                                {isDiv6 ? '🎉 HEM 2 HEM 3 → 6 İLE TAM BÖLÜNÜR!' : '❌ İki şarttan en az biri sağlanmadığı için 6\'ya tam bölünmez!'}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-emerald-300 font-bold">🔑 Kural:</span> 6 = 2 × 3 olduğundan, bir sayının 6 ile bölünmesi için <span className="text-amber-400 font-bold">aynı anda hem çift hem rakamlar toplamı 3'ün katı</span> olmalıdır!
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.3 - ERATOSTHENES KALBURU */}
+                {currentPage.visualScene.type === 'eratosthenes-sieve' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-amber-400">🛡️ Asal Kalburu (1-30):</span>
+                      <div className="flex items-center gap-1">
+                        {[2, 3, 5].map((p) => (
+                          <button
+                            key={p}
+                            onClick={() => {
+                              setSieveSelectedPrime(p);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              sieveSelectedPrime === p
+                                ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {p}'nin Katlarını Ele
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex items-center justify-center p-2">
+                      <div className="grid grid-cols-6 gap-1.5 max-w-xs">
+                        {Array.from({ length: 30 }, (_, i) => i + 1).map((n) => {
+                          const isPrime = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29].includes(n);
+                          const isOne = n === 1;
+                          const isEliminated = !isOne && !isPrime && n % sieveSelectedPrime === 0;
+
+                          return (
+                            <div
+                              key={n}
+                              className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-black transition-all ${
+                                isOne
+                                  ? 'bg-slate-800 text-slate-500 line-through'
+                                  : isPrime
+                                  ? 'bg-amber-500 text-slate-950 shadow-md scale-105 font-black'
+                                  : isEliminated
+                                  ? 'bg-rose-950/80 text-rose-400 border border-rose-500/40 line-through scale-90'
+                                  : 'bg-slate-800 text-slate-400'
+                              }`}
+                            >
+                              {n}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-amber-300 font-bold">⭐ Tanım:</span> Sadece 1'e ve kendisine bölünebilen 1'den büyük doğal sayılar <span className="text-amber-400 font-bold">ASAL SAYIDIR</span> (1 asal değildir, 2 tek çift asaldır).
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.3 - ÇARPAN AĞACI */}
+                {currentPage.visualScene.type === 'prime-factor-tree' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-emerald-400">🌳 60 Sayısının Çarpan Ağacı:</span>
+                      <div className="flex items-center gap-1">
+                        {['Kök', '1. Dallar', 'Asal Yapraklar'].map((label, idx) => (
+                          <button
+                            key={label}
+                            onClick={() => {
+                              setActiveTreeStep(idx);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              activeTreeStep === idx
+                                ? 'bg-emerald-500 text-slate-950 shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center p-2">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="w-10 h-10 rounded-xl bg-purple-600 text-white font-mono font-black text-sm flex items-center justify-center shadow-lg">
+                          60
+                        </div>
+
+                        {activeTreeStep >= 1 && (
+                          <div className="flex items-center gap-12">
+                            <div className="w-8 h-8 rounded-lg bg-cyan-600 text-white font-mono font-black text-xs flex items-center justify-center">6</div>
+                            <div className="w-8 h-8 rounded-lg bg-cyan-600 text-white font-mono font-black text-xs flex items-center justify-center">10</div>
+                          </div>
+                        )}
+
+                        {activeTreeStep >= 2 && (
+                          <div className="flex items-center gap-4">
+                            <div className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-mono font-black text-xs flex items-center justify-center ring-2 ring-emerald-300">2</div>
+                            <div className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-mono font-black text-xs flex items-center justify-center ring-2 ring-emerald-300">3</div>
+                            <div className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-mono font-black text-xs flex items-center justify-center ring-2 ring-emerald-300">2</div>
+                            <div className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-mono font-black text-xs flex items-center justify-center ring-2 ring-emerald-300">5</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-emerald-300 font-bold">🌿 Asal Çarpanlar:</span> 60 = 2 × 2 × 3 × 5 = <span className="text-amber-300 font-black font-mono">2² · 3 · 5</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.3 - ASAL ÇARPAN ALGORİTMASI */}
+                {currentPage.visualScene.type === 'prime-factor-algorithm' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-cyan-400">🪜 72 Sayısının Bölme Merdiveni:</span>
+                      <span className="text-[10px] font-mono text-slate-400">En küçük asaldan başla</span>
+                    </div>
+
+                    <div className="flex-1 flex items-center justify-center p-2">
+                      <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center gap-4 font-mono text-sm">
+                        <div className="text-right space-y-1 font-bold text-white">
+                          <div>72</div>
+                          <div>36</div>
+                          <div>18</div>
+                          <div>9</div>
+                          <div>3</div>
+                          <div className="text-emerald-400 font-black">1</div>
+                        </div>
+                        <div className="w-0.5 h-36 bg-amber-500 rounded-full" />
+                        <div className="text-left space-y-1 font-black text-amber-400">
+                          <div>2</div>
+                          <div>2</div>
+                          <div>2</div>
+                          <div>3</div>
+                          <div>3</div>
+                          <div className="text-slate-500 text-xs">Son</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-cyan-300 font-bold">📐 Üslü Gösterim:</span> 72 = <span className="text-amber-300 font-mono font-black">2³ · 3²</span> (Asal Çarpanları: 2 ve 3)
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.3 - KRİPTOGRAFİ VE GÜVENLİK KASASI */}
+                {currentPage.visualScene.type === 'prime-crypto-vault' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-purple-400">🔐 Asal Sayı Kriptografi Kasası:</span>
+                      <span className="text-[10px] font-mono text-emerald-400">RSA Şifreleme</span>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-purple-950/80 border border-purple-500/50 text-center">
+                          <div className="text-[9px] text-purple-300 font-bold">Asal Anahtar A</div>
+                          <div className="text-lg font-mono font-black text-purple-200">17</div>
+                        </div>
+                        <span className="text-xl text-amber-400 font-black">×</span>
+                        <div className="p-2 rounded-xl bg-purple-950/80 border border-purple-500/50 text-center">
+                          <div className="text-[9px] text-purple-300 font-bold">Asal Anahtar B</div>
+                          <div className="text-lg font-mono font-black text-purple-200">19</div>
+                        </div>
+                        <span className="text-xl text-emerald-400 font-black">=</span>
+                        <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-center shadow-lg">
+                          <div className="text-[9px] text-emerald-300 font-bold">Kilitli Kasa Kodu</div>
+                          <div className="text-lg font-mono font-black text-emerald-200">323</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-purple-300 font-bold">🛡️ Güvenlik İlkesi:</span> İki asal sayıyı çarpmak kolaydır, ancak 323 sayısının asal çarpanlarını anahtar olmadan bulmak zordur!
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.4 - ORTAK BÖLENLER KAFESİ */}
+                {currentPage.visualScene.type === 'common-divisors-grid' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-teal-400">🛢️ Zeytinyağı & Nar Ekşisi (24L & 36L):</span>
+                      <div className="flex items-center gap-1">
+                        {([[24, 36], [18, 30], [40, 60]] as [number, number][]).map(([a, b]) => (
+                          <button
+                            key={`${a}-${b}`}
+                            onClick={() => {
+                              setSelectedCommonNumberPair([a, b]);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              selectedCommonNumberPair[0] === a
+                                ? 'bg-teal-500 text-slate-950 shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {a}L & {b}L
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      {(() => {
+                        const [a, b] = selectedCommonNumberPair;
+                        const divsA = Array.from({ length: a }, (_, i) => i + 1).filter((d) => a % d === 0);
+                        const divsB = Array.from({ length: b }, (_, i) => i + 1).filter((d) => b % d === 0);
+                        const common = divsA.filter((d) => divsB.includes(d));
+
+                        return (
+                          <div className="space-y-1.5 w-full max-w-sm text-center">
+                            <div className="text-[10px] text-slate-400">
+                              <span className="text-amber-300 font-bold">{a} Bölenleri:</span> {divsA.join(', ')}
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              <span className="text-cyan-300 font-bold">{b} Bölenleri:</span> {divsB.join(', ')}
+                            </div>
+                            <div className="bg-teal-950/80 border border-teal-500/50 rounded-xl p-2 text-teal-200">
+                              <div className="text-[10px] font-bold text-teal-300">Ortak Eşit Kap Hacimleri (Kesişim):</div>
+                              <div className="text-sm font-mono font-black text-amber-300 mt-0.5">
+                                {'{ ' + common.join(', ') + ' }'} Litre
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-teal-300 font-bold">🎯 Sonuç:</span> Her iki sıvıyı da artmadan ve eşit olarak {selectedCommonNumberPair[0] === 24 ? '1, 2, 3, 4, 6 veya 12' : 'ortak bölen'} litrelik bidonlara doldurabiliriz!
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.4 - EŞİT ARALIKLI AĞAÇ DİKİMİ */}
+                {currentPage.visualScene.type === 'trees-planting-model' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-emerald-400">🌳 Merhamet Bahçesi Ağaçlandırma (40m × 60m):</span>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      <div className="relative w-56 h-36 border-2 border-dashed border-emerald-500 rounded-2xl bg-emerald-950/30 flex items-center justify-center p-3">
+                        <span className="absolute -top-3 bg-slate-950 px-2 text-xs font-mono font-black text-emerald-300">60 metre</span>
+                        <span className="absolute -left-3 top-1/2 -translate-y-1/2 bg-slate-950 px-1 text-xs font-mono font-black text-emerald-300 rotate-90">40 metre</span>
+                        <div className="grid grid-cols-4 gap-4 text-sm">
+                          <div>🌲</div>
+                          <div>🌲</div>
+                          <div>🌲</div>
+                          <div>🌲</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-emerald-300 font-bold">📏 Ortak Aralıklar:</span> 40 ve 60'ın ortak bölenleri: <span className="text-amber-300 font-bold font-mono">1, 2, 4, 5, 10, 20 m</span> aralıklarla ağaç dikilebilir!
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.4 - ÇİFT SAYI DOĞRUSU & ORTAK KATLAR */}
+                {currentPage.visualScene.type === 'double-number-line-multiples' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-cyan-400">🚌 Otobüs Seferleri (6 dk & 8 dk):</span>
+                      <div className="flex items-center gap-1">
+                        {[24, 48, 72].map((stop) => (
+                          <button
+                            key={stop}
+                            onClick={() => {
+                              setActiveMultipleStop(stop);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              activeMultipleStop === stop
+                                ? 'bg-cyan-500 text-slate-950 shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {stop}. Dakika
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      <div className="space-y-3 w-full max-w-sm">
+                        <div className="space-y-1">
+                          <div className="text-[10px] font-bold text-amber-300">A Otobüsü (6'şar dk):</div>
+                          <div className="flex items-center gap-1.5 text-xs font-mono">
+                            {[6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72].map((m) => (
+                              <span
+                                key={m}
+                                className={`px-1.5 py-0.5 rounded ${
+                                  [24, 48, 72].includes(m)
+                                    ? 'bg-amber-500 text-slate-950 font-black shadow-md'
+                                    : 'bg-slate-800 text-slate-400'
+                                }`}
+                              >
+                                {m}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="text-[10px] font-bold text-cyan-300">B Otobüsü (8'er dk):</div>
+                          <div className="flex items-center gap-1.5 text-xs font-mono">
+                            {[8, 16, 24, 32, 40, 48, 56, 64, 72].map((m) => (
+                              <span
+                                key={m}
+                                className={`px-1.5 py-0.5 rounded ${
+                                  [24, 48, 72].includes(m)
+                                    ? 'bg-cyan-500 text-slate-950 font-black shadow-md'
+                                    : 'bg-slate-800 text-slate-400'
+                                }`}
+                              >
+                                {m}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-cyan-300 font-bold">📍 Ortak Kalkış Anları:</span> İki otobüs her <span className="text-amber-300 font-black">24, 48, 72...</span> dakikada bir aynı anda duraktan kalkar!
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE: MAT.6.1.4 - ARALARINDA ASALLIK VENN ŞEMASI */}
+                {currentPage.visualScene.type === 'coprime-venn-diagram' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-amber-400">🤝 Aralarında Asallık (8 ve 15):</span>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2 p-2">
+                      <div className="flex items-center justify-center gap-4 w-full max-w-sm">
+                        <div className="p-3 rounded-2xl bg-amber-950/60 border border-amber-500/50 text-center flex-1">
+                          <div className="text-[10px] font-bold text-amber-300">8'in Bölenleri</div>
+                          <div className="text-xs font-mono text-slate-300 mt-1">{'{ 1, 2, 4, 8 }'}</div>
+                        </div>
+
+                        <div className="w-12 h-12 rounded-full bg-amber-500 text-slate-950 flex flex-col items-center justify-center font-mono font-black shadow-xl ring-4 ring-amber-400/30">
+                          <span className="text-[8px] font-sans">Kesişim</span>
+                          <span className="text-base font-black">1</span>
+                        </div>
+
+                        <div className="p-3 rounded-2xl bg-cyan-950/60 border border-cyan-500/50 text-center flex-1">
+                          <div className="text-[10px] font-bold text-cyan-300">15'in Bölenleri</div>
+                          <div className="text-xs font-mono text-slate-300 mt-1">{'{ 1, 3, 5, 15 }'}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-amber-300 font-bold">✨ Altın Kural:</span> 8 ve 15 asal sayı değildir ancak <span className="text-amber-400 font-bold">1'den başka ortak bölenleri olmadığı için</span> ARALARINDA ASALDIR!
+                    </div>
+                  </div>
+                )}
+
                 {/* GENERIC GEOMETRIC CHALKBOARD SCENE FALLBACK (For any unexpected scene type) */}
                 {![
                   'point-map',
@@ -1496,7 +2122,19 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   'factors-area-model',
                   'factors-rainbow-arc',
                   'multiples-number-line',
-                  'factors-multiples-duality'
+                  'factors-multiples-duality',
+                  'divisibility-last-digit',
+                  'divisibility-sum-digits',
+                  'divisibility-last-two',
+                  'divisibility-six-rule',
+                  'eratosthenes-sieve',
+                  'prime-factor-tree',
+                  'prime-factor-algorithm',
+                  'prime-crypto-vault',
+                  'common-divisors-grid',
+                  'trees-planting-model',
+                  'double-number-line-multiples',
+                  'coprime-venn-diagram'
                 ].includes(currentPage.visualScene.type) && (
                   <div className="w-full h-full p-5 bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 flex flex-col items-center justify-center text-center space-y-3">
                     <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border-2 border-teal-400 text-teal-300 flex items-center justify-center">
