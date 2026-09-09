@@ -11,6 +11,11 @@ import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
+import {
+  AreaModelsActivityView,
+  RhythmicJumpsActivityView,
+  RainbowCipherActivityView
+} from './mat6-activity-sheets';
 import confetti from 'canvas-confetti';
 import {
   FileText,
@@ -36,7 +41,9 @@ import {
   HelpCircle,
   Lightbulb,
   BookOpen,
-  RotateCcw
+  RotateCcw,
+  Package,
+  Truck
 } from 'lucide-react';
 
 interface ActivitySheetViewProps {
@@ -821,33 +828,62 @@ export function ActivitySheetView({
             }`}
           >
             {availableSheets.map((sheet, index) => {
-              const isRailway = sheet.id.includes('railway') || sheet.title.includes('Tren Rayı');
-              const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
-              const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
+              const isAreaModels =
+                sheet.id.includes('area-models') ||
+                sheet.title.includes('Alan Modelleri');
+              const isRhythmicJumps =
+                sheet.id.includes('rhythmic-jumps') ||
+                sheet.title.includes('Ritmik Sıçrama');
+              const isRainbowCipher =
+                sheet.id.includes('rainbow-cipher') ||
+                sheet.title.includes('Gökkuşağı Şifresi');
               const isTableHypo =
-                sheet.id.includes('table-hypothesis') || sheet.title.includes('Varsayım ve Tablo');
+                !isAreaModels &&
+                !isRhythmicJumps &&
+                !isRainbowCipher &&
+                (sheet.id.includes('table-hypothesis') || sheet.title.includes('Varsayım ve Tablo'));
               const isIntersectionChallenge =
-                sheet.id.includes('intersection-challenge') || sheet.title.includes('Kavşak Şifresi');
+                !isAreaModels &&
+                !isRhythmicJumps &&
+                !isRainbowCipher &&
+                (sheet.id.includes('intersection-challenge') || sheet.title.includes('Kavşak Şifresi'));
               const isLinesRelations =
+                !isAreaModels &&
+                !isRhythmicJumps &&
+                !isRainbowCipher &&
                 (sheet.id.includes('lines-relations') ||
                   sheet.id.includes('5-3-4') ||
                   sheet.title.includes('Doğruların Birbirine Göre Durumları') ||
                   sheet.title.includes('Doğruların Durumları')) &&
                 !isTableHypo &&
                 !isIntersectionChallenge;
+              const isRailway = !isAreaModels && !isRhythmicJumps && !isRainbowCipher && (sheet.id.includes('railway') || sheet.title.includes('Tren Rayı'));
+              const isBridge = !isAreaModels && !isRhythmicJumps && !isRainbowCipher && (sheet.id.includes('bridge') || sheet.title.includes('Köprü'));
+              const isStepping = !isAreaModels && !isRhythmicJumps && !isRainbowCipher && (sheet.id.includes('stepping') || sheet.title.includes('Adımlama'));
               const isErrorDetective =
+                !isAreaModels && !isRhythmicJumps && !isRainbowCipher &&
                 (sheet.id.includes('error-detective') || sheet.id.includes('hata-dedektifi') || sheet.title.includes('Hata Dedektifi')) && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isDetective =
+                !isAreaModels && !isRhythmicJumps && !isRainbowCipher &&
                 (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isConstruction =
+                !isAreaModels && !isRhythmicJumps && !isRainbowCipher &&
                 (sheet.id.includes('angle-construction') || sheet.id.includes('rotani-kendin-ciz') || sheet.title.includes('Rotanı Kendin Çiz')) && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isStations =
+                !isAreaModels && !isRhythmicJumps && !isRainbowCipher &&
                 (sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm')) && !isConstruction && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isAnatomy =
+                !isAreaModels && !isRhythmicJumps && !isRainbowCipher &&
                 (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
-              const icon = isTableHypo
+              const icon = isAreaModels
+                ? '📦'
+                : isRhythmicJumps
+                ? '🐸'
+                : isRainbowCipher
+                ? '🌈'
+                : isTableHypo
                 ? '📊'
                 : isIntersectionChallenge
                 ? '🚦'
@@ -870,7 +906,13 @@ export function ActivitySheetView({
                 : isAnatomy
                 ? '📐'
                 : '📏';
-              const title = isTableHypo
+              const title = isAreaModels
+                ? 'Alan Modelleri & Çarpan Avı'
+                : isRhythmicJumps
+                ? 'Ritmik Sıçrama & Katlar Çizgisi'
+                : isRainbowCipher
+                ? 'Gökkuşağı Şifresi & Problemler'
+                : isTableHypo
                 ? 'Varsayım & Tablo Temsili'
                 : isIntersectionChallenge
                 ? 'Kavşak Şifresi & İspat'
@@ -894,7 +936,13 @@ export function ActivitySheetView({
                 ? 'İletkinin Anatomisi'
                 : 'Aşamalı İnşa İstasyonları';
 
-              const badge = isTableHypo
+              const badge = isAreaModels
+                ? '1. Etkinlik'
+                : isRhythmicJumps
+                ? '2. Etkinlik'
+                : isRainbowCipher
+                ? '3. Etkinlik'
+                : isTableHypo
                 ? 'Tablo Analizi'
                 : isIntersectionChallenge
                 ? 'Meydan Okuma'
@@ -918,7 +966,13 @@ export function ActivitySheetView({
                 ? 'Aracı Tanıma'
                 : `Etkinlik ${index + 1}`;
 
-              const tag = isTableHypo
+              const tag = isAreaModels
+                ? '24 & 36 Alanı, Çarpan İkilileri'
+                : isRhythmicJumps
+                ? '12 & 8 Katları, Ortak Katlar'
+                : isRainbowCipher
+                ? '60 Şifresi, Tam Kare, Problem'
+                : isTableHypo
                 ? 'İki ve Üç Doğru (6 Açı)'
                 : isIntersectionChallenge
                 ? '50° Ters & Komşu Bütünler'
@@ -952,7 +1006,13 @@ export function ActivitySheetView({
                   }}
                   className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer text-left border ${
                     isActive
-                      ? isTableHypo
+                      ? isAreaModels
+                        ? 'bg-orange-600 text-white border-orange-500 shadow-md scale-[1.01]'
+                        : isRhythmicJumps
+                        ? 'bg-teal-600 text-white border-teal-500 shadow-md scale-[1.01]'
+                        : isRainbowCipher
+                        ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
+                        : isTableHypo
                         ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
                         : isIntersectionChallenge
                         ? 'bg-rose-600 text-white border-rose-500 shadow-md scale-[1.01]'
@@ -1017,7 +1077,13 @@ export function ActivitySheetView({
       {/* 1. Header Banner & Quick Action Buttons */}
       <div
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
-          isTableHypothesisActivity
+          isAreaModelsActivity
+            ? 'bg-gradient-to-br from-orange-950 via-amber-950 to-slate-950'
+            : isRhythmicJumpsActivity
+            ? 'bg-gradient-to-br from-teal-950 via-emerald-950 to-slate-950'
+            : isRainbowCipherActivity
+            ? 'bg-gradient-to-br from-purple-950 via-indigo-950 to-slate-950'
+            : isTableHypothesisActivity
             ? 'bg-gradient-to-br from-purple-950 via-indigo-950 to-slate-950'
             : isIntersectionChallengeActivity
             ? 'bg-gradient-to-br from-rose-950 via-red-950 to-slate-950'
@@ -1045,7 +1111,13 @@ export function ActivitySheetView({
         {/* Background Decorative Patterns */}
         <div
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-            isTableHypothesisActivity
+            isAreaModelsActivity
+              ? 'bg-orange-500/20'
+              : isRhythmicJumpsActivity
+              ? 'bg-teal-500/20'
+              : isRainbowCipherActivity
+              ? 'bg-purple-500/20'
+              : isTableHypothesisActivity
               ? 'bg-purple-500/20'
               : isIntersectionChallengeActivity
               ? 'bg-rose-500/20'
@@ -1072,7 +1144,13 @@ export function ActivitySheetView({
         />
         <div
           className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
-            isTableHypothesisActivity
+            isAreaModelsActivity
+              ? 'bg-amber-500/20'
+              : isRhythmicJumpsActivity
+              ? 'bg-emerald-500/20'
+              : isRainbowCipherActivity
+              ? 'bg-indigo-500/20'
+              : isTableHypothesisActivity
               ? 'bg-indigo-500/20'
               : isIntersectionChallengeActivity
               ? 'bg-red-500/20'
@@ -1103,7 +1181,13 @@ export function ActivitySheetView({
           <div className="space-y-2 max-w-2xl">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
-                isTableHypothesisActivity
+                isAreaModelsActivity
+                  ? 'bg-orange-400/20 border-orange-300/30 text-orange-200'
+                  : isRhythmicJumpsActivity
+                  ? 'bg-teal-400/20 border-teal-300/30 text-teal-200'
+                  : isRainbowCipherActivity
+                  ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
+                  : isTableHypothesisActivity
                   ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
                   : isIntersectionChallengeActivity
                   ? 'bg-rose-400/20 border-rose-300/30 text-rose-200'
@@ -1128,7 +1212,22 @@ export function ActivitySheetView({
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
-              {isTableHypothesisActivity ? (
+              {isAreaModelsActivity ? (
+                <>
+                  <Package className="w-3.5 h-3.5 text-orange-300" />
+                  <span>Alan Modelleri & Çarpan İkilileri (1. Hafta - MAT.6.1.1)</span>
+                </>
+              ) : isRhythmicJumpsActivity ? (
+                <>
+                  <Truck className="w-3.5 h-3.5 text-teal-300" />
+                  <span>Ritmik Sıçrama & Katlar (1. Hafta - MAT.6.1.1)</span>
+                </>
+              ) : isRainbowCipherActivity ? (
+                <>
+                  <Sparkles className="w-3.5 h-3.5 text-purple-300" />
+                  <span>Gökkuşağı Şifresi & Problem Çözme (1. Hafta - MAT.6.1.1)</span>
+                </>
+              ) : isTableHypothesisActivity ? (
                 <>
                   <Layers className="w-3.5 h-3.5 text-purple-300" />
                   <span>Varsayım & Tablo Temsili (4. Hafta - MAT.5.3.4)</span>
@@ -1192,7 +1291,13 @@ export function ActivitySheetView({
             </div>
             
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              {isTableHypothesisActivity
+              {isAreaModelsActivity
+                ? 'Etkinlik 1: "ALAN MODELLERİ İLE ÇARPAN AVCILIĞI"'
+                : isRhythmicJumpsActivity
+                ? 'Etkinlik 2: "RİTMİK SIÇRAMA VE KATLAR ÇİZGİSİ"'
+                : isRainbowCipherActivity
+                ? 'Etkinlik 3: "ÇARPAN GÖKKUŞAĞI ŞİFRESİ VE PROBLEM ÇÖZME"'
+                : isTableHypothesisActivity
                 ? 'Etkinlik: "VARSAYIM VE TABLO TEMSİLİ" (İki ve Üç Doğru Analizi)'
                 : isIntersectionChallengeActivity
                 ? 'Etkinlik: "KAVŞAK ŞİFRESİ VE ÇIKARIM MEYDAN OKUMASI"'
@@ -1218,7 +1323,25 @@ export function ActivitySheetView({
             </h2>
             
             {/* Kurgu Paneli / Açıklama */}
-            {isTableHypothesisActivity ? (
+            {isAreaModelsActivity ? (
+              <div className="p-3 bg-orange-950/60 border border-orange-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-orange-100 font-medium leading-relaxed">
+                  📦 <strong>Alan Modelleri &amp; Çarpanlar:</strong> &ldquo;Birim kareli alan modelleri ve dikdörtgen dizilimleri üzerinden çarpan çiftlerini keşfediniz, fireli denemelerle çarpan olmayan sayıları tespit ediniz!&rdquo;
+                </p>
+              </div>
+            ) : isRhythmicJumpsActivity ? (
+              <div className="p-3 bg-teal-950/60 border border-teal-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-teal-100 font-medium leading-relaxed">
+                  🐸 <strong>Sayı Doğrusu &amp; Katlar:</strong> &ldquo;Sayı doğrusu üzerinde ritmik sıçramalarla bir doğal sayının sonsuz katlar kümesini, ortak sefer noktalarını ve çarpan-kat ilişkisini analiz ediniz!&rdquo;
+                </p>
+              </div>
+            ) : isRainbowCipherActivity ? (
+              <div className="p-3 bg-purple-950/60 border border-purple-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-purple-100 font-medium leading-relaxed">
+                  🌈 <strong>Gökkuşağı &amp; Problem Çözme:</strong> &ldquo;Çarpan gökkuşağındaki simetrik eşleşmelerle gizli şifreyi çözünüz, tam kare sayıların tekil çarpan özelliğini ve gerçek hayat problemlerini yanıtlayınız!&rdquo;
+                </p>
+              </div>
+            ) : isTableHypothesisActivity ? (
               <div className="p-3 bg-purple-950/60 border border-purple-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-purple-100 font-medium leading-relaxed">
                   📊 <strong>Tablo &amp; Mantık Analizi:</strong> &ldquo;İki ve üç doğrunun kesişim durumlarını incele, açı sayılarını tabloya yerleştir ve 6 açı bölgesi için olası durumları (Mümkün/İmkânsız) kanıtla!&rdquo;
@@ -1292,7 +1415,13 @@ export function ActivitySheetView({
 
             <div
               className={`flex items-center gap-3 pt-2 text-[11px] font-mono ${
-                isTableHypothesisActivity
+                isAreaModelsActivity
+                  ? 'text-orange-200/70'
+                  : isRhythmicJumpsActivity
+                  ? 'text-teal-200/70'
+                  : isRainbowCipherActivity
+                  ? 'text-purple-200/70'
+                  : isTableHypothesisActivity
                   ? 'text-purple-200/70'
                   : isIntersectionChallengeActivity
                   ? 'text-rose-200/70'
@@ -1320,7 +1449,13 @@ export function ActivitySheetView({
               <span>{outcomeCode}</span>
               <span>•</span>
               <span>
-                {isTableHypothesisActivity
+                {isAreaModelsActivity
+                  ? '3 Bölüm • Alan & Çarpanlar (100 Puan)'
+                  : isRhythmicJumpsActivity
+                  ? '3 Bölüm • Sayı Doğrusu & Katlar (100 Puan)'
+                  : isRainbowCipherActivity
+                  ? '3 Bölüm • Gökkuşağı & Problemler (100 Puan)'
+                  : isTableHypothesisActivity
                   ? 'Tablo & 4 Hipotez (100 Puan)'
                   : isIntersectionChallengeActivity
                   ? '3 Hesaplama & 4 Önerme (100 Puan)'
@@ -1346,7 +1481,13 @@ export function ActivitySheetView({
               </span>
               <span>•</span>
               <span>
-                {isTableHypothesisActivity
+                {isAreaModelsActivity
+                  ? '24 ve 36 Birimkare Modelleri'
+                  : isRhythmicJumpsActivity
+                  ? '12 ve 8 Katları • Ortak Seferler'
+                  : isRainbowCipherActivity
+                  ? '60 Sayısı Gökkuşağı Şifresi'
+                  : isTableHypothesisActivity
                   ? 'İki ve Üç Doğru (6 Açı)'
                   : isIntersectionChallengeActivity
                   ? '50° Ters & Bütünler Açılar'
@@ -1384,7 +1525,13 @@ export function ActivitySheetView({
             >
               <Eye
                 className={`w-4 h-4 ${
-                  isTableHypothesisActivity
+                  isAreaModelsActivity
+                    ? 'text-orange-300'
+                    : isRhythmicJumpsActivity
+                    ? 'text-teal-300'
+                    : isRainbowCipherActivity
+                    ? 'text-purple-300'
+                    : isTableHypothesisActivity
                     ? 'text-purple-300'
                     : isIntersectionChallengeActivity
                     ? 'text-rose-300'
@@ -1412,7 +1559,13 @@ export function ActivitySheetView({
                 setWhiteboardModalOpen(true);
               }}
               className={`px-4 py-2.5 rounded-xl font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${
-                isTableHypothesisActivity
+                isAreaModelsActivity
+                  ? 'bg-orange-400 hover:bg-orange-300 text-slate-950 shadow-orange-500/20'
+                  : isRhythmicJumpsActivity
+                  ? 'bg-teal-400 hover:bg-teal-300 text-slate-950 shadow-teal-500/20'
+                  : isRainbowCipherActivity
+                  ? 'bg-purple-400 hover:bg-purple-300 text-slate-950 shadow-purple-500/20'
+                  : isTableHypothesisActivity
                   ? 'bg-purple-400 hover:bg-purple-300 text-slate-950 shadow-purple-500/20'
                   : isIntersectionChallengeActivity
                   ? 'bg-rose-400 hover:bg-rose-300 text-slate-950 shadow-rose-500/20'
@@ -1446,7 +1599,13 @@ export function ActivitySheetView({
                 <>
                   <Loader2
                     className={`w-4 h-4 animate-spin ${
-                      isTableHypothesisActivity
+                      isAreaModelsActivity
+                        ? 'text-orange-400'
+                        : isRhythmicJumpsActivity
+                        ? 'text-teal-400'
+                        : isRainbowCipherActivity
+                        ? 'text-purple-400'
+                        : isTableHypothesisActivity
                         ? 'text-purple-400'
                         : isIntersectionChallengeActivity
                         ? 'text-rose-400'
@@ -1479,8 +1638,14 @@ export function ActivitySheetView({
 
       </div>
 
-      {/* 2. BODY CONTENT: RAILWAY ENGINEERING OR STEPPING WORKSHOP OR DEDUCTION DETECTIVE OR BRIDGE OR 4-STATIONS */}
-      {isRailwayActivity ? (
+      {/* 2. BODY CONTENT: MAT.6.1.1 ACTIVITIES OR 5TH GRADE WORKSHOPS */}
+      {isAreaModelsActivity ? (
+        <AreaModelsActivityView />
+      ) : isRhythmicJumpsActivity ? (
+        <RhythmicJumpsActivityView />
+      ) : isRainbowCipherActivity ? (
+        <RainbowCipherActivityView />
+      ) : isRailwayActivity ? (
         /* ========================================================================= */
         /* BÜYÜK GÖREV: "TREN RAYI MÜHENDİSLİĞİ" (PARALEL DOĞRU İNŞASI - MAT.5.3.2)  */
         /* ========================================================================= */
