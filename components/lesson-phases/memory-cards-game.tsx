@@ -111,20 +111,29 @@ const MAT_5_3_1_PAIRS: MemoryPair[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// 2. MAT.5.3.2: Geometrik İnşa ve Çıkarım (Gelecek haftalar için hazır)
+// 2. MAT.5.3.2: Geometrik İnşa ve Çıkarım (Cetvel, Pergel, Gönye)
 // ---------------------------------------------------------------------------
 const MAT_5_3_2_PAIRS: MemoryPair[] = [
   {
     id: 'mat2-p1',
-    concept: 'PERGEL',
-    symbol: '○ (Yarıçap)',
-    badge: '🧭 Pergel',
-    definition: 'Çember çizmek ve belirli bir uzunluğu kâğıt üzerinde birebir aktarmak için kullanılan iki kollu çizim aracıdır.',
-    example: 'Eşit uzunlukta doğru parçaları oluşturma, çember çizimi.',
-    color: '#0284c7'
+    concept: 'ÖLÇEKSİZ CETVEL',
+    symbol: 'AB Doğrusu',
+    badge: '📏 Düz Cetvel',
+    definition: 'İki noktayı birleştirerek üzerinden düz bir doğru geçirmek için kullanılan ölçüsüz düz çizim aracıdır.',
+    example: 'İki nokta arasını birleştirerek tek doğru çizme.',
+    color: '#f59e0b'
   },
   {
     id: 'mat2-p2',
+    concept: 'PERGEL',
+    symbol: '○ Sabit Açıklık',
+    badge: '🧭 Pergel',
+    definition: 'Çember çizmek ve belirli bir uzunluğu kâğıt üzerinde birebir kopyalayıp aktarmak için kullanılan iki kollu araçtır.',
+    example: 'Eşit uzunlukta doğru parçaları oluşturma, çember inşası.',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat2-p3',
     concept: 'GÖNYE',
     symbol: '90° Diklik',
     badge: '📐 Gönye',
@@ -133,42 +142,330 @@ const MAT_5_3_2_PAIRS: MemoryPair[] = [
     color: '#10b981'
   },
   {
-    id: 'mat2-p3',
-    concept: 'ÖLÇEKSİZ CETVEL',
-    symbol: 'Düz Çizgi',
-    badge: '📏 Düz Cetvel',
-    definition: 'İki noktayı birleştirerek üzerinden düz bir doğru geçirmek için kullanılan ölçüsüz düz çizim aracıdır.',
-    example: 'İki nokta arasını cetvelle birleştirerek doğru parçası çizme.',
-    color: '#f59e0b'
-  },
-  {
     id: 'mat2-p4',
-    concept: 'YARIÇAP',
-    symbol: 'r Uzunluğu',
-    badge: '🔵 Yarıçap',
-    definition: 'Çemberin merkezi ile çember üzerindeki herhangi bir noktayı birleştiren doğru parçasıdır.',
+    concept: 'ÇEMBER YARIÇAPI',
+    symbol: '|OA| = r',
+    badge: '🔵 Yarıçap (r)',
+    definition: 'Çemberin merkezinden üzerindeki tüm noktalara çizilen ve uzunlukları birbirine eşit olan doğru parçalarıdır.',
     example: 'Pergel ayaklarının açıklığı kadar olan sabit mesafe.',
     color: '#8b5cf6'
   },
   {
     id: 'mat2-p5',
-    concept: 'DİKME',
+    concept: 'DIŞ NOKTADAN DİKME',
     symbol: '[PH] ⊥ d',
-    badge: '⬇️ Dikme',
-    definition: 'Bir doğruya veya düzleme 90 derecelik dik açıyla indirilen doğru parçasına denir.',
+    badge: '⬇️ Tek Dikme',
+    definition: 'Bir doğruya dışındaki sabit tek bir noktadan indirilebilen ve 90° dik açı oluşturan yalnız tek bir dikme çizilebilir.',
     example: 'Tavandan sarkan çekül ipi, dik duran direk.',
     color: '#ec4899'
   },
   {
     id: 'mat2-p6',
-    concept: 'EŞİT UZUNLUK',
-    symbol: '|AB| = |CD|',
-    badge: '⚖️ Eşitlik',
-    definition: 'Cetvelle ölçüldüğünde veya pergelle aktarıldığında boyları birbiriyle aynı olan doğru parçalarıdır.',
-    example: 'Kare kenarlarının hepsinin eşit uzunlukta olması.',
+    concept: 'IŞINDAN EŞİT PARÇA KESME',
+    symbol: '|AB| = |BC|',
+    badge: '✂️ Eşit Parça',
+    definition: 'Pergel açıklığını hiç bozmadan ışının başlangıç noktasından itibaren art arda eşit mesafeler kopyalama işlemidir.',
+    example: 'Işın üzerinde pergel adımlarıyla eşit bölmeler işaretleme.',
     color: '#6366f1'
+  },
+  {
+    id: 'mat2-p7',
+    concept: 'PARALEL DOĞRU İNŞASI',
+    symbol: 'd₁ // d₂',
+    badge: '🛤️ Paralel İnşa',
+    definition: 'Gönye yardımıyla bir doğruya eşit uzaklıktaki dik noktaları belirleyip birleştirerek elde edilen doğru modelidir.',
+    example: 'Tren raylarının iki demirinin eşit aralıklarla döşenmesi.',
+    color: '#14b8a6'
+  },
+  {
+    id: 'mat2-p8',
+    concept: 'İKİ NOKTADAN TEK DOĞRU',
+    symbol: 'A • —— • B',
+    badge: '🎯 Tek Doğru',
+    definition: 'Düzlemde verilen farklı iki noktadan yalnız ve yalnız tek bir düz doğru çizilebilir temel aksiyomudur.',
+    example: 'İki kazık arasına gerilen tek düz ip.',
+    color: '#ef4444'
   }
 ];
+
+// ---------------------------------------------------------------------------
+// 3. MAT.5.3.3: Açı Ölçme ve İletki (Açıölçer) Kullanımı
+// ---------------------------------------------------------------------------
+const MAT_5_3_3_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat3-p1',
+    concept: 'DAR AÇI',
+    symbol: '0° < s(Â) < 90°',
+    badge: '📐 Dar Açı',
+    definition: 'Ölçüsü 0 derece ile 90 derece arasında olan, dik açıdan daha küçük açıklığa sahip açıdır.',
+    example: 'Hafif aralanmış makas ağzı, çatı tepe açısı.',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat3-p2',
+    concept: 'DİK AÇI',
+    symbol: 's(Â) = 90°',
+    badge: '➕ Dik Açı (90°)',
+    definition: 'Ölçüsü tam olarak 90 derece olan ve köşesinde kare-nokta simgesiyle gösterilen dik açıklıktır.',
+    example: 'Oda duvarının tabanla yaptığı açı, kitabın köşesi.',
+    color: '#10b981'
+  },
+  {
+    id: 'mat3-p3',
+    concept: 'GENİŞ AÇI',
+    symbol: '90° < s(Â) < 180°',
+    badge: '🪭 Geniş Açı',
+    definition: 'Ölçüsü 90 derece ile 180 derece arasında olan, dik açıdan daha büyük geometrik açıklıktır.',
+    example: 'Genişçe açılmış yelpaze, saat 16.00’da akrep-yelkovan arası.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat3-p4',
+    concept: 'DOĞRU AÇI',
+    symbol: 's(Â) = 180°',
+    badge: '➖ Doğru Açı (180°)',
+    definition: 'Ölçüsü tam olarak 180 derece olan ve kolları zıt yönde dümdüz bir çizgi oluşturan açıdır.',
+    example: 'Saat 18.00’de akrep ile yelkovanın duruşu, ufuk düzlüğü.',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat3-p5',
+    concept: 'TAM AÇI',
+    symbol: 's(Â) = 360°',
+    badge: '🔄 Tam Açı (360°)',
+    definition: 'Ölçüsü tam olarak 360 derece olan ve tam bir dairesel turu tamamlayan dönme açısıdır.',
+    example: 'Yelkovanın 1 tam saatte yaptığı 360 derecelik tam tur.',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat3-p6',
+    concept: 'İLETKİ / AÇIÖLÇER',
+    symbol: '0° - 180° Skalası',
+    badge: '🧭 İletki',
+    definition: 'Açıların ölçüsünü derece (°) cinsinden hassas ölçmeye ve açı çizmeye yarayan yarım daire araçtır.',
+    example: 'Açıların derecesini belirleme ve mimari çizimler yapma.',
+    color: '#6366f1'
+  },
+  {
+    id: 'mat3-p7',
+    concept: 'DERECE',
+    symbol: '° Sembolü',
+    badge: '🏷️ Derece (°)',
+    definition: 'Açı ölçüsünün temel standart birimidir; bir tam çemberin 360’ta birine karşılık gelen açıklıktır.',
+    example: '30°, 45°, 90°, 180° açı ölçüleri.',
+    color: '#14b8a6'
+  },
+  {
+    id: 'mat3-p8',
+    concept: 'AÇININ KÖŞESİ & KOLLARI',
+    symbol: 'O Köşesi, [OA, [OB',
+    badge: '📍 Köşe ve Kollar',
+    definition: 'Açıyı oluşturan iki ışının ortak başlangıç noktasına köşe, bu ışınlara ise açının kolları denir.',
+    example: 'Makasın vidası köşe, kesen demirleri ise kollardır.',
+    color: '#ef4444'
+  }
+];
+
+// ---------------------------------------------------------------------------
+// 4. MAT.5.3.4: Doğruların Durumları ve Açı Çıkarımları
+// ---------------------------------------------------------------------------
+const MAT_5_3_4_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat4-p1',
+    concept: 'TERS AÇILAR',
+    symbol: 'a = c, b = d',
+    badge: '✖️ Ters Açılar',
+    definition: 'İki doğrunun kesişmesiyle oluşan, zıt yönlere bakan ve ölçüleri daima birbirine eşit olan açılardır.',
+    example: 'Kesişen iki caddede karşılıklı duran açılar.',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat4-p2',
+    concept: 'KOMŞU AÇILAR',
+    symbol: 'Ortak Kol [OB',
+    badge: '👥 Komşu Açılar',
+    definition: 'Ortak bir köşesi ve ortak bir kolu bulunan, ancak iç bölgeleri kesişmeyen yan yana açılardır.',
+    example: 'Açık kitabın sol ve sağ sayfalarının oluşturduğu açılar.',
+    color: '#10b981'
+  },
+  {
+    id: 'mat4-p3',
+    concept: 'TÜMLER AÇILAR',
+    symbol: 'a + b = 90°',
+    badge: '➕ Tümler (90°)',
+    definition: 'Ölçüleri toplamı 90 derece eden iki açıdır; birbirini tam bir dik açıya tamamlarlar.',
+    example: '30° ile 60° açılarının toplamının 90° etmesi.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat4-p4',
+    concept: 'BÜTÜNLER AÇILAR',
+    symbol: 'x + y = 180°',
+    badge: '➖ Bütünler (180°)',
+    definition: 'Ölçüleri toplamı 180 derece eden iki açıdır; birbirini tam bir doğru açıya tamamlarlar.',
+    example: '70° ile 110° açılarının toplamının 180° etmesi.',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat4-p5',
+    concept: 'KOMŞU BÜTÜNLER AÇILAR',
+    symbol: 'Doğru Üzerinde 180°',
+    badge: '📏 Komşu Bütünler',
+    definition: 'Bir doğru üzerinde yan yana duran, ortak kolu olan ve toplamları daima 180° eden açılardır.',
+    example: 'Düz bir cetvelin üzerine konan eğik kalemin ayırdığı iki açı.',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat4-p6',
+    concept: 'KESEN DOĞRU (TRANSVERSAL)',
+    symbol: 'd₃ Keseni',
+    badge: '⚡ Kesen Doğru',
+    definition: 'Düzlemdeki iki veya daha fazla doğruyu farklı noktalarda keserek geçen üçüncü doğrudur.',
+    example: 'İki paralel tren rayını çapraz kesen bakım yolu.',
+    color: '#6366f1'
+  },
+  {
+    id: 'mat4-p7',
+    concept: 'PARALEL DOĞRULARDA AÇISIZLIK',
+    symbol: 'Kesişim = ∅',
+    badge: '🛤️ Paralel Durum',
+    definition: 'Aynı düzlemde hiçbir zaman kesişmeyen paralel doğrular arasında kesişim ve açı meydana gelmez.',
+    example: 'Hiçbir noktası çakışmayan karşılıklı tren rayları.',
+    color: '#14b8a6'
+  },
+  {
+    id: 'mat4-p8',
+    concept: 'ÇAKIŞIK DOĞRULAR',
+    symbol: 'd₁ ≡ d₂',
+    badge: '🔀 Çakışık',
+    definition: 'Tüm noktaları ortak olan ve düzlemde tamamen üst üste gelen iki doğrunun oluşturduğu durumdur.',
+    example: 'Üst üste konulmuş aynı uzunluktaki iki çıtanın doğruları.',
+    color: '#ef4444'
+  }
+];
+
+// ---------------------------------------------------------------------------
+// 5. MAT.5.1.1: Doğal Sayılar ve Basamak Değeri
+// ---------------------------------------------------------------------------
+const MAT_5_1_1_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat5-p1',
+    concept: 'BÖLÜK',
+    symbol: 'Üçerli Grup',
+    badge: '📦 Bölük',
+    definition: 'Büyük doğal sayıların kolay okunup yazılabilmesi için sağdan sola doğru üçerli gruplanan basamak takımıdır.',
+    example: 'Birler bölüğü, binler bölüğü, milyonlar bölüğü.',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat5-p2',
+    concept: 'MİLYONLAR BÖLÜĞÜ',
+    symbol: '7, 8 ve 9. Basamak',
+    badge: '🌌 Milyonlar',
+    definition: '9 basamaklı bir sayıda milyonlar, on milyonlar ve yüz milyonlar basamaklarının oluşturduğu en sol bölüktür.',
+    example: '149.600.000 sayısındaki 149 sayısı milyonlar bölüğüdür.',
+    color: '#10b981'
+  },
+  {
+    id: 'mat5-p3',
+    concept: 'BİNLER BÖLÜĞÜ',
+    symbol: '4, 5 ve 6. Basamak',
+    badge: '🔢 Binler Bölüğü',
+    definition: 'Bir doğal sayıda binler, on binler ve yüz binler basamaklarının oluşturduğu orta bölüktür.',
+    example: '708.045.002 sayısındaki 045 kısmı binler bölüğüdür.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat5-p4',
+    concept: 'BİRLER BÖLÜĞÜ',
+    symbol: '1, 2 ve 3. Basamak',
+    badge: '🎯 Birler Bölüğü',
+    definition: 'Bir doğal sayının en sağındaki birler, onlar ve yüzler basamaklarından oluşan temel bölüğüdür.',
+    example: '345.890.120 sayısındaki 120 kısmı birler bölüğüdür.',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat5-p5',
+    concept: 'BASAMAK DEĞERİ',
+    symbol: 'Rakam × Basamak',
+    badge: '💰 Basamak Değeri',
+    definition: 'Bir rakamın sayıda bulunduğu haneye (birler, onlar, binler, milyonlar) göre kazandığı sayısal değerdir.',
+    example: '520.000 sayısındaki 5 rakamının basamak değeri 500.000’dir.',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat5-p6',
+    concept: 'SAYI DEĞERİ',
+    symbol: 'Rakamın Kendisi',
+    badge: '🏷️ Sayı Değeri',
+    definition: 'Bir rakamın bulunduğu basamağa bakılmaksızın tek başına ifade ettiği öz büyüklüğüdür.',
+    example: '708.000 sayısındaki 7 rakamının sayı değeri yalnızca 7’dir.',
+    color: '#6366f1'
+  },
+  {
+    id: 'mat5-p7',
+    concept: 'ÇÖZÜMLEME',
+    symbol: 'Basamaklar Toplamı',
+    badge: '🧩 Çözümleme',
+    definition: 'Bir doğal sayının tüm basamak değerlerinin toplamı şeklinde açık ve ayrıntılı olarak yazılmasıdır.',
+    example: '452 = (4×100) + (5×10) + (2×1) şeklinde yazılması.',
+    color: '#14b8a6'
+  },
+  {
+    id: 'mat5-p8',
+    concept: 'DOKUZ BASAMAKLI SAYI',
+    symbol: '999.999.999',
+    badge: '🏆 9 Basamak',
+    definition: 'Milyonlar, binler ve birler bölüklerinden oluşan, 100.000.000 ile 999.999.999 arasındaki büyük sayılardır.',
+    example: 'Türkiye nüfusu veya uzay mesafelerinin yazımı.',
+    color: '#ef4444'
+  }
+];
+
+// Helper to resolve pairs and topic info
+function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTitle?: string): { code: string; title: string; pairs: MemoryPair[] } {
+  const id = outcomeId || '';
+  const code = outcomeCode || '';
+  const title = (outcomeTitle || '').toLowerCase();
+
+  if (id === 'MAT.5.3.2' || code.includes('5.3.2') || title.includes('inşa') || title.includes('çıkarım')) {
+    return {
+      code: 'MAT.5.3.2',
+      title: 'Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye',
+      pairs: MAT_5_3_2_PAIRS
+    };
+  }
+
+  if (id === 'MAT.5.3.3' || code.includes('5.3.3') || title.includes('iletki') || (title.includes('açı') && !title.includes('doğru'))) {
+    return {
+      code: 'MAT.5.3.3',
+      title: 'Açı Ölçme ve İletki (Açıölçer) Kullanımı',
+      pairs: MAT_5_3_3_PAIRS
+    };
+  }
+
+  if (id === 'MAT.5.3.4' || code.includes('5.3.4') || title.includes('ters') || title.includes('tümler') || title.includes('bütünler')) {
+    return {
+      code: 'MAT.5.3.4',
+      title: 'Doğruların Durumları ve Açı Çıkarımları',
+      pairs: MAT_5_3_4_PAIRS
+    };
+  }
+
+  if (id === 'MAT.5.1.1' || code.includes('5.1.1') || title.includes('doğal sayı') || title.includes('basamak')) {
+    return {
+      code: 'MAT.5.1.1',
+      title: 'Doğal Sayılar ve Basamak Değeri',
+      pairs: MAT_5_1_1_PAIRS
+    };
+  }
+
+  return {
+    code: 'MAT.5.3.1',
+    title: 'Temel Geometrik Kavramlar ve Çizimler',
+    pairs: MAT_5_3_1_PAIRS
+  };
+}
 
 export interface CardItem {
   cardId: string;
@@ -187,9 +484,9 @@ export interface CardItem {
 export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void }) {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
-  // Outcome Resolution (Defaults to MAT.5.3.1)
-  const isTopic2 = selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2');
-  const allPairs = isTopic2 ? MAT_5_3_2_PAIRS : MAT_5_3_1_PAIRS;
+  // Dynamic Outcome Resolution
+  const activeTopic = resolveOutcomePairs(selectedOutcome?.id, selectedOutcome?.code, selectedOutcome?.title);
+  const allPairs = activeTopic.pairs;
 
   // Game Settings
   const [pairCount, setPairCount] = useState<6 | 8>(6);
@@ -415,14 +712,14 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
             <Brain className="w-3.5 h-3.5 text-teal-600" />
             <span>Kavram & Tanım Hafıza Kartları Oyunu</span>
           </div>
-          <h3 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+          <h3 className="text-xl sm:text-2xl font-black text-slate-900 flex flex-wrap items-center gap-2">
             <span>Matematiksel Hafıza Meydan Okuması</span>
             <span className="text-xs px-2.5 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 font-extrabold border border-indigo-200">
-              {isTopic2 ? 'MAT.5.3.2' : 'MAT.5.3.1'}
+              {activeTopic.code}
             </span>
           </h3>
           <p className="text-xs text-slate-500 max-w-xl">
-            Bir kartta <strong>Kavram Adı</strong>, diğer kartta ise <strong>Tanımı</strong> yer alır. Kartları çevirerek doğru kavram-tanım çiftlerini hafızandan bul!
+            <strong>{activeTopic.title}</strong> — Bir kartta <strong>Kavram Adı</strong>, diğer kartta ise <strong>Tanımı</strong> yer alır. Kartları çevirerek doğru kavram-tanım çiftlerini hafızandan bul!
           </p>
         </div>
 
