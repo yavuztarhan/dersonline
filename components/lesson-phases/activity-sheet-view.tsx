@@ -416,37 +416,61 @@ export function ActivitySheetView({
                   </text>
                 </g>
 
-                {/* ADIM 2: SOL AYAK (AYAK 1 - GÖNYE) */}
+                {/* ADIM 2: SOL AYAK İNŞA HEDEFİ (AYAK 1 - GÖNYE İLE ÇİZİLECEK) */}
                 <g>
-                  <rect x="235" y="150" width="30" height="100" fill="url(#pierGrad_view)" stroke="#d97706" stroke-width="2" rx="2" />
-                  <text x="250" y="205" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#92400e" text-anchor="middle">
-                    AYAK 1
+                  {/* Öğrencinin gönye ile çizeceği kılavuz hattı */}
+                  <line x1="250" y1="150" x2="250" y2="250" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.45" />
+                  
+                  {/* Taban Noktası Z1 */}
+                  <circle cx="250" cy="250" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5" />
+                  <text x="250" y="270" font-family="monospace" font-size="10.5" font-weight="900" fill="#c2410c" text-anchor="middle">
+                    Z1 (Taban)
                   </text>
-                  <circle cx="250" cy="150" r="4" fill="#c2410c" />
-                  <text x="228" y="145" font-family="monospace" font-size="10" font-weight="900" fill="#c2410c">
+
+                  {/* Tepe Noktası A1 */}
+                  <circle cx="250" cy="150" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5" />
+                  <text x="215" y="145" font-family="monospace" font-size="10.5" font-weight="900" fill="#c2410c">
                     A1
                   </text>
-                  <path d="M 265 240 L 275 240 L 275 250" fill="none" stroke="#ea580c" stroke-width="1.8" />
-                  <circle cx="270" cy="245" r="1.5" fill="#ea580c" />
-                  <text x="250" y="125" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#c2410c" text-anchor="middle">
-                    [A1-Z1] ⊥ d (90°)
+
+                  {/* Gönye 90° Diklik Hedef Kutusu (Zeminde) */}
+                  <path d="M 250 236 L 264 236 L 264 250" fill="none" stroke="#ea580c" stroke-width="1.8" />
+                  <circle cx="257" cy="243" r="1.5" fill="#ea580c" />
+                  
+                  <text x="250" y="195" font-family="system-ui, sans-serif" font-size="9.5" font-weight="900" fill="#c2410c" text-anchor="middle">
+                    [Z1-A1] ⊥ d
+                  </text>
+                  <text x="250" y="208" font-family="system-ui, sans-serif" font-size="8.5" font-weight="700" fill="#ea580c" text-anchor="middle">
+                    (Gönye ile Çiz)
                   </text>
                 </g>
 
-                {/* ADIM 2: SAĞ AYAK (AYAK 2 - GÖNYE) */}
+                {/* ADIM 2: SAĞ AYAK İNŞA HEDEFİ (AYAK 2 - GÖNYE İLE ÇİZİLECEK) */}
                 <g>
-                  <rect x="535" y="150" width="30" height="100" fill="url(#pierGrad_view)" stroke="#d97706" stroke-width="2" rx="2" />
-                  <text x="550" y="205" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#92400e" text-anchor="middle">
-                    AYAK 2
+                  {/* Öğrencinin gönye ile çizeceği kılavuz hattı */}
+                  <line x1="550" y1="150" x2="550" y2="250" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.45" />
+
+                  {/* Taban Noktası Z2 */}
+                  <circle cx="550" cy="250" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5" />
+                  <text x="550" y="270" font-family="monospace" font-size="10.5" font-weight="900" fill="#c2410c" text-anchor="middle">
+                    Z2 (Taban)
                   </text>
-                  <circle cx="550" cy="150" r="4" fill="#c2410c" />
-                  <text x="568" y="145" font-family="monospace" font-size="10" font-weight="900" fill="#c2410c">
+
+                  {/* Tepe Noktası A2 */}
+                  <circle cx="550" cy="150" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5" />
+                  <text x="568" y="145" font-family="monospace" font-size="10.5" font-weight="900" fill="#c2410c">
                     A2
                   </text>
-                  <path d="M 535 240 L 525 240 L 525 250" fill="none" stroke="#ea580c" stroke-width="1.8" />
-                  <circle cx="530" cy="245" r="1.5" fill="#ea580c" />
-                  <text x="550" y="125" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#c2410c" text-anchor="middle">
-                    [A2-Z2] ⊥ d (90°)
+
+                  {/* Gönye 90° Diklik Hedef Kutusu (Zeminde) */}
+                  <path d="M 550 236 L 536 236 L 536 250" fill="none" stroke="#ea580c" stroke-width="1.8" />
+                  <circle cx="543" cy="243" r="1.5" fill="#ea580c" />
+
+                  <text x="550" y="195" font-family="system-ui, sans-serif" font-size="9.5" font-weight="900" fill="#c2410c" text-anchor="middle">
+                    [Z2-A2] ⊥ d
+                  </text>
+                  <text x="550" y="208" font-family="system-ui, sans-serif" font-size="8.5" font-weight="700" fill="#ea580c" text-anchor="middle">
+                    (Gönye ile Çiz)
                   </text>
                 </g>
 
