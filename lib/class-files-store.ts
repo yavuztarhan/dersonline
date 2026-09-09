@@ -358,7 +358,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
         </text>
 
         <!-- ADIM 1: NEHİR ZEMİN DOĞRUSU (CETVEL) -->
-        <line x1="40" y1="250" x2="760" y2="250" stroke="#0d9488" stroke-width="3.5" stroke-linecap="round" />
+        <line x1="40" y1="250" x2="760" y2="250" stroke="#0d9488" stroke-width="3" stroke-dasharray="8 5" stroke-linecap="round" />
         <polygon points="36,250 48,245 48,255" fill="#0d9488" />
         <polygon points="764,250 752,245 752,255" fill="#0d9488" />
         <text x="50" y="240" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#0f766e">
@@ -494,19 +494,35 @@ export function getStoredClassroomFiles(): ClassroomFileRecord[] {
       return INITIAL_FILES;
     }
     const parsed: ClassroomFileRecord[] = JSON.parse(raw);
-    // Ensure all seed files (like activity sheets) exist
-    const existingIds = new Set(parsed.map((f) => f.id));
-    let hasNew = false;
-    for (const initFile of INITIAL_FILES) {
-      if (!existingIds.has(initFile.id)) {
-        parsed.unshift(initFile);
-        hasNew = true;
+    
+    // Always keep system seed activity files up-to-date
+    const initialMap = new Map(INITIAL_FILES.map((f) => [f.id, f]));
+    let hasChange = false;
+
+    // Update existing system files with latest code templates
+    const updatedList = parsed.map((file) => {
+      if (initialMap.has(file.id)) {
+        const seed = initialMap.get(file.id)!;
+        initialMap.delete(file.id);
+        // If system template was updated, sync it
+        if (JSON.stringify(file.pages) !== JSON.stringify(seed.pages) || file.title !== seed.title) {
+          hasChange = true;
+          return { ...seed, createdAt: file.createdAt };
+        }
       }
+      return file;
+    });
+
+    // Add any new seed files not yet in localStorage
+    initialMap.forEach((remainingSeed) => {
+      updatedList.unshift(remainingSeed);
+      hasChange = true;
+    });
+
+    if (hasChange) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
     }
-    if (hasNew) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-    }
-    return parsed;
+    return updatedList;
   } catch (e) {
     return INITIAL_FILES;
   }

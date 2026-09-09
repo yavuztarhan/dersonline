@@ -382,7 +382,7 @@ export function ActivitySheetView({
                 </text>
 
                 {/* ADIM 1: NEHİR ZEMİN DOĞRUSU (CETVEL) */}
-                <line x1="40" y1="250" x2="760" y2="250" stroke="#0d9488" stroke-width="3.5" stroke-linecap="round" />
+                <line x1="40" y1="250" x2="760" y2="250" stroke="#0d9488" stroke-width="3" stroke-dasharray="8 5" stroke-linecap="round" />
                 <polygon points="36,250 48,245 48,255" fill="#0d9488" />
                 <polygon points="764,250 752,245 752,255" fill="#0d9488" />
                 <text x="50" y="240" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#0f766e">
