@@ -9,6 +9,7 @@ import { TrueFalseGame } from '@/components/lesson-phases/true-false-game';
 import { AngleRadarGame } from '@/components/lesson-phases/angle-radar-game';
 import { ConstructionDeductionGame } from '@/components/lesson-phases/construction-deduction-game';
 import { JunctionArchitectGame } from '@/components/lesson-phases/junction-architect-game';
+import { MemoryCardsGame } from '@/components/lesson-phases/memory-cards-game';
 import {
   Puzzle,
   Sparkles,
@@ -24,7 +25,8 @@ import {
   ChevronRight,
   Play,
   Crosshair,
-  Compass
+  Compass,
+  Layers
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -41,7 +43,7 @@ interface MatchCard {
   matched: boolean;
 }
 
-export type PuzzleGameId = 'junctiongame' | 'radargame' | 'constructiongame' | 'matching' | 'wordsearch' | 'truefalse';
+export type PuzzleGameId = 'memorycards' | 'junctiongame' | 'radargame' | 'constructiongame' | 'matching' | 'wordsearch' | 'truefalse';
 
 export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   const { playSound, unlockBadge, addPoints, role, selectedOutcome } = useApp();
@@ -224,6 +226,16 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   }
 
   baseGamesList.push(
+    {
+      id: 'memorycards',
+      title: 'Kavram & Tanım Hafıza Kartları',
+      tagline: 'Kavramsal Eşleştirme & Bellek',
+      description: 'Bir kartta kavramın adı & sembolü, diğerinde tanımı! Kartları çevirerek geometrik kavram-tanım çiftlerini hafızanda eşleştir.',
+      icon: <Layers className="w-8 h-8" />,
+      badge: '12 / 16 Kart • 3D Çevirme',
+      gradient: 'from-amber-500 via-rose-600 to-indigo-800',
+      reward: '+80 XP & Rozet'
+    },
     {
       id: 'matching',
       title: isLinesAnglesTopic
@@ -416,6 +428,13 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
           {selectedGameId === 'constructiongame' && (
             <div className="animate-in fade-in duration-200">
               <ConstructionDeductionGame onBackToMenu={() => setSelectedGameId(null)} />
+            </div>
+          )}
+
+          {/* FEATURED GAME: MEMORY CARDS (KAVRAM & TANIM HAFIZA KARTLARI) */}
+          {selectedGameId === 'memorycards' && (
+            <div className="animate-in fade-in duration-200">
+              <MemoryCardsGame onBackToMenu={() => setSelectedGameId(null)} />
             </div>
           )}
 
