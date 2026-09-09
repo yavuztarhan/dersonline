@@ -89,11 +89,21 @@ export function ActivitySheetView({
     (outcomeCode === 'MAT.5.3.2' ||
       fileRecord?.id?.includes('5-3-2') ||
       fileRecord?.title?.includes('Çıkarım'));
+  const isAngleConstructionActivity =
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isDeductionDetective &&
+    (selectedSheetId.includes('angle-construction') ||
+      selectedSheetId.includes('rotani-kendin-ciz') ||
+      fileRecord?.id?.includes('angle-construction') ||
+      fileRecord?.title?.includes('Rotanı Kendin Çiz'));
   const isMeasuringStationsActivity =
     !isRailwayActivity &&
     !isBridgeActivity &&
     !isSteppingWorkshop &&
     !isDeductionDetective &&
+    !isAngleConstructionActivity &&
     (selectedSheetId.includes('stations') ||
       fileRecord?.id?.includes('stations') ||
       fileRecord?.title?.includes('Açı Ölçüm İstasyonları'));
@@ -103,10 +113,67 @@ export function ActivitySheetView({
     !isSteppingWorkshop &&
     !isDeductionDetective &&
     !isMeasuringStationsActivity &&
+    !isAngleConstructionActivity &&
     (selectedSheetId.includes('anatomy') ||
       fileRecord?.id?.includes('anatomy') ||
       fileRecord?.title?.includes('İletkinin Anatomisi') ||
       outcomeCode === 'MAT.5.3.3');
+
+  // Interactive state for MAT.5.3.3 Rotanı Kendin Çiz (İletki ile Açı İnşası)
+  const [task1Angle, setTask1Angle] = useState<number>(0);
+  const [task1Color, setTask1Color] = useState<string>('#0284c7');
+  const [showTask1Protractor, setShowTask1Protractor] = useState<boolean>(true);
+  const [task1Completed, setTask1Completed] = useState<boolean>(false);
+
+  const [task2Angle, setTask2Angle] = useState<number>(0);
+  const [task2Color, setTask2Color] = useState<string>('#7c3aed');
+  const [showTask2Protractor, setShowTask2Protractor] = useState<boolean>(true);
+  const [task2Completed, setTask2Completed] = useState<boolean>(false);
+
+  const [constructionChecklist, setConstructionChecklist] = useState<{
+    c1: boolean;
+    c2: boolean;
+    c3: boolean;
+    c4: boolean;
+  }>({
+    c1: false,
+    c2: false,
+    c3: false,
+    c4: false
+  });
+
+  const [constructionPointsAwarded, setConstructionPointsAwarded] = useState<{ task1?: boolean; task2?: boolean }>({});
+
+  const handleTask1AngleChange = (newDeg: number) => {
+    setTask1Angle(newDeg);
+    if (newDeg === 50 && !task1Completed) {
+      setTask1Completed(true);
+      playSound('success');
+      if (!constructionPointsAwarded.task1) {
+        addPoints(50);
+        setConstructionPointsAwarded((p) => ({ ...p, task1: true }));
+        try {
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    }
+  };
+
+  const handleTask2AngleChange = (newDeg: number) => {
+    setTask2Angle(newDeg);
+    if (newDeg === 140 && !task2Completed) {
+      setTask2Completed(true);
+      playSound('success');
+      if (!constructionPointsAwarded.task2) {
+        addPoints(50);
+        setConstructionPointsAwarded((p) => ({ ...p, task2: true }));
+        unlockBadge('maarif-genius');
+        try {
+          confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    }
+  };
 
   // Interactive deduction state for MAT.5.3.2 Çıkarım Dedektifi
   const [deductionAnswers, setDeductionAnswers] = useState({
@@ -460,10 +527,12 @@ export function ActivitySheetView({
               const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
               const isDetective =
                 (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway;
+              const isConstruction =
+                sheet.id.includes('angle-construction') || sheet.id.includes('rotani-kendin-ciz') || sheet.title.includes('Rotanı Kendin Çiz');
               const isStations =
-                sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm');
+                (sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm')) && !isConstruction;
               const isAnatomy =
-                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations;
+                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
               const icon = isRailway
@@ -474,6 +543,8 @@ export function ActivitySheetView({
                 ? '⭕'
                 : isDetective
                 ? '🔍'
+                : isConstruction
+                ? '🎯'
                 : isStations
                 ? '🧭'
                 : isAnatomy
@@ -487,6 +558,8 @@ export function ActivitySheetView({
                 ? 'Pergel ile Adımlama'
                 : isDetective
                 ? 'Çıkarım Dedektifi'
+                : isConstruction
+                ? 'Rotanı Kendin Çiz'
                 : isStations
                 ? 'Açı Ölçüm İstasyonları'
                 : isAnatomy
@@ -501,6 +574,8 @@ export function ActivitySheetView({
                 ? 'Atölye 2'
                 : isDetective
                 ? 'Etkinlik 1'
+                : isConstruction
+                ? 'Açı İnşası'
                 : isStations
                 ? 'Uygulama 2'
                 : isAnatomy
@@ -515,6 +590,8 @@ export function ActivitySheetView({
                 ? 'Eşit Parçalar Kesme'
                 : isDetective
                 ? '3 Deney Kutusu'
+                : isConstruction
+                ? '50° & 140° Hassas Çizim'
                 : isStations
                 ? '6 Ölçüm Kutusu & Radar'
                 : isAnatomy
@@ -539,10 +616,12 @@ export function ActivitySheetView({
                         ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
                         : isDetective
                         ? 'bg-sky-600 text-white border-sky-500 shadow-md scale-[1.01]'
+                        : isConstruction
+                        ? 'bg-teal-600 text-white border-teal-500 shadow-md scale-[1.01]'
                         : isStations
                         ? 'bg-blue-600 text-white border-blue-500 shadow-md scale-[1.01]'
                         : isAnatomy
-                        ? 'bg-teal-600 text-white border-teal-500 shadow-md scale-[1.01]'
+                        ? 'bg-emerald-600 text-white border-emerald-500 shadow-md scale-[1.01]'
                         : 'bg-emerald-600 text-white border-emerald-500 shadow-md scale-[1.01]'
                       : 'bg-white dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
                   }`}
@@ -594,6 +673,8 @@ export function ActivitySheetView({
             ? 'bg-gradient-to-br from-purple-950 via-purple-900 to-slate-950'
             : isDeductionDetective
             ? 'bg-gradient-to-br from-sky-950 via-sky-900 to-slate-950'
+            : isAngleConstructionActivity
+            ? 'bg-gradient-to-br from-teal-950 via-sky-950 to-slate-950'
             : isMeasuringStationsActivity
             ? 'bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-950'
             : isProtractorAnatomyActivity
@@ -612,6 +693,8 @@ export function ActivitySheetView({
               ? 'bg-purple-500/15'
               : isDeductionDetective
               ? 'bg-sky-500/15'
+              : isAngleConstructionActivity
+              ? 'bg-teal-500/20'
               : isMeasuringStationsActivity
               ? 'bg-blue-500/20'
               : isProtractorAnatomyActivity
@@ -629,6 +712,8 @@ export function ActivitySheetView({
               ? 'bg-indigo-500/20'
               : isDeductionDetective
               ? 'bg-indigo-500/15'
+              : isAngleConstructionActivity
+              ? 'bg-sky-500/20'
               : isMeasuringStationsActivity
               ? 'bg-indigo-500/20'
               : isProtractorAnatomyActivity
@@ -650,6 +735,8 @@ export function ActivitySheetView({
                   ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
                   : isDeductionDetective
                   ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
+                  : isAngleConstructionActivity
+                  ? 'bg-teal-400/20 border-teal-300/30 text-teal-200'
                   : isMeasuringStationsActivity
                   ? 'bg-blue-400/20 border-blue-300/30 text-blue-200'
                   : isProtractorAnatomyActivity
@@ -676,6 +763,11 @@ export function ActivitySheetView({
                 <>
                   <Search className="w-3.5 h-3.5 text-sky-300" />
                   <span>Gözlem & Mantıksal Çıkarım (SDB3.3 / E3.7)</span>
+                </>
+              ) : isAngleConstructionActivity ? (
+                <>
+                  <Compass className="w-3.5 h-3.5 text-teal-300" />
+                  <span>Hassas Açı İnşası & İletki Becerisi (SDB1.2 / SB1.1)</span>
                 </>
               ) : isMeasuringStationsActivity ? (
                 <>
@@ -704,6 +796,8 @@ export function ActivitySheetView({
                 ? 'Atölye: "PERGEL İLE ADIMLAMA" (Eşit Parçalar Kesme)'
                 : isDeductionDetective
                 ? 'Etkinlik: "ÇIKARIM DEDEKTİFİ" (Gözlem ve Temel Kurallar)'
+                : isAngleConstructionActivity
+                ? 'Etkinlik: "ROTANI KENDİN ÇİZ" (İletki ile Açı İnşası)'
                 : isMeasuringStationsActivity
                 ? 'Etkinlik: "AŞAMALI AÇI ÖLÇÜM İSTASYONLARI" (Uygulama - MAT.5.3.3)'
                 : isProtractorAnatomyActivity
@@ -736,6 +830,12 @@ export function ActivitySheetView({
                   🕵️‍♂️ <strong>Dedektif Görevi:</strong> Verilen 3 geometrik durumu incele, cetvel, pergel ve gönye ile deneylerini gerçekleştir ve temel aksiyom çıkarımlarını tamamla!
                 </p>
               </div>
+            ) : isAngleConstructionActivity ? (
+              <div className="p-3 bg-teal-950/60 border border-teal-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-teal-100 font-medium leading-relaxed">
+                  🧭 <strong>İnşa Görevi:</strong> Verilen başlangıç ışınları üzerinde iletkinin merkezini hizalayarak tam 50°'lik dar açıyı ve 140°'lik geniş açıyı sıfırdan inşa et!
+                </p>
+              </div>
             ) : isMeasuringStationsActivity ? (
               <div className="p-3 bg-blue-950/60 border border-blue-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-blue-100 font-medium leading-relaxed">
@@ -764,6 +864,8 @@ export function ActivitySheetView({
                   ? 'text-purple-200/70'
                   : isDeductionDetective
                   ? 'text-sky-200/70'
+                  : isAngleConstructionActivity
+                  ? 'text-teal-200/70'
                   : isMeasuringStationsActivity
                   ? 'text-blue-200/70'
                   : isProtractorAnatomyActivity
@@ -782,6 +884,8 @@ export function ActivitySheetView({
                   ? '2 Ana Görev (100 Puan)'
                   : isDeductionDetective
                   ? '3 Mini Deney (100 Puan)'
+                  : isAngleConstructionActivity
+                  ? '2 Açı İnşası (100 Puan)'
                   : isMeasuringStationsActivity
                   ? '3 İstasyon & 6 Açı (100 Puan)'
                   : isProtractorAnatomyActivity
@@ -2376,6 +2480,542 @@ export function ActivitySheetView({
                   </text>
                 </g>
               </svg>
+            </div>
+          </div>
+
+        </div>
+      ) : isAngleConstructionActivity ? (
+        /* ========================================================================= */
+        /* ETKİNLİK: "ROTANI KENDİN ÇİZ" (İLETKİ İLE AÇI İNŞASI - MAT.5.3.3)         */
+        /* ========================================================================= */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          
+          {/* Üst Kılavuz & İpuçları Kutusu */}
+          <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-2 border-amber-500/30 rounded-3xl p-5 shadow-sm space-y-2">
+            <div className="flex items-center gap-2 text-amber-900 dark:text-amber-300 font-black text-sm">
+              <span className="text-lg">📐</span>
+              <span>HASSAS AÇI İNŞA KILAVUZU (4 ADIMDA TAM DERECE)</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs text-amber-950 dark:text-amber-200">
+              <div className="bg-white/80 dark:bg-slate-800/80 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800/50">
+                <span className="font-bold text-amber-800 dark:text-amber-400">1. Orijin Hizala:</span> İletkinin merkezini açının köşe noktasına (A veya K) oturt.
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800/80 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800/50">
+                <span className="font-bold text-amber-800 dark:text-amber-400">2. Taban 0° Hattı:</span> Başlangıç ışınını 0° çizgisiyle tam çakıştır.
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800/80 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800/50">
+                <span className="font-bold text-amber-800 dark:text-amber-400">3. Dereceyi Belirle:</span> İletki ölçeğinden 50° veya 140°'yi bulup nokta koy.
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800/80 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800/50">
+                <span className="font-bold text-amber-800 dark:text-amber-400">4. Kolu Birleştir:</span> Cetvelle köşeyi ve noktayı birleştirerek ışını çiz.
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* GÖREV 1: 50° DAR AÇI İNŞASI */}
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border-2 border-sky-500/30 shadow-sm space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-sky-100 dark:border-sky-900/50">
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-lg bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 font-bold flex items-center justify-center text-xs">
+                      1
+                    </span>
+                    <span className="font-black text-sm text-sky-950 dark:text-sky-100">
+                      GÖREV 1: [AB Işınından 50° Dar Açı İnşası
+                    </span>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-xs font-black ${
+                      task1Completed
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-sky-50 text-sky-800 border border-sky-200'
+                    }`}
+                  >
+                    {task1Completed ? '✅ 50 Puan' : '50 Puan'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  <strong>Yönerge:</strong> Verilen <code>[AB</code> ışınının <code>A</code> noktasını köşe kabul ederek iletkinle <strong>tam 50°'lik</strong> bir dar açı çiz ve <code>[AC</code> ışını ile birleştir.
+                </p>
+
+                {/* İnteraktif Çizim Alanı (Görev 1) */}
+                <div className="bg-slate-900 rounded-2xl p-3 border border-slate-800 relative overflow-hidden flex flex-col items-center">
+                  <div className="w-full flex items-center justify-between text-[11px] font-bold text-slate-300 mb-2">
+                    <span className="text-sky-400 font-mono">
+                      Mevcut Açı: {task1Angle}° {task1Angle === 50 ? '🎯 (Tam Hedef!)' : task1Angle < 50 ? '(Daha Genişlet)' : '(Daha Daralt)'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowTask1Protractor(!showTask1Protractor)}
+                      className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
+                        showTask1Protractor
+                          ? 'bg-sky-600 text-white border-sky-400'
+                          : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                      }`}
+                    >
+                      {showTask1Protractor ? 'İletkiyi Gizle' : 'Sanal İletkiyi Aç'}
+                    </button>
+                  </div>
+
+                  <div className="w-full h-56 relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 340 200" className="w-full h-full select-none">
+                      {/* Milimetrik Grid */}
+                      <defs>
+                        <pattern id="grid_task1_sim" width="20" height="20" patternUnits="userSpaceOnUse">
+                          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.8" />
+                        </pattern>
+                      </defs>
+                      <rect width="340" height="200" fill="url(#grid_task1_sim)" />
+
+                      {/* Sanal İletki Şablonu (A(60, 160) Merkezli) */}
+                      {showTask1Protractor && (
+                        <g transform="translate(60, 160)" opacity="0.45" className="transition-opacity">
+                          {/* İletki Yarım Dairesi */}
+                          <path d="M -100 0 A 100 100 0 0 1 100 0 Z" fill="#0284c7" fillOpacity="0.15" stroke="#38bdf8" strokeWidth="1.5" />
+                          <circle cx="0" cy="0" r="10" fill="none" stroke="#38bdf8" strokeWidth="1" />
+                          <line x1="-95" y1="0" x2="95" y2="0" stroke="#38bdf8" strokeWidth="1.5" />
+                          <line x1="0" y1="0" x2="0" y2="-95" stroke="#38bdf8" strokeWidth="1" strokeDasharray="3 3" />
+
+                          {/* Derece İşaretleri (Her 10°) */}
+                          {Array.from({ length: 19 }).map((_, i) => {
+                            const deg = i * 10;
+                            const rad = (deg * Math.PI) / 180;
+                            const is50 = deg === 50;
+                            const is90 = deg === 90;
+                            const r1 = is50 || is90 ? 82 : 88;
+                            const r2 = 98;
+                            const x1 = r1 * Math.cos(rad);
+                            const y1 = -r1 * Math.sin(rad);
+                            const x2 = r2 * Math.cos(rad);
+                            const y2 = -r2 * Math.sin(rad);
+                            return (
+                              <g key={deg}>
+                                <line
+                                  x1={x1}
+                                  y1={y1}
+                                  x2={x2}
+                                  y2={y2}
+                                  stroke={is50 ? '#38bdf8' : is90 ? '#f59e0b' : '#94a3b8'}
+                                  strokeWidth={is50 || is90 ? 2 : 1}
+                                />
+                                {(deg % 30 === 0 || is50) && (
+                                  <text
+                                    x={(r1 - 10) * Math.cos(rad)}
+                                    y={-(r1 - 10) * Math.sin(rad) + 3}
+                                    fontFamily="system-ui"
+                                    fontSize="7.5"
+                                    fontWeight={is50 ? '900' : 'bold'}
+                                    fill={is50 ? '#38bdf8' : '#94a3b8'}
+                                    textAnchor="middle"
+                                  >
+                                    {deg}°
+                                  </text>
+                                )}
+                              </g>
+                            );
+                          })}
+                        </g>
+                      )}
+
+                      {/* Başlangıç [AB Işını (Yatay, A(60, 160) -> B(260, 160)) */}
+                      <line x1="60" y1="160" x2="290" y2="160" stroke="#f8fafc" strokeWidth="3" />
+                      <polygon points="285,156 295,160 285,164" fill="#f8fafc" />
+
+                      {/* İnşa Edilen [AC Işını (Dinamik Açı) */}
+                      {task1Angle > 0 && (() => {
+                        const rad = (task1Angle * Math.PI) / 180;
+                        const len = 140;
+                        const endX = 60 + len * Math.cos(rad);
+                        const endY = 160 - len * Math.sin(rad);
+                        const arcR = 40;
+                        const arcEndX = 60 + arcR * Math.cos(rad);
+                        const arcEndY = 160 - arcR * Math.sin(rad);
+
+                        return (
+                          <g>
+                            {/* Açı Yayı Dolgusu */}
+                            <path
+                              d={`M 60 160 L ${60 + arcR} 160 A ${arcR} ${arcR} 0 0 0 ${arcEndX} ${arcEndY} Z`}
+                              fill={task1Color}
+                              fillOpacity="0.25"
+                            />
+                            {/* Açı Yayı Sınırı */}
+                            <path
+                              d={`M ${60 + arcR} 160 A ${arcR} ${arcR} 0 0 0 ${arcEndX} ${arcEndY}`}
+                              fill="none"
+                              stroke={task1Color}
+                              strokeWidth="2"
+                            />
+                            {/* Işın [AC */}
+                            <line x1="60" y1="160" x2={endX} y2={endY} stroke={task1Color} strokeWidth="3" />
+                            {/* Işın Ucu Oku */}
+                            <circle cx={endX} cy={endY} r="4" fill={task1Color} />
+                            <text
+                              x={endX + 8}
+                              y={endY + 4}
+                              fontFamily="system-ui"
+                              fontSize="12"
+                              fontWeight="900"
+                              fill={task1Color}
+                            >
+                              C
+                            </text>
+                            {/* Derece Etiketi */}
+                            <text
+                              x={60 + (arcR + 18) * Math.cos(rad / 2)}
+                              y={160 - (arcR + 18) * Math.sin(rad / 2) + 4}
+                              fontFamily="system-ui"
+                              fontSize="11"
+                              fontWeight="900"
+                              fill="#f8fafc"
+                              textAnchor="middle"
+                            >
+                              {task1Angle}°
+                            </text>
+                          </g>
+                        );
+                      })()}
+
+                      {/* Vertex A & Nokta B */}
+                      <circle cx="60" cy="160" r="6" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
+                      <text x="44" y="165" fontFamily="system-ui" fontSize="13" fontWeight="900" fill="#38bdf8">
+                        [A
+                      </text>
+                      <circle cx="230" cy="160" r="4.5" fill="#f8fafc" />
+                      <text x="230" y="180" fontFamily="system-ui" fontSize="12" fontWeight="800" fill="#f8fafc" textAnchor="middle">
+                        B
+                      </text>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Açı Ayar Kontrolleri */}
+                <div className="space-y-2 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <span>Açı Ayarı: <strong className="font-mono text-sky-600 dark:text-sky-400">{task1Angle}°</strong></span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleTask1AngleChange(Math.max(0, task1Angle - 1))}
+                        className="w-6 h-6 rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+                      >
+                        -1°
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTask1AngleChange(Math.min(180, task1Angle + 1))}
+                        className="w-6 h-6 rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+                      >
+                        +1°
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTask1AngleChange(50)}
+                        className="px-2 py-0.5 rounded-md bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px] cursor-pointer"
+                      >
+                        50°'ye Hizala
+                      </button>
+                    </div>
+                  </div>
+
+                  <input
+                    type="range"
+                    min="0"
+                    max="180"
+                    value={task1Angle}
+                    onChange={(e) => handleTask1AngleChange(Number(e.target.value))}
+                    className="w-full accent-sky-500 cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Durum Bildirimi */}
+              {task1Completed ? (
+                <div className="mt-3 p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
+                  <span>🎉</span>
+                  <span>Harika! Tam 50°'lik dar açı başarıyla inşa edildi ve [AC ışını birleştirildi.</span>
+                </div>
+              ) : (
+                <div className="mt-3 p-2 bg-slate-100 dark:bg-slate-800/80 rounded-xl text-slate-500 dark:text-slate-400 text-xs text-center font-medium">
+                  🎯 İletkiyi kullanarak açıyı <strong>tam 50°'ye</strong> getiriniz.
+                </div>
+              )}
+            </div>
+
+            {/* GÖREV 2: 140° GENİŞ AÇI İNŞASI */}
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border-2 border-purple-500/30 shadow-sm space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-purple-100 dark:border-purple-900/50">
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center text-xs">
+                      2
+                    </span>
+                    <span className="font-black text-sm text-purple-950 dark:text-purple-100">
+                      GÖREV 2: [KL Işınından 140° Geniş Açı İnşası
+                    </span>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-xs font-black ${
+                      task2Completed
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-purple-50 text-purple-800 border border-purple-200'
+                    }`}
+                  >
+                    {task2Completed ? '✅ 50 Puan' : '50 Puan'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  <strong>Yönerge:</strong> Verilen <code>[KL</code> ışınını kullanarak <strong>tam 140°'lik</strong> bir geniş açı çiz. Açının yayını renkli kalemle belirle.
+                </p>
+
+                {/* İnteraktif Çizim Alanı (Görev 2) */}
+                <div className="bg-slate-900 rounded-2xl p-3 border border-slate-800 relative overflow-hidden flex flex-col items-center">
+                  <div className="w-full flex items-center justify-between text-[11px] font-bold text-slate-300 mb-2">
+                    <span className="text-purple-400 font-mono">
+                      Mevcut Açı: {task2Angle}° {task2Angle === 140 ? '🎯 (Tam Hedef!)' : task2Angle < 140 ? '(Daha Genişlet)' : '(Daha Daralt)'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowTask2Protractor(!showTask2Protractor)}
+                      className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
+                        showTask2Protractor
+                          ? 'bg-purple-600 text-white border-purple-400'
+                          : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                      }`}
+                    >
+                      {showTask2Protractor ? 'İletkiyi Gizle' : 'Sanal İletkiyi Aç'}
+                    </button>
+                  </div>
+
+                  <div className="w-full h-56 relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 340 200" className="w-full h-full select-none">
+                      {/* Milimetrik Grid */}
+                      <defs>
+                        <pattern id="grid_task2_sim" width="20" height="20" patternUnits="userSpaceOnUse">
+                          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.8" />
+                        </pattern>
+                      </defs>
+                      <rect width="340" height="200" fill="url(#grid_task2_sim)" />
+
+                      {/* Sanal İletki Şablonu (K(180, 160) veya K(60, 160) Merkezli) */}
+                      {showTask2Protractor && (
+                        <g transform="translate(60, 160)" opacity="0.45" className="transition-opacity">
+                          {/* İletki Yarım Dairesi */}
+                          <path d="M -100 0 A 100 100 0 0 1 100 0 Z" fill="#7c3aed" fillOpacity="0.15" stroke="#a855f7" strokeWidth="1.5" />
+                          <circle cx="0" cy="0" r="10" fill="none" stroke="#a855f7" strokeWidth="1" />
+                          <line x1="-95" y1="0" x2="95" y2="0" stroke="#a855f7" strokeWidth="1.5" />
+                          <line x1="0" y1="0" x2="0" y2="-95" stroke="#a855f7" strokeWidth="1" strokeDasharray="3 3" />
+
+                          {/* Derece İşaretleri */}
+                          {Array.from({ length: 19 }).map((_, i) => {
+                            const deg = i * 10;
+                            const rad = (deg * Math.PI) / 180;
+                            const is140 = deg === 140;
+                            const is90 = deg === 90;
+                            const r1 = is140 || is90 ? 82 : 88;
+                            const r2 = 98;
+                            const x1 = r1 * Math.cos(rad);
+                            const y1 = -r1 * Math.sin(rad);
+                            const x2 = r2 * Math.cos(rad);
+                            const y2 = -r2 * Math.sin(rad);
+                            return (
+                              <g key={deg}>
+                                <line
+                                  x1={x1}
+                                  y1={y1}
+                                  x2={x2}
+                                  y2={y2}
+                                  stroke={is140 ? '#c084fc' : is90 ? '#f59e0b' : '#94a3b8'}
+                                  strokeWidth={is140 || is90 ? 2 : 1}
+                                />
+                                {(deg % 30 === 0 || is140) && (
+                                  <text
+                                    x={(r1 - 10) * Math.cos(rad)}
+                                    y={-(r1 - 10) * Math.sin(rad) + 3}
+                                    fontFamily="system-ui"
+                                    fontSize="7.5"
+                                    fontWeight={is140 ? '900' : 'bold'}
+                                    fill={is140 ? '#c084fc' : '#94a3b8'}
+                                    textAnchor="middle"
+                                  >
+                                    {deg}°
+                                  </text>
+                                )}
+                              </g>
+                            );
+                          })}
+                        </g>
+                      )}
+
+                      {/* Başlangıç [KL Işını (Yatay, K(60, 160) -> L(260, 160)) */}
+                      <line x1="60" y1="160" x2="290" y2="160" stroke="#f8fafc" strokeWidth="3" />
+                      <polygon points="285,156 295,160 285,164" fill="#f8fafc" />
+
+                      {/* İnşa Edilen [KM Işını (Dinamik Geniş Açı) */}
+                      {task2Angle > 0 && (() => {
+                        const rad = (task2Angle * Math.PI) / 180;
+                        const len = 140;
+                        const endX = 60 + len * Math.cos(rad);
+                        const endY = 160 - len * Math.sin(rad);
+                        const arcR = 40;
+                        const arcEndX = 60 + arcR * Math.cos(rad);
+                        const arcEndY = 160 - arcR * Math.sin(rad);
+
+                        return (
+                          <g>
+                            {/* Açı Yayı Dolgusu */}
+                            <path
+                              d={`M 60 160 L ${60 + arcR} 160 A ${arcR} ${arcR} 0 0 0 ${arcEndX} ${arcEndY} Z`}
+                              fill={task2Color}
+                              fillOpacity="0.25"
+                            />
+                            {/* Açı Yayı Sınırı */}
+                            <path
+                              d={`M ${60 + arcR} 160 A ${arcR} ${arcR} 0 0 0 ${arcEndX} ${arcEndY}`}
+                              fill="none"
+                              stroke={task2Color}
+                              strokeWidth="2"
+                            />
+                            {/* Işın [KM */}
+                            <line x1="60" y1="160" x2={endX} y2={endY} stroke={task2Color} strokeWidth="3" />
+                            <circle cx={endX} cy={endY} r="4" fill={task2Color} />
+                            <text
+                              x={endX - 16}
+                              y={endY + 4}
+                              fontFamily="system-ui"
+                              fontSize="12"
+                              fontWeight="900"
+                              fill={task2Color}
+                            >
+                              M
+                            </text>
+                            {/* Derece Etiketi */}
+                            <text
+                              x={60 + (arcR + 18) * Math.cos(rad / 2)}
+                              y={160 - (arcR + 18) * Math.sin(rad / 2) + 4}
+                              fontFamily="system-ui"
+                              fontSize="11"
+                              fontWeight="900"
+                              fill="#f8fafc"
+                              textAnchor="middle"
+                            >
+                              {task2Angle}°
+                            </text>
+                          </g>
+                        );
+                      })()}
+
+                      {/* Vertex K & Nokta L */}
+                      <circle cx="60" cy="160" r="6" fill="#7c3aed" stroke="#ffffff" strokeWidth="2" />
+                      <text x="44" y="165" fontFamily="system-ui" fontSize="13" fontWeight="900" fill="#a855f7">
+                        [K
+                      </text>
+                      <circle cx="230" cy="160" r="4.5" fill="#f8fafc" />
+                      <text x="230" y="180" fontFamily="system-ui" fontSize="12" fontWeight="800" fill="#f8fafc" textAnchor="middle">
+                        L
+                      </text>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Açı Ayar Kontrolleri */}
+                <div className="space-y-2 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <span>Açı Ayarı: <strong className="font-mono text-purple-600 dark:text-purple-400">{task2Angle}°</strong></span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleTask2AngleChange(Math.max(0, task2Angle - 1))}
+                        className="w-6 h-6 rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+                      >
+                        -1°
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTask2AngleChange(Math.min(180, task2Angle + 1))}
+                        className="w-6 h-6 rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+                      >
+                        +1°
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTask2AngleChange(140)}
+                        className="px-2 py-0.5 rounded-md bg-purple-600 hover:bg-purple-500 text-white font-bold text-[10px] cursor-pointer"
+                      >
+                        140°'ye Hizala
+                      </button>
+                    </div>
+                  </div>
+
+                  <input
+                    type="range"
+                    min="0"
+                    max="180"
+                    value={task2Angle}
+                    onChange={(e) => handleTask2AngleChange(Number(e.target.value))}
+                    className="w-full accent-purple-500 cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Durum Bildirimi */}
+              {task2Completed ? (
+                <div className="mt-3 p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
+                  <span>🎉</span>
+                  <span>Kusursuz! Tam 140°'lik geniş açı başarıyla inşa edildi ve renkli yayla belirlendi.</span>
+                </div>
+              ) : (
+                <div className="mt-3 p-2 bg-slate-100 dark:bg-slate-800/80 rounded-xl text-slate-500 dark:text-slate-400 text-xs text-center font-medium">
+                  🎯 İletkiyi kullanarak açıyı <strong>tam 140°'ye</strong> getiriniz.
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          {/* Tartış & Kendini Değerlendir Kontrol Listesi */}
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-sm">
+                <span className="text-emerald-500 text-lg">✅</span>
+                <span>GEOMETRİK ÇIKARIM &amp; KENDİNİ DEĞERLENDİRME KONTROL LİSTESİ</span>
+              </div>
+              <span className="text-xs font-bold text-slate-400">
+                {Object.values(constructionChecklist).filter(Boolean).length} / 4 İşaretlendi
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { id: 'c1', label: '1. İletkinin merkezini köşe noktasına (A ve K) tam oturttum.' },
+                { id: 'c2', label: '2. Taban çizgisini 0° çizgisi ile tam çakıştırdım.' },
+                { id: 'c3', label: '3. 50° dar açımın dik açıdan (90°) daha dar olduğunu doğruladım.' },
+                { id: 'c4', label: '4. 140° geniş açımın dik açıdan (90°) daha geniş olduğunu doğruladım.' }
+              ].map((item) => (
+                <label
+                  key={item.id}
+                  className={`flex items-start gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                    constructionChecklist[item.id as keyof typeof constructionChecklist]
+                      ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-400 text-emerald-950 dark:text-emerald-200 font-bold'
+                      : 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={constructionChecklist[item.id as keyof typeof constructionChecklist]}
+                    onChange={(e) => {
+                      playSound('click');
+                      setConstructionChecklist((prev) => ({ ...prev, [item.id]: e.target.checked }));
+                    }}
+                    className="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                  />
+                  <span className="text-xs">{item.label}</span>
+                </label>
+              ))}
             </div>
           </div>
 

@@ -1475,6 +1475,170 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-3-angle-construction',
+    title: 'Etkinlik: "Rotanı Kendin Çiz" (İletki ile Açı İnşası - MAT.5.3.3)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.3',
+    outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-09T15:00:00Z',
+    fileSizeKb: 240,
+    tags: ['Etkinlik Kağıdı', 'Rotanı Kendin Çiz', 'Açı İnşası', 'İletki', 'Dar Açı', 'Geniş Açı', 'MAT.5.3.3', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); padding: 12px; border-radius: 12px; border: 1px solid #99f6e4;">
+    <div style="display: inline-block; background: #0d9488; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px;">
+      🧭 GEOMETRİK İNŞA İSTASYONU (MAT.5.3.3)
+    </div>
+    <h2 style="color: #115e59; font-size: 17px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      ETKİNLİK: "ROTANI KENDİN ÇİZ" (İletki ile Açı İnşası)
+    </h2>
+    <p style="color: #334155; font-size: 11px; margin: 4px 0 0 0; font-weight: 600;">
+      Ölçülü iletkin ve cetvelini kullanarak verilen başlangıç ışınları üzerinde sıfırdan 50° ve 140°'lik açıları inşa et!
+    </p>
+  </div>
+
+  <!-- Açı İnşa Kılavuzu & İpuçları Kutusu -->
+  <div style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; font-size: 10.5px; color: #92400e; line-height: 1.45;">
+    <strong>📐 Adım Adım Açı Çizim Rehberi:</strong><br/>
+    1. İletkinin <strong>merkez noktasını (orijin)</strong> açının köşe noktasına ($A$ veya $K$) tam oturt.<br/>
+    2. Taban kolunu iletkinin <strong>0° çizgisiyle</strong> tam çakıştır.<br/>
+    3. Hedef dereceyi ($50^\circ$ veya $140^\circ$) iletkinin doğru ölçeğinden bularak milimetrik kâğıda bir nokta koy.<br/>
+    4. Cetvelinle köşe noktası ile işaretlediğin noktayı birleştirerek yeni ışını çiz ve açının yayını belirle.
+  </div>
+
+  <!-- Görev Alanları Grid (2 Sütun) -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+    
+    <!-- GÖREV 1: 50° DAR AÇI İNŞASI -->
+    <div style="border: 2px solid #0284c7; border-radius: 12px; padding: 12px; background: #ffffff;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #e0f2fe; padding-bottom: 6px; margin-bottom: 8px;">
+        <span style="font-weight: 900; color: #0369a1; font-size: 12px;">
+          📍 GÖREV 1: 50° Dar Açı İnşası
+        </span>
+        <span style="font-size: 9.5px; font-weight: bold; background: #f0f9ff; color: #0284c7; padding: 2px 6px; border-radius: 4px; border: 1px solid #bae6fd;">
+          50 Puan
+        </span>
+      </div>
+      
+      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
+        <strong>Yönerge:</strong> Verilen <code>[AB</code> ışınının <code>A</code> noktasını köşe kabul ederek iletkinle <strong>tam 50°'lik</strong> bir dar açı çiz ve <code>[AC</code> ışını ile birleştir.
+      </p>
+
+      <!-- Milimetrik Çizim Alanı (Görev 1) -->
+      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 180px; background: #f8fafc; position: relative; overflow: hidden;">
+        <svg viewBox="0 0 320 180" width="100%" height="100%" style="display: block;">
+          <defs>
+            <pattern id="mm_grid_g1" width="16" height="16" patternUnits="userSpaceOnUse">
+              <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e2e8f0" stroke-width="0.8" />
+            </pattern>
+          </defs>
+          <rect width="320" height="180" fill="url(#mm_grid_g1)" />
+          
+          <!-- Başlangıç [AB Işını -->
+          <!-- Vertex A (50, 140) -->
+          <line x1="50" y1="140" x2="270" y2="140" stroke="#0f172a" stroke-width="2.5" />
+          <polygon points="265,136 275,140 265,144" fill="#0f172a" />
+          
+          <circle cx="50" cy="140" r="4.5" fill="#0284c7" />
+          <text x="36" y="145" font-family="system-ui" font-size="12" font-weight="900" fill="#0369a1">[A</text>
+          
+          <circle cx="210" cy="140" r="3.5" fill="#0f172a" />
+          <text x="210" y="156" font-family="system-ui" font-size="11" font-weight="800" fill="#0f172a" text-anchor="middle">B</text>
+
+          <!-- Çizim Kılavuz İpucu -->
+          <text x="160" y="30" font-family="system-ui" font-size="10" font-weight="700" fill="#94a3b8" text-anchor="middle">
+            [ İletkini A noktasına yerleştirip 50°'de C noktasını işaretle ]
+          </text>
+        </svg>
+      </div>
+
+      <div style="margin-top: 8px; font-size: 10px; color: #475569; font-weight: 600;">
+        💡 <em>Açı Türü: <strong>Dar Açı</strong> (0° &lt; s(BAC) = 50° &lt; 90°)</em>
+      </div>
+    </div>
+
+    <!-- GÖREV 2: 140° GENİŞ AÇI İNŞASI -->
+    <div style="border: 2px solid #7c3aed; border-radius: 12px; padding: 12px; background: #ffffff;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 6px; margin-bottom: 8px;">
+        <span style="font-weight: 900; color: #6d28d9; font-size: 12px;">
+          📍 GÖREV 2: 140° Geniş Açı İnşası
+        </span>
+        <span style="font-size: 9.5px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd6fe;">
+          50 Puan
+        </span>
+      </div>
+      
+      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
+        <strong>Yönerge:</strong> Verilen <code>[KL</code> ışınını kullanarak <strong>tam 140°'lik</strong> bir geniş açı çiz. Açının yayını renkli kalemle belirle.
+      </p>
+
+      <!-- Milimetrik Çizim Alanı (Görev 2) -->
+      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 180px; background: #f8fafc; position: relative; overflow: hidden;">
+        <svg viewBox="0 0 320 180" width="100%" height="100%" style="display: block;">
+          <defs>
+            <pattern id="mm_grid_g2" width="16" height="16" patternUnits="userSpaceOnUse">
+              <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e2e8f0" stroke-width="0.8" />
+            </pattern>
+          </defs>
+          <rect width="320" height="180" fill="url(#mm_grid_g2)" />
+          
+          <!-- Başlangıç [KL Işını -->
+          <!-- Vertex K (180, 140) sağa doğru L veya (50, 140) -->
+          <line x1="50" y1="140" x2="270" y2="140" stroke="#0f172a" stroke-width="2.5" />
+          <polygon points="265,136 275,140 265,144" fill="#0f172a" />
+          
+          <circle cx="50" cy="140" r="4.5" fill="#7c3aed" />
+          <text x="36" y="145" font-family="system-ui" font-size="12" font-weight="900" fill="#6d28d9">[K</text>
+          
+          <circle cx="210" cy="140" r="3.5" fill="#0f172a" />
+          <text x="210" y="156" font-family="system-ui" font-size="11" font-weight="800" fill="#0f172a" text-anchor="middle">L</text>
+
+          <!-- Çizim Kılavuz İpucu -->
+          <text x="160" y="30" font-family="system-ui" font-size="10" font-weight="700" fill="#94a3b8" text-anchor="middle">
+            [ İletkini K noktasına yerleştirip 140°'de M noktasını işaretle ]
+          </text>
+        </svg>
+      </div>
+
+      <div style="margin-top: 8px; font-size: 10px; color: #475569; font-weight: 600;">
+        💡 <em>Açı Türü: <strong>Geniş Açı</strong> (90° &lt; s(LKM) = 140° &lt; 180°)</em>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Kendini Değerlendir & Kontrol Listesi -->
+  <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; margin-bottom: 8px;">
+    <div style="font-size: 11px; font-weight: 900; color: #0f766e; margin-bottom: 6px;">
+      ✅ GEOMETRİK ÇIKARIM &amp; KENDİNİ DEĞERLENDİRME LİSTESİ:
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10px; color: #334155;">
+      <div>[ ] 1. İletkinin merkezini köşe noktasına ($A$ ve $K$) tam oturttum.</div>
+      <div>[ ] 2. Taban çizgisini 0° çizgisi ile tam çakıştırdım.</div>
+      <div>[ ] 3. 50° dar açımın dik açıdan (90°) daha dar olduğunu kontrol ettim.</div>
+      <div>[ ] 4. 140° geniş açımın dik açıdan (90°) daha geniş olduğunu kontrol ettim.</div>
+    </div>
+  </div>
+
+  <!-- Alt Bilgi / Puanlama -->
+  <div style="padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; font-size: 10px; color: #166534; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Görev 1 (50P) + Görev 2 (50P) = 100 Puan. (SDB1.2 / SB1.1 Maarif Geometri Atölyesi)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
