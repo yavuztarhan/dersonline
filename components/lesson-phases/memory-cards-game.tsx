@@ -662,7 +662,7 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
                 >
                   {/* Decorative Header */}
                   <div className="w-full flex items-center justify-between text-[10px] font-mono text-teal-400/60">
-                    <span>dersonline</span>
+                    <span>Maarif Akademi</span>
                     <span>#{index + 1}</span>
                   </div>
 
