@@ -250,23 +250,8 @@ export function ClassroomFilesModal({
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
-                    
-                    {/* View Read-only Button (For all users) */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        playSound('select');
-                        setViewingFile(file);
-                      }}
-                      className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer"
-                      title="Ders notunu salt okunur olarak görüntüle"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-teal-600" />
-                      <span>Görüntüle</span>
-                    </button>
-
-                    {/* Teacher specific: Open in Editable Whiteboard */}
+                  <div className="pt-4 border-t border-slate-100 space-y-2">
+                    {/* Primary Action for Teacher: Tahtaya Yükle & Düzenle */}
                     {isTeacherOrAdmin && onLoadFileToWhiteboard && (
                       <button
                         type="button"
@@ -275,49 +260,63 @@ export function ClassroomFilesModal({
                           onClose();
                           playSound('select');
                         }}
-                        className="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold text-xs border border-teal-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                        className="w-full py-2.5 px-3 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-black text-xs shadow-sm shadow-teal-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
                         title="Bu notu Beyaz Tahtaya yükle ve düzenle"
                       >
-                        <Layers className="w-3.5 h-3.5 text-teal-600" />
-                        <span>Tahtada Aç</span>
+                        <Layers className="w-4 h-4 text-teal-200" />
+                        <span>Tahtaya Yükle & Düzenle</span>
                       </button>
                     )}
 
-                    <div className="flex items-center gap-1.5 ml-auto">
-                      {/* PDF Download */}
+                    {/* Secondary Action Row: Görüntüle, PDF İndir, Sil */}
+                    <div className="grid grid-cols-12 gap-2">
+                      {/* 1. Görüntüle */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('select');
+                          setViewingFile(file);
+                        }}
+                        className={`${isTeacherOrAdmin ? 'col-span-5' : 'col-span-6'} py-2 px-2.5 rounded-xl bg-slate-50 hover:bg-teal-50 text-slate-700 hover:text-teal-900 border border-slate-200 hover:border-teal-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer`}
+                        title="Ders notunu salt okunur olarak görüntüle"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                        <span>Görüntüle</span>
+                      </button>
+
+                      {/* 2. PDF İndir */}
                       <button
                         type="button"
                         onClick={() => handleDownloadPDF(file)}
                         disabled={downloadingFileId === file.id}
-                        className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        className={`${isTeacherOrAdmin ? 'col-span-5' : 'col-span-6'} py-2 px-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50`}
                         title="Bu ders notunu PDF olarak indir"
                       >
                         {downloadingFileId === file.id ? (
                           <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            <span>İndiriliyor...</span>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600 shrink-0" />
+                            <span>İndiriliyor</span>
                           </>
                         ) : (
                           <>
-                            <Download className="w-3.5 h-3.5" />
+                            <Download className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                             <span>PDF İndir</span>
                           </>
                         )}
                       </button>
 
-                      {/* Delete button (Teacher/Admin only) */}
+                      {/* 3. Sil (Teacher/Admin only) */}
                       {isTeacherOrAdmin && (
                         <button
                           type="button"
                           onClick={() => handleDelete(file.id, file.title)}
-                          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                          className="col-span-2 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 transition-all cursor-pointer flex items-center justify-center"
                           title="Dosyayı Sil"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       )}
                     </div>
-
                   </div>
 
                 </div>
