@@ -15,9 +15,22 @@ export type GeometricShapeType =
   | 'ellipse' // Elips
   | 'pentagon' // Beşgen
   | 'hexagon' // Altıgen
+  | 'heptagon' // Düzgün Yedigen
+  | 'octagon' // Düzgün Sekizgen
   | 'parallelogram' // Paralelkenar
   | 'trapezoid' // Yamuk
-  | 'rhombus'; // Eşkenar Dörtgen
+  | 'rhombus' // Eşkenar Dörtgen
+  // 3 Boyutlu Cisimlerin 2D Görünümleri
+  | 'cylinder' // Silindir
+  | 'cube' // Küp
+  | 'rectangular_prism' // Dikdörtgenler Prizması
+  | 'cone' // Koni
+  | 'square_prism' // Kare Prizma
+  | 'square_pyramid' // Kare Piramit
+  | 'triangular_pyramid' // Üçgen Piramit
+  | 'rectangular_pyramid' // Dikdörtgen Piramit
+  | 'pentagonal_pyramid' // Beşgen Piramit
+  | 'hexagonal_pyramid'; // Altıgen Piramit
 
 export interface WhiteboardShapeItem {
   id: string;
@@ -1808,6 +1821,231 @@ export function renderShapeSvgString(shape: WhiteboardShapeItem): string {
     case 'rhombus':
       innerSvg = `<polygon points="${W / 2},${sw / 2} ${W - sw / 2},${H / 2} ${W / 2},${H - sw / 2} ${sw / 2},${H / 2}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" ${dashAttr} />`;
       break;
+
+    case 'heptagon': {
+      const pts: string[] = [];
+      for (let i = 0; i < 7; i++) {
+        const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 7;
+        const x = W / 2 + (W / 2 - sw / 2) * Math.cos(angle);
+        const y = H / 2 + (H / 2 - sw / 2) * Math.sin(angle);
+        pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+      }
+      innerSvg = `<polygon points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" ${dashAttr} />`;
+      break;
+    }
+
+    case 'octagon': {
+      const pts: string[] = [];
+      for (let i = 0; i < 8; i++) {
+        const angle = -Math.PI / 2 + Math.PI / 8 + (i * 2 * Math.PI) / 8;
+        const x = W / 2 + (W / 2 - sw / 2) * Math.cos(angle);
+        const y = H / 2 + (H / 2 - sw / 2) * Math.sin(angle);
+        pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+      }
+      innerSvg = `<polygon points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" ${dashAttr} />`;
+      break;
+    }
+
+    case 'cylinder': {
+      const cx = W / 2;
+      const rx = Math.max(10, W * 0.45 - sw);
+      const ry = Math.max(6, H * 0.14);
+      const topY = ry + sw;
+      const botY = H - ry - sw;
+      const bodyFill = fill === 'transparent' ? '#0d948815' : fill;
+      const topFill = fill === 'transparent' ? '#0d948825' : fill;
+      innerSvg = `
+        <path d="M ${cx - rx} ${topY} L ${cx - rx} ${botY} A ${rx} ${ry} 0 0 0 ${cx + rx} ${botY} L ${cx + rx} ${topY} A ${rx} ${ry} 0 0 1 ${cx - rx} ${topY} Z" fill="${bodyFill}" />
+        <path d="M ${cx - rx} ${botY} A ${rx} ${ry} 0 0 1 ${cx + rx} ${botY}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <path d="M ${cx - rx} ${botY} A ${rx} ${ry} 0 0 0 ${cx + rx} ${botY}" fill="none" stroke="${stroke}" stroke-width="${sw}" />
+        <line x1="${cx - rx}" y1="${topY}" x2="${cx - rx}" y2="${botY}" stroke="${stroke}" stroke-width="${sw}" />
+        <line x1="${cx + rx}" y1="${topY}" x2="${cx + rx}" y2="${botY}" stroke="${stroke}" stroke-width="${sw}" />
+        <ellipse cx="${cx}" cy="${topY}" rx="${rx}" ry="${ry}" fill="${topFill}" stroke="${stroke}" stroke-width="${sw}" />
+      `;
+      break;
+    }
+
+    case 'cube': {
+      const size = Math.min(W * 0.62, H * 0.62);
+      const x0 = W * 0.12;
+      const y0 = H - size - H * 0.08;
+      const dx = size * 0.45;
+      const dy = -size * 0.35;
+      const cubeFill = fill === 'transparent' ? '#0284c715' : fill;
+      const topFill = fill === 'transparent' ? '#0284c725' : fill;
+      const sideFill = fill === 'transparent' ? '#0284c720' : fill;
+      innerSvg = `
+        <polygon points="${x0},${y0} ${x0 + dx},${y0 + dy} ${x0 + size + dx},${y0 + dy} ${x0 + size},${y0}" fill="${topFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${x0 + size},${y0} ${x0 + size + dx},${y0 + dy} ${x0 + size + dx},${y0 + size + dy} ${x0 + size},${y0 + size}" fill="${sideFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${x0},${y0} ${x0 + size},${y0} ${x0 + size},${y0 + size} ${x0},${y0 + size}" fill="${cubeFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <line x1="${x0 + dx}" y1="${y0 + dy}" x2="${x0 + dx}" y2="${y0 + size + dy}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${x0 + dx}" y1="${y0 + size + dy}" x2="${x0 + size + dx}" y2="${y0 + size + dy}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${x0}" y1="${y0 + size}" x2="${x0 + dx}" y2="${y0 + size + dy}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+      `;
+      break;
+    }
+
+    case 'rectangular_prism': {
+      const fw = W * 0.65;
+      const fh = H * 0.52;
+      const x0 = W * 0.1;
+      const y0 = H - fh - H * 0.08;
+      const dx = W * 0.22;
+      const dy = -H * 0.22;
+      const pFill = fill === 'transparent' ? '#6366f115' : fill;
+      const topFill = fill === 'transparent' ? '#6366f125' : fill;
+      const sideFill = fill === 'transparent' ? '#6366f120' : fill;
+      innerSvg = `
+        <polygon points="${x0},${y0} ${x0 + dx},${y0 + dy} ${x0 + fw + dx},${y0 + dy} ${x0 + fw},${y0}" fill="${topFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${x0 + fw},${y0} ${x0 + fw + dx},${y0 + dy} ${x0 + fw + dx},${y0 + fh + dy} ${x0 + fw},${y0 + fh}" fill="${sideFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${x0},${y0} ${x0 + fw},${y0} ${x0 + fw},${y0 + fh} ${x0},${y0 + fh}" fill="${pFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <line x1="${x0 + dx}" y1="${y0 + dy}" x2="${x0 + dx}" y2="${y0 + fh + dy}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${x0 + dx}" y1="${y0 + fh + dy}" x2="${x0 + fw + dx}" y2="${y0 + fh + dy}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${x0}" y1="${y0 + fh}" x2="${x0 + dx}" y2="${y0 + fh + dy}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+      `;
+      break;
+    }
+
+    case 'cone': {
+      const apexX = W / 2;
+      const apexY = H * 0.1;
+      const cx = W / 2;
+      const rx = Math.max(10, W * 0.44 - sw);
+      const ry = Math.max(6, H * 0.15);
+      const botY = H - ry - sw;
+      const coneFill = fill === 'transparent' ? '#f59e0b15' : fill;
+      innerSvg = `
+        <path d="M ${cx - rx} ${botY} L ${apexX} ${apexY} L ${cx + rx} ${botY} A ${rx} ${ry} 0 0 1 ${cx - rx} ${botY} Z" fill="${coneFill}" />
+        <path d="M ${cx - rx} ${botY} A ${rx} ${ry} 0 0 1 ${cx + rx} ${botY}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <path d="M ${cx - rx} ${botY} A ${rx} ${ry} 0 0 0 ${cx + rx} ${botY}" fill="none" stroke="${stroke}" stroke-width="${sw}" />
+        <line x1="${cx - rx}" y1="${botY}" x2="${apexX}" y2="${apexY}" stroke="${stroke}" stroke-width="${sw}" />
+        <line x1="${cx + rx}" y1="${botY}" x2="${apexX}" y2="${apexY}" stroke="${stroke}" stroke-width="${sw}" />
+        <line x1="${apexX}" y1="${apexY}" x2="${cx}" y2="${botY}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.7)}" stroke-dasharray="3,3" opacity="0.45" />
+      `;
+      break;
+    }
+
+    case 'square_prism': {
+      const cx = W / 2;
+      const rx = W * 0.38;
+      const ry = H * 0.14;
+      const topY = H * 0.22;
+      const botY = H * 0.78;
+      const topDiamond = `${cx},${topY - ry} ${cx + rx},${topY} ${cx},${topY + ry} ${cx - rx},${topY}`;
+      const prFill = fill === 'transparent' ? '#10b98115' : fill;
+      const topFill = fill === 'transparent' ? '#10b98125' : fill;
+      innerSvg = `
+        <polygon points="${cx - rx},${topY} ${cx},${topY + ry} ${cx},${botY + ry} ${cx - rx},${botY}" fill="${prFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${cx},${topY + ry} ${cx + rx},${topY} ${cx + rx},${botY} ${cx},${botY + ry}" fill="${prFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${topDiamond}" fill="${topFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <line x1="${cx},${topY - ry}" x2="${cx},${botY - ry}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${cx - rx},${botY}" x2="${cx},${botY - ry}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${cx + rx},${botY}" x2="${cx},${botY - ry}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+      `;
+      break;
+    }
+
+    case 'triangular_pyramid': {
+      const apexX = W / 2;
+      const apexY = H * 0.12;
+      const ptLeft = { x: W * 0.14, y: H * 0.74 };
+      const ptFront = { x: W * 0.48, y: H * 0.90 };
+      const ptRight = { x: W * 0.86, y: H * 0.76 };
+      const pyFill = fill === 'transparent' ? '#ec489915' : fill;
+      innerSvg = `
+        <polygon points="${apexX},${apexY} ${ptLeft.x},${ptLeft.y} ${ptFront.x},${ptFront.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${apexX},${apexY} ${ptFront.x},${ptFront.y} ${ptRight.x},${ptRight.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <line x1="${ptLeft.x}" y1="${ptLeft.y}" x2="${ptRight.x}" y2="${ptRight.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+      `;
+      break;
+    }
+
+    case 'square_pyramid': {
+      const apexX = W / 2;
+      const apexY = H * 0.1;
+      const ptBL = { x: W * 0.26, y: H * 0.65 };
+      const ptBR = { x: W * 0.82, y: H * 0.65 };
+      const ptFR = { x: W * 0.72, y: H * 0.88 };
+      const ptFL = { x: W * 0.18, y: H * 0.88 };
+      const pyFill = fill === 'transparent' ? '#f9731615' : fill;
+      innerSvg = `
+        <polygon points="${apexX},${apexY} ${ptFL.x},${ptFL.y} ${ptFR.x},${ptFR.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${apexX},${apexY} ${ptFR.x},${ptFR.y} ${ptBR.x},${ptBR.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <line x1="${ptFL.x}" y1="${ptFL.y}" x2="${ptBL.x}" y2="${ptBL.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${apexX}" y1="${apexY}" x2="${ptBL.x}" y2="${ptBL.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${ptBL.x}" y1="${ptBL.y}" x2="${ptBR.x}" y2="${ptBR.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+      `;
+      break;
+    }
+
+    case 'rectangular_pyramid': {
+      const apexX = W / 2;
+      const apexY = H * 0.1;
+      const ptBL = { x: W * 0.22, y: H * 0.62 };
+      const ptBR = { x: W * 0.88, y: H * 0.62 };
+      const ptFR = { x: W * 0.78, y: H * 0.88 };
+      const ptFL = { x: W * 0.12, y: H * 0.88 };
+      const pyFill = fill === 'transparent' ? '#8b5cf615' : fill;
+      innerSvg = `
+        <polygon points="${apexX},${apexY} ${ptFL.x},${ptFL.y} ${ptFR.x},${ptFR.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${apexX},${apexY} ${ptFR.x},${ptFR.y} ${ptBR.x},${ptBR.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <line x1="${apexX}" y1="${apexY}" x2="${ptBL.x}" y2="${ptBL.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${ptBL.x}" y1="${ptBL.y}" x2="${ptBR.x}" y2="${ptBR.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${ptFL.x}" y1="${ptFL.y}" x2="${ptBL.x}" y2="${ptBL.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+      `;
+      break;
+    }
+
+    case 'pentagonal_pyramid': {
+      const apexX = W / 2;
+      const apexY = H * 0.1;
+      const cx = W / 2;
+      const cy = H * 0.78;
+      const rx = W * 0.42;
+      const ry = H * 0.15;
+      const v0 = { x: cx - rx, y: cy };
+      const v1 = { x: cx - rx * 0.62, y: cy + ry * 0.82 };
+      const v2 = { x: cx + rx * 0.62, y: cy + ry * 0.82 };
+      const v3 = { x: cx + rx, y: cy };
+      const v4 = { x: cx, y: cy - ry };
+      const pyFill = fill === 'transparent' ? '#14b8a615' : fill;
+      innerSvg = `
+        <polygon points="${apexX},${apexY} ${v0.x},${v0.y} ${v1.x},${v1.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${apexX},${apexY} ${v1.x},${v1.y} ${v2.x},${v2.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${apexX},${apexY} ${v2.x},${v2.y} ${v3.x},${v3.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <line x1="${apexX}" y1="${apexY}" x2="${v4.x}" y2="${v4.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${v0.x}" y1="${v0.y}" x2="${v4.x}" y2="${v4.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${v3.x}" y1="${v3.y}" x2="${v4.x}" y2="${v4.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+      `;
+      break;
+    }
+
+    case 'hexagonal_pyramid': {
+      const apexX = W / 2;
+      const apexY = H * 0.1;
+      const cx = W / 2;
+      const cy = H * 0.78;
+      const rx = W * 0.42;
+      const ry = H * 0.15;
+      const v0 = { x: cx - rx, y: cy };
+      const v1 = { x: cx - rx * 0.5, y: cy + ry * 0.86 };
+      const v2 = { x: cx + rx * 0.5, y: cy + ry * 0.86 };
+      const v3 = { x: cx + rx, y: cy };
+      const v4 = { x: cx + rx * 0.5, y: cy - ry * 0.86 };
+      const v5 = { x: cx - rx * 0.5, y: cy - ry * 0.86 };
+      const pyFill = fill === 'transparent' ? '#06b6d415' : fill;
+      innerSvg = `
+        <polygon points="${apexX},${apexY} ${v0.x},${v0.y} ${v1.x},${v1.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${apexX},${apexY} ${v1.x},${v1.y} ${v2.x},${v2.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <polygon points="${apexX},${apexY} ${v2.x},${v2.y} ${v3.x},${v3.y}" fill="${pyFill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" />
+        <line x1="${apexX}" y1="${apexY}" x2="${v4.x}" y2="${v4.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${apexX}" y1="${apexY}" x2="${v5.x}" y2="${v5.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${v3.x}" y1="${v3.y}" x2="${v4.x}" y2="${v4.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${v4.x}" y1="${v4.y}" x2="${v5.x}" y2="${v5.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+        <line x1="${v5.x}" y1="${v5.y}" x2="${v0.x}" y2="${v0.y}" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.8)}" stroke-dasharray="4,4" opacity="0.6" />
+      `;
+      break;
+    }
 
     default:
       innerSvg = `<rect x="${sw / 2}" y="${sw / 2}" width="${W - sw}" height="${H - sw}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" />`;

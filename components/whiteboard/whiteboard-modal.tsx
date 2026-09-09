@@ -369,6 +369,30 @@ const GEOMETRIC_SHAPES_DATA: {
       </svg>
     )
   },
+  {
+    type: 'heptagon',
+    label: 'Düzgün Yedigen',
+    category: 'Çokgenler',
+    defaultW: 180,
+    defaultH: 180,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="12 2 20 6 22 15 17 22 7 22 2 15 4 6" />
+      </svg>
+    )
+  },
+  {
+    type: 'octagon',
+    label: 'Düzgün Sekizgen',
+    category: 'Çokgenler',
+    defaultW: 180,
+    defaultH: 180,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="8 2 16 2 22 8 22 16 16 22 8 22 2 16 2 8" />
+      </svg>
+    )
+  },
   // 5. Dairesel
   {
     type: 'circle',
@@ -403,6 +427,132 @@ const GEOMETRIC_SHAPES_DATA: {
     previewSvg: (
       <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <ellipse cx="12" cy="12" rx="10" ry="6" />
+      </svg>
+    )
+  },
+  // 6. 3 Boyutlu Cisimler (2D Görünümler)
+  {
+    type: 'cylinder',
+    label: 'Silindir',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 160,
+    defaultH: 200,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <ellipse cx="12" cy="6" rx="8" ry="3" />
+        <path d="M4 6 v12 a8 3 0 0 0 16 0 V6" />
+      </svg>
+    )
+  },
+  {
+    type: 'cube',
+    label: 'Küp',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 180,
+    defaultH: 180,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="8" width="12" height="12" />
+        <path d="M3 8 L9 3 L21 3 L15 8 M21 3 L21 15 L15 20" />
+      </svg>
+    )
+  },
+  {
+    type: 'rectangular_prism',
+    label: 'Dikdörtgenler Prizması',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 220,
+    defaultH: 160,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="2" y="9" width="14" height="11" />
+        <path d="M2 9 L7 4 L21 4 L16 9 M21 4 L21 15 L16 20" />
+      </svg>
+    )
+  },
+  {
+    type: 'cone',
+    label: 'Koni',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 160,
+    defaultH: 200,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 3 L4 18 a8 3 0 0 0 16 0 Z" />
+      </svg>
+    )
+  },
+  {
+    type: 'square_prism',
+    label: 'Kare Prizma',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 160,
+    defaultH: 220,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="12 2 20 6 12 10 4 6" />
+        <path d="M4 6 v12 L12 22 L20 18 V6 M12 10 v12" />
+      </svg>
+    )
+  },
+  {
+    type: 'square_pyramid',
+    label: 'Kare Piramit',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 180,
+    defaultH: 190,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 3 L3 19 L15 22 L21 17 Z M12 3 L15 22" />
+      </svg>
+    )
+  },
+  {
+    type: 'triangular_pyramid',
+    label: 'Üçgen Piramit',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 180,
+    defaultH: 180,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="12 3 3 19 12 22 21 19" />
+        <line x1="12" y1="3" x2="12" y2="22" />
+      </svg>
+    )
+  },
+  {
+    type: 'rectangular_pyramid',
+    label: 'Dikdörtgen Piramit',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 200,
+    defaultH: 180,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 3 L2 18 L16 22 L22 16 Z M12 3 L16 22" />
+      </svg>
+    )
+  },
+  {
+    type: 'pentagonal_pyramid',
+    label: 'Beşgen Piramit',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 190,
+    defaultH: 190,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 3 L3 17 L8 22 L16 22 L21 17 Z M12 3 L8 22 M12 3 L16 22" />
+      </svg>
+    )
+  },
+  {
+    type: 'hexagonal_pyramid',
+    label: 'Altıgen Piramit',
+    category: '3 Boyutlu Cisimler',
+    defaultW: 190,
+    defaultH: 190,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 3 L2 16 L7 22 L12 22 L17 22 L22 16 Z M12 3 L7 22 M12 3 L12 22 M12 3 L17 22" />
       </svg>
     )
   }
@@ -2061,7 +2211,7 @@ export function WhiteboardModal({
                     </div>
 
                     <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-                      {['Temel Kavramlar', 'Üçgenler', 'Dörtgenler', 'Çokgenler', 'Dairesel'].map((cat) => {
+                      {['Temel Kavramlar', 'Üçgenler', 'Dörtgenler', 'Çokgenler', 'Dairesel', '3 Boyutlu Cisimler'].map((cat) => {
                         const items = GEOMETRIC_SHAPES_DATA.filter((s) => s.category === cat);
                         if (!items.length) return null;
 
