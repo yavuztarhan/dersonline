@@ -73,12 +73,17 @@ export function ActivitySheetView({
   // Active activity sheet file record
   const fileRecord = getActivitySheetForOutcome(outcomeCode, selectedSheetId);
   const isBridgeActivity = fileRecord?.id?.includes('bridge') || fileRecord?.title?.includes('Köprü');
+  const isSteppingWorkshop =
+    selectedSheetId.includes('stepping') ||
+    fileRecord?.id?.includes('stepping') ||
+    fileRecord?.title?.includes('Adımlama');
   const isDeductionDetective =
-    outcomeCode === 'MAT.5.3.2' ||
-    fileRecord?.id?.includes('5-3-2') ||
-    fileRecord?.title?.includes('Çıkarım');
+    !isSteppingWorkshop &&
+    (outcomeCode === 'MAT.5.3.2' ||
+      fileRecord?.id?.includes('5-3-2') ||
+      fileRecord?.title?.includes('Çıkarım'));
 
-  // Interactive deduction state for MAT.5.3.2
+  // Interactive deduction state for MAT.5.3.2 Çıkarım Dedektifi
   const [deductionAnswers, setDeductionAnswers] = useState({
     exp1: '',
     exp2: '',
@@ -94,6 +99,46 @@ export function ActivitySheetView({
     exp2?: boolean;
     exp3?: boolean;
   }>({});
+
+  // Interactive stepping workshop state for MAT.5.3.2 Pergel ile Adımlama Atölyesi
+  const [rayStep, setRayStep] = useState<number>(0); // 0 = initial, 1 = A, 2 = B, 3 = C (complete)
+  const [angleStep, setAngleStep] = useState<number>(0); // 0 = initial, 1 = arc & P1, P2
+  const [steppingCompleted, setSteppingCompleted] = useState<{ ray?: boolean; angle?: boolean }>({});
+
+  const handleAdvanceRayStep = () => {
+    playSound('click');
+    setRayStep((prev) => {
+      const next = prev < 3 ? prev + 1 : 3;
+      if (next === 3 && !steppingCompleted.ray) {
+        playSound('success');
+        addPoints(50);
+        setSteppingCompleted((p) => ({ ...p, ray: true }));
+        if (steppingCompleted.angle) {
+          unlockBadge('maarif-genius');
+          try {
+            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+          } catch (e) {}
+        }
+      }
+      return next;
+    });
+  };
+
+  const handleAdvanceAngleStep = () => {
+    playSound('click');
+    setAngleStep(1);
+    if (!steppingCompleted.angle) {
+      playSound('success');
+      addPoints(50);
+      setSteppingCompleted((p) => ({ ...p, angle: true }));
+      if (steppingCompleted.ray || rayStep === 3) {
+        unlockBadge('maarif-genius');
+        try {
+          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    }
+  };
 
   const handleCheckDeduction = (expKey: 'exp1' | 'exp2' | 'exp3') => {
     const rawVal = deductionAnswers[expKey].trim().toLowerCase();
@@ -153,7 +198,8 @@ export function ActivitySheetView({
         <div className="flex items-center gap-2 p-1.5 bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-300 dark:border-slate-700 overflow-x-auto">
           {availableSheets.map((sheet) => {
             const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
-            const isDetective = sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım');
+            const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
+            const isDetective = (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping;
             const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
             return (
               <button
@@ -167,17 +213,24 @@ export function ActivitySheetView({
                   isActive
                     ? isBridge
                       ? 'bg-amber-500 text-slate-950 shadow-md scale-102'
+                      : isStepping
+                      ? 'bg-purple-600 text-white shadow-md scale-102'
                       : isDetective
                       ? 'bg-sky-600 text-white shadow-md scale-102'
                       : 'bg-teal-600 text-white shadow-md scale-102'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-300/50 dark:hover:bg-slate-700/50'
                 }`}
               >
-                <span>{isBridge ? '🏛️' : isDetective ? '🔍' : '📐'}</span>
+                <span>{isBridge ? '🏛️' : isStepping ? '⭕' : isDetective ? '🔍' : '📐'}</span>
                 <span>{sheet.title.replace(/ \(MAT\.5\.3\.[12]\)/, '')}</span>
                 {isBridge && (
                   <span className="px-1.5 py-0.5 rounded bg-amber-950/20 text-[9px] font-black uppercase">
                     Büyük Görev
+                  </span>
+                )}
+                {isStepping && (
+                  <span className="px-1.5 py-0.5 rounded bg-purple-950/20 text-[9px] font-black uppercase">
+                    Adımlama Atölyesi
                   </span>
                 )}
                 {isDetective && (
@@ -196,6 +249,8 @@ export function ActivitySheetView({
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
           isBridgeActivity
             ? 'bg-gradient-to-br from-amber-950 via-amber-900 to-slate-950'
+            : isSteppingWorkshop
+            ? 'bg-gradient-to-br from-purple-950 via-purple-900 to-slate-950'
             : isDeductionDetective
             ? 'bg-gradient-to-br from-sky-950 via-sky-900 to-slate-950'
             : 'bg-gradient-to-br from-teal-900 via-teal-800 to-slate-900'
@@ -206,6 +261,8 @@ export function ActivitySheetView({
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
             isBridgeActivity
               ? 'bg-amber-500/10'
+              : isSteppingWorkshop
+              ? 'bg-purple-500/15'
               : isDeductionDetective
               ? 'bg-sky-500/15'
               : 'bg-teal-500/10'
@@ -215,6 +272,8 @@ export function ActivitySheetView({
           className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
             isBridgeActivity
               ? 'bg-orange-500/10'
+              : isSteppingWorkshop
+              ? 'bg-indigo-500/20'
               : isDeductionDetective
               ? 'bg-indigo-500/15'
               : 'bg-indigo-500/10'
@@ -228,6 +287,8 @@ export function ActivitySheetView({
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
                 isBridgeActivity
                   ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
+                  : isSteppingWorkshop
+                  ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
                   : isDeductionDetective
                   ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
@@ -237,6 +298,11 @@ export function ActivitySheetView({
                 <>
                   <Landmark className="w-3.5 h-3.5 text-amber-300" />
                   <span>Büyük Görev • Mimari Restorasyon & Geometrik İnşa</span>
+                </>
+              ) : isSteppingWorkshop ? (
+                <>
+                  <CircleDot className="w-3.5 h-3.5 text-purple-300" />
+                  <span>Pergel İnşası & Eşit Mesafe Aktarımı (SDB1.2 / OB2)</span>
                 </>
               ) : isDeductionDetective ? (
                 <>
@@ -254,6 +320,8 @@ export function ActivitySheetView({
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
               {isBridgeActivity
                 ? 'Büyük Görev: Tarihi Köprü Restorasyonu'
+                : isSteppingWorkshop
+                ? 'Atölye: "PERGEL İLE ADIMLAMA" (Eşit Parçalar Kesme)'
                 : isDeductionDetective
                 ? 'Etkinlik: "ÇIKARIM DEDEKTİFİ" (Gözlem ve Temel Kurallar)'
                 : 'Etkinlik 1: Aşamalı İnşa İstasyonları'}
@@ -264,6 +332,12 @@ export function ActivitySheetView({
               <div className="p-3 bg-amber-950/60 border border-amber-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-amber-100 font-medium italic leading-relaxed">
                   📜 <strong>Kurgu Paneli:</strong> &ldquo;Mimar Sinan'ın Kanuni Köprüsü'nün çizimi hasar gördü! Kemerleri ve ayakları aletlerinle tamamla.&rdquo;
+                </p>
+              </div>
+            ) : isSteppingWorkshop ? (
+              <div className="p-3 bg-purple-950/60 border border-purple-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-purple-100 font-medium leading-relaxed">
+                  ⭕ <strong>Atölye Görevi:</strong> Ölçülü cetvel (santimetre) kullanmadan, sadece pergel açıklığı ile mesafeyi sabit tutarak ışın ve açı kollarından eşit uzunlukta parçalar inşa et!
                 </p>
               </div>
             ) : isDeductionDetective ? (
@@ -282,6 +356,8 @@ export function ActivitySheetView({
               className={`flex items-center gap-3 pt-2 text-[11px] font-mono ${
                 isBridgeActivity
                   ? 'text-amber-200/70'
+                  : isSteppingWorkshop
+                  ? 'text-purple-200/70'
                   : isDeductionDetective
                   ? 'text-sky-200/70'
                   : 'text-teal-200/70'
@@ -292,6 +368,8 @@ export function ActivitySheetView({
               <span>
                 {isBridgeActivity
                   ? '4 Restorasyon Adımı (100 Puan)'
+                  : isSteppingWorkshop
+                  ? '2 Ana Görev (100 Puan)'
                   : isDeductionDetective
                   ? '3 Deney Kutusu (100 Puan)'
                   : '4 İstasyon (100 Puan)'}
@@ -300,6 +378,8 @@ export function ActivitySheetView({
               <span>
                 {isBridgeActivity
                   ? 'Geniş Milimetrik Grid'
+                  : isSteppingWorkshop
+                  ? 'Pergel ile Mesafe Koruma'
                   : isDeductionDetective
                   ? 'Aksiyom & Mantıksal Çıkarım'
                   : 'Sistem Beyaz Tahta Notu'}
@@ -324,6 +404,8 @@ export function ActivitySheetView({
                 className={`w-4 h-4 ${
                   isBridgeActivity
                     ? 'text-amber-300'
+                    : isSteppingWorkshop
+                    ? 'text-purple-300'
                     : isDeductionDetective
                     ? 'text-sky-300'
                     : 'text-teal-300'
@@ -342,6 +424,8 @@ export function ActivitySheetView({
               className={`px-4 py-2.5 rounded-xl font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${
                 isBridgeActivity
                   ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-500/20'
+                  : isSteppingWorkshop
+                  ? 'bg-purple-400 hover:bg-purple-300 text-slate-950 shadow-purple-500/20'
                   : isDeductionDetective
                   ? 'bg-sky-400 hover:bg-sky-300 text-slate-950 shadow-sky-500/20'
                   : 'bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-teal-500/20'
@@ -366,6 +450,8 @@ export function ActivitySheetView({
                     className={`w-4 h-4 animate-spin ${
                       isBridgeActivity
                         ? 'text-amber-400'
+                        : isSteppingWorkshop
+                        ? 'text-purple-400'
                         : isDeductionDetective
                         ? 'text-sky-400'
                         : 'text-teal-400'
@@ -387,8 +473,303 @@ export function ActivitySheetView({
 
       </div>
 
-      {/* 2. BODY CONTENT: EITHER ÇIKARIM DEDEKTİFİ (MAT.5.3.2) OR BRIDGE OR 4-STATIONS (MAT.5.3.1) */}
-      {isDeductionDetective ? (
+      {/* 2. BODY CONTENT: EITHER STEPPING WORKSHOP OR DEDUCTION DETECTIVE OR BRIDGE OR 4-STATIONS */}
+      {isSteppingWorkshop ? (
+        /* ========================================================================= */
+        /* ATÖLYE: "PERGEL İLE ADIMLAMA" (EŞİT PARÇALAR KESME - MAT.5.3.2)            */
+        /* ========================================================================= */
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* GÖREV A: IŞIN ÜZERİNDE ADIMLAMA */}
+            <div className="bg-white rounded-3xl p-6 border-2 border-purple-500/30 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-purple-900 font-black text-sm">
+                    <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-bold text-sm">
+                      🧭
+                    </div>
+                    <span>GÖREV A: IŞIN ÜZERİNDE ADIMLAMA</span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 font-bold text-[11px] border border-purple-200">
+                    50 Puan
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs text-slate-800 leading-relaxed">
+                  <strong>Yönerge:</strong> Pergelini bir miktar aç ve açıklığını hiç bozma. İğnesini <code>K</code> noktasına batırıp ışını kesen bir yay çiz (<code>A</code> noktası). Şimdi iğneyi <code>A</code> noktasına batırıp ikinci bir yay çiz (<code>B</code> noktası). Yan yana 3 eşit parça oluştur.
+                </div>
+
+                {/* SVG İnşa Çizim Alanı */}
+                <div className="border-2 border-dashed border-purple-300/80 rounded-2xl h-52 bg-slate-50/70 relative overflow-hidden flex items-center justify-center select-none">
+                  <svg viewBox="0 0 380 180" width="100%" height="100%" className="w-full h-full">
+                    <pattern id="grid_step_ray" width="16" height="16" patternUnits="userSpaceOnUse">
+                      <circle cx="2" cy="2" r="1" fill="#cbd5e1" />
+                    </pattern>
+                    <rect width="380" height="180" fill="url(#grid_step_ray)" />
+
+                    {/* Işın Çizgisi [K --> */}
+                    <line x1="30" y1="100" x2="350" y2="100" stroke="#334155" strokeWidth="2.5" />
+                    <polygon points="350,95 365,100 350,105" fill="#334155" />
+                    <text x="355" y="125" font-family="monospace" font-size="10" font-weight="bold" fill="#334155">[K Işını</text>
+
+                    {/* K Başlangıç Noktası */}
+                    <circle cx="50" cy="100" r="6" fill="#7c3aed" stroke="#ffffff" strokeWidth="2" />
+                    <text x="50" y="130" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#6d28d9" text-anchor="middle">
+                      K
+                    </text>
+
+                    {/* Adım 1: A Noktası ve Yayı */}
+                    {rayStep >= 1 && (
+                      <g className="animate-in fade-in zoom-in-95 duration-200">
+                        <path d="M 130 65 A 75 75 0 0 1 130 135" fill="none" stroke="#7c3aed" strokeWidth="2" strokeDasharray="4 3" />
+                        <circle cx="130" cy="100" r="5" fill="#7c3aed" stroke="#ffffff" strokeWidth="1.5" />
+                        <text x="130" y="130" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#6d28d9" text-anchor="middle">
+                          A
+                        </text>
+                        {/* Eşitlik Tırnağı 1 */}
+                        <line x1="88" y1="94" x2="92" y2="106" stroke="#6d28d9" strokeWidth="2" />
+                        <text x="90" y="85" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed" text-anchor="middle">d_pergel</text>
+                      </g>
+                    )}
+
+                    {/* Adım 2: B Noktası ve Yayı */}
+                    {rayStep >= 2 && (
+                      <g className="animate-in fade-in zoom-in-95 duration-200">
+                        <path d="M 210 65 A 75 75 0 0 1 210 135" fill="none" stroke="#7c3aed" strokeWidth="2" strokeDasharray="4 3" />
+                        <circle cx="210" cy="100" r="5" fill="#7c3aed" stroke="#ffffff" strokeWidth="1.5" />
+                        <text x="210" y="130" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#6d28d9" text-anchor="middle">
+                          B
+                        </text>
+                        {/* Eşitlik Tırnağı 2 */}
+                        <line x1="168" y1="94" x2="172" y2="106" stroke="#6d28d9" strokeWidth="2" />
+                        <text x="170" y="85" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed" text-anchor="middle">d_pergel</text>
+                      </g>
+                    )}
+
+                    {/* Adım 3: C Noktası ve Yayı */}
+                    {rayStep >= 3 && (
+                      <g className="animate-in fade-in zoom-in-95 duration-200">
+                        <path d="M 290 65 A 75 75 0 0 1 290 135" fill="none" stroke="#7c3aed" strokeWidth="2" strokeDasharray="4 3" />
+                        <circle cx="290" cy="100" r="5" fill="#7c3aed" stroke="#ffffff" strokeWidth="1.5" />
+                        <text x="290" y="130" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#6d28d9" text-anchor="middle">
+                          C
+                        </text>
+                        {/* Eşitlik Tırnağı 3 */}
+                        <line x1="248" y1="94" x2="252" y2="106" stroke="#6d28d9" strokeWidth="2" />
+                        <text x="250" y="85" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed" text-anchor="middle">d_pergel</text>
+                      </g>
+                    )}
+
+                    {/* İpuçları */}
+                    {rayStep === 0 && (
+                      <text x="190" y="45" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#94a3b8" text-anchor="middle">
+                        📍 1. Adıma tıkla: İğneyi K'ye batır ve ilk yayı çiz
+                      </text>
+                    )}
+                  </svg>
+                </div>
+              </div>
+
+              {/* Etkileşimli Adımlama Kontrolleri */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="p-3.5 bg-purple-50/80 border-2 border-purple-200 rounded-2xl space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black text-purple-900 flex items-center gap-1.5">
+                      <Compass className="w-3.5 h-3.5 text-purple-600" />
+                      <span>İnşa Simülatörü (Adım {rayStep}/3):</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-purple-700 bg-white px-2 py-0.5 rounded-md border border-purple-200">
+                      {rayStep === 3 ? 'Tamamlandı (+50 Puan)' : `${Math.round(rayStep * 16.6)} Puan`}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={handleAdvanceRayStep}
+                      disabled={rayStep >= 3}
+                      className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-sm"
+                    >
+                      <CircleDot className="w-3.5 h-3.5" />
+                      <span>
+                        {rayStep === 0
+                          ? '1. Adım: İğneyi K\'ye Batır & A Yayını Çiz'
+                          : rayStep === 1
+                          ? '2. Adım: İğneyi A\'ya Batır & B Yayını Çiz'
+                          : rayStep === 2
+                          ? '3. Adım: İğneyi B\'ye Batır & C Yayını Çiz'
+                          : '3 Eşit Parça Tamamlandı! 🎉'}
+                      </span>
+                    </button>
+
+                    {rayStep > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('click');
+                          setRayStep(0);
+                        }}
+                        className="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs border border-slate-200 transition-all cursor-pointer"
+                      >
+                        Sıfırla
+                      </button>
+                    )}
+                  </div>
+
+                  {rayStep === 3 && (
+                    <div className="p-2.5 bg-emerald-100 border border-emerald-300 rounded-xl text-xs text-emerald-900 font-bold flex items-center gap-2 animate-in fade-in">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>
+                        Harika! |KA| = |AB| = |BC| eşitliği pergel açıklığı ile santimetre cetveli olmadan garanti edildi.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* GÖREV B: AÇININ KOLLARINI EŞİTLEME */}
+            <div className="bg-white rounded-3xl p-6 border-2 border-teal-500/30 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-teal-900 font-black text-sm">
+                    <div className="w-8 h-8 rounded-xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center font-bold text-sm">
+                      📐
+                    </div>
+                    <span>GÖREV B: AÇININ KOLLARINI EŞİTLEME</span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-800 font-bold text-[11px] border border-teal-200">
+                    50 Puan
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs text-slate-800 leading-relaxed">
+                  <strong>Yönerge:</strong> Verilen rastgele bir açının her iki kolu üzerinde, aynı pergel açıklığı ile tepe noktasından (<code>O</code>) eşit uzaklıkta noktalar (<code>P₁</code> ve <code>P₂</code>) işaretle.
+                </div>
+
+                {/* SVG İnşa Çizim Alanı */}
+                <div className="border-2 border-dashed border-teal-300/80 rounded-2xl h-52 bg-slate-50/70 relative overflow-hidden flex items-center justify-center select-none">
+                  <svg viewBox="0 0 380 180" width="100%" height="100%" className="w-full h-full">
+                    <pattern id="grid_step_angle" width="16" height="16" patternUnits="userSpaceOnUse">
+                      <circle cx="2" cy="2" r="1" fill="#cbd5e1" />
+                    </pattern>
+                    <rect width="380" height="180" fill="url(#grid_step_angle)" />
+
+                    {/* Açının Tepe Noktası O */}
+                    <circle cx="50" cy="135" r="6" fill="#0d9488" stroke="#ffffff" strokeWidth="2" />
+                    <text x="35" y="152" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#0f766e">
+                      O (Tepe)
+                    </text>
+
+                    {/* Yatay Kol k1 */}
+                    <line x1="50" y1="135" x2="330" y2="135" stroke="#334155" strokeWidth="2.5" />
+                    <polygon points="330,130 345,135 330,140" fill="#334155" />
+                    <text x="340" y="152" font-family="monospace" font-size="10" font-weight="bold" fill="#334155">k₁</text>
+
+                    {/* Eğik Kol k2 (50 deg) */}
+                    <line x1="50" y1="135" x2="235" y2="25" stroke="#334155" strokeWidth="2.5" />
+                    <polygon points="230,20 245,19 240,34" fill="#334155" />
+                    <text x="250" y="32" font-family="monospace" font-size="10" font-weight="bold" fill="#334155">k₂</text>
+
+                    {/* Pergel Yayı ve Kesim Noktaları P1, P2 */}
+                    {angleStep >= 1 && (
+                      <g className="animate-in fade-in zoom-in-95 duration-200">
+                        {/* O Merkezli Pergel Yayı (R = 130) */}
+                        <path d="M 180 135 A 130 130 0 0 0 133 36" fill="none" stroke="#0d9488" strokeWidth="2.5" strokeDasharray="5 4" />
+                        
+                        {/* P1 Noktası */}
+                        <circle cx="180" cy="135" r="5" fill="#0d9488" stroke="#ffffff" strokeWidth="1.5" />
+                        <text x="180" y="155" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#0f766e" text-anchor="middle">
+                          P₁
+                        </text>
+
+                        {/* P2 Noktası */}
+                        <circle cx="133" cy="51" r="5" fill="#0d9488" stroke="#ffffff" strokeWidth="1.5" />
+                        <text x="115" y="52" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#0f766e" text-anchor="middle">
+                          P₂
+                        </text>
+
+                        {/* Eşitlik Çift Tırnakları */}
+                        <text x="120" y="125" font-family="monospace" font-size="9.5" font-weight="bold" fill="#0f766e" text-anchor="middle">
+                          r_pergel
+                        </text>
+                        <text x="85" y="80" font-family="monospace" font-size="9.5" font-weight="bold" fill="#0f766e" text-anchor="middle">
+                          r_pergel
+                        </text>
+
+                        <text x="280" y="80" font-family="monospace" font-size="10" font-weight="bold" fill="#0d9488" text-anchor="middle">
+                          |OP₁| = |OP₂|
+                        </text>
+                      </g>
+                    )}
+
+                    {angleStep === 0 && (
+                      <text x="190" y="45" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#94a3b8" text-anchor="middle">
+                        📍 Pergeli O köşesine batır ve iki kolu kesen yayı çiz
+                      </text>
+                    )}
+                  </svg>
+                </div>
+              </div>
+
+              {/* Etkileşimli Kontroller */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="p-3.5 bg-teal-50/80 border-2 border-teal-200 rounded-2xl space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black text-teal-900 flex items-center gap-1.5">
+                      <Compass className="w-3.5 h-3.5 text-teal-600" />
+                      <span>İnşa Simülatörü:</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-teal-700 bg-white px-2 py-0.5 rounded-md border border-teal-200">
+                      {angleStep === 1 ? 'Tamamlandı (+50 Puan)' : '0 Puan'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={handleAdvanceAngleStep}
+                      disabled={angleStep === 1}
+                      className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-sm"
+                    >
+                      <CircleDot className="w-3.5 h-3.5" />
+                      <span>
+                        {angleStep === 0
+                          ? 'Pergeli O Köşesine Batır & Yay Çiz'
+                          : 'Kollar Eşitlendi! (|OP₁|=|OP₂|) 🎉'}
+                      </span>
+                    </button>
+
+                    {angleStep > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('click');
+                          setAngleStep(0);
+                        }}
+                        className="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-600 font-bold text-xs border border-slate-200 transition-all cursor-pointer"
+                      >
+                        Sıfırla
+                      </button>
+                    )}
+                  </div>
+
+                  {angleStep === 1 && (
+                    <div className="p-2.5 bg-emerald-100 border border-emerald-300 rounded-xl text-xs text-emerald-900 font-bold flex items-center gap-2 animate-in fade-in">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>
+                        Kusursuz! Açının her iki kolundan tepe noktasından eşit uzaklıkta noktalar kesildi.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      ) : isDeductionDetective ? (
         /* ========================================================================= */
         /* ETKİNLİK: "ÇIKARIM DEDEKTİFİ" (GÖZLEM VE TEMEL KURALLAR - MAT.5.3.2)       */
         /* ========================================================================= */

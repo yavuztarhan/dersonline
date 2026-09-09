@@ -695,6 +695,165 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-2-stepping',
+    title: 'Pergel ile Adımlama Atölyesi: Eşit Parçalar Kesme (MAT.5.3.2)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.2',
+    outcomeTitle: 'Temel Geometrik Çizimlerin Özelliklerine Yönelik Çıkarımda Bulunabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-09T11:00:00Z',
+    fileSizeKb: 205,
+    tags: ['Etkinlik Kağıdı', 'Pergel ile Adımlama', 'Eşit Parçalar Kesme', 'Işın Üzerinde Adımlama', 'Açı Kollarını Eşitleme', 'MAT.5.3.2', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #7c3aed; padding-bottom: 8px; margin-bottom: 14px; background: linear-gradient(135deg, #f5f3ff, #ede9fe); padding: 12px; border-radius: 12px; border: 1px solid #ddd6fe;">
+    <div style="display: inline-block; background: #7c3aed; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px;">
+      ⭕ PERGEL İNŞASI &amp; EŞİT MESAFE AKTARIMI (SDB1.2 / OB2)
+    </div>
+    <h2 style="color: #5b21b6; font-size: 17px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      ATÖLYE: "PERGEL İLE ADIMLAMA" (EŞİT PARÇALAR KESME) - MAT.5.3.2
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 4px 0 0 0; font-weight: 600;">
+      Ölçülü cetvel (santimetre) kullanmadan, sadece pergel açıklığı ile mesafeyi sabit tutarak eşit uzunluk üretme istasyonları.
+    </p>
+  </div>
+
+  <!-- 2 Ana Görev Kutusu (Görev A ve Görev B) -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+    
+    <!-- GÖREV A: IŞIN ÜZERİNDE ADIMLAMA -->
+    <div style="border: 2px solid #7c3aed; border-radius: 12px; padding: 12px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 6px; margin-bottom: 8px;">
+          <span style="font-weight: 900; color: #6d28d9; font-size: 12px;">🧭 GÖREV A: IŞIN ÜZERİNDE ADIMLAMA</span>
+          <span style="font-size: 10px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd6fe;">50 Puan</span>
+        </div>
+        <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0;">
+          <strong>Yönerge:</strong> Pergelini bir miktar aç ve açıklığını hiç bozma. İğnesini <code>K</code> noktasına batırıp ışını kesen bir yay çiz (<code>A</code> noktası). Şimdi iğneyi <code>A</code> noktasına batırıp ikinci bir yay çiz (<code>B</code> noktası). Yan yana 3 eşit parça oluştur.
+        </p>
+
+        <!-- Çizim Alanı SVG -->
+        <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 170px; background: #faf5ff; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 360 170" width="100%" height="100%" style="display: block;">
+            <!-- Işın Çizgisi [K -->
+            <line x1="40" y1="100" x2="330" y2="100" stroke="#475569" stroke-width="2.5" />
+            <polygon points="330,95 345,100 330,105" fill="#475569" />
+            
+            <!-- K Başlangıç Noktası -->
+            <circle cx="50" cy="100" r="5.5" fill="#7c3aed" stroke="#ffffff" stroke-width="2" />
+            <text x="50" y="125" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#6d28d9" text-anchor="middle">K (Başlangıç)</text>
+            
+            <!-- 1. Pergel Yayı & A Noktası -->
+            <path d="M 125 70 A 80 80 0 0 1 125 130" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 3" />
+            <circle cx="125" cy="100" r="4.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5" />
+            <text x="125" y="125" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#6d28d9" text-anchor="middle">A</text>
+            
+            <!-- 2. Pergel Yayı & B Noktası -->
+            <path d="M 200 70 A 80 80 0 0 1 200 130" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 3" />
+            <circle cx="200" cy="100" r="4.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5" />
+            <text x="200" y="125" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#6d28d9" text-anchor="middle">B</text>
+
+            <!-- 3. Pergel Yayı & C Noktası -->
+            <path d="M 275 70 A 80 80 0 0 1 275 130" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 3" />
+            <circle cx="275" cy="100" r="4.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5" />
+            <text x="275" y="125" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#6d28d9" text-anchor="middle">C</text>
+
+            <!-- Eşitlik Tırnakları (Equal tick marks) -->
+            <line x1="85" y1="94" x2="89" y2="106" stroke="#6d28d9" stroke-width="1.8" />
+            <line x1="160" y1="94" x2="164" y2="106" stroke="#6d28d9" stroke-width="1.8" />
+            <line x1="235" y1="94" x2="239" y2="106" stroke="#6d28d9" stroke-width="1.8" />
+
+            <text x="87" y="85" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed" text-anchor="middle">d (sabit)</text>
+            <text x="162" y="85" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed" text-anchor="middle">d (sabit)</text>
+            <text x="237" y="85" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed" text-anchor="middle">d (sabit)</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Çıkarım Notu -->
+      <div style="margin-top: 10px; padding: 8px 10px; background: #f5f3ff; border: 1.5px solid #7c3aed; border-radius: 8px;">
+        <span style="font-size: 9.5px; font-weight: 900; color: #6d28d9; text-transform: uppercase;">✨ Matematiksel Çıkarım:</span>
+        <p style="font-size: 10.5px; color: #0f172a; margin: 4px 0 0 0; font-weight: 700;">
+          |KA| = |AB| = |BC| (Pergel açıklığı sabit tutulduğunda ardışık eşit doğru parçaları kesilir).
+        </p>
+      </div>
+    </div>
+
+    <!-- GÖREV B: AÇININ KOLLARINI EŞİTLEME -->
+    <div style="border: 2px solid #0d9488; border-radius: 12px; padding: 12px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ccfbf1; padding-bottom: 6px; margin-bottom: 8px;">
+          <span style="font-weight: 900; color: #0f766e; font-size: 12px;">📐 GÖREV B: AÇININ KOLLARINI EŞİTLEME</span>
+          <span style="font-size: 10px; font-weight: bold; background: #f0fdfa; color: #0d9488; padding: 2px 6px; border-radius: 4px; border: 1px solid #99f6e4;">50 Puan</span>
+        </div>
+        <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0;">
+          <strong>Yönerge:</strong> Verilen rastgele bir açının her iki kolu üzerinde, aynı pergel açıklığı ile tepe noktasından (<code>O</code>) eşit uzaklıkta noktalar (<code>P₁</code> ve <code>P₂</code>) işaretle.
+        </p>
+
+        <!-- Çizim Alanı SVG -->
+        <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 170px; background: #f0fdfa; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 360 170" width="100%" height="100%" style="display: block;">
+            <!-- Açının Köşesi O -->
+            <circle cx="50" cy="130" r="5.5" fill="#0d9488" stroke="#ffffff" stroke-width="2" />
+            <text x="35" y="145" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#0f766e">O (Tepe)</text>
+            
+            <!-- Yatay Kol k1 -->
+            <line x1="50" y1="130" x2="320" y2="130" stroke="#334155" stroke-width="2.5" />
+            <polygon points="320,125 335,130 320,135" fill="#334155" />
+            <text x="330" y="145" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#334155">k₁</text>
+
+            <!-- Eğik Kol k2 (50 deg) -->
+            <line x1="50" y1="130" x2="220" y2="25" stroke="#334155" stroke-width="2.5" />
+            <polygon points="215,20 230,19 226,34" fill="#334155" />
+            <text x="235" y="32" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#334155">k₂</text>
+
+            <!-- O Merkezli Pergel Yayı (R = 120) -->
+            <path d="M 170 130 A 120 120 0 0 0 127 30" fill="none" stroke="#0d9488" stroke-width="2" stroke-dasharray="4 3" />
+            
+            <!-- P1 Noktası (Yatay Kolda) -->
+            <circle cx="170" cy="130" r="4.5" fill="#0d9488" stroke="#ffffff" stroke-width="1.5" />
+            <text x="170" y="150" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#0f766e" text-anchor="middle">P₁</text>
+
+            <!-- P2 Noktası (Eğik Kolda) -->
+            <circle cx="127" cy="53" r="4.5" fill="#0d9488" stroke="#ffffff" stroke-width="1.5" />
+            <text x="110" y="55" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#0f766e" text-anchor="middle">P₂</text>
+
+            <!-- Eşitlik Çift Çizgisi -->
+            <text x="115" y="120" font-family="monospace" font-size="9" font-weight="bold" fill="#0f766e" text-anchor="middle">r_pergel</text>
+            <text x="80" y="80" font-family="monospace" font-size="9" font-weight="bold" fill="#0f766e" text-anchor="middle">r_pergel</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Çıkarım Notu -->
+      <div style="margin-top: 10px; padding: 8px 10px; background: #f0fdfa; border: 1.5px solid #0d9488; border-radius: 8px;">
+        <span style="font-size: 9.5px; font-weight: 900; color: #0f766e; text-transform: uppercase;">✨ Matematiksel Çıkarım:</span>
+        <p style="font-size: 10.5px; color: #0f172a; margin: 4px 0 0 0; font-weight: 700;">
+          |OP₁| = |OP₂| (Açının kollarından pergel yardımıyla köşe noktasından eşit uzaklıkta noktalar kesildi).
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Alt Bilgi / Puanlama & Maarif İmzası -->
+  <div style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 10px; color: #475569; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Değerlendirme:</strong> Görev A (50 Puan) + Görev B (50 Puan) = Toplam 100 Puan. (SDB1.2 / OB2 Pergel ile Mesafe Koruma)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
