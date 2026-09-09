@@ -2,7 +2,7 @@
  * DERS TAKVİMİ & AKADEMİK HAFTALIK VERİ TABANI (ACADEMIC CALENDAR DATABASE)
  * 
  * Bu veri tabanı, Türkiye Yüzyılı Maarif Modeli ve MEB Çalışma Takvimine uygun 
- * 37 haftalık eğitim-öğretim yılının tüm tarih aralıklarını, aylarını, dönemlerini ve 
+ * 36 haftalık eğitim-öğretim yılının tüm tarih aralıklarını, aylarını, dönemlerini ve 
  * belirli gün/hafta/sınav takvimini merkezi olarak yönetir.
  * 
  * Tüm sınıflar (5. Sınıf, 6. Sınıf, 7. Sınıf, 8. Sınıf...) ve branşlar (Matematik, Fen, Türkçe...)
@@ -11,423 +11,407 @@
  */
 
 export interface AcademicWeek {
-  weekNo: number; // 1 - 37
+  weekNo: number; // 1 - 36
   month: string; // "EYLÜL", "EKİM", "KASIM-ARALIK", vb.
-  dateRange: string; // "14-20", "28-04", vb.
-  formattedDateRange: string; // "14-20 EYLÜL", "28 EYLÜL - 04 EKİM", vb.
-  label: string; // "1. HAFTA (14-20 EYLÜL)", "3. HAFTA (28 EYLÜL - 04 EKİM)", vb.
+  dateRange: string; // "14-18", "28-02", vb.
+  formattedDateRange: string; // "14-18 EYLÜL", "28 EYLÜL - 02 EKİM", vb.
+  label: string; // "1. HAFTA (14-18 EYLÜL)", "3. HAFTA (28 EYLÜL - 02 EKİM)", vb.
   specialEvent: string; // "2026-2027 Eğitim-Öğretim yılı başlangıcı", "Cumhuriyet Bayramı", "SINAV HAFTASI", vb.
-  term: 1 | 2; // 1. Dönem (1-18), 2. Dönem (19-37)
+  term: 1 | 2; // 1. Dönem (1-18), 2. Dönem (19-36)
   lessonHours: string; // Varsayılan "5 SAAT"
 }
 
 export interface AcademicCalendarConfig {
   academicYear: string; // "2026-2027"
-  firstTermWeeks: number; // 18 hafta
-  secondTermWeeks: number; // 19 hafta (19-37)
-  totalWeeks: number; // 37 hafta
+  firstTermWeeks: number; // 18 hafta (1-18)
+  secondTermWeeks: number; // 18 hafta (19-36)
+  totalWeeks: number; // 36 hafta
   weeks: AcademicWeek[];
 }
 
 /**
- * 37 Haftalık Merkezi Akademik Takvim Verisi
+ * 36 Haftalık Merkezi Akademik Takvim Verisi
  */
 export const ACADEMIC_WEEKS_DATA: AcademicWeek[] = [
   {
-    weekNo: 1,
-    month: "EYLÜL",
-    dateRange: "14-20",
-    formattedDateRange: "14-20 EYLÜL",
-    label: "1. HAFTA (14-20 EYLÜL)",
-    specialEvent: "2026-2027 Eğitim-Öğretim yılı başlangıcı",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 1,
+    "month": "EYLÜL",
+    "dateRange": "14-18",
+    "formattedDateRange": "14-18 EYLÜL",
+    "label": "1. HAFTA (14-18 EYLÜL)",
+    "specialEvent": "2026-2027 Eğitim-Öğretim yılı başlangıcı",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 2,
-    month: "EYLÜL",
-    dateRange: "21-27",
-    formattedDateRange: "21-27 EYLÜL",
-    label: "2. HAFTA (21-27 EYLÜL)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 2,
+    "month": "EYLÜL",
+    "dateRange": "21-25",
+    "formattedDateRange": "21-25 EYLÜL",
+    "label": "2. HAFTA (21-25 EYLÜL)",
+    "specialEvent": "15 Temmuz Demokrasi ve Millî Birlik Günü",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 3,
-    month: "EYLÜL-EKİM",
-    dateRange: "28-04",
-    formattedDateRange: "28 EYLÜL - 04 EKİM",
-    label: "3. HAFTA (28 EYLÜL - 04 EKİM)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 3,
+    "month": "EYLÜL-EKİM",
+    "dateRange": "28-02",
+    "formattedDateRange": "28 EYLÜL - 02 EKİM",
+    "label": "3. HAFTA (28 EYLÜL - 02 EKİM)",
+    "specialEvent": "",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 4,
-    month: "EKİM",
-    dateRange: "05-11",
-    formattedDateRange: "05-11 EKİM",
-    label: "4. HAFTA (05-11 EKİM)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 4,
+    "month": "EKİM",
+    "dateRange": "05-09",
+    "formattedDateRange": "05-09 EKİM",
+    "label": "4. HAFTA (05-09 EKİM)",
+    "specialEvent": "",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 5,
-    month: "EKİM",
-    dateRange: "12-18",
-    formattedDateRange: "12-18 EKİM",
-    label: "5. HAFTA (12-18 EKİM)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 5,
+    "month": "EKİM",
+    "dateRange": "12-16",
+    "formattedDateRange": "12-16 EKİM",
+    "label": "5. HAFTA (12-16 EKİM)",
+    "specialEvent": "",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 6,
-    month: "EKİM",
-    dateRange: "19-25",
-    formattedDateRange: "19-25 EKİM",
-    label: "6. HAFTA (19-25 EKİM)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 6,
+    "month": "EKİM",
+    "dateRange": "19-23",
+    "formattedDateRange": "19-23 EKİM",
+    "label": "6. HAFTA (19-23 EKİM)",
+    "specialEvent": "",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 7,
-    month: "EKİM-KASIM",
-    dateRange: "26-01",
-    formattedDateRange: "26 EKİM - 01 KASIM",
-    label: "7. HAFTA (26 EKİM - 01 KASIM)",
-    specialEvent: "Cumhuriyet Bayramı (29 Ekim)",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 7,
+    "month": "EKİM",
+    "dateRange": "26-30",
+    "formattedDateRange": "26-30 EKİM",
+    "label": "7. HAFTA (26-30 EKİM)",
+    "specialEvent": "29 Ekim Cumhuriyet Bayramı",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 8,
-    month: "KASIM",
-    dateRange: "02-08",
-    formattedDateRange: "02-08 KASIM",
-    label: "8. HAFTA (02-08 KASIM)",
-    specialEvent: "Kızılay Haftası",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 8,
+    "month": "KASIM",
+    "dateRange": "02-06",
+    "formattedDateRange": "02-06 KASIM",
+    "label": "8. HAFTA (02-06 KASIM)",
+    "specialEvent": "Kızılay Haftası",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 9,
-    month: "KASIM",
-    dateRange: "09-15",
-    formattedDateRange: "09-15 KASIM",
-    label: "9. HAFTA (09-15 KASIM)",
-    specialEvent: "Atatürk Haftası (10 Kasım)",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 9,
+    "month": "KASIM",
+    "dateRange": "09-13",
+    "formattedDateRange": "09-13 KASIM",
+    "label": "9. HAFTA (09-13 KASIM)",
+    "specialEvent": "10 Kasım Atatürk'ü Anma Günü ve Atatürk Haftası (1. DÖNEM ARA TATİLİ: 16-20 Kasım)",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 10,
-    month: "KASIM",
-    dateRange: "23-29",
-    formattedDateRange: "23-29 KASIM",
-    label: "10. HAFTA (23-29 KASIM)",
-    specialEvent: "Öğretmenler Günü (24 Kasım)",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 10,
+    "month": "KASIM",
+    "dateRange": "23-27",
+    "formattedDateRange": "23-27 KASIM",
+    "label": "10. HAFTA (23-27 KASIM)",
+    "specialEvent": "24 Kasım Öğretmenler Günü",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 11,
-    month: "KASIM-ARALIK",
-    dateRange: "30-06",
-    formattedDateRange: "30 KASIM - 06 ARALIK",
-    label: "11. HAFTA (30 KASIM - 06 ARALIK)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 11,
+    "month": "KASIM-ARALIK",
+    "dateRange": "30-04",
+    "formattedDateRange": "30 KASIM - 04 ARALIK",
+    "label": "11. HAFTA (30 KASIM - 04 ARALIK)",
+    "specialEvent": "Dünya Engelliler Günü (3 Aralık)",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 12,
-    month: "ARALIK",
-    dateRange: "07-13",
-    formattedDateRange: "07-13 ARALIK",
-    label: "12. HAFTA (07-13 ARALIK)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 12,
+    "month": "ARALIK",
+    "dateRange": "07-11",
+    "formattedDateRange": "07-11 ARALIK",
+    "label": "12. HAFTA (07-11 ARALIK)",
+    "specialEvent": "İnsan Hakları ve Demokrasi Haftası",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 13,
-    month: "ARALIK",
-    dateRange: "14-20",
-    formattedDateRange: "14-20 ARALIK",
-    label: "13. HAFTA (14-20 ARALIK)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 13,
+    "month": "ARALIK",
+    "dateRange": "14-18",
+    "formattedDateRange": "14-18 ARALIK",
+    "label": "13. HAFTA (14-18 ARALIK)",
+    "specialEvent": "Tutum Yatırım ve Türk Malları Haftası",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 14,
-    month: "ARALIK",
-    dateRange: "21-27",
-    formattedDateRange: "21-27 ARALIK",
-    label: "14. HAFTA (21-27 ARALIK)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 14,
+    "month": "ARALIK",
+    "dateRange": "21-25",
+    "formattedDateRange": "21-25 ARALIK",
+    "label": "14. HAFTA (21-25 ARALIK)",
+    "specialEvent": "1. Dönem 1. Sınav Haftası",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 15,
-    month: "ARALIK-OCAK",
-    dateRange: "28-03",
-    formattedDateRange: "28 ARALIK - 03 OCAK",
-    label: "15. HAFTA (28 ARALIK - 03 OCAK)",
-    specialEvent: "Yılbaşı Tatili (1 Ocak)",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 15,
+    "month": "ARALIK",
+    "dateRange": "28-31",
+    "formattedDateRange": "28-31 ARALIK",
+    "label": "15. HAFTA (28-31 ARALIK)",
+    "specialEvent": "Yılbaşı Tatili (1 Ocak)",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 16,
-    month: "OCAK",
-    dateRange: "04-10",
-    formattedDateRange: "04-10 OCAK",
-    label: "16. HAFTA (04-10 OCAK)",
-    specialEvent: "SINAV HAFTASI (1. Dönem Ortak Sınavlar)",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 16,
+    "month": "OCAK",
+    "dateRange": "04-08",
+    "formattedDateRange": "04-08 OCAK",
+    "label": "16. HAFTA (04-08 OCAK)",
+    "specialEvent": "1. Dönem 2. Sınav Haftası",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 17,
-    month: "OCAK",
-    dateRange: "11-17",
-    formattedDateRange: "11-17 OCAK",
-    label: "17. HAFTA (11-17 OCAK)",
-    specialEvent: "",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 17,
+    "month": "OCAK",
+    "dateRange": "11-15",
+    "formattedDateRange": "11-15 OCAK",
+    "label": "17. HAFTA (11-15 OCAK)",
+    "specialEvent": "Dönem Sonu Değerlendirme",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 18,
-    month: "OCAK",
-    dateRange: "18-24",
-    formattedDateRange: "18-24 OCAK",
-    label: "18. HAFTA (18-24 OCAK)",
-    specialEvent: "Birinci Dönemin Sona Ermesi (Yarıyıl Tatili)",
-    term: 1,
-    lessonHours: "5 SAAT"
+    "weekNo": 18,
+    "month": "OCAK",
+    "dateRange": "18-22",
+    "formattedDateRange": "18-22 OCAK",
+    "label": "18. HAFTA (18-22 OCAK)",
+    "specialEvent": "1. Dönem Sonu - Karne Haftası (YARIYIL TATİLİ: 25 Ocak - 05 Şubat 2027)",
+    "term": 1,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 19,
-    month: "ŞUBAT",
-    dateRange: "08-14",
-    formattedDateRange: "08-14 ŞUBAT",
-    label: "19. HAFTA (08-14 ŞUBAT)",
-    specialEvent: "İkinci Yarıyıl Başlangıcı",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 19,
+    "month": "ŞUBAT",
+    "dateRange": "08-12",
+    "formattedDateRange": "08-12 ŞUBAT",
+    "label": "19. HAFTA (08-12 ŞUBAT)",
+    "specialEvent": "2. Dönem Başlangıcı",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 20,
-    month: "ŞUBAT",
-    dateRange: "15-21",
-    formattedDateRange: "15-21 ŞUBAT",
-    label: "20. HAFTA (15-21 ŞUBAT)",
-    specialEvent: "",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 20,
+    "month": "ŞUBAT",
+    "dateRange": "15-19",
+    "formattedDateRange": "15-19 ŞUBAT",
+    "label": "20. HAFTA (15-19 ŞUBAT)",
+    "specialEvent": "",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 21,
-    month: "ŞUBAT",
-    dateRange: "22-28",
-    formattedDateRange: "22-28 ŞUBAT",
-    label: "21. HAFTA (22-28 ŞUBAT)",
-    specialEvent: "",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 21,
+    "month": "ŞUBAT",
+    "dateRange": "22-26",
+    "formattedDateRange": "22-26 ŞUBAT",
+    "label": "21. HAFTA (22-26 ŞUBAT)",
+    "specialEvent": "Vergi Haftası",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 22,
-    month: "MART",
-    dateRange: "01-07",
-    formattedDateRange: "01-07 MART",
-    label: "22. HAFTA (01-07 MART)",
-    specialEvent: "Yeşilay Haftası",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 22,
+    "month": "MART",
+    "dateRange": "01-05",
+    "formattedDateRange": "01-05 MART",
+    "label": "22. HAFTA (01-05 MART)",
+    "specialEvent": "Yeşilay Haftası (2. DÖNEM ARA TATİLİ & RAMAZAN BAYRAMI: 08-12 Mart 2027)",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 23,
-    month: "MART",
-    dateRange: "15-21",
-    formattedDateRange: "15-21 MART",
-    label: "23. HAFTA (15-21 MART)",
-    specialEvent: "18 Mart Çanakkale Zaferi ve Şehitleri Anma Günü",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 23,
+    "month": "MART",
+    "dateRange": "15-19",
+    "formattedDateRange": "15-19 MART",
+    "label": "23. HAFTA (15-19 MART)",
+    "specialEvent": "İstiklâl Marşı'nın Kabulü (12 Mart) ve Şehitler Günü (18 Mart)",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 24,
-    month: "MART",
-    dateRange: "22-28",
-    formattedDateRange: "22-28 MART",
-    label: "24. HAFTA (22-28 MART)",
-    specialEvent: "Orman Haftası",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 24,
+    "month": "MART",
+    "dateRange": "22-26",
+    "formattedDateRange": "22-26 MART",
+    "label": "24. HAFTA (22-26 MART)",
+    "specialEvent": "Orman Haftası / Kütüphaneler Haftası",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 25,
-    month: "MART-NİSAN",
-    dateRange: "29-04",
-    formattedDateRange: "29 MART - 04 NİSAN",
-    label: "25. HAFTA (29 MART - 04 NİSAN)",
-    specialEvent: "SINAV HAFTASI (2. Dönem 1. Ortak Sınavlar)",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 25,
+    "month": "MART-NİSAN",
+    "dateRange": "29-02",
+    "formattedDateRange": "29 MART - 02 NİSAN",
+    "label": "25. HAFTA (29 MART - 02 NİSAN)",
+    "specialEvent": "Otizm Farkındalık Günü",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 26,
-    month: "NİSAN",
-    dateRange: "05-11",
-    formattedDateRange: "05-11 NİSAN",
-    label: "26. HAFTA (05-11 NİSAN)",
-    specialEvent: "",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 26,
+    "month": "NİSAN",
+    "dateRange": "05-09",
+    "formattedDateRange": "05-09 NİSAN",
+    "label": "26. HAFTA (05-09 NİSAN)",
+    "specialEvent": "2. Dönem 1. Sınav Haftası",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 27,
-    month: "NİSAN",
-    dateRange: "12-18",
-    formattedDateRange: "12-18 NİSAN",
-    label: "27. HAFTA (12-18 NİSAN)",
-    specialEvent: "",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 27,
+    "month": "NİSAN",
+    "dateRange": "12-16",
+    "formattedDateRange": "12-16 NİSAN",
+    "label": "27. HAFTA (12-16 NİSAN)",
+    "specialEvent": "Turizm Haftası",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 28,
-    month: "NİSAN",
-    dateRange: "19-25",
-    formattedDateRange: "19-25 NİSAN",
-    label: "28. HAFTA (19-25 NİSAN)",
-    specialEvent: "23 Nisan Ulusal Egemenlik ve Çocuk Bayramı",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 28,
+    "month": "NİSAN",
+    "dateRange": "19-23",
+    "formattedDateRange": "19-23 NİSAN",
+    "label": "28. HAFTA (19-23 NİSAN)",
+    "specialEvent": "23 Nisan Ulusal Egemenlik ve Çocuk Bayramı",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 29,
-    month: "NİSAN-MAYIS",
-    dateRange: "26-02",
-    formattedDateRange: "26 NİSAN - 02 MAYIS",
-    label: "29. HAFTA (26 NİSAN - 02 MAYIS)",
-    specialEvent: "1 Mayıs Emek ve Dayanışma Günü",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 29,
+    "month": "NİSAN",
+    "dateRange": "26-30",
+    "formattedDateRange": "26-30 NİSAN",
+    "label": "29. HAFTA (26-30 NİSAN)",
+    "specialEvent": "29 Nisan Kût'ül Amâre Zaferi / 1 Mayıs Emek ve Dayanışma Günü",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 30,
-    month: "MAYIS",
-    dateRange: "03-09",
-    formattedDateRange: "03-09 MAYIS",
-    label: "30. HAFTA (03-09 MAYIS)",
-    specialEvent: "Bilişim Haftası",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 30,
+    "month": "MAYIS",
+    "dateRange": "03-07",
+    "formattedDateRange": "03-07 MAYIS",
+    "label": "30. HAFTA (03-07 MAYIS)",
+    "specialEvent": "Bilişim Haftası / Trafik Haftası",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 31,
-    month: "MAYIS",
-    dateRange: "10-16",
-    formattedDateRange: "10-16 MAYIS",
-    label: "31. HAFTA (10-16 MAYIS)",
-    specialEvent: "Engelliler Haftası",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 31,
+    "month": "MAYIS",
+    "dateRange": "10-14",
+    "formattedDateRange": "10-14 MAYIS",
+    "label": "31. HAFTA (10-14 MAYIS)",
+    "specialEvent": "Engelliler Haftası / Anneler Günü (KURBAN BAYRAMI TATİLİ: 15-19 Mayıs)",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 32,
-    month: "MAYIS",
-    dateRange: "17-23",
-    formattedDateRange: "17-23 MAYIS",
-    label: "32. HAFTA (17-23 MAYIS)",
-    specialEvent: "19 Mayıs Atatürk’ü Anma, Gençlik ve Spor Bayramı",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 32,
+    "month": "MAYIS",
+    "dateRange": "20-21",
+    "formattedDateRange": "20-21 MAYIS",
+    "label": "32. HAFTA (20-21 MAYIS)",
+    "specialEvent": "19 Mayıs Atatürk'ü Anma, Gençlik ve Spor Bayramı",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 33,
-    month: "MAYIS",
-    dateRange: "24-30",
-    formattedDateRange: "24-30 MAYIS",
-    label: "33. HAFTA (24-30 MAYIS)",
-    specialEvent: "İstanbul'un Fethi (29 Mayıs)",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 33,
+    "month": "MAYIS",
+    "dateRange": "24-28",
+    "formattedDateRange": "24-28 MAYIS",
+    "label": "33. HAFTA (24-28 MAYIS)",
+    "specialEvent": "İstanbul'un Fethi (29 Mayıs) / 2. Dönem 2. Sınav Haftası",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 34,
-    month: "MAYIS-HAZİRAN",
-    dateRange: "31-06",
-    formattedDateRange: "31 MAYIS - 06 HAZİRAN",
-    label: "34. HAFTA (31 MAYIS - 06 HAZİRAN)",
-    specialEvent: "Çevre Koruma Haftası",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 34,
+    "month": "MAYIS-HAZİRAN",
+    "dateRange": "31-04",
+    "formattedDateRange": "31 MAYIS - 04 HAZİRAN",
+    "label": "34. HAFTA (31 MAYIS - 04 HAZİRAN)",
+    "specialEvent": "Çevre Koruma Haftası",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 35,
-    month: "HAZİRAN",
-    dateRange: "07-13",
-    formattedDateRange: "07-13 HAZİRAN",
-    label: "35. HAFTA (07-13 HAZİRAN)",
-    specialEvent: "SINAV HAFTASI (2. Dönem 2. Ortak Sınavlar)",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 35,
+    "month": "HAZİRAN",
+    "dateRange": "07-11",
+    "formattedDateRange": "07-11 HAZİRAN",
+    "label": "35. HAFTA (07-11 HAZİRAN)",
+    "specialEvent": "Dönem Sonu Değerlendirme",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   },
   {
-    weekNo: 36,
-    month: "HAZİRAN",
-    dateRange: "14-20",
-    formattedDateRange: "14-20 HAZİRAN",
-    label: "36. HAFTA (14-20 HAZİRAN)",
-    specialEvent: "Yıl Sonu Etkinlikleri Haftası",
-    term: 2,
-    lessonHours: "5 SAAT"
-  },
-  {
-    weekNo: 37,
-    month: "HAZİRAN",
-    dateRange: "21-27",
-    formattedDateRange: "21-27 HAZİRAN",
-    label: "37. HAFTA (21-27 HAZİRAN)",
-    specialEvent: "Ders Yılının Sona Ermesi (Karnelerin Verilmesi)",
-    term: 2,
-    lessonHours: "5 SAAT"
+    "weekNo": 36,
+    "month": "HAZİRAN",
+    "dateRange": "14-18",
+    "formattedDateRange": "14-18 HAZİRAN",
+    "label": "36. HAFTA (14-18 HAZİRAN)",
+    "specialEvent": "Eğitim-Öğretim Yılı Sonu - Karne Haftası",
+    "term": 2,
+    "lessonHours": "5 SAAT"
   }
 ];
 
 export const ACADEMIC_CALENDAR_CONFIG: AcademicCalendarConfig = {
   academicYear: "2026-2027",
   firstTermWeeks: 18,
-  secondTermWeeks: 19,
-  totalWeeks: 37,
+  secondTermWeeks: 18,
+  totalWeeks: 36,
   weeks: ACADEMIC_WEEKS_DATA
 };
 
-// ============================================================================
-// HELPER FONKSİYONLAR (ACADEMIC CALENDAR HELPERS)
-// ============================================================================
-
 /**
- * Belirtilen hafta numarasına göre hafta bilgilerini döndürür.
- * @param weekNo 1 ile 37 arasında hafta numarası
+ * Hafta numarasına göre takvim verisini getirir (1 - 36)
  */
 export function getAcademicWeek(weekNo: number): AcademicWeek | undefined {
   return ACADEMIC_WEEKS_DATA.find((w) => w.weekNo === weekNo);
 }
 
 /**
- * Hafta numarasına göre standart başlık etiketini döndürür.
- * Örn: 1 -> "1. HAFTA (14-20 EYLÜL)", 3 -> "3. HAFTA (28 EYLÜL - 04 EKİM)"
+ * Hafta numarasına göre takvim başlık etiketini döndürür (Örn: "1. HAFTA (14-18 EYLÜL)")
  */
 export function getAcademicWeekLabel(weekNo: number): string {
   const week = getAcademicWeek(weekNo);
@@ -436,8 +420,7 @@ export function getAcademicWeekLabel(weekNo: number): string {
 }
 
 /**
- * Hafta numarasına göre sadece tarih aralığı etiketini döndürür.
- * Örn: 1 -> "14-20 EYLÜL", 3 -> "28 EYLÜL - 04 EKİM"
+ * Hafta numarasına göre sadece tarih aralığını döndürür (Örn: "14-18 EYLÜL" veya "28 EYLÜL - 02 EKİM")
  */
 export function getAcademicDateRange(weekNo: number): string {
   const week = getAcademicWeek(weekNo);
@@ -446,21 +429,21 @@ export function getAcademicDateRange(weekNo: number): string {
 }
 
 /**
- * Döneme göre (1 veya 2) haftaları listeler.
+ * Döneme ait tüm haftaları getirir (1 veya 2)
  */
 export function getAcademicWeeksByTerm(term: 1 | 2): AcademicWeek[] {
   return ACADEMIC_WEEKS_DATA.filter((w) => w.term === term);
 }
 
 /**
- * Tüm 37 haftanın listesini döndürür.
+ * Tüm haftalık takvim listesini döndürür
  */
 export function getAllAcademicWeeks(): AcademicWeek[] {
   return ACADEMIC_WEEKS_DATA;
 }
 
 /**
- * Aktif eğitim-öğretim yılını döndürür (Örn: "2026-2027").
+ * Aktif eğitim-öğretim yılı etiketini döndürür (Örn: "2026-2027")
  */
 export function getActiveAcademicYear(): string {
   return ACADEMIC_CALENDAR_CONFIG.academicYear;
