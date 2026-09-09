@@ -157,6 +157,116 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
         images: []
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-1',
+    title: 'Etkinlik 1: Aşamalı İnşa İstasyonları (MAT.5.3.1)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.1',
+    outcomeTitle: 'Temel Geometrik Çizimler ve Geometrik Araçların Kullanımı',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-09T08:00:00Z',
+    fileSizeKb: 180,
+    tags: ['Etkinlik Kağıdı', 'Aşamalı İnşa', 'Cetvel', 'İletki', 'Pergel', 'Gönye', 'MAT.5.3.1', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif;">
+  <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 16px;">
+    <h2 style="color: #0f766e; font-size: 18px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      📐 ETKİNLİK 1: AŞAMALI İNŞA İSTASYONLARI (MAT.5.3.1)
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 4px 0 0 0; font-weight: 600;">
+      Aşağıdaki 4 ayrı istasyon alanında verilen yönergeleri uygun geometrik araçları (Cetvel, İletki, Pergel, Gönye) kullanarak tamamlayınız.
+    </p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+    
+    <!-- İSTASYON 1: CETVEL -->
+    <div style="border: 2px solid #0d9488; border-radius: 12px; padding: 12px; background: #ffffff;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ccfbf1; padding-bottom: 6px; margin-bottom: 8px;">
+        <span style="font-weight: 900; color: #0f766e; font-size: 12px;">📏 İSTASYON 1: CETVEL</span>
+        <span style="font-size: 10px; font-weight: bold; background: #f0fdfa; color: #0d9488; padding: 2px 6px; border-radius: 4px; border: 1px solid #99f6e4;">Doğru Parçası & Işın</span>
+      </div>
+      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
+        <strong>Yönerge:</strong> Cetvelini kullanarak <strong>6 cm</strong> uzunluğunda bir <code>[AB]</code> doğru parçası çiz. Ardından başlangıcı <code>C</code> olan bir <code>[CD</code> ışını inşa et.
+      </p>
+      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 160px; background: #f8fafc; position: relative; padding: 8px;">
+        <div style="position: absolute; top: 16px; left: 16px; font-size: 11px; font-weight: 900; color: #0f766e;">• A</div>
+        <div style="position: absolute; top: 16px; left: 160px; font-size: 10px; color: #94a3b8;">(6 cm → B noktası)</div>
+        <div style="position: absolute; bottom: 28px; left: 16px; font-size: 11px; font-weight: 900; color: #0f766e;">• C</div>
+        <div style="position: absolute; bottom: 28px; left: 180px; font-size: 10px; color: #94a3b8;">([CD Işını →)</div>
+        <div style="position: absolute; bottom: 6px; right: 10px; font-size: 9px; color: #64748b; font-family: monospace;">Cetvel Kılavuzu: 0 ... 6 ... 10 cm</div>
+      </div>
+    </div>
+
+    <!-- İSTASYON 2: İLETKİ -->
+    <div style="border: 2px solid #3b82f6; border-radius: 12px; padding: 12px; background: #ffffff;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #dbeafe; padding-bottom: 6px; margin-bottom: 8px;">
+        <span style="font-weight: 900; color: #1d4ed8; font-size: 12px;">🧭 İSTASYON 2: İLETKİ</span>
+        <span style="font-size: 10px; font-weight: bold; background: #eff6ff; color: #2563eb; padding: 2px 6px; border-radius: 4px; border: 1px solid #bfdbfe;">60° Açı İnşası</span>
+      </div>
+      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
+        <strong>Yönerge:</strong> Verilen yatay kolun başlangıç noktasına iletkini yerleştirerek <strong>60°'lik</strong> bir dar açı inşa et. Açının yayını çiz.
+      </p>
+      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 160px; background: #f8fafc; position: relative; padding: 8px;">
+        <div style="position: absolute; bottom: 32px; left: 24px; width: 140px; height: 2px; background: #1e293b;"></div>
+        <div style="position: absolute; bottom: 26px; left: 18px; font-size: 11px; font-weight: 900; color: #1d4ed8;">• O</div>
+        <div style="position: absolute; bottom: 27px; left: 168px; font-size: 11px; font-weight: 900; color: #1e293b;">►</div>
+        <div style="position: absolute; top: 16px; left: 70px; font-size: 10px; color: #94a3b8;">(İletki ile 60° hizası)</div>
+        <div style="position: absolute; bottom: 6px; right: 10px; font-size: 9px; color: #64748b; font-family: monospace;">Açı Ölçüsü: m(O) = 60°</div>
+      </div>
+    </div>
+
+    <!-- İSTASYON 3: PERGEL -->
+    <div style="border: 2px solid #8b5cf6; border-radius: 12px; padding: 12px; background: #ffffff;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 6px; margin-bottom: 8px;">
+        <span style="font-weight: 900; color: #6d28d9; font-size: 12px;">⭕ İSTASYON 3: PERGEL</span>
+        <span style="font-size: 10px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd6fe;">Çember & Selçuklu Motifi</span>
+      </div>
+      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
+        <strong>Yönerge:</strong> Pergelini <strong>4 cm</strong> aç. <code>'M'</code> merkezine batırarak tam bir çember çiz. Çember yayından merkeze doğru ikinci bir yay çizerek çiçek motifi oluştur.
+      </p>
+      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 160px; background: #f8fafc; position: relative; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background: #6d28d9; border: 2px solid #ffffff; box-shadow: 0 0 0 1.5px #6d28d9;"></div>
+        <span style="position: absolute; margin-top: 24px; font-size: 11px; font-weight: 900; color: #6d28d9;">M (Merkez Noktası)</span>
+        <div style="position: absolute; width: 110px; height: 110px; border-radius: 50%; border: 1px dotted #cbd5e1; pointer-events: none;"></div>
+        <div style="position: absolute; bottom: 6px; right: 10px; font-size: 9px; color: #64748b; font-family: monospace;">Yarıçap r = 4 cm</div>
+      </div>
+    </div>
+
+    <!-- İSTASYON 4: GÖNYE -->
+    <div style="border: 2px solid #ea580c; border-radius: 12px; padding: 12px; background: #ffffff;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ffedd5; padding-bottom: 6px; margin-bottom: 8px;">
+        <span style="font-weight: 900; color: #c2410c; font-size: 12px;">📐 İSTASYON 4: GÖNYE</span>
+        <span style="font-size: 10px; font-weight: bold; background: #fff7ed; color: #ea580c; padding: 2px 6px; border-radius: 4px; border: 1px solid #fed7aa;">Dikme İndirme (⊥)</span>
+      </div>
+      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
+        <strong>Yönerge:</strong> Aşağıdaki <code>d</code> doğrusuna, dışındaki <code>P</code> noktasından gönye yardımıyla bir dikme indir. Diklik sembolünü (<code>⊥</code>) koy.
+      </p>
+      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 160px; background: #f8fafc; position: relative; padding: 8px;">
+        <div style="position: absolute; top: 20px; left: 90px; font-size: 12px; font-weight: 900; color: #c2410c;">• P (Dış Nokta)</div>
+        <div style="position: absolute; bottom: 35px; left: 16px; width: 190px; height: 2px; background: #334155; transform: rotate(-8deg);"></div>
+        <div style="position: absolute; bottom: 42px; right: 20px; font-size: 11px; font-weight: 900; color: #334155;">d doğrusu</div>
+        <div style="position: absolute; bottom: 6px; right: 10px; font-size: 9px; color: #64748b; font-family: monospace;">Diklik: [PH] ⊥ d (90°)</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 14px; padding: 8px 12px; background: #f0fdfa; border: 1px solid #ccfbf1; border-radius: 8px; font-size: 10px; color: #0f766e; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Değerlendirme:</strong> Her istasyon 25 puan değerindedir. Toplam 100 Puan.</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
@@ -168,10 +278,34 @@ export function getStoredClassroomFiles(): ClassroomFileRecord[] {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_FILES));
       return INITIAL_FILES;
     }
-    return JSON.parse(raw);
+    const parsed: ClassroomFileRecord[] = JSON.parse(raw);
+    // Ensure all seed files (like activity sheets) exist
+    const existingIds = new Set(parsed.map((f) => f.id));
+    let hasNew = false;
+    for (const initFile of INITIAL_FILES) {
+      if (!existingIds.has(initFile.id)) {
+        parsed.unshift(initFile);
+        hasNew = true;
+      }
+    }
+    if (hasNew) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+    return parsed;
   } catch (e) {
     return INITIAL_FILES;
   }
+}
+
+export function getActivitySheetForOutcome(outcomeCode: string): ClassroomFileRecord | null {
+  const files = getStoredClassroomFiles();
+  return (
+    files.find(
+      (f) =>
+        f.outcomeCode === outcomeCode &&
+        (f.tags?.includes('Etkinlik Kağıdı') || f.title.toLowerCase().includes('etkinlik'))
+    ) || null
+  );
 }
 
 export function saveClassroomFile(

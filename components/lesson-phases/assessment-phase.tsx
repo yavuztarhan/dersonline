@@ -5,6 +5,7 @@ import { AssessmentPhaseData, AssessmentQuestion } from '@/types';
 import { useApp } from '@/lib/store';
 import confetti from 'canvas-confetti';
 import { SelfAssessmentRubricComponent } from '@/components/lesson-phases/self-assessment-rubric';
+import { ActivitySheetView } from '@/components/lesson-phases/activity-sheet-view';
 import {
   FileCheck2,
   Sparkles,
@@ -24,7 +25,10 @@ import {
   BookCheck,
   Check,
   ClipboardCheck,
-  BookOpen
+  BookOpen,
+  Ruler,
+  Layers,
+  FileSpreadsheet
 } from 'lucide-react';
 
 interface AssessmentPhaseProps {
@@ -42,7 +46,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
     selectedOutcome
   } = useApp();
 
-  const [activeAssessmentTab, setActiveAssessmentTab] = useState<'test' | 'rubric' | 'journal'>('test');
+  const [activeAssessmentTab, setActiveAssessmentTab] = useState<'test' | 'worksheet' | 'rubric' | 'journal'>('test');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({});
@@ -176,53 +180,84 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
 
       {/* Mode Navigation Tabs */}
       <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex flex-wrap items-center gap-1.5">
+        {/* Tab 1: Kazanım Testi */}
         <button
           onClick={() => {
             playSound('click');
             setActiveAssessmentTab('test');
           }}
-          className={`flex-1 min-w-[180px] py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[150px] py-3 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
             activeAssessmentTab === 'test'
               ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
           }`}
         >
           <FileCheck2 className="w-4 h-4" />
-          <span>1. Kazanım Testi (8 Soru)</span>
+          <span>1. Kazanım Testi</span>
         </button>
 
+        {/* Tab 2: Etkinlik Kağıdı (Öz Değerlendirme Öncesi) */}
+        <button
+          onClick={() => {
+            playSound('click');
+            setActiveAssessmentTab('worksheet');
+          }}
+          className={`flex-1 min-w-[150px] py-3 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            activeAssessmentTab === 'worksheet'
+              ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+          }`}
+        >
+          <Ruler className="w-4 h-4" />
+          <span>2. Etkinlik Kağıdı</span>
+        </button>
+
+        {/* Tab 3: Öz Değerlendirme Formu (Rubrik) */}
         <button
           onClick={() => {
             playSound('click');
             setActiveAssessmentTab('rubric');
           }}
-          className={`flex-1 min-w-[180px] py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[150px] py-3 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
             activeAssessmentTab === 'rubric'
               ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
           }`}
         >
           <ClipboardCheck className="w-4 h-4" />
-          <span>2. Öz Değerlendirme Formu (Rubrik)</span>
+          <span>3. Öz Değerlendirme (Rubrik)</span>
         </button>
 
+        {/* Tab 4: Öğrenme Günlüğü & Yansıtma */}
         <button
           onClick={() => {
             playSound('click');
             setActiveAssessmentTab('journal');
           }}
-          className={`flex-1 min-w-[180px] py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[150px] py-3 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
             activeAssessmentTab === 'journal'
               ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
           }`}
         >
           <BookOpen className="w-4 h-4" />
-          <span>3. Öğrenme Günlüğü & Yansıtma</span>
+          <span>4. Öğrenme Günlüğü</span>
         </button>
       </div>
 
-      {/* TAB 2: SELF ASSESSMENT RUBRIC FORM */}
+      {/* TAB 2: ETKİNLİK KAĞIDI (AŞAMALI İNŞA İSTASYONLARI) */}
+      {activeAssessmentTab === 'worksheet' && (
+        <ActivitySheetView
+          outcomeCode={selectedOutcome?.code || 'MAT.5.3.1'}
+          outcomeTitle={selectedOutcome?.title}
+          onGoToRubric={() => {
+            playSound('click');
+            setActiveAssessmentTab('rubric');
+          }}
+        />
+      )}
+
+      {/* TAB 3: SELF ASSESSMENT RUBRIC FORM */}
       {activeAssessmentTab === 'rubric' && (
         <SelfAssessmentRubricComponent
           outcomeId={selectedOutcome?.id}
