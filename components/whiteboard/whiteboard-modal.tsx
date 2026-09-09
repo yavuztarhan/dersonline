@@ -2535,8 +2535,8 @@ function TransformableObjectWrapper({
       const deltaX = curX - centerX;
       const deltaY = curY - centerY;
 
-      // Free continuous angle from 0 to 360 degrees
-      let deg = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 90;
+      // Handle is positioned at the bottom, so atan2 - 90° gives 0° when pointing straight down
+      let deg = Math.atan2(deltaY, deltaX) * (180 / Math.PI) - 90;
       deg = ((deg % 360) + 360) % 360;
 
       const finalDeg = Math.round(deg) % 360;
@@ -2702,9 +2702,10 @@ function TransformableObjectWrapper({
     >
       {children}
 
-      {/* ROTATION HANDLE (Çember şeklindeki ok tutamacı - Continuous Free Angle) */}
+      {/* ROTATION HANDLE (Çember şeklindeki ok tutamacı - Altta Konumlandırılmış) */}
       {isSelected && !isLocked && (
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex flex-col items-center z-40 pointer-events-auto touch-none select-none">
+        <div className="absolute -bottom-11 left-1/2 -translate-x-1/2 flex flex-col items-center z-40 pointer-events-auto touch-none select-none">
+          <div className="w-0.5 h-3.5 bg-teal-400/80" />
           <div
             onMouseDown={handleMouseDownRotate}
             onTouchStart={handleTouchStartRotate}
@@ -2713,10 +2714,9 @@ function TransformableObjectWrapper({
           >
             <RotateCw className="w-3.5 h-3.5 stroke-[2.5]" />
           </div>
-          <div className="w-0.5 h-3 bg-teal-400/80" />
 
           {liveRotation !== null && (
-            <div className="absolute -top-7 px-2 py-0.5 bg-slate-900 text-teal-300 text-[10px] font-black rounded-md shadow-2xl border border-teal-400 whitespace-nowrap pointer-events-none">
+            <div className="absolute -bottom-7 px-2 py-0.5 bg-slate-900 text-teal-300 text-[10px] font-black rounded-md shadow-2xl border border-teal-400 whitespace-nowrap pointer-events-none">
               {liveRotation}°
             </div>
           )}
