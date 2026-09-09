@@ -939,116 +939,27 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
   </div>
 
   <!-- Geniş Çizim Alanı (SVG Milimetrik Grid Canvas) -->
-  <div style="border: 2px dashed #94a3b8; border-radius: 12px; height: 190px; background: #f8fafc; position: relative; overflow: hidden; margin-bottom: 12px;">
-    <svg viewBox="0 0 760 190" width="100%" height="100%" style="display: block;">
+  <div style="border: 2px dashed #94a3b8; border-radius: 12px; height: 260px; background: #f8fafc; position: relative; overflow: hidden; margin-bottom: 12px;">
+    <svg viewBox="0 0 760 260" width="100%" height="100%" style="display: block;">
       <!-- Grid Noktaları -->
       <defs>
         <pattern id="rail_grid_static" width="20" height="20" patternUnits="userSpaceOnUse">
           <circle cx="2" cy="2" r="1.2" fill="#cbd5e1" />
         </pattern>
       </defs>
-      <rect width="760" height="190" fill="url(#rail_grid_static)" />
+      <rect width="760" height="260" fill="url(#rail_grid_static)" />
 
-      <!-- Alt Doğru d (Y = 135) -->
-      <line x1="40" y1="135" x2="720" y2="135" stroke="#334155" stroke-width="3" />
-      <polygon points="40,131 25,135 40,139" fill="#334155" />
-      <polygon points="720,131 735,135 720,139" fill="#334155" />
-      <text x="740" y="139" font-family="monospace" font-size="12" font-weight="bold" fill="#334155">d</text>
+      <!-- Alt Doğru d (Y = 190) -->
+      <line x1="40" y1="190" x2="720" y2="190" stroke="#334155" stroke-width="3" />
+      <polygon points="40,186 25,190 40,194" fill="#334155" />
+      <polygon points="720,186 735,190 720,194" fill="#334155" />
+      <text x="740" y="194" font-family="monospace" font-size="14" font-weight="bold" fill="#334155">d</text>
 
-      <!-- Üst Doğru k (Y = 55) -->
-      <line x1="40" y1="55" x2="720" y2="55" stroke="#4f46e5" stroke-width="3" stroke-dasharray="8 4" />
-      <polygon points="40,51 25,55 40,59" fill="#4f46e5" />
-      <polygon points="720,51 735,55 720,59" fill="#4f46e5" />
-      <text x="740" y="59" font-family="monospace" font-size="12" font-weight="bold" fill="#4f46e5">k</text>
-
-      <!-- Ray Traversleri (Sleepers) -->
-      <line x1="120" y1="55" x2="120" y2="135" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3" />
-      <line x1="280" y1="55" x2="280" y2="135" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3" />
-      <line x1="440" y1="55" x2="440" y2="135" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3" />
-      <line x1="600" y1="55" x2="600" y2="135" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3" />
-
-      <!-- 3 Ana Dikme [AA'], [BB'], [CC'] -->
-      <!-- Dikme 1: A -> A' (X = 200) -->
-      <line x1="200" y1="135" x2="200" y2="55" stroke="#ea580c" stroke-width="2.5" />
-      <!-- Diklik Sembolü A -->
-      <rect x="200" y="123" width="12" height="12" fill="none" stroke="#ea580c" stroke-width="1.5" />
-      <circle cx="206" cy="129" r="1.5" fill="#ea580c" />
-      <!-- A Noktası -->
-      <circle cx="200" cy="135" r="5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
-      <text x="200" y="155" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#0369a1" text-anchor="middle">A</text>
-      <!-- A' Noktası -->
-      <circle cx="200" cy="55" r="5" fill="#4f46e5" stroke="#ffffff" stroke-width="1.5" />
-      <text x="200" y="42" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#3730a3" text-anchor="middle">A'</text>
-      <text x="175" y="98" font-family="monospace" font-size="9.5" font-weight="bold" fill="#ea580c">h = 4 br</text>
-
-      <!-- Dikme 2: B -> B' (X = 360) -->
-      <line x1="360" y1="135" x2="360" y2="55" stroke="#ea580c" stroke-width="2.5" />
-      <!-- Diklik Sembolü B -->
-      <rect x="360" y="123" width="12" height="12" fill="none" stroke="#ea580c" stroke-width="1.5" />
-      <circle cx="366" cy="129" r="1.5" fill="#ea580c" />
-      <!-- B Noktası -->
-      <circle cx="360" cy="135" r="5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
-      <text x="360" y="155" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#0369a1" text-anchor="middle">B</text>
-      <!-- B' Noktası -->
-      <circle cx="360" cy="55" r="5" fill="#4f46e5" stroke="#ffffff" stroke-width="1.5" />
-      <text x="360" y="42" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#3730a3" text-anchor="middle">B'</text>
-      <text x="335" y="98" font-family="monospace" font-size="9.5" font-weight="bold" fill="#ea580c">h = 4 br</text>
-
-      <!-- Dikme 3: C -> C' (X = 520) -->
-      <line x1="520" y1="135" x2="520" y2="55" stroke="#ea580c" stroke-width="2.5" />
-      <!-- Diklik Sembolü C -->
-      <rect x="520" y="123" width="12" height="12" fill="none" stroke="#ea580c" stroke-width="1.5" />
-      <circle cx="526" cy="129" r="1.5" fill="#ea580c" />
-      <!-- C Noktası -->
-      <circle cx="520" cy="135" r="5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
-      <text x="520" y="155" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#0369a1" text-anchor="middle">C</text>
-      <!-- C' Noktası -->
-      <circle cx="520" cy="55" r="5" fill="#4f46e5" stroke="#ffffff" stroke-width="1.5" />
-      <text x="520" y="42" font-family="system-ui, sans-serif" font-size="11.5" font-weight="900" fill="#3730a3" text-anchor="middle">C'</text>
-      <text x="495" y="98" font-family="monospace" font-size="9.5" font-weight="bold" fill="#ea580c">h = 4 br</text>
-
-      <!-- Paralellik Notu -->
-      <rect x="610" y="80" width="115" height="30" rx="6" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5" />
-      <text x="667" y="100" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#3730a3" text-anchor="middle">d ∥ k (Paralel)</text>
+      <!-- Çizim Kılavuz Açıklaması -->
+      <text x="380" y="235" font-family="system-ui, sans-serif" font-size="11.5" font-weight="700" fill="#64748b" text-anchor="middle">
+        (1. Adım: Cetvelle A, B, C noktalarını belirle • 2. Adım: Gönyeyle eşit 3 dikme çık • 3. Adım: Cetvelle k paralel doğrusunu çiz)
+      </text>
     </svg>
-  </div>
-
-  <!-- Tartış-Yaz & Çoktan Seçmeli Soru Paneli -->
-  <div style="border: 2px solid #4f46e5; border-radius: 12px; padding: 12px; background: #ffffff; margin-bottom: 12px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-      <span style="font-weight: 900; color: #3730a3; font-size: 12px;">
-        💬 TARTIŞ-YAZ &amp; GEOMETRİK ÇIKARIM
-      </span>
-      <span style="font-size: 10px; font-weight: bold; background: #eef2ff; color: #4f46e5; padding: 2px 6px; border-radius: 4px; border: 1px solid #c7d2fe;">
-        100 Puan
-      </span>
-    </div>
-    
-    <p style="font-size: 11.5px; color: #1e293b; font-weight: 700; margin: 0 0 10px 0;">
-      "Oluşturduğun yeni doğru (k) ile ilk doğru (d) hiç kesişir mi? Bu doğruların arasındaki ilişkiye ne ad verilir?"
-    </p>
-
-    <!-- Seçenekler 3'lü Buton/Kutu -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 11px;">
-      <div style="border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; background: #f8fafc; font-weight: 600; color: #475569;">
-        [ &nbsp; ] Kesişen Doğrular
-      </div>
-      <div style="border: 2px solid #10b981; border-radius: 8px; padding: 8px 10px; background: #ecfdf5; font-weight: 900; color: #065f46; display: flex; align-items: center; justify-content: space-between;">
-        <span>[ ✓ ] Paralel Doğrular (d ∥ k)</span>
-        <span style="font-size: 9px; background: #10b981; color: #ffffff; padding: 1px 5px; border-radius: 4px;">Doğru</span>
-      </div>
-      <div style="border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; background: #f8fafc; font-weight: 600; color: #475569;">
-        [ &nbsp; ] Çakışık Doğrular
-      </div>
-    </div>
-
-    <!-- Matematiksel Kural Çıkarımı -->
-    <div style="margin-top: 10px; padding: 8px 10px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px;">
-      <span style="font-size: 9.5px; font-weight: 900; color: #6d28d9; text-transform: uppercase;">✨ Temel Kural Çıkarımı:</span>
-      <p style="font-size: 10.5px; color: #3730a3; margin: 3px 0 0 0; font-weight: 700;">
-        Bir doğru üzerindeki farklı noktalardan çıkılan aynı yönlü ve eşit uzunluktaki dikmelerin uç noktaları birleştirildiğinde, ilk doğruya <strong>PARALEL (∥)</strong> bir doğru elde edilir. Aralarındaki dik uzaklık hiçbir zaman değişmez.
-      </p>
-    </div>
   </div>
 
   <!-- Alt Bilgi / Değerlendirme & Puanlama -->
