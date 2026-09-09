@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import {
+  ClassroomFileRecord,
   WhiteboardPageData,
   WhiteboardImageItem,
   WhiteboardShapeItem,
@@ -63,6 +64,7 @@ interface WhiteboardModalProps {
   outcomeCode?: string;
   outcomeTitle?: string;
   classSection?: string;
+  initialFile?: ClassroomFileRecord | null;
 }
 
 const FONTS = [
@@ -419,7 +421,8 @@ export function WhiteboardModal({
   onClose,
   outcomeCode = 'MAT.5.3.4',
   outcomeTitle = 'Düzlemde İki veya Üç Doğrunun Birbirine Göre Durumuna Bağlı Olarak Oluşabilecek Açılara Dair Çıkarım Yapabilme',
-  classSection
+  classSection,
+  initialFile
 }: WhiteboardModalProps) {
   const { currentUser } = useAuth();
   const { playSound } = useApp();
@@ -445,6 +448,18 @@ export function WhiteboardModal({
   const [activeMode, setActiveMode] = useState<'pen' | 'text'>('pen');
   const [selectedClass, setSelectedClass] = useState<string>(defaultClass);
   const [documentTitle, setDocumentTitle] = useState<string>(`${defaultClass} ${outcomeCode} Ders Notları`);
+
+  // Load initial file if provided
+  useEffect(() => {
+    if (isOpen && initialFile) {
+      if (Array.isArray(initialFile.pages) && initialFile.pages.length > 0) {
+        setPages(initialFile.pages);
+      }
+      if (initialFile.title) setDocumentTitle(initialFile.title);
+      if (initialFile.classSection) setSelectedClass(initialFile.classSection);
+      setActivePageIndex(0);
+    }
+  }, [isOpen, initialFile]);
 
   // Drawing Tools State
   const [drawingTool, setDrawingTool] = useState<'pen' | 'highlighter' | 'eraser'>('pen');

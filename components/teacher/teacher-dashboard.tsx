@@ -15,6 +15,7 @@ import {
   exportClassroomFileToPdf
 } from '@/lib/class-files-store';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
+import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentOutcomeDetailModal } from '@/components/gamification/student-outcome-detail-modal';
 import jsPDF from 'jspdf';
@@ -59,6 +60,8 @@ export function TeacherDashboard() {
   // Classroom Files State
   const [classroomFiles, setClassroomFiles] = useState<ClassroomFileRecord[]>([]);
   const [dashboardWhiteboardOpen, setDashboardWhiteboardOpen] = useState(false);
+  const [editingFileInWhiteboard, setEditingFileInWhiteboard] = useState<ClassroomFileRecord | null>(null);
+  const [viewingFile, setViewingFile] = useState<ClassroomFileRecord | null>(null);
   const [filesSearchTerm, setFilesSearchTerm] = useState('');
   const [filesClassFilter, setFilesClassFilter] = useState('all');
   const [filesOutcomeFilter, setFilesOutcomeFilter] = useState('all');
@@ -1044,33 +1047,67 @@ export function TeacherDashboard() {
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleDownloadFilePDF(file)}
-                        disabled={downloadingFileId === file.id}
-                        className="flex-1 py-2.5 px-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs font-black flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
-                      >
-                        {downloadingFileId === file.id ? (
-                          <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
-                            <span>PDF Hazırlanıyor...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Download className="w-3.5 h-3.5 text-teal-600" />
-                            <span>PDF İndir</span>
-                          </>
-                        )}
-                      </button>
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-1.5 flex-wrap">
+                      <div className="flex items-center gap-1.5 flex-wrap flex-1">
+                        {/* 1. Görüntüle */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playSound('select');
+                            setViewingFile(file);
+                          }}
+                          className="px-2.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs font-black flex items-center gap-1.5 transition-colors cursor-pointer"
+                          title="Ders notunu salt okunur modda tam ekran görüntüle"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-teal-600" />
+                          <span>Görüntüle</span>
+                        </button>
 
+                        {/* 2. PDF İndir */}
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadFilePDF(file)}
+                          disabled={downloadingFileId === file.id}
+                          className="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                          title="Bu ders notunu PDF olarak indir"
+                        >
+                          {downloadingFileId === file.id ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-600" />
+                              <span className="hidden sm:inline">İndiriliyor...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Download className="w-3.5 h-3.5 text-slate-600" />
+                              <span>İndir</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* 3. Tahtada Aç (Öğretmen için düzenlenebilir) */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playSound('select');
+                            setEditingFileInWhiteboard(file);
+                            setDashboardWhiteboardOpen(true);
+                          }}
+                          className="px-2.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                          title="Bu notu Akıllı Tahtaya yükle ve üzerinde çizim yap"
+                        >
+                          <MonitorPlay className="w-3.5 h-3.5" />
+                          <span>Tahtada Aç</span>
+                        </button>
+                      </div>
+
+                      {/* 4. Sil */}
                       <button
                         type="button"
                         onClick={() => handleDeleteFile(file.id, file.title)}
-                        className="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors cursor-pointer"
+                        className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors cursor-pointer shrink-0"
                         title="Notu Sil"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -1091,17 +1128,28 @@ export function TeacherDashboard() {
         />
       )}
 
-      {/* Dashboard Whiteboard Modal */}
+      {/* Dashboard Whiteboard Modal (Editable Mode) */}
       {dashboardWhiteboardOpen && (
         <WhiteboardModal
           isOpen={dashboardWhiteboardOpen}
           onClose={() => {
             setDashboardWhiteboardOpen(false);
+            setEditingFileInWhiteboard(null);
             setClassroomFiles(getStoredClassroomFiles());
           }}
-          outcomeCode="MAT.5.3.4"
-          outcomeTitle="Doğruların Birbirine Göre Durumları & Açı İlişkileri"
-          classSection={selectedClass}
+          initialFile={editingFileInWhiteboard}
+          outcomeCode={editingFileInWhiteboard?.outcomeCode || "MAT.5.3.4"}
+          outcomeTitle={editingFileInWhiteboard?.outcomeTitle || "Doğruların Birbirine Göre Durumları & Açı İlişkileri"}
+          classSection={editingFileInWhiteboard?.classSection || selectedClass}
+        />
+      )}
+
+      {/* Whiteboard Pure Read-Only Viewer Modal */}
+      {viewingFile && (
+        <WhiteboardViewerModal
+          isOpen={!!viewingFile}
+          onClose={() => setViewingFile(null)}
+          file={viewingFile}
         />
       )}
 

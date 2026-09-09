@@ -13,6 +13,7 @@ import {
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
+import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import {
   GraduationCap,
   Sparkles,
@@ -32,7 +33,8 @@ import {
   Search,
   Calendar,
   FileText,
-  Trophy
+  Trophy,
+  Eye
 } from 'lucide-react';
 
 export function StudentDashboard() {
@@ -42,6 +44,7 @@ export function StudentDashboard() {
   const [files, setFiles] = useState<ClassroomFileRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
+  const [viewingFile, setViewingFile] = useState<ClassroomFileRecord | null>(null);
 
   useEffect(() => {
     setFiles(getStoredClassroomFiles());
@@ -333,29 +336,56 @@ export function StudentDashboard() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleDownloadFilePDF(file)}
-                  disabled={downloadingFileId === file.id}
-                  className="w-full py-2 px-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-                >
-                  {downloadingFileId === file.id ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>İndiriliyor...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Download className="w-3.5 h-3.5" />
-                      <span>PDF Olarak İndir</span>
-                    </>
-                  )}
-                </button>
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-200/80">
+                  {/* 1. Görüntüle */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playSound('select');
+                      setViewingFile(file);
+                    }}
+                    className="flex-1 py-2 px-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                    title="Ders notunu salt okunur modda tam ekran görüntüle"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-teal-600" />
+                    <span>Görüntüle</span>
+                  </button>
+
+                  {/* 2. PDF İndir */}
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadFilePDF(file)}
+                    disabled={downloadingFileId === file.id}
+                    className="flex-1 py-2 px-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    title="Bu ders notunu PDF olarak cihazına indir"
+                  >
+                    {downloadingFileId === file.id ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>İndiriliyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-3.5 h-3.5" />
+                        <span>PDF İndir</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Whiteboard Pure Read-Only Viewer Modal */}
+      {viewingFile && (
+        <WhiteboardViewerModal
+          isOpen={!!viewingFile}
+          onClose={() => setViewingFile(null)}
+          file={viewingFile}
+        />
+      )}
 
     </div>
   );

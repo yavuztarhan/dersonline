@@ -9,6 +9,7 @@ import {
 } from '@/lib/class-files-store';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
+import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -26,7 +27,8 @@ import {
   Plus,
   Loader2,
   CheckCircle2,
-  BookOpen
+  BookOpen,
+  MonitorPlay
 } from 'lucide-react';
 
 interface ClassroomFilesModalProps {
@@ -52,6 +54,7 @@ export function ClassroomFilesModal({
   const [selectedClassFilter, setSelectedClassFilter] = useState<string>(classSection || 'all');
   const [searchQuery, setSearchQuery] = useState('');
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
+  const [viewingFile, setViewingFile] = useState<ClassroomFileRecord | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -247,9 +250,24 @@ export function ClassroomFilesModal({
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
                     
-                    {onLoadFileToWhiteboard && (
+                    {/* View Read-only Button (For all users) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSound('select');
+                        setViewingFile(file);
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                      title="Ders notunu salt okunur olarak görüntüle"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-teal-600" />
+                      <span>Görüntüle</span>
+                    </button>
+
+                    {/* Teacher specific: Open in Editable Whiteboard */}
+                    {isTeacherOrAdmin && onLoadFileToWhiteboard && (
                       <button
                         type="button"
                         onClick={() => {
@@ -260,7 +278,7 @@ export function ClassroomFilesModal({
                         className="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold text-xs border border-teal-200 transition-colors flex items-center gap-1.5 cursor-pointer"
                         title="Bu notu Beyaz Tahtaya yükle ve düzenle"
                       >
-                        <Eye className="w-3.5 h-3.5" />
+                        <Layers className="w-3.5 h-3.5 text-teal-600" />
                         <span>Tahtada Aç</span>
                       </button>
                     )}
@@ -271,7 +289,7 @@ export function ClassroomFilesModal({
                         type="button"
                         onClick={() => handleDownloadPDF(file)}
                         disabled={downloadingFileId === file.id}
-                        className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                         title="Bu ders notunu PDF olarak indir"
                       >
                         {downloadingFileId === file.id ? (
@@ -310,7 +328,7 @@ export function ClassroomFilesModal({
 
         {/* Footer */}
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 shrink-0">
-          <span>💡 Ders notları öğretmenler tarafından sisteme kaydedilir, öğrenciler diledikleri zaman PDF olarak indirebilir.</span>
+          <span>💡 Ders notları öğretmenler tarafından sisteme kaydedilir, öğrenciler diledikleri zaman görüntüleyebilir veya PDF olarak indirebilir.</span>
           <button
             onClick={onClose}
             className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold cursor-pointer"
@@ -320,6 +338,13 @@ export function ClassroomFilesModal({
         </div>
 
       </div>
+
+      {/* Read-Only Whiteboard Viewer Modal */}
+      <WhiteboardViewerModal
+        isOpen={!!viewingFile}
+        onClose={() => setViewingFile(null)}
+        file={viewingFile}
+      />
     </div>
   );
 }
