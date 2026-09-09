@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import {
@@ -21,6 +22,8 @@ import {
   PenTool,
   Highlighter,
   Eraser,
+  Undo2,
+  Redo2,
   Trash2,
   Plus,
   Type,
@@ -482,6 +485,23 @@ export function WhiteboardModal({
   const [symbolsDropdownOpen, setSymbolsDropdownOpen] = useState(false);
   const [showHeader, setShowHeader] = useState<boolean>(true);
 
+  // Mounted state for portal
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Undo / Redo stacks for Canvas Freehand Drawing
+  const [undoStack, setUndoStack] = useState<string[]>([]);
+  const [redoStack, setRedoStack] = useState<string[]>([]);
+  const strokeStartState = useRef<string | null>(null);
+
+  // Clear undo/redo stacks on page switch or document change
+  useEffect(() => {
+    setUndoStack([]);
+    setRedoStack([]);
+  }, [activePageIndex, loadedFileId]);
+
   // Modals & UI States
   const [webImageModalOpen, setWebImageModalOpen] = useState(false);
   const [classroomFilesModalOpen, setClassroomFilesModalOpen] = useState(false);
@@ -561,9 +581,177 @@ export function WhiteboardModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedObjectId, activePageIndex, activePage]);
 
-  if (!isOpen) return null;
+  // --- DRAWING CANVAS HANDLERS ---
+  const saveCurrentCanvasData = () => {
+    const canvas = canvasRef.current;
+    const editorEl = textEditorRefs.current[`page-${activePageIndex}`];
+    const html = editorEl ? editorEl.innerHTML : undefined;
+    if (canvas) {
+      const dataUrl = canvas.toDataURL('image/png');
+      setPages((prev) =>
+        prev.map((p, i) =>
+          i === activePageIndex
+            ? { ...p, drawingDataUrl: dataUrl, ...(html !== undefined ? { textContent: html } : {}) }
+            : p
+        )
+      );
+    } else if (html !== undefined) {
+      setPages((prev) =>
+        prev.map((p, i) =>
+          i === activePageIndex ? { ...p, textContent: html } : p
+        )
+      );
+    }
+  };
 
-  // --- PAGE OPERATIONS ---
+  const handleUndo = useCallback(() => {
+    if (undoStack.length === 0) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const currentSnapshot = canvas.toDataURL('image/png');
+    const previousSnapshot = undoStack[undoStack.length - 1];
+    setUndoStack((prev) => prev.slice(0, -1));
+    setRedoStack((prev) => [...prev, currentSnapshot]);
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      const dataUrl = canvas.toDataURL('image/png');
+      setPages((prev) =>
+        prev.map((p, i) => (i === activePageIndex ? { ...p, drawingDataUrl: dataUrl } : p))
+      );
+    };
+    img.src = previousSnapshot;
+    playSound('click');
+  }, [undoStack, activePageIndex, playSound]);
+
+  const handleRedo = useCallback(() => {
+    if (redoStack.length === 0) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const currentSnapshot = canvas.toDataURL('image/png');
+    const nextSnapshot = redoStack[redoStack.length - 1];
+    setRedoStack((prev) => prev.slice(0, -1));
+    setUndoStack((prev) => [...prev, currentSnapshot]);
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      const dataUrl = canvas.toDataURL('image/png');
+      setPages((prev) =>
+        prev.map((p, i) => (i === activePageIndex ? { ...p, drawingDataUrl: dataUrl } : p))
+      );
+    };
+    img.src = nextSnapshot;
+    playSound('click');
+  }, [redoStack, activePageIndex, playSound]);
+
+  // Undo / Redo keyboard shortcuts for drawing mode
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleUndoRedoKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        handleUndo();
+      } else if (
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')
+      ) {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+    window.addEventListener('keydown', handleUndoRedoKeyDown);
+    return () => window.removeEventListener('keydown', handleUndoRedoKeyDown);
+  }, [isOpen, handleUndo, handleRedo]);
+
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (activeMode !== 'pen') return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Save snapshot before new stroke
+    strokeStartState.current = canvas.toDataURL('image/png');
+    isDrawing.current = true;
+    const rect = canvas.getBoundingClientRect();
+
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    lastX.current = (clientX - rect.left) * scaleX;
+    lastY.current = (clientY - rect.top) * scaleY;
+  };
+
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing.current || activeMode !== 'pen') return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const currentX = (clientX - rect.left) * scaleX;
+    const currentY = (clientY - rect.top) * scaleY;
+
+    ctx.beginPath();
+    ctx.moveTo(lastX.current, lastY.current);
+    ctx.lineTo(currentX, currentY);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (drawingTool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = penWidth * 5;
+      ctx.stroke();
+    } else if (drawingTool === 'highlighter') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = penColor + '55'; // semi-transparent
+      ctx.lineWidth = penWidth * 4;
+      ctx.stroke();
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = penColor;
+      ctx.lineWidth = penWidth;
+      ctx.stroke();
+    }
+
+    lastX.current = currentX;
+    lastY.current = currentY;
+  };
+
+  const stopDrawing = () => {
+    if (!isDrawing.current) return;
+    isDrawing.current = false;
+    if (strokeStartState.current) {
+      setUndoStack((prev) => [...prev.slice(-25), strokeStartState.current!]);
+      setRedoStack([]);
+      strokeStartState.current = null;
+    }
+    saveCurrentCanvasData();
+  };
+
+  if (!isOpen || !mounted) return null;
   const handleAddPage = () => {
     playSound('select');
     const newPageNumber = pages.length + 1;
@@ -632,95 +820,6 @@ export function WhiteboardModal({
     playSound('click');
     const updated = pages.map((p, i) => (i === activePageIndex ? { ...p, backgroundType: bg } : p));
     setPages(updated);
-  };
-
-  // --- DRAWING CANVAS HANDLERS ---
-  const saveCurrentCanvasData = () => {
-    const canvas = canvasRef.current;
-    const editorEl = textEditorRefs.current[`page-${activePageIndex}`];
-    const html = editorEl ? editorEl.innerHTML : undefined;
-    if (canvas) {
-      const dataUrl = canvas.toDataURL('image/png');
-      setPages((prev) =>
-        prev.map((p, i) =>
-          i === activePageIndex
-            ? { ...p, drawingDataUrl: dataUrl, ...(html !== undefined ? { textContent: html } : {}) }
-            : p
-        )
-      );
-    } else if (html !== undefined) {
-      setPages((prev) =>
-        prev.map((p, i) =>
-          i === activePageIndex ? { ...p, textContent: html } : p
-        )
-      );
-    }
-  };
-
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (activeMode !== 'pen') return;
-    isDrawing.current = true;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    lastX.current = (clientX - rect.left) * scaleX;
-    lastY.current = (clientY - rect.top) * scaleY;
-  };
-
-  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing.current || activeMode !== 'pen') return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    const currentX = (clientX - rect.left) * scaleX;
-    const currentY = (clientY - rect.top) * scaleY;
-
-    ctx.beginPath();
-    ctx.moveTo(lastX.current, lastY.current);
-    ctx.lineTo(currentX, currentY);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
-    if (drawingTool === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = penWidth * 5;
-      ctx.stroke();
-    } else if (drawingTool === 'highlighter') {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = penColor + '55'; // semi-transparent
-      ctx.lineWidth = penWidth * 4;
-      ctx.stroke();
-    } else {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = penColor;
-      ctx.lineWidth = penWidth;
-      ctx.stroke();
-    }
-
-    lastX.current = currentX;
-    lastY.current = currentY;
-  };
-
-  const stopDrawing = () => {
-    if (!isDrawing.current) return;
-    isDrawing.current = false;
-    saveCurrentCanvasData();
   };
 
   // --- TEXT FORMATTING & WORD COMMANDS ---
@@ -1162,8 +1261,8 @@ export function WhiteboardModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] bg-slate-950/85 backdrop-blur-md flex flex-col select-none animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md flex flex-col select-none animate-in fade-in duration-200">
       
       {/* 1. TOP WORD-STYLE TOOLBAR & HEADER */}
       <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-2 shadow-xl flex flex-col gap-2 shrink-0 z-50 relative overflow-visible">
@@ -1387,6 +1486,38 @@ export function WhiteboardModal({
                   title="Silgi"
                 >
                   <Eraser className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Undo / Redo Buttons (Geri Al / İleri Al) */}
+              <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700">
+                <button
+                  type="button"
+                  onClick={handleUndo}
+                  disabled={undoStack.length === 0}
+                  className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-xs font-semibold ${
+                    undoStack.length === 0
+                      ? 'text-slate-600 cursor-not-allowed opacity-40'
+                      : 'text-slate-200 hover:bg-slate-700 hover:text-white active:scale-95'
+                  }`}
+                  title="Geri Al (Ctrl+Z)"
+                >
+                  <Undo2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Geri Al</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRedo}
+                  disabled={redoStack.length === 0}
+                  className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-xs font-semibold ${
+                    redoStack.length === 0
+                      ? 'text-slate-600 cursor-not-allowed opacity-40'
+                      : 'text-slate-200 hover:bg-slate-700 hover:text-white active:scale-95'
+                  }`}
+                  title="İleri Al (Ctrl+Y / Cmd+Shift+Z)"
+                >
+                  <Redo2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">İleri Al</span>
                 </button>
               </div>
 
@@ -2366,7 +2497,8 @@ export function WhiteboardModal({
         }}
       />
 
-    </div>
+    </div>,
+    document.body
   );
 }
 

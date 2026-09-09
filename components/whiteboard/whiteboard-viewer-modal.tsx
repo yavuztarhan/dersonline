@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { ClassroomFileRecord, renderShapeSvgString, exportClassroomFileToPdf } from '@/lib/class-files-store';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
@@ -38,12 +39,17 @@ export function WhiteboardViewerModal({
   const { currentUser } = useAuth();
   const { playSound } = useApp();
 
+  const [mounted, setMounted] = useState(false);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Reset page and zoom on file change or modal open
   useEffect(() => {
@@ -70,7 +76,7 @@ export function WhiteboardViewerModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, currentPageIndex, file]);
 
-  if (!isOpen || !file) return null;
+  if (!isOpen || !file || !mounted) return null;
 
   const pages = Array.isArray(file.pages) && file.pages.length > 0 ? file.pages : [];
   const totalPages = pages.length > 0 ? pages.length : 1;
@@ -173,10 +179,10 @@ export function WhiteboardViewerModal({
     }
   };
 
-  return (
+  return createPortal(
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-between p-2 sm:p-4 animate-in fade-in select-none"
+      className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-between p-2 sm:p-4 animate-in fade-in select-none"
     >
       {/* 1. TOP VIEWER HEADER BAR */}
       <div className="w-full max-w-6xl bg-slate-900/95 text-white rounded-2xl sm:rounded-3xl border border-slate-700/80 shadow-2xl p-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-3 shrink-0">
@@ -456,6 +462,7 @@ export function WhiteboardViewerModal({
         </div>
       </div>
 
-    </div>
+    </div>,
+    document.body
   );
 }
