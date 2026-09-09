@@ -72,12 +72,19 @@ export function ActivitySheetView({
 
   // Active activity sheet file record
   const fileRecord = getActivitySheetForOutcome(outcomeCode, selectedSheetId);
-  const isBridgeActivity = fileRecord?.id?.includes('bridge') || fileRecord?.title?.includes('Köprü');
+  const isRailwayActivity =
+    selectedSheetId.includes('railway') ||
+    fileRecord?.id?.includes('railway') ||
+    fileRecord?.title?.includes('Tren Rayı');
+  const isBridgeActivity =
+    !isRailwayActivity && (fileRecord?.id?.includes('bridge') || fileRecord?.title?.includes('Köprü'));
   const isSteppingWorkshop =
-    selectedSheetId.includes('stepping') ||
-    fileRecord?.id?.includes('stepping') ||
-    fileRecord?.title?.includes('Adımlama');
+    !isRailwayActivity &&
+    (selectedSheetId.includes('stepping') ||
+      fileRecord?.id?.includes('stepping') ||
+      fileRecord?.title?.includes('Adımlama'));
   const isDeductionDetective =
+    !isRailwayActivity &&
     !isSteppingWorkshop &&
     (outcomeCode === 'MAT.5.3.2' ||
       fileRecord?.id?.includes('5-3-2') ||
@@ -104,6 +111,52 @@ export function ActivitySheetView({
   const [rayStep, setRayStep] = useState<number>(0); // 0 = initial, 1 = A, 2 = B, 3 = C (complete)
   const [angleStep, setAngleStep] = useState<number>(0); // 0 = initial, 1 = arc & P1, P2
   const [steppingCompleted, setSteppingCompleted] = useState<{ ray?: boolean; angle?: boolean }>({});
+
+  // Interactive railway state for MAT.5.3.2 Tren Rayı Mühendisliği
+  const [railStep, setRailStep] = useState<number>(0); // 0: base d line, 1: points A,B,C, 2: 3 perpendiculars [AA', BB', CC'], 3: parallel line k & sleepers
+  const [railQuestionAnswer, setRailQuestionAnswer] = useState<string | null>(null);
+  const [railQuestionSubmitted, setRailQuestionSubmitted] = useState<boolean>(false);
+  const [railwayCompleted, setRailwayCompleted] = useState<boolean>(false);
+
+  const handleAdvanceRailStep = () => {
+    playSound('click');
+    setRailStep((prev) => {
+      const next = prev < 3 ? prev + 1 : 3;
+      if (next === 3 && !railwayCompleted) {
+        playSound('success');
+        addPoints(50);
+        if (railQuestionSubmitted && railQuestionAnswer === 'parallel') {
+          unlockBadge('maarif-genius');
+          try {
+            confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+          } catch (e) {}
+        }
+      }
+      return next;
+    });
+  };
+
+  const handleSelectRailAnswer = (choice: string) => {
+    if (railQuestionSubmitted) return;
+    playSound('select');
+    setRailQuestionAnswer(choice);
+  };
+
+  const handleSubmitRailAnswer = () => {
+    if (!railQuestionAnswer) return;
+    setRailQuestionSubmitted(true);
+    if (railQuestionAnswer === 'parallel') {
+      playSound('success');
+      addPoints(50);
+      setRailwayCompleted(true);
+      unlockBadge('maarif-genius');
+      try {
+        confetti({ particleCount: 100, spread: 85, origin: { y: 0.6 } });
+      } catch (e) {}
+    } else {
+      playSound('click');
+    }
+  };
 
   const handleAdvanceRayStep = () => {
     playSound('click');
@@ -204,14 +257,17 @@ export function ActivitySheetView({
             }`}
           >
             {availableSheets.map((sheet, index) => {
+              const isRailway = sheet.id.includes('railway') || sheet.title.includes('Tren Rayı');
               const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
               const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
               const isDetective =
-                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping;
+                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
-              const icon = isBridge ? '🏛️' : isStepping ? '⭕' : isDetective ? '🔍' : '📐';
-              const title = isBridge
+              const icon = isRailway ? '🚆' : isBridge ? '🏛️' : isStepping ? '⭕' : isDetective ? '🔍' : '📐';
+              const title = isRailway
+                ? 'Tren Rayı Mühendisliği'
+                : isBridge
                 ? 'Tarihi Köprü Restorasyonu'
                 : isStepping
                 ? 'Pergel ile Adımlama'
@@ -219,7 +275,9 @@ export function ActivitySheetView({
                 ? 'Çıkarım Dedektifi'
                 : 'Aşamalı İnşa İstasyonları';
 
-              const badge = isBridge
+              const badge = isRailway
+                ? 'Büyük Görev'
+                : isBridge
                 ? 'Büyük Görev'
                 : isStepping
                 ? 'Atölye 2'
@@ -227,7 +285,9 @@ export function ActivitySheetView({
                 ? 'Etkinlik 1'
                 : `Etkinlik ${index + 1}`;
 
-              const tag = isBridge
+              const tag = isRailway
+                ? 'Gönye ile Paralel Doğru'
+                : isBridge
                 ? '4 Restorasyon Adımı'
                 : isStepping
                 ? 'Eşit Parçalar Kesme'
@@ -245,7 +305,9 @@ export function ActivitySheetView({
                   }}
                   className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer text-left border ${
                     isActive
-                      ? isBridge
+                      ? isRailway
+                        ? 'bg-indigo-600 text-white border-indigo-500 shadow-md scale-[1.01]'
+                        : isBridge
                         ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md scale-[1.01]'
                         : isStepping
                         ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
@@ -294,7 +356,9 @@ export function ActivitySheetView({
       {/* 1. Header Banner & Quick Action Buttons */}
       <div
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
-          isBridgeActivity
+          isRailwayActivity
+            ? 'bg-gradient-to-br from-indigo-950 via-slate-900 to-amber-950'
+            : isBridgeActivity
             ? 'bg-gradient-to-br from-amber-950 via-amber-900 to-slate-950'
             : isSteppingWorkshop
             ? 'bg-gradient-to-br from-purple-950 via-purple-900 to-slate-950'
@@ -306,7 +370,9 @@ export function ActivitySheetView({
         {/* Background Decorative Patterns */}
         <div
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-            isBridgeActivity
+            isRailwayActivity
+              ? 'bg-indigo-500/20'
+              : isBridgeActivity
               ? 'bg-amber-500/10'
               : isSteppingWorkshop
               ? 'bg-purple-500/15'
@@ -317,7 +383,9 @@ export function ActivitySheetView({
         />
         <div
           className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
-            isBridgeActivity
+            isRailwayActivity
+              ? 'bg-amber-500/15'
+              : isBridgeActivity
               ? 'bg-orange-500/10'
               : isSteppingWorkshop
               ? 'bg-indigo-500/20'
@@ -332,7 +400,9 @@ export function ActivitySheetView({
           <div className="space-y-2 max-w-2xl">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
-                isBridgeActivity
+                isRailwayActivity
+                  ? 'bg-indigo-400/20 border-indigo-300/30 text-indigo-200'
+                  : isBridgeActivity
                   ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
                   : isSteppingWorkshop
                   ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
@@ -341,7 +411,12 @@ export function ActivitySheetView({
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
-              {isBridgeActivity ? (
+              {isRailwayActivity ? (
+                <>
+                  <Layers className="w-3.5 h-3.5 text-indigo-300" />
+                  <span>Büyük Görev • Gönye ile Paralel Doğru İnşası (SDB2.2 / E3.7)</span>
+                </>
+              ) : isBridgeActivity ? (
                 <>
                   <Landmark className="w-3.5 h-3.5 text-amber-300" />
                   <span>Büyük Görev • Mimari Restorasyon & Geometrik İnşa</span>
@@ -365,7 +440,9 @@ export function ActivitySheetView({
             </div>
             
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              {isBridgeActivity
+              {isRailwayActivity
+                ? 'Büyük Görev: "TREN RAYI MÜHENDİSLİĞİ" (Gönye ile Paralel Doğru İnşası)'
+                : isBridgeActivity
                 ? 'Büyük Görev: Tarihi Köprü Restorasyonu'
                 : isSteppingWorkshop
                 ? 'Atölye: "PERGEL İLE ADIMLAMA" (Eşit Parçalar Kesme)'
@@ -375,7 +452,13 @@ export function ActivitySheetView({
             </h2>
             
             {/* Kurgu Paneli / Açıklama */}
-            {isBridgeActivity ? (
+            {isRailwayActivity ? (
+              <div className="p-3 bg-indigo-950/60 border border-indigo-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-indigo-100 font-medium italic leading-relaxed">
+                  🚂 <strong>Kurgu Paneli:</strong> &ldquo;Tren raylarının birbirine çarpmaması ve trenin raydan çıkmaması için rayların aralarındaki dik mesafenin her noktada aynı olması gerekir. Kendi tren rayını gönye ve cetvelle inşa et!&rdquo;
+                </p>
+              </div>
+            ) : isBridgeActivity ? (
               <div className="p-3 bg-amber-950/60 border border-amber-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-amber-100 font-medium italic leading-relaxed">
                   📜 <strong>Kurgu Paneli:</strong> &ldquo;Mimar Sinan'ın Kanuni Köprüsü'nün çizimi hasar gördü! Kemerleri ve ayakları aletlerinle tamamla.&rdquo;
@@ -401,7 +484,9 @@ export function ActivitySheetView({
 
             <div
               className={`flex items-center gap-3 pt-2 text-[11px] font-mono ${
-                isBridgeActivity
+                isRailwayActivity
+                  ? 'text-indigo-200/70'
+                  : isBridgeActivity
                   ? 'text-amber-200/70'
                   : isSteppingWorkshop
                   ? 'text-purple-200/70'
@@ -413,7 +498,9 @@ export function ActivitySheetView({
               <span>{outcomeCode}</span>
               <span>•</span>
               <span>
-                {isBridgeActivity
+                {isRailwayActivity
+                  ? '3 İnşa Adımı (100 Puan)'
+                  : isBridgeActivity
                   ? '4 Restorasyon Adımı (100 Puan)'
                   : isSteppingWorkshop
                   ? '2 Ana Görev (100 Puan)'
@@ -423,7 +510,9 @@ export function ActivitySheetView({
               </span>
               <span>•</span>
               <span>
-                {isBridgeActivity
+                {isRailwayActivity
+                  ? 'd ∥ k Paralel Doğrular'
+                  : isBridgeActivity
                   ? 'Geniş Milimetrik Grid'
                   : isSteppingWorkshop
                   ? 'Pergel ile Mesafe Koruma'
@@ -449,7 +538,9 @@ export function ActivitySheetView({
             >
               <Eye
                 className={`w-4 h-4 ${
-                  isBridgeActivity
+                  isRailwayActivity
+                    ? 'text-indigo-300'
+                    : isBridgeActivity
                     ? 'text-amber-300'
                     : isSteppingWorkshop
                     ? 'text-purple-300'
@@ -469,7 +560,9 @@ export function ActivitySheetView({
                 setWhiteboardModalOpen(true);
               }}
               className={`px-4 py-2.5 rounded-xl font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${
-                isBridgeActivity
+                isRailwayActivity
+                  ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-500/20'
+                  : isBridgeActivity
                   ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-500/20'
                   : isSteppingWorkshop
                   ? 'bg-purple-400 hover:bg-purple-300 text-slate-950 shadow-purple-500/20'
@@ -495,7 +588,9 @@ export function ActivitySheetView({
                 <>
                   <Loader2
                     className={`w-4 h-4 animate-spin ${
-                      isBridgeActivity
+                      isRailwayActivity
+                        ? 'text-indigo-400'
+                        : isBridgeActivity
                         ? 'text-amber-400'
                         : isSteppingWorkshop
                         ? 'text-purple-400'
@@ -520,8 +615,513 @@ export function ActivitySheetView({
 
       </div>
 
-      {/* 2. BODY CONTENT: EITHER STEPPING WORKSHOP OR DEDUCTION DETECTIVE OR BRIDGE OR 4-STATIONS */}
-      {isSteppingWorkshop ? (
+      {/* 2. BODY CONTENT: RAILWAY ENGINEERING OR STEPPING WORKSHOP OR DEDUCTION DETECTIVE OR BRIDGE OR 4-STATIONS */}
+      {isRailwayActivity ? (
+        /* ========================================================================= */
+        /* BÜYÜK GÖREV: "TREN RAYI MÜHENDİSLİĞİ" (PARALEL DOĞRU İNŞASI - MAT.5.3.2)  */
+        /* ========================================================================= */
+        <div className="space-y-6">
+          
+          {/* 3 Aşamalı Çizim Kılavuzu Kartları */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            
+            {/* 1. Adım: Noktalar */}
+            <div
+              className={`bg-white rounded-2xl p-4 border-2 transition-all space-y-2 cursor-pointer ${
+                railStep >= 1
+                  ? 'border-sky-500 bg-sky-50/30 shadow-md ring-2 ring-sky-200'
+                  : 'border-slate-200 hover:border-sky-300'
+              }`}
+              onClick={() => {
+                if (railStep === 0) handleAdvanceRailStep();
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 text-sky-700 font-bold flex items-center justify-center text-xs">
+                  📏
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded font-bold text-[10px] border ${
+                    railStep >= 1
+                      ? 'bg-sky-500 text-white border-sky-600'
+                      : 'bg-sky-50 text-sky-800 border-sky-200'
+                  }`}
+                >
+                  {railStep >= 1 ? '✓ 1. Adım Tamam' : '1. Adım: Cetvel'}
+                </span>
+              </div>
+              <h4 className="font-black text-slate-900 text-xs">Doğru Üzerinde Noktalar</h4>
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                Verilen <code>d</code> doğrusu üzerinde aralarında belirli mesafeler olan <code>A</code>, <code>B</code> ve <code>C</code> noktalarını belirle.
+              </p>
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-sky-700">
+                <span>Araç: Cetvel</span>
+                <span>30 Puan</span>
+              </div>
+            </div>
+
+            {/* 2. Adım: Gönye 90° Eşit Dikmeler */}
+            <div
+              className={`bg-white rounded-2xl p-4 border-2 transition-all space-y-2 cursor-pointer ${
+                railStep >= 2
+                  ? 'border-amber-500 bg-amber-50/30 shadow-md ring-2 ring-amber-200'
+                  : 'border-slate-200 hover:border-amber-300'
+              }`}
+              onClick={() => {
+                if (railStep === 1) handleAdvanceRailStep();
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 font-bold flex items-center justify-center text-xs">
+                  📐
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded font-bold text-[10px] border ${
+                    railStep >= 2
+                      ? 'bg-amber-500 text-slate-950 border-amber-600'
+                      : 'bg-amber-50 text-amber-800 border-amber-200'
+                  }`}
+                >
+                  {railStep >= 2 ? '✓ 2. Adım Tamam' : '2. Adım: Gönye (90°)'}
+                </span>
+              </div>
+              <h4 className="font-black text-slate-900 text-xs">Eşit Uzunlukta 3 Dikme</h4>
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                Gönyenin dik köşesini kullanarak <code>A, B, C</code> noktalarından doğrunun üst tarafına eşit uzunlukta (4 br) 3 dikme çık (<code>[AA'], [BB'], [CC']</code>).
+              </p>
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-amber-700">
+                <span>Araç: Gönye (⊥ 90°)</span>
+                <span>35 Puan</span>
+              </div>
+            </div>
+
+            {/* 3. Adım: Cetvel ile Birleştirme */}
+            <div
+              className={`bg-white rounded-2xl p-4 border-2 transition-all space-y-2 cursor-pointer ${
+                railStep >= 3
+                  ? 'border-indigo-500 bg-indigo-50/30 shadow-md ring-2 ring-indigo-200'
+                  : 'border-slate-200 hover:border-indigo-300'
+              }`}
+              onClick={() => {
+                if (railStep === 2) handleAdvanceRailStep();
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold flex items-center justify-center text-xs">
+                  📏
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded font-bold text-[10px] border ${
+                    railStep >= 3
+                      ? 'bg-indigo-600 text-white border-indigo-700'
+                      : 'bg-indigo-50 text-indigo-800 border-indigo-200'
+                  }`}
+                >
+                  {railStep >= 3 ? '✓ 3. Adım Tamam' : '3. Adım: Cetvel'}
+                </span>
+              </div>
+              <h4 className="font-black text-slate-900 text-xs">Paralel Ray Doğrusu (k)</h4>
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                Dikmelerin tepe noktalarını (<code>A', B', C'</code>) cetvelle birleştirerek yeni bir <code>k</code> doğrusu çiz (<code>d ∥ k</code>).
+              </p>
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-indigo-700">
+                <span>Araç: Ölçüsüz Cetvel</span>
+                <span>35 Puan</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Geniş İnteraktif Çizim Alanı (Milimetrik Grid Canvas) */}
+          <div className="bg-white rounded-3xl p-6 border-2 border-indigo-500/40 shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                  <span>🚆</span>
+                  <span>Geniş Çizim Alanı (İnteraktif Ray İnşası Simülatörü)</span>
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Aşağıdaki çizim alanında adımları tek tek uygulayarak tren rayının paralel iki kolunu inşa ediniz.
+                </p>
+              </div>
+
+              {/* Simülatör Adım Kontrol Butonları */}
+              <div className="flex items-center gap-2">
+                {railStep < 3 ? (
+                  <button
+                    type="button"
+                    onClick={handleAdvanceRailStep}
+                    className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+                  >
+                    <span>
+                      {railStep === 0
+                        ? '1. Adım: Noktaları Belirle'
+                        : railStep === 1
+                        ? '2. Adım: 3 Dikme Çık (Gönye 90°)'
+                        : '3. Adım: Rayı Tamamla (k Doğrusu)'}
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 font-black text-xs border border-emerald-300 flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Ray İnşası Tamamlandı! (+50 XP)</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSound('click');
+                        setRailStep(0);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all cursor-pointer"
+                    >
+                      Yeniden Başlat
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Büyük İnteraktif Blueprint Canvas */}
+            <div className="border-2 border-dashed border-indigo-300 rounded-2xl bg-[#fafafa] p-3 sm:p-5 relative overflow-hidden select-none shadow-inner">
+              <svg viewBox="0 0 800 280" width="100%" height="100%" className="w-full h-auto overflow-visible select-none">
+                <defs>
+                  <pattern id="grid_railway_sim" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1.2" fill="#cbd5e1" />
+                  </pattern>
+                  <linearGradient id="railGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#4f46e5" />
+                    <stop offset="50%" stopColor="#6366f1" />
+                    <stop offset="100%" stopColor="#4f46e5" />
+                  </linearGradient>
+                </defs>
+
+                <rect width="800" height="280" fill="url(#grid_railway_sim)" />
+
+                {/* Ray Zemin Çakılları / Ballast Alanı (Adım 3'te görünür) */}
+                {railStep >= 3 && (
+                  <rect
+                    x="40"
+                    y="75"
+                    width="720"
+                    height="120"
+                    rx="12"
+                    fill="#f1f5f9"
+                    stroke="#e2e8f0"
+                    strokeWidth="1.5"
+                    className="animate-in fade-in duration-500"
+                  />
+                )}
+
+                {/* Ray Traversleri (Sleepers - Adım 3'te rayı birbirine bağlar) */}
+                {railStep >= 3 && (
+                  <g className="animate-in fade-in duration-500">
+                    {[90, 140, 190, 240, 290, 340, 390, 440, 490, 540, 590, 640, 690].map((x) => (
+                      <rect
+                        key={x}
+                        x={x - 4}
+                        y="80"
+                        width="8"
+                        height="110"
+                        rx="2"
+                        fill="#b45309"
+                        opacity="0.8"
+                        stroke="#78350f"
+                        strokeWidth="1"
+                      />
+                    ))}
+                  </g>
+                )}
+
+                {/* ALT DOĞRU d (Y = 190) */}
+                <line x1="40" y1="190" x2="740" y2="190" stroke="#1e293b" strokeWidth="3.5" />
+                <polygon points="40,185 24,190 40,195" fill="#1e293b" />
+                <polygon points="740,185 756,190 740,195" fill="#1e293b" />
+                <text x="765" y="195" font-family="monospace" font-size="14" font-weight="900" fill="#1e293b">
+                  d
+                </text>
+
+                {/* ADIM 1: A, B, C Noktaları */}
+                {railStep >= 1 && (
+                  <g className="animate-in fade-in zoom-in-95 duration-300">
+                    {/* A Noktası (X = 200, Y = 190) */}
+                    <circle cx="200" cy="190" r="7" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
+                    <text x="200" y="215" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#0369a1" text-anchor="middle">
+                      A
+                    </text>
+
+                    {/* B Noktası (X = 390, Y = 190) */}
+                    <circle cx="390" cy="190" r="7" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
+                    <text x="390" y="215" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#0369a1" text-anchor="middle">
+                      B
+                    </text>
+
+                    {/* C Noktası (X = 580, Y = 190) */}
+                    <circle cx="580" cy="190" r="7" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
+                    <text x="580" y="215" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#0369a1" text-anchor="middle">
+                      C
+                    </text>
+                  </g>
+                )}
+
+                {/* ADIM 2: 3 Eşit Dikme [AA'], [BB'], [CC'] (h = 100px = 4 br) */}
+                {railStep >= 2 && (
+                  <g className="animate-in fade-in zoom-in-95 duration-400">
+                    {/* Dikme 1: A -> A' */}
+                    <line x1="200" y1="190" x2="200" y2="90" stroke="#f59e0b" strokeWidth="3" />
+                    {/* Diklik sembolü A */}
+                    <path d="M 200 176 L 214 176 L 214 190" fill="none" stroke="#d97706" strokeWidth="2" />
+                    <circle cx="207" cy="183" r="2" fill="#d97706" />
+                    <circle cx="200" cy="90" r="7" fill="#4f46e5" stroke="#ffffff" strokeWidth="2.5" />
+                    <text x="200" y="74" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#3730a3" text-anchor="middle">
+                      A'
+                    </text>
+                    <text x="170" y="145" font-family="monospace" font-size="11" font-weight="900" fill="#d97706">
+                      h = 4 br
+                    </text>
+
+                    {/* Dikme 2: B -> B' */}
+                    <line x1="390" y1="190" x2="390" y2="90" stroke="#f59e0b" strokeWidth="3" />
+                    {/* Diklik sembolü B */}
+                    <path d="M 390 176 L 404 176 L 404 190" fill="none" stroke="#d97706" strokeWidth="2" />
+                    <circle cx="397" cy="183" r="2" fill="#d97706" />
+                    <circle cx="390" cy="90" r="7" fill="#4f46e5" stroke="#ffffff" strokeWidth="2.5" />
+                    <text x="390" y="74" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#3730a3" text-anchor="middle">
+                      B'
+                    </text>
+                    <text x="360" y="145" font-family="monospace" font-size="11" font-weight="900" fill="#d97706">
+                      h = 4 br
+                    </text>
+
+                    {/* Dikme 3: C -> C' */}
+                    <line x1="580" y1="190" x2="580" y2="90" stroke="#f59e0b" strokeWidth="3" />
+                    {/* Diklik sembolü C */}
+                    <path d="M 580 176 L 594 176 L 594 190" fill="none" stroke="#d97706" strokeWidth="2" />
+                    <circle cx="587" cy="183" r="2" fill="#d97706" />
+                    <circle cx="580" cy="90" r="7" fill="#4f46e5" stroke="#ffffff" strokeWidth="2.5" />
+                    <text x="580" y="74" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#3730a3" text-anchor="middle">
+                      C'
+                    </text>
+                    <text x="550" y="145" font-family="monospace" font-size="11" font-weight="900" fill="#d97706">
+                      h = 4 br
+                    </text>
+                  </g>
+                )}
+
+                {/* ADIM 3: ÜST PARALEL DOĞRU k (Y = 90) & TREN */}
+                {railStep >= 3 && (
+                  <g className="animate-in fade-in duration-500">
+                    <line x1="40" y1="90" x2="740" y2="90" stroke="#4f46e5" strokeWidth="3.5" />
+                    <polygon points="40,85 24,90 40,95" fill="#4f46e5" />
+                    <polygon points="740,85 756,90 740,95" fill="#4f46e5" />
+                    <text x="765" y="95" font-family="monospace" font-size="14" font-weight="900" fill="#4f46e5">
+                      k
+                    </text>
+
+                    {/* Paralellik Rozeti */}
+                    <rect x="635" y="125" width="130" height="34" rx="8" fill="#eef2ff" stroke="#4f46e5" strokeWidth="2" />
+                    <text x="700" y="147" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#3730a3" text-anchor="middle">
+                      d ∥ k (Paralel)
+                    </text>
+
+                    {/* Ray Üzerinde Hareket Eden Tren Emojisi / İkonu */}
+                    <g transform="translate(680, 52)">
+                      <text font-size="28" text-anchor="middle">🚂</text>
+                    </g>
+                  </g>
+                )}
+              </svg>
+            </div>
+          </div>
+
+          {/* Tartış-Yaz & Çoktan Seçmeli Soru Paneli */}
+          <div className="bg-white rounded-3xl p-6 border-2 border-indigo-500/30 shadow-md space-y-4">
+            <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2 text-indigo-900 font-black text-sm">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-bold text-sm">
+                  💬
+                </div>
+                <span>TARTIŞ-YAZ: GEOMETRİK ÇIKARIM VE İLİŞKİ SORUSU</span>
+              </div>
+              <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-800 font-bold text-[11px] border border-indigo-200">
+                100 Puan
+              </span>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-sm text-slate-800 font-semibold leading-relaxed">
+              &ldquo;Oluşturduğun yeni doğru (<code>k</code>) ile ilk doğru (<code>d</code>) hiç kesişir mi? Bu doğruların arasındaki geometrik ilişkiye ne ad verilir?&rdquo;
+            </div>
+
+            {/* 3 Seçenek Kartı */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              
+              {/* Seçenek 1: Kesişen */}
+              <button
+                type="button"
+                onClick={() => handleSelectRailAnswer('intersecting')}
+                disabled={railQuestionSubmitted}
+                className={`p-4 rounded-2xl border-2 text-left transition-all flex flex-col justify-between cursor-pointer ${
+                  railQuestionAnswer === 'intersecting'
+                    ? railQuestionSubmitted
+                      ? 'border-rose-400 bg-rose-50 text-rose-900 ring-2 ring-rose-200'
+                      : 'border-indigo-600 bg-indigo-50/50 text-indigo-950 ring-2 ring-indigo-200'
+                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-bold text-xs">A) Kesişen Doğrular</span>
+                  <div
+                    className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
+                      railQuestionAnswer === 'intersecting'
+                        ? 'border-indigo-600 bg-indigo-600 text-white'
+                        : 'border-slate-300'
+                    }`}
+                  >
+                    {railQuestionAnswer === 'intersecting' && '●'}
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500">Doğrular bir noktada buluşup kesişir.</p>
+              </button>
+
+              {/* Seçenek 2: Paralel Doğrular (DOĞRU) */}
+              <button
+                type="button"
+                onClick={() => handleSelectRailAnswer('parallel')}
+                disabled={railQuestionSubmitted}
+                className={`p-4 rounded-2xl border-2 text-left transition-all flex flex-col justify-between cursor-pointer ${
+                  railQuestionAnswer === 'parallel'
+                    ? railQuestionSubmitted
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-300'
+                      : 'border-indigo-600 bg-indigo-50/50 text-indigo-950 ring-2 ring-indigo-200'
+                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-bold text-xs">B) Paralel Doğrular (d ∥ k)</span>
+                  <div
+                    className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
+                      railQuestionAnswer === 'parallel'
+                        ? 'border-emerald-600 bg-emerald-600 text-white'
+                        : 'border-slate-300'
+                    }`}
+                  >
+                    {railQuestionAnswer === 'parallel' && '●'}
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500">Aralarındaki dik mesafe her noktada eşittir, asla kesişmezler.</p>
+              </button>
+
+              {/* Seçenek 3: Çakışık Doğrular */}
+              <button
+                type="button"
+                onClick={() => handleSelectRailAnswer('coincident')}
+                disabled={railQuestionSubmitted}
+                className={`p-4 rounded-2xl border-2 text-left transition-all flex flex-col justify-between cursor-pointer ${
+                  railQuestionAnswer === 'coincident'
+                    ? railQuestionSubmitted
+                      ? 'border-rose-400 bg-rose-50 text-rose-900 ring-2 ring-rose-200'
+                      : 'border-indigo-600 bg-indigo-50/50 text-indigo-950 ring-2 ring-indigo-200'
+                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-bold text-xs">C) Çakışık Doğrular</span>
+                  <div
+                    className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
+                      railQuestionAnswer === 'coincident'
+                        ? 'border-indigo-600 bg-indigo-600 text-white'
+                        : 'border-slate-300'
+                    }`}
+                  >
+                    {railQuestionAnswer === 'coincident' && '●'}
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500">Tüm noktaları ortak olan üst üste doğrular.</p>
+              </button>
+
+            </div>
+
+            {/* Yanıtı Gönder & Kontrol Butonu */}
+            {!railQuestionSubmitted ? (
+              <div className="flex justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={handleSubmitRailAnswer}
+                  disabled={!railQuestionAnswer}
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-black text-xs transition-all flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer disabled:cursor-not-allowed"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Yanıtı Onayla ve Puanı Al</span>
+                </button>
+              </div>
+            ) : (
+              <div
+                className={`p-4 rounded-2xl border-2 space-y-2 animate-in fade-in duration-300 ${
+                  railQuestionAnswer === 'parallel'
+                    ? 'border-emerald-300 bg-emerald-50/90 text-emerald-950'
+                    : 'border-rose-300 bg-rose-50/90 text-rose-950'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-black text-xs flex items-center gap-1.5">
+                    {railQuestionAnswer === 'parallel' ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span>Tebrikler! Doğru Yanıt (+50 XP)</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-4 h-4 text-rose-600" />
+                        <span>Yanlış Yanıt! Tekrar Düşünelim</span>
+                      </>
+                    )}
+                  </span>
+                  {railQuestionAnswer !== 'parallel' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRailQuestionSubmitted(false);
+                        setRailQuestionAnswer(null);
+                      }}
+                      className="text-xs font-bold underline text-rose-700 hover:text-rose-900 cursor-pointer"
+                    >
+                      Tekrar Dene
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-xs leading-relaxed font-medium">
+                  {railQuestionAnswer === 'parallel'
+                    ? 'Bir doğru üzerindeki noktalardan aynı yöne çıkılan eşit uzunluktaki dikmelerin (h = 4 br) uç noktaları birleştirildiğinde elde edilen doğru, ilk doğruya PARALELDİR (d ∥ k). Aralarındaki dik uzaklık sabit olduğu için sonsuza kadar uzatılsalar bile hiçbir zaman kesişmezler!'
+                    : 'Çıktığımız 3 dikme de aynı uzunlukta (4 birim) olduğundan, rayların arasındaki dik mesafe hiçbir noktada değişmez. Bu iki doğru birbirine ne yaklaşır ne de uzaklaşır.'}
+                </p>
+              </div>
+            )}
+
+            {/* Matematiksel Çıkarım Notu */}
+            <div className="p-3.5 bg-indigo-50/70 border border-indigo-200 rounded-2xl flex items-start gap-3">
+              <span className="text-lg">✨</span>
+              <div className="text-xs text-indigo-950 leading-relaxed">
+                <strong>Matematiksel İlke:</strong> Bir düzlemde iki doğrunun paralel olması için aralarındaki dik mesafenin her noktada sabit kalması gerekir. Gönye ile dik açı (90°) ve cetvelle eşit uzunluk aktarımı bu paralelliğin garantisidir.
+              </div>
+            </div>
+
+          </div>
+
+          {/* Alt Bilgi & Değerlendirme */}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+            <span className="flex items-center gap-1.5 font-semibold">
+              <Award className="w-4 h-4 text-amber-500" />
+              <span>
+                <strong>Değerlendirme:</strong> Çizim Simülasyonu (50 Puan) + Mantıksal Çıkarım (50 Puan) = 100 Puan
+              </span>
+            </span>
+            <span className="font-mono font-bold text-slate-400">www.maarifakademi.com.tr</span>
+          </div>
+
+        </div>
+      ) : isSteppingWorkshop ? (
         /* ========================================================================= */
         /* ATÖLYE: "PERGEL İLE ADIMLAMA" (EŞİT PARÇALAR KESME - MAT.5.3.2)            */
         /* ========================================================================= */
