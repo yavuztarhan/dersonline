@@ -2103,6 +2103,305 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-4-table-hypothesis',
+    title: 'Etkinlik: "Varsayım ve Tablo Temsili" (İki ve Üç Doğru Analizi - MAT.5.3.4)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.4',
+    outcomeTitle: 'Düzlemde İki veya Üç Doğrunun Durumuna Bağlı Olarak Oluşabilecek Açılara Dair Çıkarım Yapabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-10T09:00:00Z',
+    fileSizeKb: 280,
+    tags: ['Etkinlik Kağıdı', 'Varsayım ve Tablo', 'İki ve Üç Doğru', 'Açı Çeşitleri', 'Mümkün İmkansız', 'MAT.5.3.4', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f5f3ff, #ede9fe); padding: 10px; border-radius: 12px; border: 1px solid #ddd6fe;">
+    <div style="display: inline-block; background: #7c3aed; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      📊 VARSAYIM &amp; TABLO TEMSİLİ (4. HAFTA - MAT.5.3.4)
+    </div>
+    <h2 style="color: #5b21b6; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      VARSAYIM VE TABLO TEMSİLİ (İKİ VE ÜÇ DOĞRU ANALİZİ)
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Aşağıdaki durumları inceleyerek açı çeşitlerini ve sayılarını tabloya yerleştiriniz.
+    </p>
+  </div>
+
+  <!-- A BÖLÜMÜ: İKİ DOĞRUNUN KESİŞİMİ DURUMU -->
+  <div style="border: 2px solid #8b5cf6; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #6d28d9; font-size: 11.5px;">
+        📌 A) İKİ DOĞRUNUN KESİŞİMİ DURUMU
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 1px 5px; border-radius: 4px; border: 1px solid #ddd6fe;">
+        50 Puan
+      </span>
+    </div>
+    <p style="font-size: 10.5px; color: #334155; line-height: 1.35; margin: 0 0 8px 0;">
+      İki doğru düzlemde kesiştirildiğinde oluşabilecek açı türlerini ve sayılarını tablodaki boşluklara yazınız:
+    </p>
+
+    <!-- Tablo -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: center; margin-bottom: 4px;">
+      <thead>
+        <tr style="background: #f5f3ff; color: #5b21b6; font-weight: 900; border-bottom: 2px solid #ddd6fe;">
+          <th style="padding: 6px 8px; text-align: left; width: 30%;">Durum</th>
+          <th style="padding: 6px 8px; width: 18%;">Dar Açı Sayısı</th>
+          <th style="padding: 6px 8px; width: 18%;">Geniş Açı Sayısı</th>
+          <th style="padding: 6px 8px; width: 18%;">Dik Açı Sayısı</th>
+          <th style="padding: 6px 8px; width: 16%;">Toplam Açı</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 6px 8px; text-align: left; font-weight: 700; color: #1e293b;">
+            1. Eğik Kesişme
+          </td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #6d28d9;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #6d28d9;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #6d28d9;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 900; color: #0f172a; background: #f8fafc;">4</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e2e8f0; background: #faf5ff;">
+          <td style="padding: 6px 8px; text-align: left; font-weight: 700; color: #047857;">
+            2. Dik Kesişme (⊥)
+          </td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #047857;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #047857;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #047857;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 900; color: #0f172a; background: #f1f5f9;">4</td>
+        </tr>
+        <tr style="background: #ffffff;">
+          <td style="padding: 6px 8px; text-align: left; font-weight: 700; color: #b45309;">
+            3. Paralel Olma (//)
+          </td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #b45309;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #b45309;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 700; color: #b45309;">( ........ )</td>
+          <td style="padding: 6px 8px; font-weight: 900; color: #0f172a; background: #f8fafc;">0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- B BÖLÜMÜ: ÜÇ DOĞRUNUN TEK BİR NOKTADA KESİŞİMİ DURUMU -->
+  <div style="border: 2px solid #0284c7; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #e0f2fe; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #0369a1; font-size: 11.5px;">
+        📌 B) ÜÇ DOĞRUNUN TEK BİR NOKTADA KESİŞİMİ DURUMU (6 AÇI BÖLGESİ)
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #f0f9ff; color: #0284c7; padding: 1px 5px; border-radius: 4px; border: 1px solid #bae6fd;">
+        50 Puan
+      </span>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 140px 1fr; gap: 10px; align-items: center; margin-bottom: 6px;">
+      <!-- Mini 6 Açı SVG Şeması -->
+      <div style="border: 1px dashed #cbd5e1; border-radius: 8px; height: 115px; background: #f8fafc; position: relative; overflow: hidden;">
+        <svg viewBox="0 0 140 115" width="100%" height="100%">
+          <!-- Doğru 1 (Yatay) -->
+          <line x1="10" y1="57" x2="130" y2="57" stroke="#0284c7" stroke-width="2" />
+          <!-- Doğru 2 (60°) -->
+          <line x1="35" y1="14" x2="105" y2="101" stroke="#7c3aed" stroke-width="2" />
+          <!-- Doğru 3 (120°) -->
+          <line x1="105" y1="14" x2="35" y2="101" stroke="#d97706" stroke-width="2" />
+          <!-- Merkez O -->
+          <circle cx="70" cy="57" r="4" fill="#dc2626" />
+          <text x="70" y="47" font-family="system-ui" font-size="9" font-weight="900" fill="#dc2626" text-anchor="middle">O</text>
+          <text x="70" y="70" font-family="system-ui" font-size="7.5" font-weight="bold" fill="#64748b" text-anchor="middle">6 Açı Bölgesi</text>
+        </svg>
+      </div>
+
+      <p style="font-size: 10.5px; color: #334155; line-height: 1.35; margin: 0;">
+        Üç doğru aynı merkez noktadan geçtiğinde merkez etrafında <strong>toplam 6 açı bölgesi</strong> (tam açı = 360°) oluşur. Aşağıdaki durumların gerçekleşip gerçekleşemeyeceğini <strong>(Mümkün / İmkânsız)</strong> olarak belirtiniz:
+      </p>
+    </div>
+
+    <!-- 4 Önerme Satırı -->
+    <div style="space-y: 4px; font-size: 10px; color: #1e293b;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+        <span>• <strong>6 adet dar açı</strong> oluşması:</span>
+        <span style="font-weight: 800; color: #0284c7;">[ &nbsp; ] Mümkün &nbsp; / &nbsp; [ &nbsp; ] İmkânsız</span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+        <span>• <strong>2 geniş açı ve 4 dar açı</strong> oluşması:</span>
+        <span style="font-weight: 800; color: #0284c7;">[ &nbsp; ] Mümkün &nbsp; / &nbsp; [ &nbsp; ] İmkânsız</span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+        <span>• <strong>2 dik açı ve 4 dar açı</strong> oluşması:</span>
+        <span style="font-weight: 800; color: #0284c7;">[ &nbsp; ] Mümkün &nbsp; / &nbsp; [ &nbsp; ] İmkânsız</span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span>• <strong>6 adet geniş açı</strong> oluşması:</span>
+        <span style="font-weight: 800; color: #0284c7;">[ &nbsp; ] Mümkün &nbsp; / &nbsp; [ &nbsp; ] İmkânsız</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alt Bilgi / Puanlama -->
+  <div style="padding: 8px 12px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; font-size: 10px; color: #5b21b6; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Bölüm A (50P) + Bölüm B (50P) = 100 Puan. (SDB3.3 / E3.7 Mantıksal Çıkarım)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-5-3-4-intersection-challenge',
+    title: 'Etkinlik: "Kavşak Şifresi ve Çıkarım Meydan Okuması" (MAT.5.3.4)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.4',
+    outcomeTitle: 'Düzlemde İki veya Üç Doğrunun Durumuna Bağlı Olarak Oluşabilecek Açılara Dair Çıkarım Yapabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 285,
+    tags: ['Etkinlik Kağıdı', 'Kavşak Şifresi', 'Ters Açılar', 'Komşu Bütünler', 'Tam Açı 360', 'MAT.5.3.4', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #ef4444; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #fef2f2, #fee2e2); padding: 10px; border-radius: 12px; border: 1px solid #fca5a5;">
+    <div style="display: inline-block; background: #dc2626; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🚦 AÇI ŞİFRESİ &amp; MEYDAN OKUMA (4. HAFTA - MAT.5.3.4)
+    </div>
+    <h2 style="color: #991b1b; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      KAVŞAK ŞİFRESİ VE ÇIKARIM MEYDAN OKUMASI
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Verilen 50°'lik kavşak açısını inceleyerek ters açı, komşu bütünler ve 4 açının toplamını bulunuz.
+    </p>
+  </div>
+
+  <!-- KAVŞAK GÖRSELİ & HESAPLAMA ALANI (GRID) -->
+  <div style="display: grid; grid-template-columns: 200px 1fr; gap: 12px; margin-bottom: 10px;">
+    
+    <!-- Sol SVG: Çapraz Kavşak Şeması -->
+    <div style="border: 2px solid #ef4444; border-radius: 10px; padding: 8px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="font-size: 10.5px; font-weight: 900; color: #b91c1c; margin-bottom: 4px; text-align: center;">
+        🚦 'O' MERKEZLİ KAVŞAK
+      </div>
+      <div style="border: 1px dashed #cbd5e1; border-radius: 6px; height: 160px; background: #f8fafc; position: relative; overflow: hidden;">
+        <svg viewBox="0 0 200 160" width="100%" height="100%">
+          <!-- Doğru 1 (40° Eğim) -->
+          <line x1="20" y1="130" x2="180" y2="30" stroke="#0284c7" stroke-width="3" />
+          <!-- Doğru 2 (-40° Eğim) -->
+          <line x1="20" y1="30" x2="180" y2="130" stroke="#0ea5e9" stroke-width="3" />
+          
+          <!-- Merkez O (100, 80) -->
+          <circle cx="100" cy="80" r="5" fill="#dc2626" />
+          <text x="100" y="74" font-family="system-ui" font-size="9.5" font-weight="900" fill="#dc2626" text-anchor="middle">O</text>
+
+          <!-- Üst Açı = 50° (Verilen) -->
+          <path d="M 85 68 A 20 20 0 0 1 115 68" fill="none" stroke="#dc2626" stroke-width="2" />
+          <rect x="75" y="42" width="50" height="18" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1" />
+          <text x="100" y="55" font-family="system-ui" font-size="10.5" font-weight="900" fill="#991b1b" text-anchor="middle">50° (Üst)</text>
+
+          <!-- Alt Açı = ? -->
+          <path d="M 85 92 A 20 20 0 0 0 115 92" fill="none" stroke="#64748b" stroke-width="1.5" />
+          <text x="100" y="112" font-family="monospace" font-size="11" font-weight="900" fill="#0284c7" text-anchor="middle">? (Alt)</text>
+
+          <!-- Sol Açı = ? -->
+          <text x="45" y="84" font-family="monospace" font-size="10" font-weight="900" fill="#6d28d9" text-anchor="middle">? (Sol)</text>
+
+          <!-- Sağ Açı = ? -->
+          <text x="155" y="84" font-family="monospace" font-size="10" font-weight="900" fill="#6d28d9" text-anchor="middle">? (Sağ)</text>
+        </svg>
+      </div>
+      <div style="font-size: 9px; color: #64748b; text-align: center; margin-top: 4px; font-weight: 600;">
+        (İki doğrunun 'O' noktasındaki kesişimi)
+      </div>
+    </div>
+
+    <!-- Sağ: 3 Soru & İşlem Alanı -->
+    <div style="border: 2px solid #ef4444; border-radius: 10px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="font-size: 11px; font-weight: 900; color: #b91c1c; border-bottom: 1.5px solid #fee2e2; padding-bottom: 4px; margin-bottom: 6px;">
+        🔍 AÇI HESAPLAMA ADIMLARI (50 Puan)
+      </div>
+
+      <div style="space-y: 6px; font-size: 10.5px; color: #1e293b;">
+        <!-- Soru 1 -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px;">
+          <div style="font-weight: 700;">1. Verilen 50°'lik açının tam karşısındaki <strong>ters açının</strong> ölçüsü kaç derecedir?</div>
+          <div style="margin-top: 3px; font-weight: 800; color: #0284c7;">
+            Ters Açı Ölçüsü: <span style="border-bottom: 1.5px solid #0284c7; min-width: 60px; display: inline-block;">( ..........° )</span>
+          </div>
+        </div>
+
+        <!-- Soru 2 -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px;">
+          <div style="font-weight: 700;">2. Verilen 50°'lik açının yan tarafında bulunan <strong>komşu bütünler açının</strong> ölçüsü kaç derecedir?</div>
+          <div style="margin-top: 3px; font-weight: 800; color: #6d28d9;">
+            İşlem: 180° - 50° = <span style="border-bottom: 1.5px solid #6d28d9; min-width: 60px; display: inline-block;">( ..........° )</span>
+          </div>
+        </div>
+
+        <!-- Soru 3 -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px;">
+          <div style="font-weight: 700;">3. Kavşakta oluşan <strong>4 açının ölçüleri toplamı</strong> kaç derecedir?</div>
+          <div style="margin-top: 3px; font-weight: 800; color: #dc2626;">
+            Toplam: <span style="border-bottom: 1.5px solid #dc2626; min-width: 60px; display: inline-block;">( ..........° )</span> (Tam Açı)
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BÖLÜM 4: ÇIKARIM ÖNERMELERİNİ DEĞERLENDİRİNİZ (D / Y) -->
+  <div style="border: 2px solid #0d9488; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 8px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ccfbf1; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #0f766e; font-size: 11.5px;">
+        ⚖️ ÇIKARIM ÖNERMELERİNİ DEĞERLENDİRİNİZ (50 Puan - Doğru [D] / Yanlış [Y])
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #f0fdfa; color: #0d9488; padding: 1px 5px; border-radius: 4px; border: 1px solid #99f6e4;">
+        4 x 12.5P = 50P
+      </span>
+    </div>
+
+    <div style="space-y: 4px; font-size: 10px; color: #1e293b;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+        <span>[ &nbsp;&nbsp;&nbsp; ] 1. İki doğru kesiştiğinde oluşan karşılıklı açıların (ters açıların) ölçüleri daima birbirine eşittir.</span>
+        <span style="font-weight: 800; color: #0f766e;">( D / Y )</span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+        <span>[ &nbsp;&nbsp;&nbsp; ] 2. Paralel iki doğru birbiriyle kesişmediği için aralarında açı oluşmaz.</span>
+        <span style="font-weight: 800; color: #0f766e;">( D / Y )</span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+        <span>[ &nbsp;&nbsp;&nbsp; ] 3. Birbirini dik kesen iki doğru 4 adet 90°'lik dik açı meydana getirir.</span>
+        <span style="font-weight: 800; color: #0f766e;">( D / Y )</span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span>[ &nbsp;&nbsp;&nbsp; ] 4. Komşu tümler iki açının ölçüleri toplamı 180°'dir.</span>
+        <span style="font-weight: 800; color: #0f766e;">( D / Y )</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alt Bilgi / Puanlama -->
+  <div style="padding: 8px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; font-size: 10px; color: #991b1b; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Hesaplama Adımları (50P) + Önerme Değerlendirme (50P) = 100 Puan. (SDB3.3 / E3.7 Açı İspatı)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 

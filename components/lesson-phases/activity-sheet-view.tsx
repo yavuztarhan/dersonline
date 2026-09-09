@@ -119,6 +119,29 @@ export function ActivitySheetView({
     (selectedSheetId.includes('stations') ||
       fileRecord?.id?.includes('stations') ||
       fileRecord?.title?.includes('Açı Ölçüm İstasyonları'));
+  const isTableHypothesisActivity =
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isDeductionDetective &&
+    !isErrorDetectiveActivity &&
+    !isAngleConstructionActivity &&
+    !isMeasuringStationsActivity &&
+    (selectedSheetId.includes('table-hypothesis') ||
+      fileRecord?.id?.includes('table-hypothesis') ||
+      fileRecord?.title?.includes('Varsayım ve Tablo'));
+  const isIntersectionChallengeActivity =
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isDeductionDetective &&
+    !isErrorDetectiveActivity &&
+    !isAngleConstructionActivity &&
+    !isMeasuringStationsActivity &&
+    !isTableHypothesisActivity &&
+    (selectedSheetId.includes('intersection-challenge') ||
+      fileRecord?.id?.includes('intersection-challenge') ||
+      fileRecord?.title?.includes('Kavşak Şifresi'));
   const isLinesRelationsActivity =
     !isRailwayActivity &&
     !isBridgeActivity &&
@@ -127,6 +150,8 @@ export function ActivitySheetView({
     !isErrorDetectiveActivity &&
     !isAngleConstructionActivity &&
     !isMeasuringStationsActivity &&
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
     (selectedSheetId.includes('lines-relations') ||
       selectedSheetId.includes('5-3-4') ||
       fileRecord?.id?.includes('lines-relations') ||
@@ -141,10 +166,138 @@ export function ActivitySheetView({
     !isMeasuringStationsActivity &&
     !isAngleConstructionActivity &&
     !isLinesRelationsActivity &&
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
     (selectedSheetId.includes('anatomy') ||
       fileRecord?.id?.includes('anatomy') ||
       fileRecord?.title?.includes('İletkinin Anatomisi') ||
       outcomeCode === 'MAT.5.3.3');
+
+  // Interactive state for MAT.5.3.4 Varsayım ve Tablo Temsili
+  const [tableHypoAnswers, setTableHypoAnswers] = useState<{
+    egik_dar: string;
+    egik_genis: string;
+    egik_dik: string;
+    dik_dar: string;
+    dik_genis: string;
+    dik_dik: string;
+    paralel_dar: string;
+    paralel_genis: string;
+    paralel_dik: string;
+    b1: string;
+    b2: string;
+    b3: string;
+    b4: string;
+  }>({
+    egik_dar: '',
+    egik_genis: '',
+    egik_dik: '',
+    dik_dar: '',
+    dik_genis: '',
+    dik_dik: '',
+    paralel_dar: '',
+    paralel_genis: '',
+    paralel_dik: '',
+    b1: '',
+    b2: '',
+    b3: '',
+    b4: ''
+  });
+  const [tableHypoChecked, setTableHypoChecked] = useState<boolean>(false);
+  const [tableHypoScore, setTableHypoScore] = useState<number>(0);
+  const [tableHypoPointsAwarded, setTableHypoPointsAwarded] = useState<boolean>(false);
+
+  const handleCheckTableHypo = () => {
+    let score = 0;
+    if (tableHypoAnswers.egik_dar.trim() === '2') score += 5.5;
+    if (tableHypoAnswers.egik_genis.trim() === '2') score += 5.5;
+    if (tableHypoAnswers.egik_dik.trim() === '0') score += 5.5;
+    if (tableHypoAnswers.dik_dar.trim() === '0') score += 5.5;
+    if (tableHypoAnswers.dik_genis.trim() === '0') score += 5.5;
+    if (tableHypoAnswers.dik_dik.trim() === '4') score += 6;
+    if (tableHypoAnswers.paralel_dar.trim() === '0') score += 5.5;
+    if (tableHypoAnswers.paralel_genis.trim() === '0') score += 5.5;
+    if (tableHypoAnswers.paralel_dik.trim() === '0') score += 5.5;
+
+    if (tableHypoAnswers.b1 === 'mumkun') score += 12.5;
+    if (tableHypoAnswers.b2 === 'mumkun') score += 12.5;
+    if (tableHypoAnswers.b3 === 'mumkun') score += 12.5;
+    if (tableHypoAnswers.b4 === 'imkansiz') score += 12.5;
+
+    const finalScore = Math.min(100, Math.round(score));
+    setTableHypoScore(finalScore);
+    setTableHypoChecked(true);
+
+    if (finalScore >= 75) {
+      playSound('success');
+      if (!tableHypoPointsAwarded) {
+        addPoints(finalScore);
+        setTableHypoPointsAwarded(true);
+        if (finalScore === 100) {
+          unlockBadge('maarif-genius');
+        }
+        try {
+          confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    } else {
+      playSound('click');
+    }
+  };
+
+  // Interactive state for MAT.5.3.4 Kavşak Şifresi ve Çıkarım Meydan Okuması
+  const [kavsakAnswers, setKavsakAnswers] = useState<{
+    q1_ters: string;
+    q2_butunler: string;
+    q3_toplam: string;
+    p1: string;
+    p2: string;
+    p3: string;
+    p4: string;
+  }>({
+    q1_ters: '',
+    q2_butunler: '',
+    q3_toplam: '',
+    p1: '',
+    p2: '',
+    p3: '',
+    p4: ''
+  });
+  const [kavsakChecked, setKavsakChecked] = useState<boolean>(false);
+  const [kavsakScore, setKavsakScore] = useState<number>(0);
+  const [kavsakPointsAwarded, setKavsakPointsAwarded] = useState<boolean>(false);
+
+  const handleCheckKavsak = () => {
+    let score = 0;
+    if (kavsakAnswers.q1_ters.trim() === '50') score += 16.6;
+    if (kavsakAnswers.q2_butunler.trim() === '130') score += 16.7;
+    if (kavsakAnswers.q3_toplam.trim() === '360') score += 16.7;
+
+    if (kavsakAnswers.p1 === 'D') score += 12.5;
+    if (kavsakAnswers.p2 === 'D') score += 12.5;
+    if (kavsakAnswers.p3 === 'D') score += 12.5;
+    if (kavsakAnswers.p4 === 'Y') score += 12.5;
+
+    const finalScore = Math.min(100, Math.round(score));
+    setKavsakScore(finalScore);
+    setKavsakChecked(true);
+
+    if (finalScore >= 75) {
+      playSound('success');
+      if (!kavsakPointsAwarded) {
+        addPoints(finalScore);
+        setKavsakPointsAwarded(true);
+        if (finalScore === 100) {
+          unlockBadge('maarif-genius');
+        }
+        try {
+          confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    } else {
+      playSound('click');
+    }
+  };
 
   // Interactive state for MAT.5.3.4 "DOĞRULARIN BİRBİRİNE GÖRE DURUMLARI"
   const [linesActiveTab, setLinesActiveTab] = useState<'overview' | 'intersecting' | 'perpendicular' | 'parallel' | 'transversal'>('overview');
@@ -629,24 +782,34 @@ export function ActivitySheetView({
               const isRailway = sheet.id.includes('railway') || sheet.title.includes('Tren Rayı');
               const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
               const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
+              const isTableHypo =
+                sheet.id.includes('table-hypothesis') || sheet.title.includes('Varsayım ve Tablo');
+              const isIntersectionChallenge =
+                sheet.id.includes('intersection-challenge') || sheet.title.includes('Kavşak Şifresi');
               const isLinesRelations =
-                sheet.id.includes('lines-relations') ||
-                sheet.id.includes('5-3-4') ||
-                sheet.title.includes('Doğruların Birbirine Göre Durumları') ||
-                sheet.title.includes('Doğruların Durumları');
+                (sheet.id.includes('lines-relations') ||
+                  sheet.id.includes('5-3-4') ||
+                  sheet.title.includes('Doğruların Birbirine Göre Durumları') ||
+                  sheet.title.includes('Doğruların Durumları')) &&
+                !isTableHypo &&
+                !isIntersectionChallenge;
               const isErrorDetective =
-                (sheet.id.includes('error-detective') || sheet.id.includes('hata-dedektifi') || sheet.title.includes('Hata Dedektifi')) && !isLinesRelations;
+                (sheet.id.includes('error-detective') || sheet.id.includes('hata-dedektifi') || sheet.title.includes('Hata Dedektifi')) && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isDetective =
-                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway && !isErrorDetective && !isLinesRelations;
+                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isConstruction =
-                (sheet.id.includes('angle-construction') || sheet.id.includes('rotani-kendin-ciz') || sheet.title.includes('Rotanı Kendin Çiz')) && !isErrorDetective && !isLinesRelations;
+                (sheet.id.includes('angle-construction') || sheet.id.includes('rotani-kendin-ciz') || sheet.title.includes('Rotanı Kendin Çiz')) && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isStations =
-                (sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm')) && !isConstruction && !isErrorDetective && !isLinesRelations;
+                (sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm')) && !isConstruction && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isAnatomy =
-                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction && !isErrorDetective && !isLinesRelations;
+                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
-              const icon = isLinesRelations
+              const icon = isTableHypo
+                ? '📊'
+                : isIntersectionChallenge
+                ? '🚦'
+                : isLinesRelations
                 ? '📐'
                 : isRailway
                 ? '🚆'
@@ -665,7 +828,11 @@ export function ActivitySheetView({
                 : isAnatomy
                 ? '📐'
                 : '📏';
-              const title = isLinesRelations
+              const title = isTableHypo
+                ? 'Varsayım & Tablo Temsili'
+                : isIntersectionChallenge
+                ? 'Kavşak Şifresi & İspat'
+                : isLinesRelations
                 ? 'Doğruların Durumları'
                 : isRailway
                 ? 'Tren Rayı Mühendisliği'
@@ -685,7 +852,11 @@ export function ActivitySheetView({
                 ? 'İletkinin Anatomisi'
                 : 'Aşamalı İnşa İstasyonları';
 
-              const badge = isLinesRelations
+              const badge = isTableHypo
+                ? 'Tablo Analizi'
+                : isIntersectionChallenge
+                ? 'Meydan Okuma'
+                : isLinesRelations
                 ? 'Gözlem & Sınıflandırma'
                 : isRailway
                 ? 'Büyük Görev'
@@ -705,7 +876,11 @@ export function ActivitySheetView({
                 ? 'Aracı Tanıma'
                 : `Etkinlik ${index + 1}`;
 
-              const tag = isLinesRelations
+              const tag = isTableHypo
+                ? 'İki ve Üç Doğru (6 Açı)'
+                : isIntersectionChallenge
+                ? '50° Ters & Komşu Bütünler'
+                : isLinesRelations
                 ? '4 Temel Durum (//, ⊥, Kesen)'
                 : isRailway
                 ? 'Gönye ile Paralel Doğru'
@@ -735,7 +910,11 @@ export function ActivitySheetView({
                   }}
                   className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer text-left border ${
                     isActive
-                      ? isLinesRelations
+                      ? isTableHypo
+                        ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
+                        : isIntersectionChallenge
+                        ? 'bg-rose-600 text-white border-rose-500 shadow-md scale-[1.01]'
+                        : isLinesRelations
                         ? 'bg-blue-600 text-white border-blue-500 shadow-md scale-[1.01]'
                         : isRailway
                         ? 'bg-indigo-600 text-white border-indigo-500 shadow-md scale-[1.01]'
@@ -796,7 +975,11 @@ export function ActivitySheetView({
       {/* 1. Header Banner & Quick Action Buttons */}
       <div
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
-          isLinesRelationsActivity
+          isTableHypothesisActivity
+            ? 'bg-gradient-to-br from-purple-950 via-indigo-950 to-slate-950'
+            : isIntersectionChallengeActivity
+            ? 'bg-gradient-to-br from-rose-950 via-red-950 to-slate-950'
+            : isLinesRelationsActivity
             ? 'bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-950'
             : isRailwayActivity
             ? 'bg-gradient-to-br from-indigo-950 via-slate-900 to-amber-950'
@@ -820,7 +1003,11 @@ export function ActivitySheetView({
         {/* Background Decorative Patterns */}
         <div
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-            isLinesRelationsActivity
+            isTableHypothesisActivity
+              ? 'bg-purple-500/20'
+              : isIntersectionChallengeActivity
+              ? 'bg-rose-500/20'
+              : isLinesRelationsActivity
               ? 'bg-blue-500/20'
               : isRailwayActivity
               ? 'bg-indigo-500/20'
@@ -843,7 +1030,11 @@ export function ActivitySheetView({
         />
         <div
           className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
-            isLinesRelationsActivity
+            isTableHypothesisActivity
+              ? 'bg-indigo-500/20'
+              : isIntersectionChallengeActivity
+              ? 'bg-red-500/20'
+              : isLinesRelationsActivity
               ? 'bg-indigo-500/20'
               : isRailwayActivity
               ? 'bg-amber-500/15'
@@ -870,7 +1061,11 @@ export function ActivitySheetView({
           <div className="space-y-2 max-w-2xl">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
-                isLinesRelationsActivity
+                isTableHypothesisActivity
+                  ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
+                  : isIntersectionChallengeActivity
+                  ? 'bg-rose-400/20 border-rose-300/30 text-rose-200'
+                  : isLinesRelationsActivity
                   ? 'bg-blue-400/20 border-blue-300/30 text-blue-200'
                   : isRailwayActivity
                   ? 'bg-indigo-400/20 border-indigo-300/30 text-indigo-200'
@@ -891,7 +1086,17 @@ export function ActivitySheetView({
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
-              {isLinesRelationsActivity ? (
+              {isTableHypothesisActivity ? (
+                <>
+                  <Layers className="w-3.5 h-3.5 text-purple-300" />
+                  <span>Varsayım & Tablo Temsili (4. Hafta - MAT.5.3.4)</span>
+                </>
+              ) : isIntersectionChallengeActivity ? (
+                <>
+                  <Sparkles className="w-3.5 h-3.5 text-rose-300" />
+                  <span>Kavşak Şifresi & Mantıksal Çıkarım (4. Hafta - MAT.5.3.4)</span>
+                </>
+              ) : isLinesRelationsActivity ? (
                 <>
                   <Layers className="w-3.5 h-3.5 text-blue-300" />
                   <span>Gözlem & Sınıflandırma (4. Hafta - MAT.5.3.4)</span>
@@ -945,7 +1150,11 @@ export function ActivitySheetView({
             </div>
             
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              {isLinesRelationsActivity
+              {isTableHypothesisActivity
+                ? 'Etkinlik: "VARSAYIM VE TABLO TEMSİLİ" (İki ve Üç Doğru Analizi)'
+                : isIntersectionChallengeActivity
+                ? 'Etkinlik: "KAVŞAK ŞİFRESİ VE ÇIKARIM MEYDAN OKUMASI"'
+                : isLinesRelationsActivity
                 ? 'Etkinlik: "DOĞRULARIN BİRBİRİNE GÖRE DURUMLARI" (Gözlem ve Sınıflandırma)'
                 : isRailwayActivity
                 ? 'Büyük Görev: "TREN RAYI MÜHENDİSLİĞİ" (Gönye ile Paralel Doğru İnşası)'
@@ -967,7 +1176,19 @@ export function ActivitySheetView({
             </h2>
             
             {/* Kurgu Paneli / Açıklama */}
-            {isLinesRelationsActivity ? (
+            {isTableHypothesisActivity ? (
+              <div className="p-3 bg-purple-950/60 border border-purple-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-purple-100 font-medium leading-relaxed">
+                  📊 <strong>Tablo &amp; Mantık Analizi:</strong> &ldquo;İki ve üç doğrunun kesişim durumlarını incele, açı sayılarını tabloya yerleştir ve 6 açı bölgesi için olası durumları (Mümkün/İmkânsız) kanıtla!&rdquo;
+                </p>
+              </div>
+            ) : isIntersectionChallengeActivity ? (
+              <div className="p-3 bg-rose-950/60 border border-rose-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-rose-100 font-medium leading-relaxed">
+                  🚦 <strong>Kavşak Açı Meydan Okuması:</strong> &ldquo;50°'lik kavşak açısını baz alarak ters açıyı, komşu bütünler açıyı ve 360°'lik tam açıyı çöz, çıkarım önermelerini değerlendir!&rdquo;
+                </p>
+              </div>
+            ) : isLinesRelationsActivity ? (
               <div className="p-3 bg-blue-950/60 border border-blue-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-blue-100 font-medium leading-relaxed">
                   📐 <strong>Doğruların Konum Rehberi:</strong> &ldquo;Düzlemde iki veya üç doğrunun birbirine göre durumlarını inceleyerek ortak nokta sayılarını, açı özelliklerini ve matematiksel sembollerini keşfet!&rdquo;
@@ -2645,7 +2866,6 @@ export function ActivitySheetView({
                 <line x1="250" y1="150" x2="550" y2="150" stroke="#6d28d9" stroke-width="1" stroke-dasharray="2 2" opacity="0.4" />
                 <circle cx="400" cy="150" r="14" fill="#ede9fe" stroke="#6d28d9" stroke-width="2" />
                 <circle cx="400" cy="150" r="4" fill="#6d28d9" />
-                <line x1="388" y1="150" x2="412" y2="150" stroke="#6d28d9" stroke-width="1.5" />
                 <line x1="400" y1="138" x2="400" y2="162" stroke="#6d28d9" stroke-width="1.5" />
 
                 {/* K Noktası Etiketi */}
@@ -2662,6 +2882,746 @@ export function ActivitySheetView({
             </div>
           </div>
 
+        </div>
+      ) : isTableHypothesisActivity ? (
+        /* ========================================================================= */
+        /* ETKİNLİK: "VARSAYIM VE TABLO TEMSİLİ (İki ve Üç Doğru Analizi)" (MAT.5.3.4)*/
+        /* ========================================================================= */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {/* Üst Kontrol ve Başlık Paneli */}
+          <div className="bg-slate-900 border-2 border-purple-500/50 rounded-3xl p-6 shadow-xl space-y-4 text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="text-2xl">📊</span>
+                <span className="text-base sm:text-lg font-black text-white tracking-wide">
+                  VARSAYIM VE TABLO TEMSİLİ: &ldquo;İKİ VE ÜÇ DOĞRU ANALİZİ&rdquo;
+                </span>
+                <span className="bg-purple-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-purple-400">
+                  4. Hafta • MAT.5.3.4
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                {tableHypoChecked && (
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full border ${tableHypoScore >= 80 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50' : 'bg-amber-500/20 text-amber-300 border-amber-500/50'}`}>
+                    Başarı Puanı: %{Math.round(tableHypoScore)}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={handleCheckTableHypo}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg shadow-purple-600/30 transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>{tableHypoChecked ? 'Yeniden Değerlendir' : 'Tablo ve Varsayımları Kontrol Et'}</span>
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Doğruların düzlemdeki kesişim durumlarını matematiksel olarak modelleyiniz. İki doğrunun kesişim açılarını tabloya doldurunuz; ardından tek bir merkezde kesişen üç doğrunun oluşturduğu 6 açıyı hipotezlerle analiz ediniz.
+            </p>
+          </div>
+
+          {/* BÖLÜM A: İKİ DOĞRUNUN KESİŞİMİ TABLOSU */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-purple-500/30 shadow-md space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-lg bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 flex items-center justify-center font-black text-xs">
+                    A
+                  </span>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
+                    İki Doğrunun Kesişimi Durumu (Açı Çeşitleri Tablosu)
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Aşağıdaki üç duruma ait oluşan açı sayılarını kutucuklara yazınız:
+                </p>
+              </div>
+              <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                Tablo Değeri: 50 Puan
+              </span>
+            </div>
+
+            {/* Tablo Grid */}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-xs">
+                <thead>
+                  <tr className="bg-purple-50/80 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 font-black border-b-2 border-purple-200 dark:border-purple-800">
+                    <th className="p-3 text-left">Kesişim Durumu</th>
+                    <th className="p-3 text-center">Dar Açı Sayısı</th>
+                    <th className="p-3 text-center">Geniş Açı Sayısı</th>
+                    <th className="p-3 text-center">Dik Açı Sayısı (90°)</th>
+                    <th className="p-3 text-center">Toplam Açı Sayısı</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-medium">
+                  {/* Satır 1: Eğik Kesişme */}
+                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-3 font-bold text-slate-800 dark:text-slate-200">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <span>1. Eğik Kesişme</span>
+                      </div>
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.egik_dar}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, egik_dar: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.egik_dar.trim() === '2'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.egik_dar.trim() !== '2' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 2</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.egik_genis}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, egik_genis: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.egik_genis.trim() === '2'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.egik_genis.trim() !== '2' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 2</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.egik_dik}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, egik_dik: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.egik_dik.trim() === '0'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.egik_dik.trim() !== '0' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 0</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center font-black text-sm text-slate-700 dark:text-slate-300">
+                      4
+                    </td>
+                  </tr>
+
+                  {/* Satır 2: Dik Kesişme */}
+                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-3 font-bold text-slate-800 dark:text-slate-200">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span>2. Dik Kesişme (⊥)</span>
+                      </div>
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.dik_dar}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, dik_dar: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.dik_dar.trim() === '0'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.dik_dar.trim() !== '0' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 0</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.dik_genis}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, dik_genis: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.dik_genis.trim() === '0'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.dik_genis.trim() !== '0' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 0</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.dik_dik}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, dik_dik: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.dik_dik.trim() === '4'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.dik_dik.trim() !== '4' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 4</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center font-black text-sm text-slate-700 dark:text-slate-300">
+                      4
+                    </td>
+                  </tr>
+
+                  {/* Satır 3: Paralel Olma */}
+                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-3 font-bold text-slate-800 dark:text-slate-200">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                        <span>3. Paralel Olma (//)</span>
+                      </div>
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.paralel_dar}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, paralel_dar: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.paralel_dar.trim() === '0'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.paralel_dar.trim() !== '0' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 0</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.paralel_genis}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, paralel_genis: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.paralel_genis.trim() === '0'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.paralel_genis.trim() !== '0' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 0</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={tableHypoAnswers.paralel_dik}
+                        onChange={(e) => setTableHypoAnswers({ ...tableHypoAnswers, paralel_dik: e.target.value })}
+                        placeholder="..."
+                        className={`w-14 h-9 text-center rounded-lg border font-black text-sm transition-all ${
+                          tableHypoChecked
+                            ? tableHypoAnswers.paralel_dik.trim() === '0'
+                              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:border-purple-500'
+                        }`}
+                      />
+                      {tableHypoChecked && tableHypoAnswers.paralel_dik.trim() !== '0' && (
+                        <div className="text-[10px] font-bold text-rose-600 mt-1">Doğru: 0</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-center font-black text-sm text-slate-700 dark:text-slate-300">
+                      0
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* BÖLÜM B: ÜÇ DOĞRUNUN TEK MERKEZDE KESİŞİMİ */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-indigo-500/30 shadow-md space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 flex items-center justify-center font-black text-xs">
+                    B
+                  </span>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
+                    Üç Doğrunun Tek Bir Noktada Kesişimi Durumu (6 Açı Bölgesi)
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Üç doğru aynı merkez noktadan (O) geçtiğinde 6 açı bölgesi oluşur. Durumların gerçekleşebilirliğini seçiniz:
+                </p>
+              </div>
+              <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                Mantıksal Çıkarım: 50 Puan
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              {/* Sol: 6 Açı SVG Modeli */}
+              <div className="lg:col-span-5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 flex flex-col items-center">
+                <div className="w-full max-w-[280px] aspect-square relative">
+                  <svg viewBox="0 0 240 240" className="w-full h-full overflow-visible">
+                    <circle cx="120" cy="120" r="100" fill="none" stroke="#cbd5e1" strokeDasharray="3 3" />
+                    
+                    {/* Doğru 1 (d1 - Yatay) */}
+                    <line x1="20" y1="120" x2="220" y2="120" stroke="#6366f1" strokeWidth="2.5" />
+                    <text x="225" y="124" fontSize="11" fontWeight="bold" fill="#6366f1">d₁</text>
+
+                    {/* Doğru 2 (d2 - 60 derece) */}
+                    <line x1="70" y1="33" x2="170" y2="207" stroke="#a855f7" strokeWidth="2.5" />
+                    <text x="175" y="215" fontSize="11" fontWeight="bold" fill="#a855f7">d₂</text>
+
+                    {/* Doğru 3 (d3 - 120 derece) */}
+                    <line x1="170" y1="33" x2="70" y2="207" stroke="#ec4899" strokeWidth="2.5" />
+                    <text x="65" y="220" fontSize="11" fontWeight="bold" fill="#ec4899">d₃</text>
+
+                    {/* Merkez O */}
+                    <circle cx="120" cy="120" r="4.5" fill="#1e293b" />
+                    <text x="127" y="115" fontSize="11" fontWeight="bold" fill="#1e293b">O</text>
+
+                    {/* 6 Açı Numaraları */}
+                    <text x="145" y="95" fontSize="10" fontWeight="bold" fill="#4f46e5">1</text>
+                    <text x="120" y="80" fontSize="10" fontWeight="bold" fill="#4f46e5">2</text>
+                    <text x="95" y="95" fontSize="10" fontWeight="bold" fill="#4f46e5">3</text>
+                    <text x="95" y="150" fontSize="10" fontWeight="bold" fill="#4f46e5">4</text>
+                    <text x="120" y="165" fontSize="10" fontWeight="bold" fill="#4f46e5">5</text>
+                    <text x="145" y="150" fontSize="10" fontWeight="bold" fill="#4f46e5">6</text>
+                  </svg>
+                </div>
+                <div className="mt-2 text-center text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                  6 Açının Toplamı = 360° (Tam Açı)
+                </div>
+              </div>
+
+              {/* Sağ: 4 Hipotez Seçenek Kartı */}
+              <div className="lg:col-span-7 space-y-3">
+                {[
+                  {
+                    id: 'b1',
+                    text: '1. 6 adet dar açı oluşması',
+                    correct: 'mumkun',
+                    proof: 'Mümkündür. Örneğin 6 açının her biri 60° olabilir (6 × 60° = 360°).'
+                  },
+                  {
+                    id: 'b2',
+                    text: '2. 2 geniş açı ve 4 dar açı oluşması',
+                    correct: 'mumkun',
+                    proof: 'Mümkündür. Örneğin 2 adet 120° (240°) ve 4 adet 30° (120°) → Toplam 360°.'
+                  },
+                  {
+                    id: 'b3',
+                    text: '3. 2 dik açı ve 4 dar açı oluşması',
+                    correct: 'mumkun',
+                    proof: 'Mümkündür. Örneğin 2 adet 90° (180°) ve 4 adet 45° (180°) → Toplam 360°.'
+                  },
+                  {
+                    id: 'b4',
+                    text: '4. 6 adet geniş açı oluşması',
+                    correct: 'imkansiz',
+                    proof: 'İmkânsızdır! Geniş açı >90° olduğundan 6 geniş açının toplamı >540° olur ve 360°’yi aşar.'
+                  }
+                ].map((item) => {
+                  const currentVal = tableHypoAnswers[item.id as keyof typeof tableHypoAnswers];
+                  const isCorrect = currentVal === item.correct;
+
+                  return (
+                    <div
+                      key={item.id}
+                      className={`p-3.5 rounded-2xl border transition-all ${
+                        tableHypoChecked
+                          ? isCorrect
+                            ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-400'
+                            : 'bg-rose-50/70 dark:bg-rose-950/30 border-rose-400'
+                          : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                          {item.text}
+                        </span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playSound('select');
+                              setTableHypoAnswers({ ...tableHypoAnswers, [item.id]: 'mumkun' });
+                            }}
+                            className={`px-3 py-1 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                              currentVal === 'mumkun'
+                                ? 'bg-indigo-600 text-white shadow-sm'
+                                : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            Mümkün
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playSound('select');
+                              setTableHypoAnswers({ ...tableHypoAnswers, [item.id]: 'imkansiz' });
+                            }}
+                            className={`px-3 py-1 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                              currentVal === 'imkansiz'
+                                ? 'bg-indigo-600 text-white shadow-sm'
+                                : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            İmkânsız
+                          </button>
+                        </div>
+                      </div>
+
+                      {tableHypoChecked && (
+                        <div className={`mt-2 pt-2 border-t text-[11px] font-semibold flex items-center gap-1.5 ${isCorrect ? 'border-emerald-200 text-emerald-800 dark:text-emerald-300' : 'border-rose-200 text-rose-800 dark:text-rose-300'}`}>
+                          <span>{isCorrect ? '✓ Doğru:' : '✗ Açıklama:'}</span>
+                          <span>{item.proof}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : isIntersectionChallengeActivity ? (
+        /* ========================================================================= */
+        /* ETKİNLİK: "KAVŞAK ŞİFRESİ VE ÇIKARIM MEYDAN OKUMASI" (MAT.5.3.4)          */
+        /* ========================================================================= */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {/* Üst Kontrol ve Başlık Paneli */}
+          <div className="bg-slate-900 border-2 border-rose-500/50 rounded-3xl p-6 shadow-xl space-y-4 text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="text-2xl">🚦</span>
+                <span className="text-base sm:text-lg font-black text-white tracking-wide">
+                  KAVŞAK ŞİFRESİ: &ldquo;ÇIKARIM MEYDAN OKUMASI&rdquo;
+                </span>
+                <span className="bg-rose-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-rose-400">
+                  4. Hafta • MAT.5.3.4
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                {kavsakChecked && (
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full border ${kavsakScore >= 80 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50' : 'bg-amber-500/20 text-amber-300 border-amber-500/50'}`}>
+                    Puan: %{Math.round(kavsakScore)}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={handleCheckKavsak}
+                  className="px-4 py-2 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black text-xs rounded-xl shadow-lg shadow-rose-600/30 transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>{kavsakChecked ? 'Yeniden Değerlendir' : 'Şifreyi ve Önermeleri Kontrol Et'}</span>
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Kavşakta kesişen iki caddenin oluşturduğu açıları ters açı ve komşu bütünler açı kurallarıyla çözünüz. Ardından geometrik çıkarım önermelerini Doğru (D) veya Yanlış (Y) olarak değerlendiriniz.
+            </p>
+          </div>
+
+          {/* BÖLÜM 1: KAVŞAK MODELİ VE AÇI HESAPLARI */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-rose-500/30 shadow-md space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-lg bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 flex items-center justify-center font-black text-xs">
+                    1
+                  </span>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
+                    Kavşak Açısı Analizi (50° Modeli)
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Şehir kavşağında kesişen iki yoldan bir açının ölçüsü 50° olarak verilmiştir.
+                </p>
+              </div>
+              <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                50 Puan
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              {/* Sol: İnteraktif Kavşak SVG */}
+              <div className="lg:col-span-5 bg-slate-950 rounded-2xl p-4 border border-slate-800 flex flex-col items-center shadow-inner">
+                <div className="w-full max-w-[280px] aspect-square relative">
+                  <svg viewBox="0 0 260 260" className="w-full h-full overflow-visible">
+                    {/* Yollar (Gri asfalt) */}
+                    <line x1="30" y1="60" x2="230" y2="200" stroke="#334155" strokeWidth="32" strokeLinecap="round" />
+                    <line x1="30" y1="200" x2="230" y2="60" stroke="#334155" strokeWidth="32" strokeLinecap="round" />
+                    
+                    {/* Yol Şeritleri (Sarı kesikli) */}
+                    <line x1="30" y1="60" x2="230" y2="200" stroke="#fbbf24" strokeWidth="2" strokeDasharray="6 6" />
+                    <line x1="30" y1="200" x2="230" y2="60" stroke="#fbbf24" strokeWidth="2" strokeDasharray="6 6" />
+
+                    {/* Cadde İsimleri */}
+                    <text x="35" y="45" fontSize="10" fontWeight="bold" fill="#94a3b8">Atatürk Cd.</text>
+                    <text x="210" y="45" fontSize="10" fontWeight="bold" fill="#94a3b8">Cumhuriyet Cd.</text>
+
+                    {/* Merkez Noktası O */}
+                    <circle cx="130" cy="130" r="5" fill="#f8fafc" />
+                    <text x="138" y="134" fontSize="12" fontWeight="bold" fill="#f8fafc">O</text>
+
+                    {/* Üst Açı: 50° */}
+                    <path d="M 112 112 A 25 25 0 0 1 148 112" fill="none" stroke="#f43f5e" strokeWidth="3" />
+                    <g transform="translate(130, 95)">
+                      <rect x="-24" y="-10" width="48" height="20" rx="6" fill="#f43f5e" />
+                      <text x="0" y="4" fontSize="11" fontWeight="bold" fill="#ffffff" textAnchor="middle">50°</text>
+                    </g>
+
+                    {/* Alt Açı: Ters Açı (?) */}
+                    <path d="M 148 148 A 25 25 0 0 1 112 148" fill="none" stroke="#f43f5e" strokeWidth="3" />
+                    <g transform="translate(130, 168)">
+                      <rect x="-26" y="-10" width="52" height="20" rx="6" fill={kavsakChecked ? (kavsakAnswers.q1_ters.trim() === '50' ? '#10b981' : '#f43f5e') : '#475569'} />
+                      <text x="0" y="4" fontSize="11" fontWeight="bold" fill="#ffffff" textAnchor="middle">
+                        {kavsakChecked ? '50°' : 'Ters: ?'}
+                      </text>
+                    </g>
+
+                    {/* Sol Açı: Bütünler (?) */}
+                    <g transform="translate(70, 130)">
+                      <rect x="-24" y="-10" width="48" height="20" rx="6" fill={kavsakChecked ? (kavsakAnswers.q2_butunler.trim() === '130' ? '#10b981' : '#475569') : '#334155'} />
+                      <text x="0" y="4" fontSize="10" fontWeight="bold" fill="#ffffff" textAnchor="middle">
+                        {kavsakChecked ? '130°' : '?'}
+                      </text>
+                    </g>
+
+                    {/* Sağ Açı: Bütünler (?) */}
+                    <g transform="translate(190, 130)">
+                      <rect x="-24" y="-10" width="48" height="20" rx="6" fill={kavsakChecked ? (kavsakAnswers.q2_butunler.trim() === '130' ? '#10b981' : '#475569') : '#334155'} />
+                      <text x="0" y="4" fontSize="10" fontWeight="bold" fill="#ffffff" textAnchor="middle">
+                        {kavsakChecked ? '130°' : '?'}
+                      </text>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Sağ: 3 Soru Kartı */}
+              <div className="lg:col-span-7 space-y-3.5">
+                {/* Soru 1 */}
+                <div className={`p-4 rounded-2xl border transition-all ${kavsakChecked ? (kavsakAnswers.q1_ters.trim() === '50' ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-400' : 'bg-rose-50/80 dark:bg-rose-950/30 border-rose-400') : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'}`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      1. 50°&apos;lik açının karşısındaki <strong className="text-rose-600 dark:text-rose-400">ters açı</strong> kaç derecedir?
+                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <input
+                        type="text"
+                        maxLength={3}
+                        value={kavsakAnswers.q1_ters}
+                        onChange={(e) => setKavsakAnswers({ ...kavsakAnswers, q1_ters: e.target.value })}
+                        placeholder="..."
+                        className="w-16 h-9 text-center font-black text-sm rounded-lg border bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 focus:border-rose-500"
+                      />
+                      <span className="font-bold text-xs">°</span>
+                    </div>
+                  </div>
+                  {kavsakChecked && (
+                    <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                      İpucu: Kesişen doğrularda ters yönlü açılar birbirine eşittir (50°).
+                    </div>
+                  )}
+                </div>
+
+                {/* Soru 2 */}
+                <div className={`p-4 rounded-2xl border transition-all ${kavsakChecked ? (kavsakAnswers.q2_butunler.trim() === '130' ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-400' : 'bg-rose-50/80 dark:bg-rose-950/30 border-rose-400') : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'}`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      2. Bu açının hemen yanındaki <strong className="text-amber-600 dark:text-amber-400">komşu bütünler açı</strong> kaç derecedir?
+                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <input
+                        type="text"
+                        maxLength={3}
+                        value={kavsakAnswers.q2_butunler}
+                        onChange={(e) => setKavsakAnswers({ ...kavsakAnswers, q2_butunler: e.target.value })}
+                        placeholder="..."
+                        className="w-16 h-9 text-center font-black text-sm rounded-lg border bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 focus:border-rose-500"
+                      />
+                      <span className="font-bold text-xs">°</span>
+                    </div>
+                  </div>
+                  {kavsakChecked && (
+                    <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                      İpucu: Bir doğru üzerinde oluşan komşu açıların toplamı 180°&apos;dir (180° - 50° = 130°).
+                    </div>
+                  )}
+                </div>
+
+                {/* Soru 3 */}
+                <div className={`p-4 rounded-2xl border transition-all ${kavsakChecked ? (kavsakAnswers.q3_toplam.trim() === '360' ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-400' : 'bg-rose-50/80 dark:bg-rose-950/30 border-rose-400') : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'}`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      3. Kavşakta oluşan 4 açının <strong className="text-indigo-600 dark:text-indigo-400">toplamı</strong> kaç derecedir?
+                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <input
+                        type="text"
+                        maxLength={3}
+                        value={kavsakAnswers.q3_toplam}
+                        onChange={(e) => setKavsakAnswers({ ...kavsakAnswers, q3_toplam: e.target.value })}
+                        placeholder="..."
+                        className="w-16 h-9 text-center font-black text-sm rounded-lg border bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 focus:border-rose-500"
+                      />
+                      <span className="font-bold text-xs">°</span>
+                    </div>
+                  </div>
+                  {kavsakChecked && (
+                    <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                      İpucu: Bir tam dönüşün açısı 360°&apos;dir (50° + 130° + 50° + 130° = 360°).
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* BÖLÜM 2: D/Y GEOMETRİK ÇIKARIM MEYDAN OKUMASI */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-amber-500/30 shadow-md space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 flex items-center justify-center font-black text-xs">
+                    2
+                  </span>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
+                    Geometrik Çıkarım Meydan Okuması (Doğru / Yanlış)
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Aşağıdaki ifadelerin doğruluğunu değerlendirerek D (Doğru) veya Y (Yanlış) butonuna basınız:
+                </p>
+              </div>
+              <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                50 Puan
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  id: 'p1',
+                  text: 'İki doğru kesiştiğinde oluşan ters açılar daima birbirine eşittir.',
+                  correct: 'D',
+                  explanation: 'Doğru. Kesişen doğruların oluşturduğu zıt yönlü açılar birbirine eşittir.'
+                },
+                {
+                  id: 'p2',
+                  text: 'Paralel iki doğru kesişmediği için aralarında açı oluşmaz.',
+                  correct: 'D',
+                  explanation: 'Doğru. Paralel doğruların ortak noktası yoktur (p // r), dolayısıyla açı 0’dır.'
+                },
+                {
+                  id: 'p3',
+                  text: 'Birbirini dik kesen iki doğru 4 adet 90°\'lik dik açı meydana getirir.',
+                  correct: 'D',
+                  explanation: 'Doğru. Dik kesişen doğrular (k ⊥ m) 4 dik açı oluşturur.'
+                },
+                {
+                  id: 'p4',
+                  text: 'Komşu tümler iki açının toplamı 180°\'dir.',
+                  correct: 'Y',
+                  explanation: 'Yanlış! Tümler açıların toplamı 90°\'dir. Toplamı 180° olan açılara Bütünler Açı denir.'
+                }
+              ].map((item) => {
+                const currentVal = kavsakAnswers[item.id as keyof typeof kavsakAnswers];
+                const isCorrect = currentVal === item.correct;
+
+                return (
+                  <div
+                    key={item.id}
+                    className={`p-4 rounded-2xl border transition-all flex flex-col justify-between gap-3 ${
+                      kavsakChecked
+                        ? isCorrect
+                          ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-400'
+                          : 'bg-rose-50/70 dark:bg-rose-950/30 border-rose-400'
+                        : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-relaxed">
+                        {item.text}
+                      </p>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playSound('select');
+                            setKavsakAnswers({ ...kavsakAnswers, [item.id]: 'D' });
+                          }}
+                          className={`w-8 h-8 rounded-lg font-black text-xs transition-all cursor-pointer ${
+                            currentVal === 'D'
+                              ? 'bg-emerald-600 text-white shadow-sm'
+                              : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          D
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playSound('select');
+                            setKavsakAnswers({ ...kavsakAnswers, [item.id]: 'Y' });
+                          }}
+                          className={`w-8 h-8 rounded-lg font-black text-xs transition-all cursor-pointer ${
+                            currentVal === 'Y'
+                              ? 'bg-rose-600 text-white shadow-sm'
+                              : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          Y
+                        </button>
+                      </div>
+                    </div>
+
+                    {kavsakChecked && (
+                      <div className={`text-[11px] font-semibold pt-2 border-t flex items-center gap-1.5 ${isCorrect ? 'border-emerald-200 text-emerald-800 dark:text-emerald-300' : 'border-rose-200 text-rose-800 dark:text-rose-300'}`}>
+                        <span>{isCorrect ? '✓' : '✗'}</span>
+                        <span>{item.explanation}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       ) : isLinesRelationsActivity ? (
         /* ========================================================================= */
@@ -6244,7 +7204,11 @@ export function ActivitySheetView({
             <span>Sıradaki Aşama: Öz Değerlendirme Rubriği</span>
           </div>
           <p className="text-xs text-slate-500">
-            {isLinesRelationsActivity
+            {isTableHypothesisActivity
+              ? 'Varsayım ve Tablo Temsili (İki ve Üç Doğru Analizi) adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi geometrik çıkarım becerilerinizi değerlendiriniz.'
+              : isIntersectionChallengeActivity
+              ? 'Kavşak Şifresi ve Çıkarım Meydan Okuması adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı ve ispat becerilerinizi değerlendiriniz.'
+              : isLinesRelationsActivity
               ? 'Doğruların Birbirine Göre Durumları (Kesişen, Dik, Paralel, Kesen) gözlem ve sınıflandırma adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi geometrik çıkarım becerilerinizi değerlendiriniz.'
               : isErrorDetectiveActivity
               ? 'Hata Dedektifi ve Öz Değerlendirme adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı ölçüm ve analiz becerilerinizi değerlendiriniz.'
