@@ -73,105 +73,129 @@ export function ActivitySheetView({
 
   // Active activity sheet file record
   const fileRecord = getActivitySheetForOutcome(outcomeCode, selectedSheetId);
-  const isRailwayActivity =
-    selectedSheetId.includes('railway') ||
-    fileRecord?.id?.includes('railway') ||
-    fileRecord?.title?.includes('Tren Rayı');
-  const isBridgeActivity =
-    !isRailwayActivity && (fileRecord?.id?.includes('bridge') || fileRecord?.title?.includes('Köprü'));
-  const isSteppingWorkshop =
-    !isRailwayActivity &&
-    (selectedSheetId.includes('stepping') ||
-      fileRecord?.id?.includes('stepping') ||
-      fileRecord?.title?.includes('Adımlama'));
-  const isDeductionDetective =
-    !isRailwayActivity &&
-    !isSteppingWorkshop &&
-    (outcomeCode === 'MAT.5.3.2' ||
-      fileRecord?.id?.includes('5-3-2') ||
-      fileRecord?.title?.includes('Çıkarım'));
-  const isErrorDetectiveActivity =
-    !isRailwayActivity &&
-    !isBridgeActivity &&
-    !isSteppingWorkshop &&
-    !isDeductionDetective &&
-    (selectedSheetId.includes('error-detective') ||
-      selectedSheetId.includes('hata-dedektifi') ||
-      fileRecord?.id?.includes('error-detective') ||
-      fileRecord?.title?.includes('Hata Dedektifi'));
-  const isAngleConstructionActivity =
-    !isRailwayActivity &&
-    !isBridgeActivity &&
-    !isSteppingWorkshop &&
-    !isDeductionDetective &&
-    !isErrorDetectiveActivity &&
-    (selectedSheetId.includes('angle-construction') ||
-      selectedSheetId.includes('rotani-kendin-ciz') ||
-      fileRecord?.id?.includes('angle-construction') ||
-      fileRecord?.title?.includes('Rotanı Kendin Çiz'));
-  const isMeasuringStationsActivity =
-    !isRailwayActivity &&
-    !isBridgeActivity &&
-    !isSteppingWorkshop &&
-    !isDeductionDetective &&
-    !isErrorDetectiveActivity &&
-    !isAngleConstructionActivity &&
-    (selectedSheetId.includes('stations') ||
-      fileRecord?.id?.includes('stations') ||
-      fileRecord?.title?.includes('Açı Ölçüm İstasyonları'));
+
   const isTableHypothesisActivity =
-    !isRailwayActivity &&
-    !isBridgeActivity &&
-    !isSteppingWorkshop &&
-    !isDeductionDetective &&
-    !isErrorDetectiveActivity &&
-    !isAngleConstructionActivity &&
-    !isMeasuringStationsActivity &&
-    (selectedSheetId.includes('table-hypothesis') ||
-      fileRecord?.id?.includes('table-hypothesis') ||
-      fileRecord?.title?.includes('Varsayım ve Tablo'));
+    selectedSheetId.includes('table-hypothesis') ||
+    fileRecord?.id?.includes('table-hypothesis') ||
+    fileRecord?.title?.includes('Varsayım ve Tablo');
+
   const isIntersectionChallengeActivity =
-    !isRailwayActivity &&
-    !isBridgeActivity &&
-    !isSteppingWorkshop &&
-    !isDeductionDetective &&
-    !isErrorDetectiveActivity &&
-    !isAngleConstructionActivity &&
-    !isMeasuringStationsActivity &&
     !isTableHypothesisActivity &&
     (selectedSheetId.includes('intersection-challenge') ||
       fileRecord?.id?.includes('intersection-challenge') ||
       fileRecord?.title?.includes('Kavşak Şifresi'));
+
   const isLinesRelationsActivity =
-    !isRailwayActivity &&
-    !isBridgeActivity &&
-    !isSteppingWorkshop &&
-    !isDeductionDetective &&
-    !isErrorDetectiveActivity &&
-    !isAngleConstructionActivity &&
-    !isMeasuringStationsActivity &&
     !isTableHypothesisActivity &&
     !isIntersectionChallengeActivity &&
     (selectedSheetId.includes('lines-relations') ||
       selectedSheetId.includes('5-3-4') ||
       fileRecord?.id?.includes('lines-relations') ||
       fileRecord?.title?.includes('Doğruların Birbirine Göre Durumları') ||
-      outcomeCode === 'MAT.5.3.4');
-  const isProtractorAnatomyActivity =
+      (outcomeCode === 'MAT.5.3.4' &&
+        !selectedSheetId.includes('table-hypothesis') &&
+        !selectedSheetId.includes('intersection-challenge')));
+
+  const isRailwayActivity =
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
+    !isLinesRelationsActivity &&
+    (selectedSheetId.includes('railway') ||
+      fileRecord?.id?.includes('railway') ||
+      fileRecord?.title?.includes('Tren Rayı'));
+
+  const isBridgeActivity =
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
+    !isLinesRelationsActivity &&
+    !isRailwayActivity &&
+    (selectedSheetId.includes('bridge') ||
+      fileRecord?.id?.includes('bridge') ||
+      fileRecord?.title?.includes('Köprü'));
+
+  const isSteppingWorkshop =
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
+    !isLinesRelationsActivity &&
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    (selectedSheetId.includes('stepping') ||
+      fileRecord?.id?.includes('stepping') ||
+      fileRecord?.title?.includes('Adımlama'));
+
+  const isErrorDetectiveActivity =
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
+    !isLinesRelationsActivity &&
     !isRailwayActivity &&
     !isBridgeActivity &&
     !isSteppingWorkshop &&
-    !isDeductionDetective &&
+    (selectedSheetId.includes('error-detective') ||
+      selectedSheetId.includes('hata-dedektifi') ||
+      fileRecord?.id?.includes('error-detective') ||
+      fileRecord?.title?.includes('Hata Dedektifi'));
+
+  const isAngleConstructionActivity =
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
+    !isLinesRelationsActivity &&
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isErrorDetectiveActivity &&
+    (selectedSheetId.includes('angle-construction') ||
+      selectedSheetId.includes('rotani-kendin-ciz') ||
+      fileRecord?.id?.includes('angle-construction') ||
+      fileRecord?.title?.includes('Rotanı Kendin Çiz'));
+
+  const isMeasuringStationsActivity =
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
+    !isLinesRelationsActivity &&
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isErrorDetectiveActivity &&
+    !isAngleConstructionActivity &&
+    (selectedSheetId.includes('stations') ||
+      fileRecord?.id?.includes('stations') ||
+      fileRecord?.title?.includes('Açı Ölçüm İstasyonları'));
+
+  const isProtractorAnatomyActivity =
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
+    !isLinesRelationsActivity &&
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
     !isErrorDetectiveActivity &&
     !isMeasuringStationsActivity &&
     !isAngleConstructionActivity &&
-    !isLinesRelationsActivity &&
-    !isTableHypothesisActivity &&
-    !isIntersectionChallengeActivity &&
     (selectedSheetId.includes('anatomy') ||
       fileRecord?.id?.includes('anatomy') ||
       fileRecord?.title?.includes('İletkinin Anatomisi') ||
-      outcomeCode === 'MAT.5.3.3');
+      (outcomeCode === 'MAT.5.3.3' &&
+        !selectedSheetId.includes('stations') &&
+        !selectedSheetId.includes('angle-construction') &&
+        !selectedSheetId.includes('error-detective')));
+
+  const isDeductionDetective =
+    !isTableHypothesisActivity &&
+    !isIntersectionChallengeActivity &&
+    !isLinesRelationsActivity &&
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isErrorDetectiveActivity &&
+    !isAngleConstructionActivity &&
+    !isMeasuringStationsActivity &&
+    !isProtractorAnatomyActivity &&
+    (selectedSheetId.includes('deduction-detective') ||
+      fileRecord?.id?.includes('5-3-2') ||
+      fileRecord?.title?.includes('Çıkarım Dedektifi') ||
+      (outcomeCode === 'MAT.5.3.2' &&
+        !selectedSheetId.includes('stepping') &&
+        !selectedSheetId.includes('railway')));
 
   // Interactive state for MAT.5.3.4 Varsayım ve Tablo Temsili
   const [tableHypoAnswers, setTableHypoAnswers] = useState<{
@@ -1250,7 +1274,13 @@ export function ActivitySheetView({
 
             <div
               className={`flex items-center gap-3 pt-2 text-[11px] font-mono ${
-                isRailwayActivity
+                isTableHypothesisActivity
+                  ? 'text-purple-200/70'
+                  : isIntersectionChallengeActivity
+                  ? 'text-rose-200/70'
+                  : isLinesRelationsActivity
+                  ? 'text-blue-200/70'
+                  : isRailwayActivity
                   ? 'text-indigo-200/70'
                   : isBridgeActivity
                   ? 'text-amber-200/70'
@@ -1272,7 +1302,13 @@ export function ActivitySheetView({
               <span>{outcomeCode}</span>
               <span>•</span>
               <span>
-                {isRailwayActivity
+                {isTableHypothesisActivity
+                  ? 'Tablo & 4 Hipotez (100 Puan)'
+                  : isIntersectionChallengeActivity
+                  ? '3 Hesaplama & 4 Önerme (100 Puan)'
+                  : isLinesRelationsActivity
+                  ? '4 Doğru Durumu & Sınıflandırma (100 Puan)'
+                  : isRailwayActivity
                   ? '3 İnşa Adımı (100 Puan)'
                   : isBridgeActivity
                   ? '4 Restorasyon Adımı (100 Puan)'
@@ -1292,7 +1328,13 @@ export function ActivitySheetView({
               </span>
               <span>•</span>
               <span>
-                {isRailwayActivity
+                {isTableHypothesisActivity
+                  ? 'İki ve Üç Doğru (6 Açı)'
+                  : isIntersectionChallengeActivity
+                  ? '50° Ters & Bütünler Açılar'
+                  : isLinesRelationsActivity
+                  ? 'd // k, ⊥, Kesen'
+                  : isRailwayActivity
                   ? 'd // k Paralel Doğrular'
                   : isBridgeActivity
                   ? 'Geniş Milimetrik Grid'
@@ -1324,7 +1366,13 @@ export function ActivitySheetView({
             >
               <Eye
                 className={`w-4 h-4 ${
-                  isRailwayActivity
+                  isTableHypothesisActivity
+                    ? 'text-purple-300'
+                    : isIntersectionChallengeActivity
+                    ? 'text-rose-300'
+                    : isLinesRelationsActivity
+                    ? 'text-blue-300'
+                    : isRailwayActivity
                     ? 'text-indigo-300'
                     : isBridgeActivity
                     ? 'text-amber-300'
@@ -1346,7 +1394,13 @@ export function ActivitySheetView({
                 setWhiteboardModalOpen(true);
               }}
               className={`px-4 py-2.5 rounded-xl font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${
-                isRailwayActivity
+                isTableHypothesisActivity
+                  ? 'bg-purple-400 hover:bg-purple-300 text-slate-950 shadow-purple-500/20'
+                  : isIntersectionChallengeActivity
+                  ? 'bg-rose-400 hover:bg-rose-300 text-slate-950 shadow-rose-500/20'
+                  : isLinesRelationsActivity
+                  ? 'bg-blue-400 hover:bg-blue-300 text-slate-950 shadow-blue-500/20'
+                  : isRailwayActivity
                   ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-500/20'
                   : isBridgeActivity
                   ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-500/20'
@@ -1374,7 +1428,13 @@ export function ActivitySheetView({
                 <>
                   <Loader2
                     className={`w-4 h-4 animate-spin ${
-                      isRailwayActivity
+                      isTableHypothesisActivity
+                        ? 'text-purple-400'
+                        : isIntersectionChallengeActivity
+                        ? 'text-rose-400'
+                        : isLinesRelationsActivity
+                        ? 'text-blue-400'
+                        : isRailwayActivity
                         ? 'text-indigo-400'
                         : isBridgeActivity
                         ? 'text-amber-400'

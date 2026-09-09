@@ -2347,7 +2347,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px;">
           <div style="font-weight: 700;">2. Verilen 50°'lik açının yan tarafında bulunan <strong>komşu bütünler açının</strong> ölçüsü kaç derecedir?</div>
           <div style="margin-top: 3px; font-weight: 800; color: #6d28d9;">
-            İşlem: 180° - 50° = <span style="border-bottom: 1.5px solid #6d28d9; min-width: 60px; display: inline-block;">( ..........° )</span>
+            Komşu Bütünler Açı Ölçüsü: <span style="border-bottom: 1.5px solid #6d28d9; min-width: 60px; display: inline-block;">( ..........° )</span>
           </div>
         </div>
 
