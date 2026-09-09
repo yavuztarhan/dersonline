@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { Outcome } from '@/types';
 import { getAnnualPlanByOutcomeCode, AnnualPlanItem } from '@/lib/annual-plan-data';
+import { getAcademicWeekLabel } from '@/lib/academic-calendar';
 import {
   FileText,
   Download,
@@ -35,8 +36,13 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
   const admin = currentUser && currentUser.role === 'admin' ? (currentUser as any) : null;
 
+  // Determine grade level dynamically (5, 6, etc.)
+  const gradeLevel = outcome.gradeId === 'grade-6' || outcome.code.startsWith('MAT.6') ? 6 : 5;
+  const gradeLabel = `${gradeLevel}. SINIF`;
+  const gradeKademe = `${gradeLevel}. Sınıf`;
+
   // Retrieve annual plan metadata for this outcome code
-  const annualPlan: AnnualPlanItem | undefined = getAnnualPlanByOutcomeCode(outcome.code);
+  const annualPlan: AnnualPlanItem | undefined = getAnnualPlanByOutcomeCode(outcome.code, gradeLevel);
 
   // Form states for customization
   const [schoolName, setSchoolName] = useState('ATATÜRK ORTAOKULU');
@@ -44,7 +50,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
   const [teacherName, setTeacherName] = useState('Ahmet YILMAZ');
   const [teacherBranch, setTeacherBranch] = useState('Matematik');
   const [principalName, setPrincipalName] = useState('Mehmet GÜNGÖR');
-  const [selectedClassSection, setSelectedClassSection] = useState('5. Sınıf (5-A)');
+  const [selectedClassSection, setSelectedClassSection] = useState(`${gradeKademe} (${gradeLevel}-A)`);
   const [lessonDateInfo, setLessonDateInfo] = useState('');
   const [pageLayoutMode, setPageLayoutMode] = useState<'single' | 'multi'>('single');
 
@@ -56,7 +62,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
   const page1Ref = useRef<HTMLDivElement>(null);
   const page2Ref = useRef<HTMLDivElement>(null);
 
-  // Initialize values from teacher profile
+  // Initialize values from teacher profile & outcome
   useEffect(() => {
     if (teacher) {
       if (teacher.school) setSchoolName(teacher.school.toUpperCase());
@@ -64,21 +70,26 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
       if (teacher.branch) setTeacherBranch(teacher.branch);
       if (teacher.principalName) setPrincipalName(teacher.principalName);
       if (teacher.assignedClasses && teacher.assignedClasses.length > 0) {
-        setSelectedClassSection(`5. Sınıf (${teacher.assignedClasses.join(', ')})`);
+        setSelectedClassSection(`${gradeKademe} (${teacher.assignedClasses.join(', ')})`);
+      } else {
+        setSelectedClassSection(`${gradeKademe} (${gradeLevel}-A)`);
       }
     } else if (admin) {
       if (admin.school) setSchoolName(admin.school.toUpperCase());
       if (admin.name) setTeacherName(admin.name);
       if (admin.branch) setTeacherBranch(admin.branch || 'Matematik');
       if (admin.principalName) setPrincipalName(admin.principalName);
+      setSelectedClassSection(`${gradeKademe} (${gradeLevel}-A)`);
+    } else {
+      setSelectedClassSection(`${gradeKademe} (${gradeLevel}-A)`);
     }
 
     if (annualPlan) {
       setLessonDateInfo(annualPlan.hafta);
     } else {
-      setLessonDateInfo('1. HAFTA (14-20 EYLÜL)');
+      setLessonDateInfo(getAcademicWeekLabel(1));
     }
-  }, [teacher, admin, annualPlan, isOpen]);
+  }, [teacher, admin, annualPlan, isOpen, outcome.code, gradeLevel]);
 
   if (!isOpen) return null;
 
@@ -466,10 +477,10 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
                       lineHeight: '1.2'
                     }}
                   >
-                    5. SINIF {teacherBranch ? teacherBranch.toUpperCase() : 'MATEMATİK'} DERSİ GÜNLÜK PLANI
+                    {gradeLabel} {teacherBranch ? teacherBranch.toUpperCase() : 'MATEMATİK'} DERSİ GÜNLÜK PLANI
                   </h2>
                   <div className="text-[9.5px] font-bold text-slate-800 bg-slate-100 inline-block px-2.5 py-0.5 rounded border border-slate-300">
-                    {lessonDateInfo || '1. HAFTA (14-20 EYLÜL)'}
+                    {lessonDateInfo || (annualPlan?.hafta ?? getAcademicWeekLabel(1))}
                   </div>
                 </div>
 
@@ -479,13 +490,13 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
                     <tbody>
                       <tr className="border-b border-black">
                         <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black w-32">Ders / Kademe</td>
-                        <td className="p-1 px-1.5 border-r border-black">{teacherBranch || 'Matematik'} / 5. Sınıf</td>
+                        <td className="p-1 px-1.5 border-r border-black">{teacherBranch || 'Matematik'} / {gradeKademe}</td>
                         <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black w-20">Süre</td>
                         <td className="p-1 px-1.5">{annualPlan?.saat || '5 SAAT'} (40 dk x 5)</td>
                       </tr>
                       <tr className="border-b border-black">
                         <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black">Öğrenme Alanı / Ünite</td>
-                        <td colSpan={3} className="p-1 px-1.5 font-bold uppercase">{annualPlan?.unite || 'GEOMETRİK ŞEKİLLER'}</td>
+                        <td colSpan={3} className="p-1 px-1.5 font-bold uppercase">{annualPlan?.unite || (gradeLevel === 6 ? 'SAYILAR VE NİCELİKLER' : 'GEOMETRİK ŞEKİLLER')}</td>
                       </tr>
                       <tr className="border-b border-black">
                         <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black">Konu</td>
@@ -625,10 +636,10 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
                         lineHeight: '1.25'
                       }}
                     >
-                      5. SINIF {teacherBranch ? teacherBranch.toUpperCase() : 'MATEMATİK'} DERSİ GÜNLÜK PLANI
+                      {gradeLabel} {teacherBranch ? teacherBranch.toUpperCase() : 'MATEMATİK'} DERSİ GÜNLÜK PLANI
                     </h2>
                     <div className="text-[10px] font-bold text-slate-800 bg-slate-100 inline-block px-2.5 py-0.5 rounded border border-slate-300">
-                      {lessonDateInfo || '1. HAFTA (14-20 EYLÜL)'}
+                      {lessonDateInfo || (annualPlan?.hafta ?? getAcademicWeekLabel(1))}
                     </div>
                   </div>
 
@@ -638,13 +649,13 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
                       <tbody>
                         <tr className="border-b border-black">
                           <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black w-32">Ders / Kademe</td>
-                          <td className="p-1 px-1.5 border-r border-black">{teacherBranch || 'Matematik'} / 5. Sınıf</td>
+                          <td className="p-1 px-1.5 border-r border-black">{teacherBranch || 'Matematik'} / {gradeKademe}</td>
                           <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black w-20">Süre</td>
                           <td className="p-1 px-1.5">{annualPlan?.saat || '5 SAAT'} (40 dk x 5)</td>
                         </tr>
                         <tr className="border-b border-black">
                           <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black">Öğrenme Alanı / Ünite</td>
-                          <td colSpan={3} className="p-1 px-1.5 font-bold uppercase">{annualPlan?.unite || 'GEOMETRİK ŞEKİLLER'}</td>
+                          <td colSpan={3} className="p-1 px-1.5 font-bold uppercase">{annualPlan?.unite || (gradeLevel === 6 ? 'SAYILAR VE NİCELİKLER' : 'GEOMETRİK ŞEKİLLER')}</td>
                         </tr>
                         <tr className="border-b border-black">
                           <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black">Konu</td>
