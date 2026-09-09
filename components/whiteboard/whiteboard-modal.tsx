@@ -1781,10 +1781,15 @@ export function WhiteboardModal({
                       </div>
                     </div>
 
-                    <div className="text-right text-[9px] text-slate-400 font-bold flex items-center gap-2">
-                      <span>{selectedClass} Şubesi</span>
-                      <span>•</span>
-                      <span>{new Date().toLocaleDateString('tr-TR')}</span>
+                    <div className="text-right flex flex-col items-end justify-center">
+                      <div className="text-[9px] text-slate-400 font-bold leading-tight">
+                        {currentUser?.name || 'Ahmet Yılmaz'}
+                      </div>
+                      <div className="text-[9px] text-slate-400 font-bold flex items-center gap-1.5 leading-tight">
+                        <span>{selectedClass} Şubesi</span>
+                        <span>•</span>
+                        <span>{new Date().toLocaleDateString('tr-TR')}</span>
+                      </div>
                     </div>
                   </div>
                 )}
