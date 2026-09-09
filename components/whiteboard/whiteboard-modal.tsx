@@ -89,6 +89,70 @@ const FONT_SIZES = [
   { pt: '32pt', label: '32', cmd: '7' }
 ];
 
+const COLOR_PALETTES = [
+  {
+    category: 'Mürekkep & Kalem Renkleri',
+    colors: [
+      { hex: '#0f172a', label: 'Koyu Siyah' },
+      { hex: '#334155', label: 'Grafit Gri' },
+      { hex: '#1d4ed8', label: 'Ders Mavisi' },
+      { hex: '#0284c7', label: 'Gökyüzü Mavisi' },
+      { hex: '#0d9488', label: 'Maarif Turkuazı' },
+      { hex: '#16a34a', label: 'Tahta Yeşili' },
+      { hex: '#d97706', label: 'Amber / Altın' },
+      { hex: '#dc2626', label: 'Uyarı Kırmızısı' },
+      { hex: '#7c3aed', label: 'Geometri Moru' },
+      { hex: '#db2777', label: 'Gül Pembesi' },
+      { hex: '#ea580c', label: 'Canlı Turuncu' },
+      { hex: '#ffffff', label: 'Saf Beyaz' }
+    ]
+  },
+  {
+    category: 'Fosforlu & Vurgu Tonları',
+    colors: [
+      { hex: '#fef08a', label: 'Fosforlu Sarı' },
+      { hex: '#bbf7d0', label: 'Fosforlu Yeşil' },
+      { hex: '#bae6fd', label: 'Fosforlu Mavi' },
+      { hex: '#fbcfe8', label: 'Fosforlu Pembe' },
+      { hex: '#fed7aa', label: 'Fosforlu Turuncu' },
+      { hex: '#ddd6fe', label: 'Fosforlu Lavanta' }
+    ]
+  }
+];
+
+const PEN_WIDTH_PRESETS = [
+  { width: 1, label: '1px', desc: 'İnce Çizim (İğne Uç)' },
+  { width: 2, label: '2px', desc: 'Standart Kalem (Önerilen)' },
+  { width: 4, label: '4px', desc: 'Belirgin Çizgi' },
+  { width: 6, label: '6px', desc: 'Kalın Başlık Ucu' },
+  { width: 10, label: '10px', desc: 'Keçeli Kalem' },
+  { width: 16, label: '16px', desc: 'Vurgulayıcı & Marker' },
+  { width: 24, label: '24px', desc: 'Geniş Fosforlu Şerit' }
+];
+
+const CATEGORIZED_MATH_SYMBOLS = [
+  {
+    category: 'Geometri & Açılar',
+    symbols: ['°', '∠', '∡', '//', '⊥', '△', '≅', '∼', '⊾', '∦']
+  },
+  {
+    category: 'İşlemler & Karşılaştırma',
+    symbols: ['±', '×', '÷', '≠', '≤', '≥', '≈', '≡', '∝', '∓']
+  },
+  {
+    category: 'Sayılar & Cebir',
+    symbols: ['√', '∛', 'π', '∞', '‰', '%', '∑', '∫', 'Δ', '∂']
+  },
+  {
+    category: 'Yunan Harfleri (Açı İsimleri)',
+    symbols: ['α', 'β', 'γ', 'θ', 'λ', 'μ', 'φ', 'ω', 'Δ', 'Ω']
+  },
+  {
+    category: 'Kümeler & Mantık',
+    symbols: ['∈', '∉', '⊂', '⊆', '∪', '∩', '∅', '∀', '∃', '⇒', '⇔']
+  }
+];
+
 const PEN_COLORS = ['#0f172a', '#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#ffffff'];
 const TEXT_COLORS = ['#0f172a', '#b91c1c', '#047857', '#1d4ed8', '#b45309', '#6d28d9', '#be185d'];
 const FILL_COLORS = [
@@ -483,6 +547,12 @@ export function WhiteboardModal({
   const [selectedObjectId, setSelectedObjectId] = useState<{ type: 'image' | 'shape'; id: string } | null>(null);
   const [shapesDropdownOpen, setShapesDropdownOpen] = useState(false);
   const [symbolsDropdownOpen, setSymbolsDropdownOpen] = useState(false);
+  const [penColorDropdownOpen, setPenColorDropdownOpen] = useState(false);
+  const [penWidthDropdownOpen, setPenWidthDropdownOpen] = useState(false);
+  const [textColorDropdownOpen, setTextColorDropdownOpen] = useState(false);
+  const [imageDropdownOpen, setImageDropdownOpen] = useState(false);
+  const [bgDropdownOpen, setBgDropdownOpen] = useState(false);
+  const [activeSymbolCategory, setActiveSymbolCategory] = useState<string>(CATEGORIZED_MATH_SYMBOLS[0].category);
   const [showHeader, setShowHeader] = useState<boolean>(true);
 
   // Mounted state for portal
@@ -1449,53 +1519,55 @@ export function WhiteboardModal({
         </div>
 
         {/* Bottom Row: Context Ribbon (Pen vs Word Typography + Geometric Shapes + Media) */}
-        <div className="flex items-center justify-between gap-3 pt-1 border-t border-slate-800 text-xs relative overflow-visible">
+        <div className="flex items-center justify-between gap-3 pt-1 border-t border-slate-800 text-xs relative overflow-visible flex-wrap sm:flex-nowrap">
           
           {/* Mode A: Drawing Tools Ribbon */}
           {activeMode === 'pen' ? (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Çizim:</span>
-              
-              <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700">
+              {/* Segmented Drawing Tools (Kalem, Vurgu, Silgi) */}
+              <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700 shadow-sm">
                 <button
                   type="button"
                   onClick={() => setDrawingTool('pen')}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    drawingTool === 'pen' ? 'bg-teal-500 text-slate-950' : 'text-slate-300 hover:bg-slate-700'
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    drawingTool === 'pen' ? 'bg-teal-500 text-slate-950 shadow-sm' : 'text-slate-300 hover:bg-slate-700/80 hover:text-white'
                   }`}
-                  title="Kalem"
+                  title="Normal Çizim Kalemi"
                 >
-                  <PenTool className="w-4 h-4" />
+                  <PenTool className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Kalem</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setDrawingTool('highlighter')}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    drawingTool === 'highlighter' ? 'bg-amber-400 text-slate-950' : 'text-slate-300 hover:bg-slate-700'
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    drawingTool === 'highlighter' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-300 hover:bg-slate-700/80 hover:text-white'
                   }`}
-                  title="Fosforlu Vurgu Kalemi"
+                  title="Fosforlu Vurgu Kalemi (Yarı Şeffaf)"
                 >
-                  <Highlighter className="w-4 h-4" />
+                  <Highlighter className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Vurgu</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setDrawingTool('eraser')}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    drawingTool === 'eraser' ? 'bg-rose-500 text-white' : 'text-slate-300 hover:bg-slate-700'
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    drawingTool === 'eraser' ? 'bg-rose-500 text-white shadow-sm' : 'text-slate-300 hover:bg-slate-700/80 hover:text-white'
                   }`}
                   title="Silgi"
                 >
-                  <Eraser className="w-4 h-4" />
+                  <Eraser className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Silgi</span>
                 </button>
               </div>
 
-              {/* Undo / Redo Buttons (Geri Al / İleri Al) */}
-              <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700">
+              {/* Undo / Redo Buttons */}
+              <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700 shadow-sm">
                 <button
                   type="button"
                   onClick={handleUndo}
                   disabled={undoStack.length === 0}
-                  className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-xs font-semibold ${
+                  className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-xs font-semibold cursor-pointer ${
                     undoStack.length === 0
                       ? 'text-slate-600 cursor-not-allowed opacity-40'
                       : 'text-slate-200 hover:bg-slate-700 hover:text-white active:scale-95'
@@ -1503,13 +1575,13 @@ export function WhiteboardModal({
                   title="Geri Al (Ctrl+Z)"
                 >
                   <Undo2 className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Geri Al</span>
+                  <span className="hidden lg:inline">Geri</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleRedo}
                   disabled={redoStack.length === 0}
-                  className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-xs font-semibold ${
+                  className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all text-xs font-semibold cursor-pointer ${
                     redoStack.length === 0
                       ? 'text-slate-600 cursor-not-allowed opacity-40'
                       : 'text-slate-200 hover:bg-slate-700 hover:text-white active:scale-95'
@@ -1517,54 +1589,217 @@ export function WhiteboardModal({
                   title="İleri Al (Ctrl+Y / Cmd+Shift+Z)"
                 >
                   <Redo2 className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">İleri Al</span>
+                  <span className="hidden lg:inline">İleri</span>
                 </button>
               </div>
 
-              {/* Color Palette */}
-              <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
-                {PEN_COLORS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => {
-                      setPenColor(c);
-                      playSound('click');
-                    }}
-                    className={`w-5 h-5 rounded-full border border-white/30 transition-transform ${
-                      penColor === c ? 'scale-125 ring-2 ring-teal-400' : ''
-                    }`}
-                    style={{ backgroundColor: c }}
+              {/* AÇILIR RENK PALETİ (POPOVER) */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPenColorDropdownOpen(!penColorDropdownOpen);
+                    setPenWidthDropdownOpen(false);
+                    playSound('click');
+                  }}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm ${
+                    penColorDropdownOpen
+                      ? 'bg-slate-700 text-white ring-2 ring-teal-400'
+                      : 'bg-slate-800 hover:bg-slate-700/90 text-slate-200 border border-slate-700'
+                  }`}
+                  title="Kalem Rengi Seç"
+                >
+                  <span
+                    className="w-4 h-4 rounded-full border border-white/40 shadow-inner inline-block shrink-0"
+                    style={{ backgroundColor: penColor }}
                   />
-                ))}
+                  <span>Renk</span>
+                  <ChevronDown className="w-3 h-3 text-slate-400" />
+                </button>
+
+                {penColorDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-[110]"
+                      onClick={() => setPenColorDropdownOpen(false)}
+                    />
+                    <div className="absolute top-full left-0 mt-2 z-[120] w-64 bg-slate-900 border border-slate-700 rounded-2xl p-3 shadow-2xl animate-in zoom-in-95 space-y-3">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[11px] font-black text-teal-300">
+                        <span className="flex items-center gap-1.5">
+                          <Palette className="w-3.5 h-3.5 text-teal-400" />
+                          <span>Mürekkep & Kalem Rengi</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setPenColorDropdownOpen(false)}
+                          className="text-slate-400 hover:text-white p-0.5"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      {COLOR_PALETTES.map((paletteGroup) => (
+                        <div key={paletteGroup.category} className="space-y-1.5">
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            {paletteGroup.category}
+                          </div>
+                          <div className="grid grid-cols-4 gap-2">
+                            {paletteGroup.colors.map((c) => (
+                              <button
+                                key={c.hex}
+                                type="button"
+                                onClick={() => {
+                                  setPenColor(c.hex);
+                                  setPenColorDropdownOpen(false);
+                                  playSound('click');
+                                }}
+                                className={`flex flex-col items-center gap-1 p-1.5 rounded-xl border transition-all cursor-pointer ${
+                                  penColor === c.hex
+                                    ? 'border-teal-400 bg-teal-500/20 shadow-sm scale-105'
+                                    : 'border-slate-800 hover:border-slate-600 hover:bg-slate-800'
+                                }`}
+                                title={c.label}
+                              >
+                                <span
+                                  className="w-5 h-5 rounded-full border border-white/30 shadow-sm shrink-0"
+                                  style={{ backgroundColor: c.hex }}
+                                />
+                                <span className="text-[9px] text-slate-300 font-medium truncate w-full text-center">
+                                  {c.label}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Özel Renk Seçici */}
+                      <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400 font-bold">Özel Renk:</span>
+                        <input
+                          type="color"
+                          value={penColor.startsWith('#') && penColor.length === 7 ? penColor : '#0f172a'}
+                          onChange={(e) => setPenColor(e.target.value)}
+                          className="w-7 h-7 rounded-lg border border-slate-700 bg-transparent cursor-pointer"
+                          title="Renk Paletinden Özel Renk Seç"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
-              {/* Pen Width */}
-              <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
-                {[2, 4, 8, 14].map((w) => (
-                  <button
-                    key={w}
-                    type="button"
-                    onClick={() => setPenWidth(w)}
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      penWidth === w ? 'bg-teal-500 text-slate-950' : 'text-slate-300 hover:bg-slate-700'
-                    }`}
-                  >
-                    {w}px
-                  </button>
-                ))}
+              {/* AÇILIR KALEM KALINLIĞI PALETİ (POPOVER) */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPenWidthDropdownOpen(!penWidthDropdownOpen);
+                    setPenColorDropdownOpen(false);
+                    playSound('click');
+                  }}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm ${
+                    penWidthDropdownOpen
+                      ? 'bg-slate-700 text-white ring-2 ring-teal-400'
+                      : 'bg-slate-800 hover:bg-slate-700/90 text-slate-200 border border-slate-700'
+                  }`}
+                  title="Kalem Kalınlığı Ayarla"
+                >
+                  <span
+                    className="rounded-full bg-teal-400 inline-block shrink-0"
+                    style={{ width: Math.max(4, Math.min(10, penWidth)), height: Math.max(4, Math.min(10, penWidth)) }}
+                  />
+                  <span>{penWidth} px</span>
+                  <ChevronDown className="w-3 h-3 text-slate-400" />
+                </button>
+
+                {penWidthDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-[110]"
+                      onClick={() => setPenWidthDropdownOpen(false)}
+                    />
+                    <div className="absolute top-full left-0 mt-2 z-[120] w-56 bg-slate-900 border border-slate-700 rounded-2xl p-3 shadow-2xl animate-in zoom-in-95 space-y-3">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[11px] font-black text-teal-300">
+                        <span>Kalem Kalınlığı</span>
+                        <button
+                          type="button"
+                          onClick={() => setPenWidthDropdownOpen(false)}
+                          className="text-slate-400 hover:text-white p-0.5"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      {/* Presets List */}
+                      <div className="space-y-1">
+                        {PEN_WIDTH_PRESETS.map((preset) => (
+                          <button
+                            key={preset.width}
+                            type="button"
+                            onClick={() => {
+                              setPenWidth(preset.width);
+                              setPenWidthDropdownOpen(false);
+                              playSound('click');
+                            }}
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                              penWidth === preset.width
+                                ? 'bg-teal-500/20 border border-teal-400 text-teal-300 font-bold'
+                                : 'hover:bg-slate-800 text-slate-300 border border-transparent'
+                            }`}
+                          >
+                            <span className="text-xs">{preset.label}</span>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="bg-teal-400 rounded-full"
+                                style={{ width: 28, height: Math.min(14, preset.width) }}
+                              />
+                              <span className="text-[10px] font-mono text-slate-400 w-7 text-right">
+                                {preset.width}px
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Fine Slider */}
+                      <div className="pt-2 border-t border-slate-800 space-y-1.5">
+                        <div className="flex items-center justify-between text-[10px] text-slate-400">
+                          <span>Hassas Ayar:</span>
+                          <span className="font-mono text-teal-300 font-bold">{penWidth} px</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="1"
+                          max="32"
+                          value={penWidth}
+                          onChange={(e) => setPenWidth(Number(e.target.value))}
+                          className="w-full accent-teal-400 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
+
+              {/* Clear Page Drawings Button */}
+              <button
+                type="button"
+                onClick={handleClearPage}
+                className="p-1.5 rounded-xl bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-300 border border-slate-700 transition-colors cursor-pointer"
+                title="Sayfadaki Tüm Çizimleri Temizle"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
             </div>
           ) : (
             /* Mode B: Word Typography Ribbon */
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Yazı:</span>
-
               {/* Font Family Selector */}
               <select
                 value={fontFamily}
                 onChange={(e) => handleFontChange(e.target.value)}
-                className="px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
+                className="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400 cursor-pointer"
               >
                 {FONTS.map((f) => (
                   <option key={f.id} value={f.id}>
@@ -1580,7 +1815,7 @@ export function WhiteboardModal({
                   const targetObj = FONT_SIZES.find((s) => s.pt === e.target.value) || FONT_SIZES[2];
                   handleFontSizeChange(targetObj.pt, targetObj.cmd);
                 }}
-                className="px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400 font-mono"
+                className="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400 font-mono cursor-pointer"
               >
                 {FONT_SIZES.map((s) => (
                   <option key={s.pt} value={s.pt}>
@@ -1595,7 +1830,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('bold')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 font-bold cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 font-bold cursor-pointer transition-colors"
                   title="Kalın (Ctrl+B)"
                 >
                   <Bold className="w-3.5 h-3.5" />
@@ -1604,7 +1839,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('italic')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 italic cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 italic cursor-pointer transition-colors"
                   title="İtalik (Ctrl+I)"
                 >
                   <Italic className="w-3.5 h-3.5" />
@@ -1613,7 +1848,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('underline')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 underline cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 underline cursor-pointer transition-colors"
                   title="Altı Çizili (Ctrl+U)"
                 >
                   <Underline className="w-3.5 h-3.5" />
@@ -1622,7 +1857,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('strikeThrough')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 cursor-pointer transition-colors"
                   title="Üstü Çizili"
                 >
                   <Strikethrough className="w-3.5 h-3.5" />
@@ -1635,7 +1870,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('justifyLeft')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 cursor-pointer transition-colors"
                   title="Sola Hizala"
                 >
                   <AlignLeft className="w-3.5 h-3.5" />
@@ -1644,7 +1879,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('justifyCenter')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 cursor-pointer transition-colors"
                   title="Ortala"
                 >
                   <AlignCenter className="w-3.5 h-3.5" />
@@ -1653,7 +1888,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('justifyRight')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 cursor-pointer transition-colors"
                   title="Sağa Hizala"
                 >
                   <AlignRight className="w-3.5 h-3.5" />
@@ -1662,7 +1897,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('justifyFull')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 cursor-pointer transition-colors"
                   title="İki Yana Yasla"
                 >
                   <AlignJustify className="w-3.5 h-3.5" />
@@ -1675,7 +1910,7 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('insertUnorderedList')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 cursor-pointer transition-colors"
                   title="Madde İşaretli Liste"
                 >
                   <List className="w-3.5 h-3.5" />
@@ -1684,63 +1919,133 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('insertOrderedList')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 cursor-pointer transition-colors"
                   title="Numaralı Liste"
                 >
                   <ListOrdered className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              {/* Text Colors */}
-              <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
-                {TEXT_COLORS.slice(0, 5).map((tc) => (
-                  <button
-                    key={tc}
-                    type="button"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setTextColor(tc);
-                      applyTextCommand('foreColor', tc);
-                    }}
-                    className="w-4 h-4 rounded-full border border-white/20 cursor-pointer hover:scale-110 transition-transform"
-                    style={{ backgroundColor: tc }}
+              {/* AÇILIR YAZI RENGİ PALETİ */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTextColorDropdownOpen(!textColorDropdownOpen);
+                    playSound('click');
+                  }}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
+                    textColorDropdownOpen
+                      ? 'bg-slate-700 text-white ring-2 ring-teal-400'
+                      : 'bg-slate-800 hover:bg-slate-700/90 text-slate-200 border border-slate-700'
+                  }`}
+                  title="Metin Yazı Rengi Seç"
+                >
+                  <span
+                    className="w-3.5 h-3.5 rounded-full border border-white/40 shadow-inner inline-block shrink-0"
+                    style={{ backgroundColor: textColor }}
                   />
-                ))}
+                  <span>Yazı Rengi</span>
+                  <ChevronDown className="w-3 h-3 text-slate-400" />
+                </button>
+
+                {textColorDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-[110]"
+                      onClick={() => setTextColorDropdownOpen(false)}
+                    />
+                    <div className="absolute top-full left-0 mt-2 z-[120] w-52 bg-slate-900 border border-slate-700 rounded-2xl p-3 shadow-2xl animate-in zoom-in-95 space-y-2.5">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[11px] font-black text-teal-300">
+                        <span>Yazı Rengi</span>
+                        <button
+                          type="button"
+                          onClick={() => setTextColorDropdownOpen(false)}
+                          className="text-slate-400 hover:text-white p-0.5"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-2">
+                        {TEXT_COLORS.map((tc) => (
+                          <button
+                            key={tc}
+                            type="button"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => {
+                              setTextColor(tc);
+                              applyTextCommand('foreColor', tc);
+                              setTextColorDropdownOpen(false);
+                            }}
+                            className={`p-2 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
+                              textColor === tc
+                                ? 'border-teal-400 bg-teal-500/20 scale-110 shadow-sm'
+                                : 'border-slate-800 hover:border-slate-600 bg-slate-800'
+                            }`}
+                          >
+                            <span
+                              className="w-4 h-4 rounded-full border border-white/30"
+                              style={{ backgroundColor: tc }}
+                            />
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400 font-bold">Özel Renk:</span>
+                        <input
+                          type="color"
+                          value={textColor.startsWith('#') && textColor.length === 7 ? textColor : '#0f172a'}
+                          onChange={(e) => {
+                            setTextColor(e.target.value);
+                            applyTextCommand('foreColor', e.target.value);
+                          }}
+                          className="w-7 h-7 rounded-lg border border-slate-700 bg-transparent cursor-pointer"
+                          title="Özel Yazı Rengi Seç"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
 
-          {/* Shared Tools: 12 Geometric Shapes Dropdown + Math Symbols + Images */}
+          {/* Shared Tools: 17 Geometric Shapes Dropdown + Categorized Math Symbols + Media + Background */}
           <div className="flex items-center gap-2 flex-wrap shrink-0 relative overflow-visible">
             
-            {/* GEOMETRIC SHAPES DROPDOWN (12 Shapes) */}
+            {/* GEOMETRIC SHAPES DROPDOWN (17 Shapes & Basic Concepts) */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => {
                   setShapesDropdownOpen(!shapesDropdownOpen);
+                  setSymbolsDropdownOpen(false);
+                  setImageDropdownOpen(false);
+                  setBgDropdownOpen(false);
                   playSound('click');
                 }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
                   shapesDropdownOpen
                     ? 'bg-teal-500 text-slate-950 shadow-md ring-2 ring-teal-400'
                     : 'bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/40'
                 }`}
-                title="Geometrik Şekil Ekle (Kare, Üçgenler, Daire, Çokgenler vb.)"
+                title="Geometrik Şekil Ekle (Nokta, Doğru, Işın, Üçgenler, Daire, Çokgenler vb.)"
               >
                 <Shapes className="w-4 h-4 text-teal-300" />
                 <span>Geometrik Şekiller</span>
                 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
               </button>
 
-              {/* 17 Shapes Categorized Grid Popover (Fixed Overlay over canvas) */}
+              {/* 17 Shapes Categorized Grid Popover */}
               {shapesDropdownOpen && (
                 <>
                   <div
                     className="fixed inset-0 z-[110]"
                     onClick={() => setShapesDropdownOpen(false)}
                   />
-                  <div className="absolute top-full right-0 sm:left-0 mt-2 z-[120] w-80 sm:w-96 bg-slate-900 border-2 border-teal-400/80 rounded-2xl p-3.5 shadow-2xl animate-in zoom-in-95 space-y-3">
+                  <div className="absolute top-full right-0 sm:left-auto sm:right-0 mt-2 z-[120] w-80 sm:w-96 bg-slate-900 border-2 border-teal-400/80 rounded-2xl p-3.5 shadow-2xl animate-in zoom-in-95 space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-xs font-black text-teal-300">
                       <span className="flex items-center gap-1.5">
                         <Shapes className="w-4 h-4 text-teal-400" />
@@ -1796,146 +2101,241 @@ export function WhiteboardModal({
               )}
             </div>
 
-            {/* Math Symbols Quick Chips & All Symbols Popover */}
-            <div className="flex items-center gap-1 bg-slate-800 px-2 py-1 rounded-xl border border-slate-700 relative">
-              <span className="text-[10px] text-teal-300 font-bold mr-1">Sembol:</span>
-              {MATH_SYMBOLS.slice(0, 8).map((sym) => (
-                <button
-                  key={sym}
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => insertMathSymbol(sym)}
-                  className="w-5 h-5 rounded bg-slate-700 hover:bg-slate-600 text-[11px] font-bold text-white flex items-center justify-center font-mono cursor-pointer transition-transform hover:scale-110"
-                  title={`İmlecin Olduğu Yere Ekle: ${sym}`}
-                >
-                  {sym}
-                </button>
-              ))}
+            {/* AÇILIR MATEMATİK & GEOMETRİ SEMBOLLERİ PALETİ */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setSymbolsDropdownOpen(!symbolsDropdownOpen);
+                  setShapesDropdownOpen(false);
+                  setImageDropdownOpen(false);
+                  setBgDropdownOpen(false);
+                  playSound('click');
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
+                  symbolsDropdownOpen
+                    ? 'bg-teal-500 text-slate-950 font-black ring-2 ring-teal-400'
+                    : 'bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700'
+                }`}
+                title="Açı, Paralel Doğru, Denklem ve Matematik Sembolleri"
+              >
+                <span className="font-mono text-sm">°//π</span>
+                <span>Semboller</span>
+                <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
+              </button>
 
-              {/* All Symbols Popover Button */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    setSymbolsDropdownOpen(!symbolsDropdownOpen);
-                    playSound('click');
-                  }}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-all flex items-center gap-0.5 ${
-                    symbolsDropdownOpen
-                      ? 'bg-teal-500 text-slate-950 font-black'
-                      : 'bg-slate-700 hover:bg-slate-600 text-teal-300'
-                  }`}
-                  title="Tüm Matematik Sembolleri"
-                >
-                  <span>Tümü</span>
-                  <ChevronDown className="w-2.5 h-2.5" />
-                </button>
-
-                {symbolsDropdownOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-[110]"
-                      onClick={() => setSymbolsDropdownOpen(false)}
-                    />
-                    <div className="absolute top-full right-0 mt-2 z-[120] w-64 bg-slate-900 border-2 border-teal-400/80 rounded-2xl p-3 shadow-2xl animate-in zoom-in-95 space-y-2">
-                      <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[11px] font-black text-teal-300">
-                        <span>Matematik Sembolleri</span>
-                        <button
-                          type="button"
-                          onClick={() => setSymbolsDropdownOpen(false)}
-                          className="text-slate-400 hover:text-white"
-                        >
-                          ✕
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-6 gap-1.5 max-h-56 overflow-y-auto pr-1">
-                        {MATH_SYMBOLS.map((sym) => (
-                          <button
-                            key={sym}
-                            type="button"
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => {
-                              insertMathSymbol(sym);
-                            }}
-                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-teal-500/20 hover:border-teal-400 border border-slate-700 text-sm font-bold text-white flex items-center justify-center font-mono cursor-pointer transition-all hover:scale-110"
-                            title={`Ekle: ${sym}`}
-                          >
-                            {sym}
-                          </button>
-                        ))}
-                      </div>
+              {symbolsDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-[110]"
+                    onClick={() => setSymbolsDropdownOpen(false)}
+                  />
+                  <div className="absolute top-full right-0 mt-2 z-[120] w-80 bg-slate-900 border-2 border-teal-400/80 rounded-2xl p-3.5 shadow-2xl animate-in zoom-in-95 space-y-3">
+                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-xs font-black text-teal-300">
+                      <span>Matematik & Geometri Sembolleri</span>
+                      <button
+                        type="button"
+                        onClick={() => setSymbolsDropdownOpen(false)}
+                        className="text-slate-400 hover:text-white p-0.5"
+                      >
+                        ✕
+                      </button>
                     </div>
-                  </>
-                )}
-              </div>
+
+                    {/* Category Tabs */}
+                    <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
+                      {CATEGORIZED_MATH_SYMBOLS.map((cat) => (
+                        <button
+                          key={cat.category}
+                          type="button"
+                          onClick={() => setActiveSymbolCategory(cat.category)}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-bold shrink-0 transition-all cursor-pointer ${
+                            activeSymbolCategory === cat.category
+                              ? 'bg-teal-500 text-slate-950 shadow-sm'
+                              : 'bg-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+                          }`}
+                        >
+                          {cat.category}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Active Category Symbol Grid */}
+                    <div className="grid grid-cols-6 gap-1.5 max-h-48 overflow-y-auto pr-1">
+                      {(CATEGORIZED_MATH_SYMBOLS.find((c) => c.category === activeSymbolCategory)?.symbols || []).map((sym) => (
+                        <button
+                          key={sym}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            insertMathSymbol(sym);
+                            playSound('click');
+                          }}
+                          className="h-9 rounded-xl bg-slate-800 hover:bg-teal-500/20 hover:border-teal-400 border border-slate-700 text-sm font-bold text-white flex items-center justify-center font-mono cursor-pointer transition-all hover:scale-110 active:scale-95"
+                          title={`Metne / Başlığa Ekle: ${sym}`}
+                        >
+                          {sym}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="text-[9.5px] text-slate-400 pt-1.5 border-t border-slate-800 text-center">
+                      💡 Tıkladığınız sembol, yazı alanında imlecin olduğu yere eklenir.
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Local Image Upload Trigger */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleLocalImageUpload}
-              accept="image/*"
-              className="hidden"
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
-              title="Bilgisayardan / Tabletten Resim Yükle"
-            >
-              <Upload className="w-3.5 h-3.5 text-teal-400" />
-              <span>Resim Yükle</span>
-            </button>
+            {/* AÇILIR GÖRSEL & MEDYA BUTONU */}
+            <div className="relative">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleLocalImageUpload}
+                accept="image/*"
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setImageDropdownOpen(!imageDropdownOpen);
+                  setShapesDropdownOpen(false);
+                  setSymbolsDropdownOpen(false);
+                  setBgDropdownOpen(false);
+                  playSound('click');
+                }}
+                className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
+                  imageDropdownOpen
+                    ? 'bg-slate-700 text-white ring-2 ring-teal-400'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                }`}
+                title="Görsel Yükle veya İnternetten Ara"
+              >
+                <ImageIcon className="w-3.5 h-3.5 text-teal-400" />
+                <span>Görsel</span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
 
-            {/* Web Image Search Trigger */}
-            <button
-              type="button"
-              onClick={() => {
-                setWebImageModalOpen(true);
-                playSound('click');
-              }}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
-              title="İnternetten & Kütüphaneden Görsel Ara"
-            >
-              <Globe className="w-3.5 h-3.5 text-sky-400" />
-              <span>İnternetten Görsel</span>
-            </button>
+              {imageDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-[110]"
+                    onClick={() => setImageDropdownOpen(false)}
+                  />
+                  <div className="absolute top-full right-0 mt-2 z-[120] w-56 bg-slate-900 border border-slate-700 rounded-2xl p-2.5 shadow-2xl animate-in zoom-in-95 space-y-1.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageDropdownOpen(false);
+                        fileInputRef.current?.click();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Upload className="w-4 h-4 text-teal-400" />
+                      <span>Cihazdan Yükle</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageDropdownOpen(false);
+                        setWebImageModalOpen(true);
+                        playSound('click');
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Globe className="w-4 h-4 text-sky-400" />
+                      <span>İnternetten Görsel Ara</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
 
-            {/* Background Pattern Selector */}
-            <div className="flex items-center gap-1 bg-slate-800 p-0.5 rounded-xl border border-slate-700">
+            {/* AÇILIR ARKA PLAN SEÇİCİ */}
+            <div className="relative">
               <button
                 type="button"
-                onClick={() => handleChangeBackground('grid')}
-                className={`px-2 py-1 rounded text-[10px] font-bold ${
-                  activePage.backgroundType === 'grid' ? 'bg-teal-500 text-slate-950' : 'text-slate-300'
+                onClick={() => {
+                  setBgDropdownOpen(!bgDropdownOpen);
+                  setShapesDropdownOpen(false);
+                  setSymbolsDropdownOpen(false);
+                  setImageDropdownOpen(false);
+                  playSound('click');
+                }}
+                className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
+                  bgDropdownOpen
+                    ? 'bg-slate-700 text-white ring-2 ring-teal-400'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
                 }`}
-                title="Kareli Matematik Defteri"
+                title="Sayfa Arka Plan Düzeni (Kareli, Çizgili, Düz)"
               >
-                Kareli
+                <Layers className="w-3.5 h-3.5 text-amber-400" />
+                <span>
+                  {activePage.backgroundType === 'grid'
+                    ? 'Kareli'
+                    : activePage.backgroundType === 'lined'
+                    ? 'Çizgili'
+                    : 'Düz Beyaz'}
+                </span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
-              <button
-                type="button"
-                onClick={() => handleChangeBackground('lined')}
-                className={`px-2 py-1 rounded text-[10px] font-bold ${
-                  activePage.backgroundType === 'lined' ? 'bg-teal-500 text-slate-950' : 'text-slate-300'
-                }`}
-                title="Çizgili Defter"
-              >
-                Çizgili
-              </button>
-              <button
-                type="button"
-                onClick={() => handleChangeBackground('blank')}
-                className={`px-2 py-1 rounded text-[10px] font-bold ${
-                  activePage.backgroundType === 'blank' ? 'bg-teal-500 text-slate-950' : 'text-slate-300'
-                }`}
-                title="Düz Beyaz Sayfa"
-              >
-                Düz
-              </button>
+
+              {bgDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-[110]"
+                    onClick={() => setBgDropdownOpen(false)}
+                  />
+                  <div className="absolute top-full right-0 mt-2 z-[120] w-48 bg-slate-900 border border-slate-700 rounded-2xl p-2 shadow-2xl animate-in zoom-in-95 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleChangeBackground('grid');
+                        setBgDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                        activePage.backgroundType === 'grid'
+                          ? 'bg-teal-500/20 text-teal-300 font-bold'
+                          : 'text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <span>📐 Kareli Defter</span>
+                      {activePage.backgroundType === 'grid' && <Check className="w-3.5 h-3.5 text-teal-400" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleChangeBackground('lined');
+                        setBgDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                        activePage.backgroundType === 'lined'
+                          ? 'bg-teal-500/20 text-teal-300 font-bold'
+                          : 'text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <span>📝 Çizgili Defter</span>
+                      {activePage.backgroundType === 'lined' && <Check className="w-3.5 h-3.5 text-teal-400" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleChangeBackground('blank');
+                        setBgDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                        activePage.backgroundType === 'blank'
+                          ? 'bg-teal-500/20 text-teal-300 font-bold'
+                          : 'text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <span>⬜ Düz Beyaz Sayfa</span>
+                      {activePage.backgroundType === 'blank' && <Check className="w-3.5 h-3.5 text-teal-400" />}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
 
           </div>
