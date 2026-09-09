@@ -267,6 +267,112 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-1-bridge',
+    title: 'Büyük Görev: Tarihi Köprü Restorasyonu (MAT.5.3.1)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.1',
+    outcomeTitle: 'Temel Geometrik Çizimler ve Geometrik Araçların Kullanımı',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-09T09:00:00Z',
+    fileSizeKb: 210,
+    tags: ['Etkinlik Kağıdı', 'Büyük Görev', 'Tarihi Köprü Restorasyonu', 'Mimar Sinan', 'Cetvel', 'İletki', 'Pergel', 'Gönye', 'MAT.5.3.1', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #1e293b;">
+  <div style="text-align: center; border-bottom: 2px solid #b45309; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #fffbeb, #fef3c7); padding: 12px; border-radius: 12px; border: 1px solid #fde68a;">
+    <div style="display: inline-block; background: #b45309; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px;">
+      🏛️ MİMARİ RESTORASYON &amp; GEOMETRİK İNŞA
+    </div>
+    <h2 style="color: #78350f; font-size: 17px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      BÜYÜK GÖREV: TARİHİ KÖPRÜ RESTORASYONU (MAT.5.3.1)
+    </h2>
+    <div style="margin-top: 6px; padding: 6px 12px; background: #ffffff; border-radius: 8px; border: 1px dashed #d97706; display: inline-block;">
+      <p style="color: #92400e; font-size: 11px; margin: 0; font-weight: 700; font-style: italic;">
+        📜 <strong>Kurgu Paneli:</strong> &ldquo;Mimar Sinan'ın Kanuni Köprüsü'nün çizimi hasar gördü! Kemerleri ve ayakları aletlerinle tamamla.&rdquo;
+      </p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;">
+    <div style="background: #ffffff; border: 1.5px solid #0d9488; border-radius: 8px; padding: 6px 8px;">
+      <div style="font-size: 10px; font-weight: 900; color: #0f766e;">📏 ADIM 1: CETVEL</div>
+      <div style="font-size: 9.5px; color: #334155; margin-top: 2px;">Düz nehir zemin doğrusunu çiz.</div>
+    </div>
+    <div style="background: #ffffff; border: 1.5px solid #ea580c; border-radius: 8px; padding: 6px 8px;">
+      <div style="font-size: 10px; font-weight: 900; color: #c2410c;">📐 ADIM 2: GÖNYE</div>
+      <div style="font-size: 9.5px; color: #334155; margin-top: 2px;">Zemine 90° dik iki köprü ayağı indir.</div>
+    </div>
+    <div style="background: #ffffff; border: 1.5px solid #7c3aed; border-radius: 8px; padding: 6px 8px;">
+      <div style="font-size: 10px; font-weight: 900; color: #6d28d9;">⭕ ADIM 3: PERGEL</div>
+      <div style="font-size: 9.5px; color: #334155; margin-top: 2px;">İki ayak arasına dairesel kemer yayı kondur.</div>
+    </div>
+    <div style="background: #ffffff; border: 1.5px solid #2563eb; border-radius: 8px; padding: 6px 8px;">
+      <div style="font-size: 10px; font-weight: 900; color: #1d4ed8;">🧭 ADIM 4: İLETKİ</div>
+      <div style="font-size: 9.5px; color: #334155; margin-top: 2px;">Köprü kulesinin açısını kontrol et.</div>
+    </div>
+  </div>
+
+  <div style="border: 2px solid #78350f; border-radius: 12px; background: #ffffff; padding: 12px; position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+      <span style="font-size: 11px; font-weight: 900; color: #78350f; display: flex; align-items: center; gap: 4px;">
+        🏛️ GENİŞ ÇİZİM ALANI: MİLİMETRİK GRID CANVAS
+      </span>
+      <span style="font-size: 9px; font-family: monospace; color: #64748b; background: #f8fafc; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0;">
+        Ölçek: 1 birim = 1 cm • Kılavuz Grid Aktif
+      </span>
+    </div>
+
+    <div style="border: 1.5px dashed #94a3b8; border-radius: 8px; height: 320px; background-color: #fcfbf7; background-image: radial-gradient(#d4d4d8 1px, transparent 1px); background-size: 16px 16px; position: relative; overflow: hidden; padding: 10px;">
+      <div style="position: absolute; top: 18px; left: 40px; border: 1.5px solid #94a3b8; background: #fefce8; padding: 6px 10px; border-radius: 6px; border-left: 4px solid #2563eb;">
+        <div style="font-size: 10px; font-weight: 900; color: #1d4ed8;">🏰 Kule Gözetleme Çatısı</div>
+        <div style="font-size: 8.5px; color: #475569; margin-top: 2px;">İletkiyi 'T' köşesine koyup çatı açısını (45°/60°) doğrula.</div>
+        <div style="font-size: 9px; font-weight: bold; color: #2563eb; font-family: monospace; margin-top: 2px;">T Tepe Noktası (İletki Kontrolü) •</div>
+      </div>
+
+      <div style="position: absolute; bottom: 85px; left: 130px; font-size: 9.5px; font-weight: 900; color: #c2410c;">
+        Ayak 1: [A1-Z1] ⊥ Zemin (Gönye ile 90°)
+      </div>
+      <div style="position: absolute; bottom: 42px; left: 155px; width: 4px; height: 40px; border-left: 2px dashed #ea580c;"></div>
+
+      <div style="position: absolute; bottom: 42px; left: 260px; text-align: center;">
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #6d28d9; margin: 0 auto; border: 1.5px solid #ffffff; box-shadow: 0 0 0 1px #6d28d9;"></div>
+        <div style="font-size: 9px; font-weight: 900; color: #6d28d9; margin-top: 2px;">K (Kemer Merkezi)</div>
+        <div style="font-size: 8px; color: #7c3aed; font-family: monospace;">Pergel İğnesi (r = 5 cm)</div>
+      </div>
+
+      <div style="position: absolute; bottom: 42px; left: 160px; width: 200px; height: 100px; border-top: 2px dashed #a855f7; border-left: 2px dashed #a855f7; border-right: 2px dashed #a855f7; border-top-left-radius: 100px; border-top-right-radius: 100px; pointer-events: none; opacity: 0.6;"></div>
+
+      <div style="position: absolute; bottom: 85px; right: 130px; font-size: 9.5px; font-weight: 900; color: #c2410c; text-align: right;">
+        Ayak 2: [A2-Z2] ⊥ Zemin (Gönye ile 90°)
+      </div>
+      <div style="position: absolute; bottom: 42px; right: 155px; width: 4px; height: 40px; border-right: 2px dashed #ea580c;"></div>
+
+      <div style="position: absolute; bottom: 40px; left: 20px; right: 20px; height: 2.5px; background: #0d9488;">
+        <div style="position: absolute; left: 0; top: -18px; font-size: 9.5px; font-weight: 900; color: #0f766e;">◄ Düz Nehir Zemin Doğrusu (Cetvel ile Çiz)</div>
+        <div style="position: absolute; right: 0; top: -18px; font-size: 9.5px; font-weight: 900; color: #0f766e;">d_nehir ►</div>
+      </div>
+
+      <div style="position: absolute; bottom: 12px; left: 20px; right: 20px; display: flex; justify-content: space-around; font-size: 11px; color: #38bdf8; opacity: 0.7;">
+        <span>~~~ Meriç / Tunca Nehri Su Seviyesi ~~~</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 10px; padding: 8px 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 10px; color: #92400e; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Puanlama:</strong> Her restorasyon adımı 25 puandır. (1. Cetvel: 25P, 2. Gönye: 25P, 3. Pergel: 25P, 4. İletki: 25P) Toplam: 100 Puan.</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
@@ -297,15 +403,22 @@ export function getStoredClassroomFiles(): ClassroomFileRecord[] {
   }
 }
 
-export function getActivitySheetForOutcome(outcomeCode: string): ClassroomFileRecord | null {
+export function getActivitySheetsForOutcome(outcomeCode: string): ClassroomFileRecord[] {
   const files = getStoredClassroomFiles();
-  return (
-    files.find(
-      (f) =>
-        f.outcomeCode === outcomeCode &&
-        (f.tags?.includes('Etkinlik Kağıdı') || f.title.toLowerCase().includes('etkinlik'))
-    ) || null
+  return files.filter(
+    (f) =>
+      f.outcomeCode === outcomeCode &&
+      (f.tags?.includes('Etkinlik Kağıdı') || f.title.toLowerCase().includes('etkinlik') || f.title.toLowerCase().includes('görev'))
   );
+}
+
+export function getActivitySheetForOutcome(outcomeCode: string, activityId?: string): ClassroomFileRecord | null {
+  const sheets = getActivitySheetsForOutcome(outcomeCode);
+  if (activityId) {
+    const found = sheets.find((s) => s.id === activityId);
+    if (found) return found;
+  }
+  return sheets[0] || null;
 }
 
 export function saveClassroomFile(
