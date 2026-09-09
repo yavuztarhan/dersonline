@@ -193,54 +193,101 @@ export function ActivitySheetView({
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       
-      {/* 0. Multi-Activity Tab Switcher (if multiple activities exist for outcome) */}
+      {/* 0. Multi-Activity Tab Switcher (Responsive Grid without horizontal scroll) */}
       {availableSheets.length > 1 && (
-        <div className="flex items-center gap-2 p-1.5 bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-300 dark:border-slate-700 overflow-x-auto">
-          {availableSheets.map((sheet) => {
-            const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
-            const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
-            const isDetective = (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping;
-            const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
-            return (
-              <button
-                key={sheet.id}
-                type="button"
-                onClick={() => {
-                  playSound('click');
-                  setSelectedSheetId(sheet.id);
-                }}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all cursor-pointer whitespace-nowrap ${
-                  isActive
-                    ? isBridge
-                      ? 'bg-amber-500 text-slate-950 shadow-md scale-102'
-                      : isStepping
-                      ? 'bg-purple-600 text-white shadow-md scale-102'
-                      : isDetective
-                      ? 'bg-sky-600 text-white shadow-md scale-102'
-                      : 'bg-teal-600 text-white shadow-md scale-102'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-300/50 dark:hover:bg-slate-700/50'
-                }`}
-              >
-                <span>{isBridge ? '🏛️' : isStepping ? '⭕' : isDetective ? '🔍' : '📐'}</span>
-                <span>{sheet.title.replace(/ \(MAT\.5\.3\.[12]\)/, '')}</span>
-                {isBridge && (
-                  <span className="px-1.5 py-0.5 rounded bg-amber-950/20 text-[9px] font-black uppercase">
-                    Büyük Görev
+        <div className="bg-slate-100/90 dark:bg-slate-800/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs">
+          <div
+            className={`grid gap-2 ${
+              availableSheets.length === 2
+                ? 'grid-cols-1 sm:grid-cols-2'
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+            }`}
+          >
+            {availableSheets.map((sheet, index) => {
+              const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
+              const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
+              const isDetective =
+                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping;
+              const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
+
+              const icon = isBridge ? '🏛️' : isStepping ? '⭕' : isDetective ? '🔍' : '📐';
+              const title = isBridge
+                ? 'Tarihi Köprü Restorasyonu'
+                : isStepping
+                ? 'Pergel ile Adımlama'
+                : isDetective
+                ? 'Çıkarım Dedektifi'
+                : 'Aşamalı İnşa İstasyonları';
+
+              const badge = isBridge
+                ? 'Büyük Görev'
+                : isStepping
+                ? 'Atölye 2'
+                : isDetective
+                ? 'Etkinlik 1'
+                : `Etkinlik ${index + 1}`;
+
+              const tag = isBridge
+                ? '4 Restorasyon Adımı'
+                : isStepping
+                ? 'Eşit Parçalar Kesme'
+                : isDetective
+                ? '3 Deney Kutusu'
+                : '4 Mini İstasyon';
+
+              return (
+                <button
+                  key={sheet.id}
+                  type="button"
+                  onClick={() => {
+                    playSound('click');
+                    setSelectedSheetId(sheet.id);
+                  }}
+                  className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer text-left border ${
+                    isActive
+                      ? isBridge
+                        ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md scale-[1.01]'
+                        : isStepping
+                        ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
+                        : isDetective
+                        ? 'bg-sky-600 text-white border-sky-500 shadow-md scale-[1.01]'
+                        : 'bg-teal-600 text-white border-teal-500 shadow-md scale-[1.01]'
+                      : 'bg-white dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-base sm:text-lg shrink-0">{icon}</span>
+                    <div className="min-w-0">
+                      <div className="font-black text-xs truncate">{title}</div>
+                      <div
+                        className={`text-[10px] font-medium truncate ${
+                          isActive
+                            ? isBridge
+                              ? 'text-amber-950/80'
+                              : 'text-white/80'
+                            : 'text-slate-400 dark:text-slate-400'
+                        }`}
+                      >
+                        {tag}
+                      </div>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider shrink-0 ml-2 ${
+                      isActive
+                        ? isBridge
+                          ? 'bg-amber-950/20 text-slate-950'
+                          : 'bg-white/20 text-white'
+                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    {badge}
                   </span>
-                )}
-                {isStepping && (
-                  <span className="px-1.5 py-0.5 rounded bg-purple-950/20 text-[9px] font-black uppercase">
-                    Adımlama Atölyesi
-                  </span>
-                )}
-                {isDetective && (
-                  <span className="px-1.5 py-0.5 rounded bg-sky-950/20 text-[9px] font-black uppercase">
-                    Dedektif Deneyleri
-                  </span>
-                )}
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
