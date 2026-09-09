@@ -273,7 +273,7 @@ export function WhiteboardModal({
       id: 'page-1',
       pageNumber: 1,
       backgroundType: 'grid',
-      textContent: `<h2 style="color: #0f766e; font-weight: 800; margin-bottom: 6px; font-size: 14pt;">📐 ${outcomeCode} - ${outcomeTitle}</h2><p>Ders Notları & Çalışma Alanı</p><p>Buraya klavye ile yazabilir, üst araç çubuğundaki geometrik şekilleri, görselleri ve kalem araçlarını kullanabilirsiniz.</p>`,
+      textContent: '',
       images: [],
       shapes: []
     }
@@ -386,7 +386,7 @@ export function WhiteboardModal({
       id: `page-${Date.now()}`,
       pageNumber: newPageNumber,
       backgroundType: activePage.backgroundType || 'grid',
-      textContent: `<p>Sayfa ${newPageNumber}</p>`,
+      textContent: '',
       images: [],
       shapes: []
     };
@@ -431,7 +431,7 @@ export function WhiteboardModal({
       }
       const updated = pages.map((p, i) =>
         i === activePageIndex
-          ? { ...p, drawingDataUrl: undefined, textContent: '<p></p>', images: [], shapes: [] }
+          ? { ...p, drawingDataUrl: undefined, textContent: '', images: [], shapes: [] }
           : p
       );
       setPages(updated);
