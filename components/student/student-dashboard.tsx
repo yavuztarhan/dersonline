@@ -1,10 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import Link from 'next/link';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import {
+  ClassroomFileRecord,
+  getStoredClassroomFiles
+} from '@/lib/class-files-store';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import {
   GraduationCap,
   Sparkles,
@@ -16,14 +22,133 @@ import {
   CheckCircle2,
   Gamepad2,
   Compass,
-  School
+  School,
+  FolderOpen,
+  Download,
+  Layers,
+  Loader2,
+  Search,
+  Calendar,
+  FileText
 } from 'lucide-react';
 
 export function StudentDashboard() {
   const { currentUser } = useAuth();
-  const { studentPoints, studentBadges } = useApp();
+  const { studentPoints, studentBadges, playSound } = useApp();
+
+  const [files, setFiles] = useState<ClassroomFileRecord[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFiles(getStoredClassroomFiles());
+  }, []);
 
   const student = currentUser && currentUser.role === 'student' ? currentUser : null;
+  const studentClass = student?.classSection || '5-A';
+
+  const relevantFiles = files.filter((f) => {
+    const matchesClass = f.classSection === studentClass || f.classSection === 'Tümü';
+    const matchesSearch =
+      !searchQuery ||
+      f.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      f.outcomeCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      f.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesClass && matchesSearch;
+  });
+
+  const handleDownloadFilePDF = async (file: ClassroomFileRecord) => {
+    try {
+      setDownloadingFileId(file.id);
+      playSound('select');
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      for (let i = 0; i < file.pages.length; i++) {
+        const page = file.pages[i];
+
+        const pageContainer = document.createElement('div');
+        pageContainer.style.width = '794px';
+        pageContainer.style.minHeight = '1123px';
+        pageContainer.style.padding = '40px';
+        pageContainer.style.backgroundColor = page.backgroundType === 'dark' ? '#0f172a' : '#ffffff';
+        pageContainer.style.color = page.backgroundType === 'dark' ? '#f8fafc' : '#0f172a';
+        pageContainer.style.fontFamily = 'Inter, sans-serif';
+        pageContainer.style.boxSizing = 'border-box';
+        pageContainer.style.position = 'relative';
+
+        pageContainer.innerHTML = `
+          <div style="border-bottom: 2px solid #0d9488; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <div style="font-size: 10px; font-weight: 800; color: #0f766e; text-transform: uppercase;">
+                ${file.school || student?.school || 'Edirne Selimiye İmam Hatip Ortaokulu'} • ${file.classSection} Şubesi
+              </div>
+              <div style="font-size: 14px; font-weight: 900; color: #0f172a; margin-top: 2px;">
+                ${file.title}
+              </div>
+              <div style="font-size: 10px; color: #64748b; font-weight: 600;">
+                Kazanım: ${file.outcomeCode} - ${file.outcomeTitle}
+              </div>
+            </div>
+            <div style="text-align: right; font-size: 10px; font-weight: 700; color: #64748b;">
+              Sayfa ${page.pageNumber} / ${file.pageCount}
+            </div>
+          </div>
+
+          <div style="min-height: 850px; font-size: 13px; line-height: 1.6;">
+            ${page.textContent || ''}
+          </div>
+
+          <div style="border-top: 1px solid #cbd5e1; padding-top: 10px; margin-top: 20px; display: flex; justify-content: space-between; font-size: 9.5px; color: #64748b;">
+            <span>Hazırlayan: <strong>${file.authorName}</strong></span>
+            <span>Tarih: ${new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
+          </div>
+        `;
+
+        if (page.drawingDataUrl) {
+          const img = document.createElement('img');
+          img.src = page.drawingDataUrl;
+          img.style.position = 'absolute';
+          img.style.top = '0';
+          img.style.left = '0';
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.pointerEvents = 'none';
+          pageContainer.appendChild(img);
+        }
+
+        document.body.appendChild(pageContainer);
+
+        const canvas = await html2canvas(pageContainer, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: page.backgroundType === 'dark' ? '#0f172a' : '#ffffff'
+        });
+
+        document.body.removeChild(pageContainer);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        if (i > 0) pdf.addPage('a4', 'portrait');
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      }
+
+      const cleanTitle = file.title.trim().replace(/\s+/g, '_');
+      pdf.save(`${file.classSection}_${file.outcomeCode}_${cleanTitle}.pdf`);
+      playSound('success');
+    } catch (err) {
+      console.error('PDF indirme hatası:', err);
+      alert('PDF oluşturulurken bir hata oluştu.');
+    } finally {
+      setDownloadingFileId(null);
+    }
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-300">
@@ -141,10 +266,40 @@ export function StudentDashboard() {
             </Link>
           </div>
 
+          {/* Lesson 3 Card */}
+          <div className="p-6 rounded-3xl bg-white border-2 border-amber-200 hover:border-amber-400 transition-all shadow-sm space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-black border border-amber-200">
+                3. Hafta Kazanımı (MAT.5.3.3)
+              </span>
+              <span className="text-xs font-bold text-amber-600 flex items-center gap-1">
+                <Sparkles className="w-4 h-4" />
+                <span>Açı Laboratuvarı</span>
+              </span>
+            </div>
+
+            <div>
+              <h4 className="text-base font-black text-slate-900">
+                Açı Çeşitleri & İletki ile Ölçüm
+              </h4>
+              <p className="text-xs text-slate-500 mt-1">
+                Açı Dedektifi hikayesi, dijital iletki simülasyonu, Açı Radarı oyunu ve rubrik öz değerlendirmesi.
+              </p>
+            </div>
+
+            <Link
+              href="/lesson/MAT.5.3.3"
+              className="w-full py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
+            >
+              <span>Açı Laboratuvarına Gir</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
         </div>
 
         {/* Gamified Badges Showcase (1 Col) */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 h-fit">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
               <Award className="w-4 h-4 text-amber-500" />
@@ -181,6 +336,98 @@ export function StudentDashboard() {
           </div>
         </div>
 
+      </div>
+
+      {/* Classroom Files & Whiteboard Notes for Students */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="p-2 rounded-xl bg-teal-50 text-teal-700">
+                <FolderOpen className="w-5 h-5" />
+              </span>
+              <h3 className="text-lg font-black text-slate-900">
+                {studentClass} Sınıfımın Ders Notları & Beyaz Tahta Arşivi
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500">
+              Öğretmeninin derste akıllı tahta üzerinde işlediği tüm çizimleri, formülleri ve özetleri buradan inceleyebilir ve PDF olarak cihazına indirebilirsin.
+            </p>
+          </div>
+
+          {/* Mini Search */}
+          <div className="relative w-full sm:w-64">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Not veya konu ara..."
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-800 outline-none focus:border-teal-500 focus:bg-white"
+            />
+          </div>
+        </div>
+
+        {relevantFiles.length === 0 ? (
+          <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-xs text-slate-500 space-y-2">
+            <div className="text-2xl">📝</div>
+            <div className="font-bold text-slate-700">Henüz paylaşılan ders notu bulunamadı</div>
+            <p>Öğretmenin akıllı tahtada ders notu oluşturup kaydettiğinde burada görünecek.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {relevantFiles.map((file) => (
+              <div
+                key={file.id}
+                className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-teal-300 hover:shadow-md transition-all flex flex-col justify-between space-y-3"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 text-[10px] font-black uppercase">
+                      {file.outcomeCode}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                      <Layers className="w-3 h-3" />
+                      <span>{file.pageCount} Sayfa</span>
+                    </span>
+                  </div>
+
+                  <h4 className="text-xs font-black text-slate-900 line-clamp-2">
+                    {file.title}
+                  </h4>
+
+                  <div className="text-[10px] text-slate-500 line-clamp-1">
+                    {file.outcomeTitle}
+                  </div>
+
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+                    <span>{file.authorName}</span>
+                    <span>{new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleDownloadFilePDF(file)}
+                  disabled={downloadingFileId === file.id}
+                  className="w-full py-2 px-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {downloadingFileId === file.id ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>İndiriliyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-3.5 h-3.5" />
+                      <span>PDF Olarak İndir</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
     </div>

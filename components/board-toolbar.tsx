@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
 import { LessonPhaseId, Outcome } from '@/types';
 import { getOutcomeById } from '@/lib/curriculum-data';
+import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
 import {
   PenTool,
   Highlighter,
@@ -20,7 +21,9 @@ import {
   Eye,
   EyeOff,
   Palette,
-  Download
+  Download,
+  FileText,
+  Presentation
 } from 'lucide-react';
 
 interface BoardToolbarProps {
@@ -73,6 +76,7 @@ export function BoardToolbar({
 
   const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
   const [colorMenuOpen, setColorMenuOpen] = useState(false);
+  const [whiteboardOpen, setWhiteboardOpen] = useState(false);
 
   const handleToolSelect = (tool: 'pen' | 'highlighter' | 'eraser') => {
     playSound('click');
@@ -150,6 +154,24 @@ export function BoardToolbar({
           >
             {toolbarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
+
+          {/* Whiteboard Studio Trigger Button (NEW) */}
+          <button
+            onClick={() => {
+              playSound('click');
+              setWhiteboardOpen(true);
+            }}
+            className="p-3 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-600 hover:from-teal-300 hover:to-emerald-500 text-slate-950 font-black shadow-lg shadow-teal-500/20 transition-all hover:scale-105 active:scale-95 cursor-pointer relative group"
+            title="Beyaz Tahta (A4 Defter & Çizim Stüdyosu)"
+          >
+            <Presentation className="w-5 h-5" />
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+            </span>
+          </button>
+
+          <div className="w-6 h-[1px] bg-slate-700 my-0.5" />
 
           {/* Canvas Mode Toggle */}
           <div className="p-1 bg-slate-800 rounded-2xl flex flex-col items-center gap-1.5 w-full">
@@ -320,6 +342,14 @@ export function BoardToolbar({
 
         </div>
       </div>
+
+      {/* Multi-Page A4 Whiteboard Studio Modal */}
+      <WhiteboardModal
+        isOpen={whiteboardOpen}
+        onClose={() => setWhiteboardOpen(false)}
+        outcomeCode={outcomeCode}
+        outcomeTitle={outcomeTitle}
+      />
     </>
   );
 }

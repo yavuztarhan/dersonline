@@ -9,6 +9,14 @@ import { getOutcomeById } from '@/lib/curriculum-data';
 import { LessonPlanModal } from '@/components/lesson-plan-modal';
 import { TeacherRubricAnalytics } from '@/components/teacher/teacher-rubric-analytics';
 import {
+  ClassroomFileRecord,
+  getStoredClassroomFiles,
+  deleteClassroomFile
+} from '@/lib/class-files-store';
+import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import {
   School,
   MapPin,
   Users,
@@ -27,14 +35,33 @@ import {
   Calendar,
   FileText,
   Download,
-  ClipboardCheck
+  ClipboardCheck,
+  FolderOpen,
+  Layers,
+  Presentation,
+  Loader2,
+  Search,
+  Filter,
+  Eye
 } from 'lucide-react';
 
 export function TeacherDashboard() {
   const { currentUser, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
   const [activePlanOutcome, setActivePlanOutcome] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'plans'>('analytics');
+  const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'plans' | 'files'>('analytics');
+
+  // Classroom Files State
+  const [classroomFiles, setClassroomFiles] = useState<ClassroomFileRecord[]>([]);
+  const [dashboardWhiteboardOpen, setDashboardWhiteboardOpen] = useState(false);
+  const [filesSearchTerm, setFilesSearchTerm] = useState('');
+  const [filesClassFilter, setFilesClassFilter] = useState('all');
+  const [filesOutcomeFilter, setFilesOutcomeFilter] = useState('all');
+  const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setClassroomFiles(getStoredClassroomFiles());
+  }, []);
 
   // If current user is teacher
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
@@ -113,6 +140,107 @@ export function TeacherDashboard() {
     if (window.confirm(`${stuName} adlı öğrenciyi silmek istediğinize emin misiniz?`)) {
       deleteStudent(stuId);
       playSound('clear');
+    }
+  };
+
+  const handleDeleteFile = (fileId: string, title: string) => {
+    if (window.confirm(`"${title}" isimli ders notunu silmek istediğinize emin misiniz?`)) {
+      deleteClassroomFile(fileId);
+      setClassroomFiles(getStoredClassroomFiles());
+      playSound('clear');
+    }
+  };
+
+  const handleDownloadFilePDF = async (file: ClassroomFileRecord) => {
+    try {
+      setDownloadingFileId(file.id);
+      playSound('select');
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      for (let i = 0; i < file.pages.length; i++) {
+        const page = file.pages[i];
+
+        const pageContainer = document.createElement('div');
+        pageContainer.style.width = '794px';
+        pageContainer.style.minHeight = '1123px';
+        pageContainer.style.padding = '40px';
+        pageContainer.style.backgroundColor = page.backgroundType === 'dark' ? '#0f172a' : '#ffffff';
+        pageContainer.style.color = page.backgroundType === 'dark' ? '#f8fafc' : '#0f172a';
+        pageContainer.style.fontFamily = 'Inter, sans-serif';
+        pageContainer.style.boxSizing = 'border-box';
+        pageContainer.style.position = 'relative';
+
+        pageContainer.innerHTML = `
+          <div style="border-bottom: 2px solid #0d9488; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <div style="font-size: 10px; font-weight: 800; color: #0f766e; text-transform: uppercase;">
+                ${file.school || teacher?.school || 'Edirne Selimiye İmam Hatip Ortaokulu'} • ${file.classSection} Şubesi
+              </div>
+              <div style="font-size: 14px; font-weight: 900; color: #0f172a; margin-top: 2px;">
+                ${file.title}
+              </div>
+              <div style="font-size: 10px; color: #64748b; font-weight: 600;">
+                Kazanım: ${file.outcomeCode} - ${file.outcomeTitle}
+              </div>
+            </div>
+            <div style="text-align: right; font-size: 10px; font-weight: 700; color: #64748b;">
+              Sayfa ${page.pageNumber} / ${file.pageCount}
+            </div>
+          </div>
+
+          <div style="min-height: 850px; font-size: 13px; line-height: 1.6;">
+            ${page.textContent || ''}
+          </div>
+
+          <div style="border-top: 1px solid #cbd5e1; padding-top: 10px; margin-top: 20px; display: flex; justify-content: space-between; font-size: 9.5px; color: #64748b;">
+            <span>Hazırlayan: <strong>${file.authorName}</strong></span>
+            <span>Tarih: ${new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
+          </div>
+        `;
+
+        if (page.drawingDataUrl) {
+          const img = document.createElement('img');
+          img.src = page.drawingDataUrl;
+          img.style.position = 'absolute';
+          img.style.top = '0';
+          img.style.left = '0';
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.pointerEvents = 'none';
+          pageContainer.appendChild(img);
+        }
+
+        document.body.appendChild(pageContainer);
+
+        const canvas = await html2canvas(pageContainer, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: page.backgroundType === 'dark' ? '#0f172a' : '#ffffff'
+        });
+
+        document.body.removeChild(pageContainer);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        if (i > 0) pdf.addPage('a4', 'portrait');
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      }
+
+      const cleanTitle = file.title.trim().replace(/\s+/g, '_');
+      pdf.save(`${file.classSection}_${file.outcomeCode}_${cleanTitle}.pdf`);
+      playSound('success');
+    } catch (err) {
+      console.error('PDF indirme hatası:', err);
+      alert('PDF oluşturulurken bir hata oluştu.');
+    } finally {
+      setDownloadingFileId(null);
     }
   };
 
@@ -257,6 +385,26 @@ export function TeacherDashboard() {
         >
           <BookOpen className="w-4 h-4 text-teal-600" />
           <span>Ders Planları & Akıllı Tahta Akışları</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
+            setActiveSection('files');
+            setClassroomFiles(getStoredClassroomFiles());
+          }}
+          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            activeSection === 'files'
+              ? 'bg-white text-teal-900 shadow-md border border-teal-200'
+              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+          }`}
+        >
+          <FolderOpen className="w-4 h-4 text-teal-600" />
+          <span>Sınıf Dosyaları & Ders Notları</span>
+          <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase">
+            {classroomFiles.length} Dosya
+          </span>
         </button>
       </div>
 
@@ -656,12 +804,225 @@ export function TeacherDashboard() {
         </div>
       )}
 
+      {/* SECTION 4: CLASSROOM FILES & WHITEBOARD NOTES */}
+      {activeSection === 'files' && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          
+          {/* Header & Quick Action */}
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <FolderOpen className="w-5 h-5 text-teal-600" />
+                <span>Sınıf Dosyaları & Dijital Beyaz Tahta Notları</span>
+              </h3>
+              <p className="text-xs text-slate-500">
+                Akıllı tahtada ders esnasında yazılıp çizilen veya sisteme eklenen A4 ders notları, öğrenme çıktısı ve şube etiketleriyle burada arşivlenir. Öğrenciler de kendi panellerinden bu notları PDF olarak indirebilir.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                playSound('click');
+                setDashboardWhiteboardOpen(true);
+              }}
+              className="px-5 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
+            >
+              <Presentation className="w-4 h-4" />
+              <span>Yeni Beyaz Tahta Notu Oluştur</span>
+            </button>
+          </div>
+
+          {/* Search & Filter Bar */}
+          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs grid grid-cols-1 sm:grid-cols-12 gap-3">
+            <div className="sm:col-span-6 relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={filesSearchTerm}
+                onChange={(e) => setFilesSearchTerm(e.target.value)}
+                placeholder="Ders notu başlığı, etiket veya konu ara..."
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-800 outline-none focus:border-teal-500 focus:bg-white"
+              />
+            </div>
+
+            <div className="sm:col-span-3">
+              <select
+                value={filesOutcomeFilter}
+                onChange={(e) => setFilesOutcomeFilter(e.target.value)}
+                className="w-full py-2.5 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 outline-none focus:border-teal-500"
+              >
+                <option value="all">Tüm Kazanımlar</option>
+                <option value="MAT.5.3.1">MAT.5.3.1 (1. Hafta)</option>
+                <option value="MAT.5.3.2">MAT.5.3.2 (2. Hafta)</option>
+                <option value="MAT.5.3.3">MAT.5.3.3 (3. Hafta)</option>
+                <option value="MAT.5.3.4">MAT.5.3.4 (4. Hafta)</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-3">
+              <select
+                value={filesClassFilter}
+                onChange={(e) => setFilesClassFilter(e.target.value)}
+                className="w-full py-2.5 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 outline-none focus:border-teal-500"
+              >
+                <option value="all">Tüm Şubeler</option>
+                {teacherClasses.map((cls: string) => (
+                  <option key={cls} value={cls}>
+                    {cls} Şubesi
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Files Grid */}
+          {(() => {
+            const filtered = classroomFiles.filter((f) => {
+              const matchOutcome = filesOutcomeFilter === 'all' || f.outcomeCode === filesOutcomeFilter;
+              const matchClass =
+                filesClassFilter === 'all' ||
+                f.classSection === filesClassFilter ||
+                f.classSection === 'Tümü';
+              const matchSearch =
+                !filesSearchTerm ||
+                f.title.toLowerCase().includes(filesSearchTerm.toLowerCase()) ||
+                f.tags.some((t) => t.toLowerCase().includes(filesSearchTerm.toLowerCase())) ||
+                f.authorName.toLowerCase().includes(filesSearchTerm.toLowerCase());
+              return matchOutcome && matchClass && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+              return (
+                <div className="p-12 text-center bg-white rounded-3xl border border-dashed border-slate-300 space-y-3">
+                  <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto text-xl font-bold">
+                    📂
+                  </div>
+                  <div className="text-sm font-black text-slate-800">
+                    Aramanıza Uygun Ders Notu Bulunamadı
+                  </div>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto">
+                    Henüz bu filtreye ait bir beyaz tahta ders notu kaydedilmemiş veya arama kriteriyle eşleşen sonuç yok.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFilesSearchTerm('');
+                      setFilesOutcomeFilter('all');
+                      setFilesClassFilter('all');
+                    }}
+                    className="text-xs font-bold text-teal-600 hover:underline"
+                  >
+                    Filtreleri Temizle
+                  </button>
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.map((file) => (
+                  <div
+                    key={file.id}
+                    className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-800 font-black text-[11px] border border-teal-200">
+                          {file.outcomeCode} • {file.classSection}
+                        </span>
+                        <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                          <Layers className="w-3.5 h-3.5" />
+                          <span>{file.pageCount} Sayfa</span>
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="font-black text-sm text-slate-900 group-hover:text-teal-700 transition-colors line-clamp-2">
+                          {file.title}
+                        </h4>
+                        <div className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                          {file.outcomeTitle}
+                        </div>
+                      </div>
+
+                      {file.tags && file.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {file.tags.map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-semibold"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                        <span className="font-semibold">{file.authorName}</span>
+                        <span>{new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadFilePDF(file)}
+                        disabled={downloadingFileId === file.id}
+                        className="flex-1 py-2.5 px-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs font-black flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        {downloadingFileId === file.id ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
+                            <span>PDF Hazırlanıyor...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Download className="w-3.5 h-3.5 text-teal-600" />
+                            <span>PDF İndir</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteFile(file.id, file.title)}
+                        className="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors cursor-pointer"
+                        title="Notu Sil"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
+        </div>
+      )}
+
       {/* Lesson Plan PDF Modal */}
       {activePlanOutcome && (
         <LessonPlanModal
           isOpen={!!activePlanOutcome}
           onClose={() => setActivePlanOutcome(null)}
           outcome={activePlanOutcome}
+        />
+      )}
+
+      {/* Dashboard Whiteboard Modal */}
+      {dashboardWhiteboardOpen && (
+        <WhiteboardModal
+          isOpen={dashboardWhiteboardOpen}
+          onClose={() => {
+            setDashboardWhiteboardOpen(false);
+            setClassroomFiles(getStoredClassroomFiles());
+          }}
+          outcomeCode="MAT.5.3.4"
+          outcomeTitle="Doğruların Birbirine Göre Durumları & Açı İlişkileri"
+          classSection={selectedClass}
         />
       )}
 
