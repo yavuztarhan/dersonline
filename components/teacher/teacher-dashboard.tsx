@@ -16,6 +16,7 @@ import {
 } from '@/lib/class-files-store';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
+import { StudentOutcomeDetailModal } from '@/components/gamification/student-outcome-detail-modal';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -49,10 +50,11 @@ import {
 } from 'lucide-react';
 
 export function TeacherDashboard() {
-  const { currentUser, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher } = useAuth();
+  const { currentUser, students, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher, awardPointsToStudent } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
   const [activePlanOutcome, setActivePlanOutcome] = useState<any>(null);
   const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'leaderboard' | 'plans' | 'files'>('analytics');
+  const [selectedStudentForDetail, setSelectedStudentForDetail] = useState<any | null>(null);
 
   // Classroom Files State
   const [classroomFiles, setClassroomFiles] = useState<ClassroomFileRecord[]>([]);
@@ -559,10 +561,21 @@ export function TeacherDashboard() {
                       </tr>
                     ) : (
                       classStudents.map((stu) => (
-                        <tr key={stu.id} className="hover:bg-slate-50/80 transition-colors">
+                        <tr
+                          key={stu.id}
+                          onClick={() => {
+                            playSound('select');
+                            setSelectedStudentForDetail(stu);
+                          }}
+                          className="hover:bg-teal-50/50 transition-colors cursor-pointer group"
+                          title="Öğrencinin Detaylı Kazanım ve Rubrik Karnesini Aç"
+                        >
                           <td className="py-3 px-3 font-mono font-black text-slate-900">#{stu.studentNumber}</td>
                           <td className="py-3 px-3">
-                            <div className="font-bold text-slate-900">{stu.name}</div>
+                            <div className="font-bold text-slate-900 group-hover:text-teal-800 transition-colors flex items-center gap-1.5">
+                              <span>{stu.name}</span>
+                              <BarChart2 className="w-3 h-3 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
                             <div className="text-[10px] text-slate-400">{stu.classSection} Şubesi</div>
                           </td>
                           <td className="py-3 px-3 text-[11px] text-slate-600 truncate max-w-[140px]">
@@ -578,14 +591,32 @@ export function TeacherDashboard() {
                             </div>
                           </td>
                           <td className="py-3 px-3 text-right">
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteStudent(stu.id, stu.name)}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                              title="Öğrenciyi Sil"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  playSound('select');
+                                  setSelectedStudentForDetail(stu);
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                                title="Kazanım Karnesini Aç"
+                              >
+                                <BarChart2 className="w-3 h-3 text-teal-600" />
+                                <span>Karne</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteStudent(stu.id, stu.name);
+                                }}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                                title="Öğrenciyi Sil"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -1071,6 +1102,21 @@ export function TeacherDashboard() {
           outcomeCode="MAT.5.3.4"
           outcomeTitle="Doğruların Birbirine Göre Durumları & Açı İlişkileri"
           classSection={selectedClass}
+        />
+      )}
+
+      {/* Student Detailed Outcome & Rubric Comparison Modal */}
+      {selectedStudentForDetail && (
+        <StudentOutcomeDetailModal
+          isOpen={!!selectedStudentForDetail}
+          onClose={() => setSelectedStudentForDetail(null)}
+          student={selectedStudentForDetail}
+          allStudents={students}
+          onAwardXp={(studentId, amount) => {
+            awardPointsToStudent(studentId, amount);
+            playSound('bell');
+          }}
+          isTeacher={true}
         />
       )}
 
