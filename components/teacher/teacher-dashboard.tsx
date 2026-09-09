@@ -255,81 +255,161 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* Tab Navigation Pill Bar */}
-      <div className="flex items-center gap-2 p-1.5 bg-slate-150 bg-slate-200/60 rounded-2xl border border-slate-300/60 overflow-x-auto">
+      {/* Executive Module Switcher (5 Primary Sections) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
+        {/* 1. Öz Değerlendirme Rubrik Raporları */}
         <button
           type="button"
           onClick={() => {
             playSound('select');
             setActiveSection('analytics');
           }}
-          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
             activeSection === 'analytics'
-              ? 'bg-white text-teal-900 shadow-md border border-teal-200'
-              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+              ? 'bg-white shadow-md border-teal-500 ring-2 ring-teal-500/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
           }`}
         >
-          <ClipboardCheck className="w-4 h-4 text-teal-600" />
-          <span>Öz Değerlendirme Rubrik Raporları</span>
-          <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase tracking-wider">
-            Yeni
-          </span>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeSection === 'analytics' ? 'bg-teal-600 text-white shadow-sm' : 'bg-teal-50 text-teal-700'
+              }`}
+            >
+              <ClipboardCheck className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase tracking-wider border border-teal-200">
+              Yeni
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'analytics' ? 'text-teal-950' : 'text-slate-800'}`}>
+              Öz Değerlendirme
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Rubrik Raporları
+            </div>
+          </div>
+          {activeSection === 'analytics' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-teal-600 rounded-full" />
+          )}
         </button>
 
+        {/* 2. Sınıfım & Öğrenci Listesi */}
         <button
           type="button"
           onClick={() => {
             playSound('select');
             setActiveSection('students');
           }}
-          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
             activeSection === 'students'
-              ? 'bg-white text-teal-900 shadow-md border border-teal-200'
-              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+              ? 'bg-white shadow-md border-indigo-500 ring-2 ring-indigo-500/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
           }`}
         >
-          <Users className="w-4 h-4 text-teal-600" />
-          <span>Sınıfım & Öğrenci Listesi</span>
-          <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
-            {classStudents.length} Öğrenci
-          </span>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeSection === 'students' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-indigo-50 text-indigo-700'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold border border-indigo-200">
+              {classStudents.length} Öğrenci
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'students' ? 'text-indigo-950' : 'text-slate-800'}`}>
+              Sınıfım & Öğrenciler
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Öğrenci Yönetimi
+            </div>
+          </div>
+          {activeSection === 'students' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-indigo-600 rounded-full" />
+          )}
         </button>
 
+        {/* 3. Sınıf XP Lider Tablosu */}
         <button
           type="button"
           onClick={() => {
             playSound('select');
             setActiveSection('leaderboard');
           }}
-          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
             activeSection === 'leaderboard'
-              ? 'bg-white text-amber-900 shadow-md border border-amber-300'
-              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+              ? 'bg-white shadow-md border-amber-500 ring-2 ring-amber-500/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
           }`}
         >
-          <Trophy className="w-4 h-4 text-amber-500" />
-          <span>Sınıf XP Lider Tablosu</span>
-          <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black">
-            Liderler
-          </span>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeSection === 'leaderboard' ? 'bg-amber-500 text-white shadow-sm' : 'bg-amber-50 text-amber-600'
+              }`}
+            >
+              <Trophy className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black border border-amber-200">
+              Liderler
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'leaderboard' ? 'text-amber-950' : 'text-slate-800'}`}>
+              Sınıf XP Tablosu
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Sıralama Panosu
+            </div>
+          </div>
+          {activeSection === 'leaderboard' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-amber-500 rounded-full" />
+          )}
         </button>
 
+        {/* 4. Ders Planları & Akıllı Tahta Akışları */}
         <button
           type="button"
           onClick={() => {
             playSound('select');
             setActiveSection('plans');
           }}
-          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
             activeSection === 'plans'
-              ? 'bg-white text-teal-900 shadow-md border border-teal-200'
-              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+              ? 'bg-white shadow-md border-emerald-500 ring-2 ring-emerald-500/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
           }`}
         >
-          <BookOpen className="w-4 h-4 text-teal-600" />
-          <span>Ders Planları & Akıllı Tahta Akışları</span>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeSection === 'plans' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-50 text-emerald-700'
+              }`}
+            >
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+              5. Sınıf
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'plans' ? 'text-emerald-950' : 'text-slate-800'}`}>
+              Ders Planları
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Akıllı Tahta Akışları
+            </div>
+          </div>
+          {activeSection === 'plans' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-emerald-600 rounded-full" />
+          )}
         </button>
 
+        {/* 5. Sınıf Dosyaları & Ders Notları */}
         <button
           type="button"
           onClick={() => {
@@ -337,17 +417,35 @@ export function TeacherDashboard() {
             setActiveSection('files');
             setClassroomFiles(getStoredClassroomFiles());
           }}
-          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
             activeSection === 'files'
-              ? 'bg-white text-teal-900 shadow-md border border-teal-200'
-              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+              ? 'bg-white shadow-md border-teal-500 ring-2 ring-teal-500/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
           }`}
         >
-          <FolderOpen className="w-4 h-4 text-teal-600" />
-          <span>Sınıf Dosyaları & Ders Notları</span>
-          <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase">
-            {classroomFiles.length} Dosya
-          </span>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeSection === 'files' ? 'bg-teal-600 text-white shadow-sm' : 'bg-teal-50 text-teal-700'
+              }`}
+            >
+              <FolderOpen className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase border border-teal-200">
+              {classroomFiles.length} Dosya
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'files' ? 'text-teal-950' : 'text-slate-800'}`}>
+              Sınıf Dosyaları
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Ders Notları & PDF
+            </div>
+          </div>
+          {activeSection === 'files' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-teal-600 rounded-full" />
+          )}
         </button>
       </div>
 
