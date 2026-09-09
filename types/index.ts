@@ -84,7 +84,7 @@ export interface PuzzleItem {
   concept: string; // e.g. "Doğru", "Doğru Parçası", "Işın", "Nokta"
   symbol: string; // e.g. "AB", "[AB]", "[AB", "A"
   definition: string;
-  visualType: 'point' | 'line' | 'segment' | 'ray' | 'angle';
+  visualType: 'point' | 'line' | 'segment' | 'ray' | 'angle' | 'area' | 'rainbow' | 'square' | 'number' | string;
   matched?: boolean;
 }
 
@@ -122,6 +122,10 @@ export interface SelfAssessmentRubric {
   title: string;
   description: string;
   criteria: RubricCriterion[];
+  checklistItems?: Array<{
+    id: string;
+    text: string;
+  }>;
 }
 
 export interface AssessmentPhaseData {

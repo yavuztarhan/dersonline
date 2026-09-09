@@ -74,10 +74,28 @@ export function ActivitySheetView({
   // Active activity sheet file record
   const fileRecord = getActivitySheetForOutcome(outcomeCode, selectedSheetId);
 
+  const isAreaModelsActivity =
+    selectedSheetId.includes('area-models') ||
+    fileRecord?.id?.includes('area-models') ||
+    fileRecord?.title?.includes('Alan Modelleri');
+
+  const isRhythmicJumpsActivity =
+    selectedSheetId.includes('rhythmic-jumps') ||
+    fileRecord?.id?.includes('rhythmic-jumps') ||
+    fileRecord?.title?.includes('Ritmik Sıçrama');
+
+  const isRainbowCipherActivity =
+    selectedSheetId.includes('rainbow-cipher') ||
+    fileRecord?.id?.includes('rainbow-cipher') ||
+    fileRecord?.title?.includes('Gökkuşağı Şifresi');
+
   const isTableHypothesisActivity =
-    selectedSheetId.includes('table-hypothesis') ||
-    fileRecord?.id?.includes('table-hypothesis') ||
-    fileRecord?.title?.includes('Varsayım ve Tablo');
+    !isAreaModelsActivity &&
+    !isRhythmicJumpsActivity &&
+    !isRainbowCipherActivity &&
+    (selectedSheetId.includes('table-hypothesis') ||
+      fileRecord?.id?.includes('table-hypothesis') ||
+      fileRecord?.title?.includes('Varsayım ve Tablo'));
 
   const isIntersectionChallengeActivity =
     !isTableHypothesisActivity &&
@@ -7264,7 +7282,13 @@ export function ActivitySheetView({
             <span>Sıradaki Aşama: Öz Değerlendirme Rubriği</span>
           </div>
           <p className="text-xs text-slate-500">
-            {isTableHypothesisActivity
+            {isAreaModelsActivity
+              ? 'Alan Modelleri ile Çarpan Avcılığı adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi çarpan ve bölen bulma becerilerinizi değerlendiriniz.'
+              : isRhythmicJumpsActivity
+              ? 'Ritmik Sıçrama ve Katlar Çizgisi adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi katlar ve ortak kat hesaplama becerilerinizi değerlendiriniz.'
+              : isRainbowCipherActivity
+              ? 'Çarpan Gökkuşağı Şifresi ve Problem Çözme adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi problem çözme ve akıl yürütme becerilerinizi değerlendiriniz.'
+              : isTableHypothesisActivity
               ? 'Varsayım ve Tablo Temsili (İki ve Üç Doğru Analizi) adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi geometrik çıkarım becerilerinizi değerlendiriniz.'
               : isIntersectionChallengeActivity
               ? 'Kavşak Şifresi ve Çıkarım Meydan Okuması adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı ve ispat becerilerinizi değerlendiriniz.'

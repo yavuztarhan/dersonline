@@ -1509,7 +1509,348 @@ export const CURRICULUM_DATA: Grade[] = [
         icon: 'Calculator',
         color: 'from-blue-500 to-indigo-600',
         description: 'Doğal Sayılar, Kümeler, Tam Sayılar ve Kesirler.',
-        units: []
+        units: [
+          {
+            id: 'unit-6-sayilar',
+            subjectId: 'mat-6',
+            unitNumber: 1,
+            title: '1. Ünite: Sayılar ve Nicelikler (Doğal Sayılarla İşlemler)',
+            description: 'Doğal sayıların çarpanları, katları, asal sayılar, bölünebilme kuralları ve üslü ifadeler.',
+            icon: 'Calculator',
+            themeColor: '#3b82f6',
+            topics: [
+              {
+                id: 'topic-6-carpanlar',
+                unitId: 'unit-6-sayilar',
+                title: 'Bir Doğal Sayının Çarpanları ve Katları',
+                description: 'Çarpan (bölen) kavramı, dikdörtgensel alan modelleri, çarpan gökkuşağı ve ritmik katlar.',
+                outcomes: [
+                  {
+                    id: 'MAT.6.1.1',
+                    code: 'MAT.6.1.1',
+                    title: 'Bir Doğal Sayının Çarpanlarını ve Katlarını Belirleyebilme',
+                    shortTitle: 'Bir Doğal Sayının Çarpanları ve Katları',
+                    description: 'Bir doğal sayının çarpanlarını (bölenlerini) dikdörtgensel alan modelleri, çarpan gökkuşağı ve çarpan ikilileri ile belirler; bir doğal sayının katlarını ritmik sayma ve sayı doğrusu üzerinde modeller, günlük hayat problemlerinde çarpan ve kat ilişkilerini yorumlar.',
+                    gradeId: 'grade-6',
+                    subjectId: 'mat-6',
+                    unitId: 'unit-6-sayilar',
+                    topicId: 'topic-6-carpanlar',
+                    durationMinutes: 40,
+                    pedagogyGuide: {
+                      maarifSDBs: [
+                        'SDB1.2: Öz Düzenleme (Çarpan ikililerini küçükten büyüğe sıralarken ve gökkuşağı modelinde eksik çarpan bırakmamak için sistematik kontrol yapma)',
+                        'SDB2.2: İş Birliği ve Akran Öğrenmesi (Kolileme ve paylaşım senaryolarında farklı çarpan kombinasyonlarını karşılaştırıp tartışma)',
+                        'SDB3.3: Matematiksel Muhakeme ve Problem Çözme (Çarpan ve bölen kavramlarının özdeşliğini, bir sayının katlarının sonsuza gittiğini modelleme)'
+                      ],
+                      processComponents: [
+                        'a) Bir doğal sayının çarpanlarını (bölenlerini) alan modelleri ve çarpan ikilileriyle belirler.',
+                        'b) Sayının çarpanlarını küçükten büyüğe sıralayarak "Çarpan Gökkuşağı" temsilinde eşleştirir.',
+                        'c) Bir doğal sayının pozitif tam sayı katlarını ritmik sayma ve sayı doğrusu üzerinde gösterir.',
+                        'ç) Bir sayının çarpanları ile katları arasındaki çift yönlü ilişkiyi (a · b = c ise a ve b c\'nin çarpanı, c ise a ve b\'nin katıdır) kavrar.',
+                        'd) Günlük hayat durumlarında (kolileme, eşit paylaşım, nöbetleşme, sefer süreleri) çarpan ve kat kavramlarını problem çözmede kullanır.'
+                      ],
+                      learningGoals: [
+                        'Her doğal sayının en küçük pozitif çarpanının 1, en büyük pozitif çarpanının kendisi olduğunu fark eder.',
+                        'Bir doğal sayının "çarpanı" ile "böleni" ifadelerinin aynı anlama geldiğini açıklar.',
+                        'Çarpan gökkuşağı modelinde baştan ve sondan eşit uzaklıktaki sayıların çarpımının daima hedef sayıyı verdiğini keşfeder.',
+                        'Bir doğal sayının katlarının, o sayının sırasıyla 1, 2, 3, 4... gibi pozitif tam sayılarla çarpılmasıyla elde edildiğini ve sonsuza kadar devam ettiğini kavrar.',
+                        'Tam kare sayıların (örn. 36) tek sayıda pozitif çarpana sahip olduğunu (çünkü 6 × 6 eşleşir) fark eder.'
+                      ],
+                      teacherTips: [
+                        'Birim kareler veya karo taşları kullanarak öğrencilere 24 veya 36 birimkarelik farklı dikdörtgenler oluşturmasını isteyiniz (1×24, 2×12, 3×8, 4×6).',
+                        'Gökkuşağı modelini tahtada renkli yaylarla çizdirerek dıştan içe doğru çarpan eşleşmelerini görselleştiriniz.',
+                        'Katlar kavramını sayı doğrusunda kurbağa veya kanguru zıplamasıyla somutlaştırınız.'
+                      ],
+                      misconceptions: [
+                        'Çarpan ile kat kavramlarını birbiriyle karıştırmak (Örn: 12\'nin çarpanı sorulduğunda 24, 36 demek).',
+                        'Bir sayının 1 ve kendisini çarpan olarak saymayı unutmak.',
+                        'Sıfırı (0) bir sayının pozitif çarpanı zannetmek.',
+                        'Bir sayının çarpan sayısının o sayının büyüklüğüyle daima doğru orantılı olduğunu düşünmek (Örn: 24\'ün 8 çarpanı varken 25\'in 3 çarpanı vardır).'
+                      ],
+                      keyQuestions: [
+                        '36 sayısının tüm pozitif çarpanlarını gökkuşağı yöntemiyle nasıl eksiksiz bulabilirsin?',
+                        'Bir sayının çarpanları sınırlı mıdır, katları sınırlı mıdır? Neden?',
+                        'Her 12 dakikada bir kalkan bir yardım aracının ilk 1 saatteki kalkış dakikaları nelerdir?'
+                      ]
+                    },
+                    phases: {
+                      story: {
+                        title: 'Kardeşlik Sofrası ve İyilik Kolisi Seferberliği',
+                        character: {
+                          name: 'Gönüllü Koordinatörü Eren & Fatma Teyze',
+                          role: 'İyilik Hareketi Lojistik Mimarları',
+                          avatar: '📦'
+                        },
+                        scenario: 'Kızılay ve Aşevi gönüllüleri, Ramazan ayı ve afet destek çalışmaları kapsamında "Kardeşlik Sofrası" için gıda kolileri hazırlıyor. Eren ve Fatma Teyze depodaki 36 şişe sızma zeytinyağı ve 48 paket mercimeği hiç artmayacak şekilde eşit sayıda paketleyecekler. Ayrıca yardım servisleri her 12 dakikada bir lojistik merkezinden hareket ediyor.',
+                        realLifeConnection: 'Depolama, lojistik paketleme, koli ebatları belirleme ve periyodik sefer saatleri planlamasında çarpanlar ve katlar matematiği hayati rol oynar.',
+                        reflectionQuestion: '36 şişe zeytinyağını hiç artmayacak şekilde kaçar kaçar kolileyebiliriz? Her 12 dakikada kalkan araçlar ilk 1 saatte hangi dakikalarda hareket eder?',
+                        keyTakeaway: 'Bir sayıyı kalansız bölen sayılara o sayının çarpanları (bölenleri) denir. Sayının kendisiyle başlayıp ritmik artan değerler ise onun katlarıdır.',
+                        pages: [
+                          {
+                            id: 'p6-1',
+                            pageNumber: 1,
+                            chapterTitle: '1. Bölüm: Kolileme Düzeni & Dikdörtgensel Alan Modeli',
+                            conceptTitle: 'Bir Doğal Sayının Çarpanları (Bölenleri)',
+                            conceptBadge: 'Çarpan İkilileri',
+                            symbolicCode: '36 = 1×36 = 2×18 = 3×12 = 4×9 = 6×6',
+                            narrativeText: 'Fatma Teyze depodaki 36 şişe zeytinyağını masaya dizdi. "Eren evladım," dedi, "bu şişeleri öyle kutulayalım ki her kutuda eşit sayıda şişe olsun ve tek bir şişe bile artmasın!" Eren eline kareli defteri aldı ve dikdörtgensel koli tabanları çizmeye başladı.',
+                            characterDialogue: {
+                              speaker: 'Fatma Teyze',
+                              text: 'Bir sayıyı kalansız bölen her pozitif tam sayı, o sayının bir ÇARPANI veya BÖLENİDİR. 36 şişeyi 1\'erli, 2\'şerli, 3\'erli, 4\'erli, 6\'şarlı, 9\'arlı, 12\'şerli, 18\'erli veya 36\'şarlı paketleyebiliriz!'
+                            },
+                            visualScene: {
+                              type: 'intersecting-lines',
+                              caption: '36 birimlik alan: 1×36, 2×18, 3×12, 4×9 ve 6×6 dikdörtgenleri ile modellenir.'
+                            },
+                            interactiveAction: {
+                              prompt: '36 şişenin tüm çarpan ikililerini keşfederek eksiksiz koli planı oluşturun!',
+                              actionLabel: 'Çarpan İkililerini Doğrula 📦',
+                              feedbackRevealed: 'Tebrikler! 36\'nın çarpanları: 1, 2, 3, 4, 6, 9, 12, 18, 36 olmak üzere 9 tanedir.'
+                            },
+                            mathTakeaway: 'Kural 1: Her pozitif doğal sayının en küçük çarpanı 1, en büyük çarpanı ise sayının KENDİSİDİR. Çarpan ile Bölen eş anlamlıdır.'
+                          },
+                          {
+                            id: 'p6-2',
+                            pageNumber: 2,
+                            chapterTitle: '2. Bölüm: Çarpan Gökkuşağı ve Simetri Sırrı',
+                            conceptTitle: 'Gökkuşağı Yayı ile Çarpan Eşleme',
+                            conceptBadge: 'Simetrik Eşleme',
+                            symbolicCode: '1 · 36 = 2 · 18 = 3 · 12 = 4 · 9 = 6 · 6',
+                            narrativeText: 'Eren 36\'nın çarpanlarını küçükten büyüğe tahtaya yazdı: 1, 2, 3, 4, 6, 9, 12, 18, 36. Fatma Teyze renkli tebeşirlerle baştaki ve sondaki sayıları yaylarla birleştirdi.',
+                            characterDialogue: {
+                              speaker: 'Eren',
+                              text: 'Gözlerime inanamıyorum! En dıştaki 1 ile 36\'nın çarpımı 36, bir içteki 2 ile 18\'in çarpımı 36, 3 ile 12\'nin çarpımı 36, 4 ile 9\'un çarpımı 36! Tam ortadaki 6 ise kendisiyle çarpılınca (6×6=36) kalbi oluşturuyor!'
+                            },
+                            visualScene: {
+                              type: 'intersecting-lines',
+                              caption: 'Çarpan Gökkuşağı: Karşılıklı yayların uçlarındaki sayıların çarpımı daima ana sayıyı verir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Gökkuşağı yaylarını birleştirerek eksik kalan çarpan çiftini yakalayın!',
+                              actionLabel: 'Gökkuşağını Tamamla 🌈',
+                              feedbackRevealed: 'Harika gözlem! Çarpan gökkuşağında baştan ve sondan eşit uzaklıktaki çarpanların çarpımı daima sayının kendisini verir.'
+                            },
+                            mathTakeaway: 'Kural 2: Çarpanlar küçükten büyüğe dizildiğinde baştan ve sondan eşleşen sayıların çarpımı sabittir. 36 gibi tam kare sayıların çarpan sayısı TEKTİR.'
+                          },
+                          {
+                            id: 'p6-3',
+                            pageNumber: 3,
+                            chapterTitle: '3. Bölüm: Ritmik Seferler & Sayı Doğrusunda Katlar',
+                            conceptTitle: 'Bir Doğal Sayının Katları',
+                            conceptBadge: 'Ritmik Katlar',
+                            symbolicCode: '12, 24, 36, 48, 60, 72, 84, 96, 108, 120...',
+                            narrativeText: 'Aşevinden çıkan sıcak çorba ve yardım tırları her 12 dakikada bir hareket ediyor. Eren lojistik saatini ayarlarken kalkış dakikalarını sayı doğrusuna işaretledi.',
+                            characterDialogue: {
+                              speaker: 'Fatma Teyze',
+                              text: '12\'nin 1 katı 12. dakika, 2 katı 24. dakika, 3 katı 36. dakika, 4 katı 48. dakika, 5 katı 60. dakika (yani 1. saat)! Bir sayının pozitif tam sayılarla (1, 2, 3...) çarpılmasıyla elde edilen sayılara o sayının KATLARI denir.'
+                            },
+                            visualScene: {
+                              type: 'intersecting-lines',
+                              caption: 'Sayı doğrusunda 12 birimlik eşit sıçramalar 12\'nin katlarını oluşturur.'
+                            },
+                            interactiveAction: {
+                              prompt: '12\'nin 100\'den küçük en büyük katını sayı doğrusunda bulun!',
+                              actionLabel: 'Katı Tespit Et ⏱️',
+                              feedbackRevealed: 'Doğru hesaplama! 12 × 8 = 96, 12\'nin 100\'den küçük en büyük katıdır.'
+                            },
+                            mathTakeaway: 'Kural 3: Bir doğal sayının çarpanları sınırlı sayıda iken, katları sonsuza kadar devam eder. Katlar daima sayının kendisine eşit veya ondan büyüktür.'
+                          },
+                          {
+                            id: 'p6-4',
+                            pageNumber: 4,
+                            chapterTitle: '4. Bölüm: Lojistik Şifresi: Çarpan ve Katın Dansı',
+                            conceptTitle: 'Çarpan ile Kat Arasındaki Çift Yönlü Bağ',
+                            conceptBadge: 'Matematiksel İlişki',
+                            symbolicCode: '6 × 8 = 48  ⟹  6 ve 8 çarpan, 48 ise kattır!',
+                            narrativeText: 'Günün sonunda 48 koli mercimek ve 36 koli zeytinyağı tırlara yüklendi. Eren ve Fatma Teyze defteri kapatırken çarpan ve kat arasındaki muazzam dengeyi özetlediler.',
+                            characterDialogue: {
+                              speaker: 'Eren & Fatma Teyze',
+                              text: 'Eğer 6 ile 8\'i çarptığımızda 48 buluyorsak; 6 ve 8 sayıları 48\'in ÇARPANI (BÖLENİ), 48 sayısı ise hem 6\'nın hem de 8\'in bir KATIDIR!'
+                            },
+                            visualScene: {
+                              type: 'intersecting-lines',
+                              caption: 'Çarpan ve kat madalyonun iki yüzü gibidir: Parçalardan bütüne (çarpan), bütünden ritmik ilerlemeye (kat).'
+                            },
+                            interactiveAction: {
+                              prompt: 'Çarpan ve kat ilişkisini özetleyen formülü onaylayın!',
+                              actionLabel: 'Bağlantıyı Mühürle 🔐',
+                              feedbackRevealed: 'Harika bir öğrenme yolculuğu! Artık bir doğal sayının çarpanlarını ve katlarını eksiksiz belirleyebiliyorsun.'
+                            },
+                            mathTakeaway: 'Sonuç: a · b = c eşitliğinde a ve b sayıları c\'nin çarpanlarıdır; c sayısı ise a ve b sayılarının ortak bir katıdır.'
+                          }
+                        ]
+                      },
+                      lab: {
+                        title: 'Dinamik Çarpan Alanı ve Sayı Işını Laboratuvarı',
+                        toolType: 'experiment-bench',
+                        instructions: 'Birim karelerle dikdörtgensel alanlar oluşturarak çarpan çiftlerini keşfedin, çarpan gökkuşağı yaylarını simüle edin ve sayı doğrusunda ritmik sıçramalarla katları test edin.',
+                        taskGoal: '36 sayısının tüm çarpanlarını firesiz dikdörtgenlerle modelleyin ve 12\'nin ilk 10 katını sayı doğrusunda işaretleyin.',
+                        interactiveTips: [
+                          'Genişlik x Yükseklik çarpımı hedef sayıyı tam vermelidir; artık birim kare kalırsa o sayı çarpan değildir!',
+                          'Gökkuşağı modelinde yayların dıştan içe doğru çarpımını kontrol ediniz.',
+                          'Sayı doğrusunda adım büyüklüğünü değiştirerek farklı sayıların katlarını karşılaştırınız.'
+                        ]
+                      },
+                      puzzle: {
+                        title: 'Çarpanlar ve Katlar Oyun İstasyonu',
+                        instructions: 'Öğrenilen kavramları pekiştirmek için 3 özel oyundan birini seçiniz: Kolileme Fabrikası, Kat Avcısı Kurbağa veya Gökkuşağı Kasası.',
+                        items: [
+                          {
+                            id: 'p1',
+                            concept: 'Çarpan (Bölen)',
+                            symbol: 'a | c',
+                            definition: 'Bir doğal sayıyı kalansız bölebilen pozitif tam sayılardır.',
+                            visualType: 'area'
+                          },
+                          {
+                            id: 'p2',
+                            concept: 'Doğal Sayının Katı',
+                            symbol: 'k · n',
+                            definition: 'Bir doğal sayının pozitif tam sayılarla (1, 2, 3...) çarpılmasıyla elde edilen sayılardır.',
+                            visualType: 'ray'
+                          },
+                          {
+                            id: 'p3',
+                            concept: 'Çarpan Gökkuşağı',
+                            symbol: '1·n = a·b',
+                            definition: 'Çarpanların küçükten büyüğe dizilip dıştan içe yaylarla eşleştirildiği simetrik modeldir.',
+                            visualType: 'rainbow'
+                          },
+                          {
+                            id: 'p4',
+                            concept: 'Tam Kare Sayı Çarpanı',
+                            symbol: 'n = a²',
+                            definition: 'Aynı iki çarpanın çarpımı olan (örn: 6×6=36), pozitif çarpan sayısı tek olan sayılardır.',
+                            visualType: 'square'
+                          }
+                        ]
+                      },
+                      assessment: {
+                        title: 'Değerlendirme Testi: Çarpanlar ve Katlar',
+                        instructions: 'Aşağıdaki 14 soruyu dikkatle okuyunuz. Sorular 8 temel kavrama ve 6 günlük hayat problem çözme sorusundan oluşmaktadır.',
+                        reflectionPrompt: 'Bugün çarpan (bölen) ve kat kavramları hakkında ne öğrendiniz? Çarpan gökkuşağı yöntemi eksik çarpan bulmada size nasıl yardımcı oldu?',
+                        questions: [
+                          {
+                            id: 'q1',
+                            questionText: '24 sayısının pozitif çarpan sayısı kaçtır?',
+                            options: ['6', '7', '8', '10'],
+                            correctOptionIndex: 2,
+                            explanation: '24\'ün çarpanları: 1, 2, 3, 4, 6, 8, 12, 24 olmak üzere toplam 8 tanedir.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q2',
+                            questionText: 'Aşağıdakilerden hangisi 36 sayısının bir çarpanı DEĞİLDİR?',
+                            options: ['4', '8', '9', '12'],
+                            correctOptionIndex: 1,
+                            explanation: '36 sayısı 8\'e bölündüğünde kalan 4 olur (36 = 8×4 + 4), bu yüzden 8 sayısı 36\'nın çarpanı (böleni) değildir.',
+                            bloomLevel: 'Bilgi'
+                          },
+                          {
+                            id: 'q3',
+                            questionText: '15 sayısının 100\'den küçük en büyük katı kaçtır?',
+                            options: ['85', '90', '95', '105'],
+                            correctOptionIndex: 1,
+                            explanation: '15\'in katları: 15, 30, 45, 60, 75, 90, 105... 100\'den küçük en büyük katı 15 × 6 = 90\'dır.',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q4',
+                            questionText: 'Bir doğal sayının tüm çarpanları küçükten büyüğe doğru sıralanarak çarpan gökkuşağı oluşturulmuştur:\n1, 2, 3, A, 6, B, 10, 15, C, 60\nBuna göre A + B + C toplamı kaçtır?',
+                            options: ['39', '42', '44', '49'],
+                            correctOptionIndex: 0,
+                            explanation: 'En dıştaki çarpım 1 × 60 = 60\'tır. Dolayısıyla sayımız 60\'tır. 60 = 3 × C ⟹ C = 20 değil; 60 = 2 × C ⟹ C = 30. 60 = A × 15 ⟹ A = 4. 60 = 6 × B ⟹ B = 5 (ya da 60 = B × 10 ⟹ B = 6 değil, sıralı dizi: 1,2,3,4,5,6,10,12,15,20,30,60). Dizide A=4, B=5, C=30. Toplam = 4 + 5 + 30 = 39\'dur.',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q5',
+                            questionText: '48 sayısının kaç tane ÇİFT doğal sayı çarpanı vardır?',
+                            options: ['6', '7', '8', '10'],
+                            correctOptionIndex: 2,
+                            explanation: '48\'in çarpanları: 1, 2, 3, 4, 6, 8, 12, 16, 24, 48 (10 çarpan). Tek olanlar: 1 ve 3 (2 adet). Çift olanlar: 2, 4, 6, 8, 12, 16, 24, 48 olmak üzere 8 tanedir.',
+                            bloomLevel: 'Analiz'
+                          },
+                          {
+                            id: 'q6',
+                            questionText: 'Bir doğal sayının çarpanları aynı zamanda o sayının neyidir?',
+                            options: ['Katı', 'Böleni', 'Üssü', 'Karesi'],
+                            correctOptionIndex: 1,
+                            explanation: 'Bir sayıyı kalansız bölen sayılara bölen denir ve bir sayının çarpanları ile bölenleri tamamen aynı kümedir.',
+                            bloomLevel: 'Bilgi'
+                          },
+                          {
+                            id: 'q7',
+                            questionText: 'Aşağıdaki sayılardan hangisinin pozitif çarpan sayısı TEK sayıdır?',
+                            options: ['18', '24', '36', '40'],
+                            correctOptionIndex: 2,
+                            explanation: 'Tam kare sayıların çarpan sayısı tektir çünkü ortadaki çarpan kendisiyle eşleşir (6×6=36). 36\'nın çarpanları: 1, 2, 3, 4, 6, 9, 12, 18, 36 (9 adet).',
+                            bloomLevel: 'Kavrama'
+                          },
+                          {
+                            id: 'q8',
+                            questionText: '7 sayısının 50 ile 80 arasındaki katlarının toplamı kaçtır?',
+                            options: ['196', '203', '266', '273'],
+                            correctOptionIndex: 2,
+                            explanation: '7\'nin 50 ile 80 arasındaki katları: 56, 63, 70, 77\'dir. Toplam = 56 + 63 + 70 + 77 = 266\'dır.',
+                            bloomLevel: 'Uygulama'
+                          },
+                          {
+                            id: 'q9',
+                            questionText: 'Bir sınıftaki 32 öğrenci beden eğitimi dersinde eşit sayıda sıralara dizilecektir. Sıra sayısı 1\'den fazla ve her sıradaki öğrenci sayısı 1\'den fazla olmak üzere kaç farklı sıra düzeni oluşturulabilir?',
+                            options: ['3', '4', '5', '6'],
+                            correctOptionIndex: 1,
+                            explanation: '32\'nin çarpan ikilileri: 1×32, 2×16, 4×8, 8×4, 16×2, 32×1. 1\'den fazla şartı olduğundan (1×32 ve 32×1 hariç): 2×16, 4×8, 8×4 ve 16×2 olmak üzere 4 farklı düzen kurulabilir.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q10',
+                            questionText: 'Bir aşevinde 45 kg pirinç hiç artmayacak şekilde eşit büyüklükte torbalara doldurulacaktır. Torbaların her biri 3 kg\'dan ağır ve 15 kg\'dan hafif olacağına göre, bir torbanın ağırlığı kaç farklı tam sayı değeri alabilir?',
+                            options: ['1', '2', '3', '4'],
+                            correctOptionIndex: 1,
+                            explanation: '45\'in bölenleri: 1, 3, 5, 9, 15, 45. 3 kg\'dan ağır ve 15 kg\'dan hafif olan bölenler: 5 kg ve 9 kg\'dır (2 farklı değer).',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q11',
+                            questionText: 'İki kardeşten Ali 6 günde bir, Can ise 8 günde bir dedelerini ziyaret etmektedir. İkisi birlikte ilk ziyareti yaptıktan sonraki 50 gün içinde kaç kez daha aynı gün ziyarete giderler?',
+                            options: ['1', '2', '3', '4'],
+                            correctOptionIndex: 1,
+                            explanation: '6 ve 8\'in ortak katları: 24, 48, 72... 50 gün içinde 24. gün ve 48. gün olmak üzere 2 kez daha aynı gün birlikte giderler.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q12',
+                            questionText: 'Kenar uzunlukları santimetre cinsinden birer doğal sayı ve alanı 40 cm² olan bir dikdörtgenin çevre uzunluğu EN AZ kaç cm olabilir?',
+                            options: ['26', '28', '44', '82'],
+                            correctOptionIndex: 0,
+                            explanation: 'Alanı 40 olan dikdörtgenin kenar çarpanları: 1×40 (Çevre=82), 2×20 (Çevre=44), 4×10 (Çevre=28), 5×8 (Çevre=2×(5+8)=26 cm). Çevrenin en az olması için kenarlar birbirine en yakın (5 ve 8) seçilir, Çevre = 26 cm.',
+                            bloomLevel: 'Problem Çözme / Muhakeme'
+                          },
+                          {
+                            id: 'q13',
+                            questionText: 'Bir yardım deposundaki gıda kolileri 12\'şerli ve 15\'erli sayıldığında hiç koli artmamaktadır. Kolilerin sayısının 100 ile 200 arasında olduğu bilindiğine göre, depoda kaç koli olabilir?',
+                            options: ['120', '150', '160', '210'],
+                            correctOptionIndex: 0,
+                            explanation: '12 ve 15\'in ortak katları 60\'ın katlarıdır: 60, 120, 180, 240... 100 ile 200 arasında 120 ve 180 vardır. Seçeneklerde 120 yer almaktadır.',
+                            bloomLevel: 'Problem Çözme'
+                          },
+                          {
+                            id: 'q14',
+                            questionText: 'Bir belediye otobüsü ilk durağından her 18 dakikada bir hareket etmektedir. Sabah saat 07:00\'de ilk seferine başlayan bu otobüs, saat 09:30\'a kadar toplam kaç sefer yapmış olur? (Saat 07:00\'deki ilk sefer dahildir)',
+                            options: ['8', '9', '10', '11'],
+                            correctOptionIndex: 1,
+                            explanation: '07:00 ile 09:30 arası toplam süre 2 saat 30 dakika = 150 dakikadır. Sefer dakikaları: 0. dk (1.), 18. dk (2.), 36. dk (3.), 54. dk (4.), 72. dk (5.), 90. dk (6.), 108. dk (7.), 126. dk (8.), 144. dk (9.). Toplam 9 sefer yapılmıştır.',
+                            bloomLevel: 'Problem Çözme'
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   },

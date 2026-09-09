@@ -1,6 +1,66 @@
 import { SelfAssessmentRubric } from '@/types';
 
 export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
+  'MAT.6.1.1': {
+    id: 'rubric-mat-6-1-1',
+    outcomeId: 'MAT.6.1.1',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Bir Doğal Sayının Çarpanları ve Katları',
+    description:
+      'Karşılaştığınız problem durumlarında bir doğal sayının çarpan ve katlarına yönelik muhakeme yapabilme, alan ve gökkuşağı modellerini kullanma becerilerinizi dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Çarpan Kavramını Anlama (Bölen İlişkisi & Kalansız Bölme)',
+        category: 'Kavramsal Anlama & Alan Modeli',
+        levelDescriptions: {
+          1: 'Sayının çarpanlarını bulurken eksik bırakır, kalansız bölme ilişkisini kuramaz.',
+          2: 'Küçük sayıların çarpanlarını bulur, büyük sayılarda bazı çarpanları atlar.',
+          3: 'Bir doğal sayının tüm pozitif çarpanlarını sistematik (alan/gökkuşağı) olarak bulur.',
+          4: 'Çarpan sayısı ile sayının geometrik modelleri arasında bağıntı kurar ve geneller.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Kat Kavramını Uygulama (Ritmik Sayma & Aralık Sınırlamaları)',
+        category: 'Matematiksel Uygulama & Örüntü',
+        levelDescriptions: {
+          1: 'Bir sayının katlarını ritmik saymada zorlanır, işlem hatası yapar.',
+          2: 'Sayının ardışık katlarını yazar fakat aralık sınırlamalarında (örn: 50 ile 100 arası) zorlanır.',
+          3: 'İstenen aralıktaki katları eksiksiz listeler ve kat ilişkisini doğru yorumlar.',
+          4: 'Farklı iki sayının kat örüntülerini karşılaştırarak ortak kat mantığını açıklar.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Problem Durumunda Muhakeme (İyilik Kolisi & Paylaştırma)',
+        category: 'Problem Çözme & Karar Verme',
+        levelDescriptions: {
+          1: 'Verilen bağlamda çarpan mı kat mı kullanacağına karar veremez.',
+          2: 'Öğretmen rehberliğinde çarpan/kat ilişkisini probleme uygular.',
+          3: 'Günlük hayat problemlerinde çarpan ve katları bağımsız olarak doğru modeller.',
+          4: 'Problemi birden fazla stratejiyle çözer, gerekçelendirir ve yeni problem kurgular.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Matematiksel Temsil ve Dil (Alan Modeli, Gökkuşağı, Sayı Doğrusu)',
+        category: 'Temsil & Matematiksel Dil',
+        levelDescriptions: {
+          1: 'Çarpanları rastgele yazar, gösterim modellerini kullanamaz.',
+          2: 'Sadece liste yöntemini kullanır, modelleme araçlarını sınırlı kullanır.',
+          3: 'Alan modeli, gökkuşağı ve sayı doğrusu temsillerini amacına uygun kullanır.',
+          4: 'Temsiller arası geçiş yapar ve çıkarımlarını matematiksel önermelerle ifade eder.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Bir doğal sayının çarpanı ile böleninin aynı anlama geldiğini biliyorum.' },
+      { id: 'chk2', text: 'Dikdörtgensel alan modelini kullanarak bir sayının tüm çarpanlarını eksiksiz bulabiliyorum.' },
+      { id: 'chk3', text: 'Gökkuşağı yönteminde uçlardaki sayıların çarpımının ana sayıyı verdiğini fark ettim.' },
+      { id: 'chk4', text: 'Bir sayının katlarını belirli bir sınıra kadar ritmik ve hatasız listeleyebiliyorum.' },
+      { id: 'chk5', text: 'Günlük hayatta paylaştırma ve paketleme problemlerinde çarpanlardan yararlanabiliyorum.' }
+    ]
+  },
   'MAT.5.3.4': {
     id: 'rubric-mat-5-3-4',
     outcomeId: 'MAT.5.3.4',

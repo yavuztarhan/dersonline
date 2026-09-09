@@ -5,6 +5,7 @@ import { LabPhaseData } from '@/types';
 import { useApp } from '@/lib/store';
 import { ExperimentBench } from '@/components/lesson-phases/experiment-bench';
 import { LinesAnglesBench } from '@/components/lesson-phases/lines-angles-bench';
+import { FactorsMultiplesBench } from '@/components/lesson-phases/factors-multiples-bench';
 import confetti from 'canvas-confetti';
 import {
   Shapes,
@@ -92,16 +93,26 @@ function getAngleType(deg: number): { type: 'sifir' | 'dar' | 'dik' | 'genis' | 
 export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const { playSound, unlockBadge, addPoints, selectedOutcome } = useApp();
 
+  const isFactorsMultiplesOutcome =
+    selectedOutcome?.id === 'MAT.6.1.1' ||
+    selectedOutcome?.code?.includes('6.1.1') ||
+    data.title.toLowerCase().includes('çarpan') ||
+    data.title.toLowerCase().includes('katlar');
+
   const isLinesAnglesOutcome =
-    selectedOutcome?.id === 'MAT.5.3.4' ||
-    selectedOutcome?.code?.includes('5.3.4') ||
-    data.title.toLowerCase().includes('doğru ve açı') ||
-    data.title.toLowerCase().includes('kesişen');
+    !isFactorsMultiplesOutcome &&
+    (selectedOutcome?.id === 'MAT.5.3.4' ||
+      selectedOutcome?.code?.includes('5.3.4') ||
+      data.title.toLowerCase().includes('doğru ve açı') ||
+      data.title.toLowerCase().includes('kesişen'));
 
   const isExperimentBench =
-    !isLinesAnglesOutcome && (data.toolType === 'experiment-bench' || selectedOutcome?.id === 'MAT.5.3.2');
+    !isFactorsMultiplesOutcome &&
+    !isLinesAnglesOutcome &&
+    (data.toolType === 'experiment-bench' || selectedOutcome?.id === 'MAT.5.3.2');
 
   const isAngleTopic =
+    !isFactorsMultiplesOutcome &&
     !isLinesAnglesOutcome &&
     (selectedOutcome?.id === 'MAT.5.3.3' ||
       selectedOutcome?.code?.includes('5.3.3') ||
@@ -843,6 +854,50 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       </g>
     );
   };
+
+  // ==========================================
+  // 0. OUTCOME: MAT.6.1.1 (FACTORS & MULTIPLES BENCH)
+  // ==========================================
+  if (isFactorsMultiplesOutcome) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold uppercase tracking-wider mb-2">
+              <FlaskConical className="w-3.5 h-3.5 text-teal-600" />
+              <span>2. Aşama: Dinamik Çarpan Alanı ve Sayı Işını Laboratuvarı (MAT.6.1.1)</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-900">{data.title}</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Dikdörtgensel alan modelleme masası, çarpan gökkuşağı simülatörü ve zıplayan sayı doğrusu ile çarpan ve katları keşfedin!
+            </p>
+          </div>
+        </div>
+
+        {/* Factors & Multiples Interactive Lab Bench */}
+        <FactorsMultiplesBench />
+
+        {/* Jump to Phase 3 */}
+        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-slate-600 font-bold">
+            <CheckCircle2 className="w-4 h-4 text-teal-600" />
+            <span>Atölye çalışmalarını tamamladıktan sonra 3. Aşama Oyunlar Arenası&apos;na geçebilirsiniz.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              playSound('select');
+              onNextPhase();
+            }}
+            className="px-6 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+          >
+            <span>3. Aşama: Oyunlar Arenası</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // 0. OUTCOME: MAT.5.3.4 (LINES & ANGLES EXPERIMENT BENCH)

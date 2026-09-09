@@ -98,6 +98,7 @@ export function SelfAssessmentRubricComponent({
   const maxPossibleScore = totalCriteriaCount * 4;
 
   const [ratings, setRatings] = useState<Record<string, number>>({});
+  const [checklistAnswers, setChecklistAnswers] = useState<Record<string, 'evet' | 'kismen' | 'hayir'>>({});
   const [studentNote, setStudentNote] = useState('');
   const [isSaved, setIsSaved] = useState(false);
 
@@ -372,6 +373,80 @@ export function SelfAssessmentRubricComponent({
           );
         })}
       </div>
+
+      {/* 2.5. Student Öz Değerlendirme Maddeleri (Evet / Kısmen / Hayır) */}
+      {rubric.checklistItems && rubric.checklistItems.length > 0 && (
+        <div className="bg-white rounded-3xl p-6 border-2 border-teal-500/30 shadow-xs space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-black text-sm">
+                ✓
+              </span>
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-teal-700">
+                  Öğrenci Öz Denetim Listesi
+                </span>
+                <h3 className="text-base font-black text-slate-900">
+                  Öğrenci Öz Değerlendirme Maddeleri (Evet / Kısmen / Hayır)
+                </h3>
+              </div>
+            </div>
+            <span className="text-xs text-teal-700 font-bold bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+              5 Temel Hedef
+            </span>
+          </div>
+
+          <div className="space-y-2.5">
+            {rubric.checklistItems.map((chk, index) => {
+              const currentAns = checklistAnswers[chk.id];
+              return (
+                <div
+                  key={chk.id}
+                  className={`p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    currentAns
+                      ? 'bg-slate-50 border-teal-300'
+                      : 'bg-white border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-black flex items-center justify-center shrink-0">
+                      {index + 1}
+                    </span>
+                    <span className="text-xs font-semibold text-slate-800 leading-relaxed">
+                      {chk.text}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-center">
+                    {[
+                      { val: 'evet', label: 'Evet (3P)', color: 'bg-emerald-600 text-white' },
+                      { val: 'kismen', label: 'Kısmen (2P)', color: 'bg-amber-500 text-white' },
+                      { val: 'hayir', label: 'Hayır (1P)', color: 'bg-rose-500 text-white' }
+                    ].map((btn) => (
+                      <button
+                        key={btn.val}
+                        type="button"
+                        disabled={isSaved}
+                        onClick={() => {
+                          playSound('select');
+                          setChecklistAnswers((prev) => ({ ...prev, [chk.id]: btn.val as any }));
+                        }}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                          currentAns === btn.val
+                            ? `${btn.color} shadow-sm scale-102`
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
+                        }`}
+                      >
+                        {btn.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* 3. Student Personal Reflection & Learning Goal Note */}
       <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4">

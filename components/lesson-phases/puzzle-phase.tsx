@@ -10,6 +10,9 @@ import { AngleRadarGame } from '@/components/lesson-phases/angle-radar-game';
 import { ConstructionDeductionGame } from '@/components/lesson-phases/construction-deduction-game';
 import { JunctionArchitectGame } from '@/components/lesson-phases/junction-architect-game';
 import { MemoryCardsGame } from '@/components/lesson-phases/memory-cards-game';
+import { KolilemeFactoryGame } from '@/components/lesson-phases/kolileme-factory-game';
+import { FrogJumpGame } from '@/components/lesson-phases/frog-jump-game';
+import { RainbowVaultGame } from '@/components/lesson-phases/rainbow-vault-game';
 import {
   Puzzle,
   Sparkles,
@@ -26,7 +29,9 @@ import {
   Play,
   Crosshair,
   Compass,
-  Layers
+  Layers,
+  Package,
+  Activity
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -43,7 +48,17 @@ interface MatchCard {
   matched: boolean;
 }
 
-export type PuzzleGameId = 'memorycards' | 'junctiongame' | 'radargame' | 'constructiongame' | 'matching' | 'wordsearch' | 'truefalse';
+export type PuzzleGameId = 
+  | 'kolilemefactory'
+  | 'frogjump'
+  | 'rainbowvault'
+  | 'memorycards'
+  | 'junctiongame'
+  | 'radargame'
+  | 'constructiongame'
+  | 'matching'
+  | 'wordsearch'
+  | 'truefalse';
 
 export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   const { playSound, unlockBadge, addPoints, role, selectedOutcome } = useApp();
@@ -157,16 +172,25 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     }
   };
 
+  const isFactorsMultiplesTopic =
+    selectedOutcome?.id === 'MAT.6.1.1' ||
+    selectedOutcome?.code?.includes('6.1.1') ||
+    data.title?.toLowerCase().includes('çarpan') ||
+    data.title?.toLowerCase().includes('katlar');
+
   const isLinesAnglesTopic =
-    selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4');
+    !isFactorsMultiplesTopic &&
+    (selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4'));
 
   const isAngleTopic =
+    !isFactorsMultiplesTopic &&
     !isLinesAnglesTopic &&
     (data.title?.toLowerCase().includes('iletki') ||
       selectedOutcome?.id === 'MAT.5.3.3' ||
       (data.title?.toLowerCase().includes('açı') && !data.title?.toLowerCase().includes('doğru')));
 
   const isConstructionTopic =
+    !isFactorsMultiplesTopic &&
     !isLinesAnglesTopic &&
     !isAngleTopic &&
     (selectedOutcome?.id === 'MAT.5.3.2' ||
@@ -187,6 +211,41 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     gradient: string;
     reward: string;
   }> = [];
+
+  if (isFactorsMultiplesTopic) {
+    baseGamesList.push(
+      {
+        id: 'kolilemefactory',
+        title: 'Kolileme Fabrikası: Çarpan Eşleme',
+        tagline: 'Arcade Çarpan Eşleme',
+        description: 'Banttan gelen kolilerin ürün sayılarını bölen doğru çarpan paketlerini seç, kutuları eksiksiz ve firesiz doldur!',
+        icon: <Package className="w-8 h-8" />,
+        badge: '4 Seviye • Combo & Süre',
+        gradient: 'from-amber-500 via-orange-600 to-amber-800',
+        reward: '+120 XP & Usta Kolici Rozeti'
+      },
+      {
+        id: 'frogjump',
+        title: 'Kat Avcısı Kurbağa: Sayı Doğrusu',
+        tagline: 'Ritmik Sıçrama Parkuru',
+        description: 'Kurbağayı hedef sayının tam katlarına zıplat! Tuzak nilüfer yapraklarından kaç, çarpan sineklerini yakala.',
+        icon: <Activity className="w-8 h-8" />,
+        badge: '4 Seviye • 3 Can',
+        gradient: 'from-emerald-500 via-teal-600 to-cyan-800',
+        reward: '+150 XP & Nilüfer Şampiyonu'
+      },
+      {
+        id: 'rainbowvault',
+        title: 'Gökkuşağı Kasası: Eksik Çarpan',
+        tagline: 'Gökkuşağı Yayı Şifresi',
+        description: 'Gökkuşağı yayındaki simetrik çarpan eşlerini bul, kayıp çarpanı tuşlayarak çelik kasa kilidini aç!',
+        icon: <Sparkles className="w-8 h-8" />,
+        badge: '4 Kasa • Şifre Çözücü',
+        gradient: 'from-purple-600 via-indigo-600 to-pink-600',
+        reward: '+140 XP & Çarpan Dedektifi'
+      }
+    );
+  }
 
   if (isLinesAnglesTopic) {
     baseGamesList.push({
@@ -411,6 +470,27 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+
+          {/* FEATURED GAME: KOLİLEME FABRİKASI (ÇARPAN EŞLEME ARCADE) */}
+          {selectedGameId === 'kolilemefactory' && (
+            <div className="animate-in fade-in duration-200">
+              <KolilemeFactoryGame onBackToMenu={() => setSelectedGameId(null)} />
+            </div>
+          )}
+
+          {/* FEATURED GAME: KAT AVCISI KURBAĞA (SAYI DOĞRUSU PARKURU) */}
+          {selectedGameId === 'frogjump' && (
+            <div className="animate-in fade-in duration-200">
+              <FrogJumpGame onBackToMenu={() => setSelectedGameId(null)} />
+            </div>
+          )}
+
+          {/* FEATURED GAME: GÖKKUŞAĞI KASASI (EKSİK ÇARPAN BULMACA) */}
+          {selectedGameId === 'rainbowvault' && (
+            <div className="animate-in fade-in duration-200">
+              <RainbowVaultGame onBackToMenu={() => setSelectedGameId(null)} />
+            </div>
+          )}
 
           {/* FEATURED GAME: JUNCTION ARCHITECT (KAVŞAK MİMARI) */}
           {selectedGameId === 'junctiongame' && (

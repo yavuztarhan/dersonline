@@ -2402,6 +2402,388 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-6-1-1-area-models',
+    title: 'Etkinlik 1: "Alan Modelleri ile Çarpan Avcılığı" (MAT.6.1.1)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.1',
+    outcomeTitle: 'Bir Doğal Sayının Çarpanlarını ve Katlarını Belirleyebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve İyilik Lojistiği Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 290,
+    tags: ['Etkinlik Kağıdı', 'Alan Modelleri', 'Çarpan İkilileri', 'Bölenler', 'MAT.6.1.1', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #ea580c; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #fff7ed, #ffedd5); padding: 10px; border-radius: 12px; border: 1px solid #fed7aa;">
+    <div style="display: inline-block; background: #ea580c; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      📦 ALAN MODELLERİ &amp; ÇARPAN İKİLİLERİ (6. SINIF - MAT.6.1.1)
+    </div>
+    <h2 style="color: #9a3412; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      ALAN MODELLERİ İLE ÇARPAN AVCILIĞI
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Birim karelerle firesiz dikdörtgenler oluşturarak çarpan çiftlerini keşfediniz.
+    </p>
+  </div>
+
+  <!-- A BÖLÜMÜ: 24 BİRİMKARELİK KOLİ TABANLARI -->
+  <div style="border: 2px solid #ea580c; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ffedd5; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #c2410c; font-size: 11.5px;">
+        📌 A) 24 BİRİMKARELİK ALAN MODELLERİ VE ÇARPAN İKİLİLERİ
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #fff7ed; color: #ea580c; padding: 1px 5px; border-radius: 4px; border: 1px solid #fed7aa;">
+        40 Puan
+      </span>
+    </div>
+    <p style="font-size: 10.5px; color: #334155; line-height: 1.35; margin: 0 0 8px 0;">
+      24 adet özdeş yardım kutusu, tabanı dikdörtgen olacak şekilde firesiz dizilecektir. Oluşturulabilecek tüm farklı dikdörtgen boyutlarını ve çarpan ikililerini yazınız:
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 10.5px;">
+      <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px;">
+        <span style="font-weight: 800; color: #9a3412;">1. Dikdörtgen:</span> 1 sıra x 24 kutu ⟹ <strong>1 × 24 = 24</strong>
+        <div style="color: #64748b; font-size: 9.5px; margin-top: 2px;">Çarpan Çifti: ( 1 , 24 )</div>
+      </div>
+      <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px;">
+        <span style="font-weight: 800; color: #9a3412;">2. Dikdörtgen:</span> 2 sıra x ..... kutu ⟹ <strong>2 × ..... = 24</strong>
+        <div style="color: #64748b; font-size: 9.5px; margin-top: 2px;">Çarpan Çifti: ( 2 , ..... )</div>
+      </div>
+      <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px;">
+        <span style="font-weight: 800; color: #9a3412;">3. Dikdörtgen:</span> 3 sıra x ..... kutu ⟹ <strong>3 × ..... = 24</strong>
+        <div style="color: #64748b; font-size: 9.5px; margin-top: 2px;">Çarpan Çifti: ( 3 , ..... )</div>
+      </div>
+      <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px;">
+        <span style="font-weight: 800; color: #9a3412;">4. Dikdörtgen:</span> 4 sıra x ..... kutu ⟹ <strong>4 × ..... = 24</strong>
+        <div style="color: #64748b; font-size: 9.5px; margin-top: 2px;">Çarpan Çifti: ( 4 , ..... )</div>
+      </div>
+    </div>
+    <div style="margin-top: 8px; padding: 6px 10px; background: #f8fafc; border-radius: 6px; font-size: 10px; font-weight: 700; color: #334155;">
+      Sonuç: 24 sayısının tüm pozitif çarpanları (küçükten büyüğe): <strong>{ ............................................................................ }</strong> (Toplam: ..... adet)
+    </div>
+  </div>
+
+  <!-- B BÖLÜMÜ: FİRELİ ALAN DEDEKTİFİ -->
+  <div style="border: 2px solid #dc2626; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #fee2e2; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #b91c1c; font-size: 11.5px;">
+        🔍 B) FİRELİ ALAN DEDEKTİFİ: NEDEN ÇARPAN DEĞİLDİR?
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #fef2f2; color: #dc2626; padding: 1px 5px; border-radius: 4px; border: 1px solid #fecaca;">
+        30 Puan
+      </span>
+    </div>
+    <p style="font-size: 10.5px; color: #334155; line-height: 1.35; margin: 0 0 6px 0;">
+      24 kutuyu 5'erli veya 7'şerli sıralar halinde dizmeye çalıştığımızda ne olduğunu inceleyiniz:
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 10px;">
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 8px;">
+        <strong style="color: #991b1b;">5'erli Dizilim Denemesi:</strong>
+        <div style="margin-top: 4px; color: #475569;">
+          24 ÷ 5 = ..... (Kalan: .....)<br/>
+          Tam dikdörtgen oluşur mu? <strong>[ Evet / Hayır ]</strong><br/>
+          Gerekçe: 5 sayısı 24'ü kalansız .................................... için çarpanı ....................................
+        </div>
+      </div>
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 8px;">
+        <strong style="color: #991b1b;">7'şerli Dizilim Denemesi:</strong>
+        <div style="margin-top: 4px; color: #475569;">
+          24 ÷ 7 = ..... (Kalan: .....)<br/>
+          Tam dikdörtgen oluşur mu? <strong>[ Evet / Hayır ]</strong><br/>
+          Gerekçe: 7 sayısı 24'ü kalansız .................................... için çarpanı ....................................
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C BÖLÜMÜ: 36 VE 48 SAYILARININ ÇARPAN KARŞILAŞTIRMASI -->
+  <div style="border: 2px solid #0d9488; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ccfbf1; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #0f766e; font-size: 11.5px;">
+        ⚖️ C) 36 VE 48 SAYILARININ ÇARPAN VE ALAN KARŞILAŞTIRMASI
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #f0fdf4; color: #0d9488; padding: 1px 5px; border-radius: 4px; border: 1px solid #99f6e4;">
+        30 Puan
+      </span>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: center;">
+      <thead>
+        <tr style="background: #f0fdfa; color: #115e59; font-weight: 900; border-bottom: 2px solid #99f6e4;">
+          <th style="padding: 6px; text-align: left; width: 25%;">Doğal Sayı</th>
+          <th style="padding: 6px; text-align: left; width: 45%;">Tüm Pozitif Çarpanları</th>
+          <th style="padding: 6px; width: 15%;">Çarpan Sayısı</th>
+          <th style="padding: 6px; width: 15%;">Tek mi Çift mi?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 6px; text-align: left; font-weight: bold; color: #0f766e;">36 (Zeytinyağı)</td>
+          <td style="padding: 6px; text-align: left;">1, 2, 3, 4, 6, 9, 12, 18, 36</td>
+          <td style="padding: 6px; font-weight: bold;">( ..... )</td>
+          <td style="padding: 6px; font-weight: bold; color: #ea580c;">( ..... )</td>
+        </tr>
+        <tr style="background: #fafafa;">
+          <td style="padding: 6px; text-align: left; font-weight: bold; color: #0f766e;">48 (Mercimek)</td>
+          <td style="padding: 6px; text-align: left;">1, 2, 3, 4, 6, 8, 12, 16, 24, 48</td>
+          <td style="padding: 6px; font-weight: bold;">( ..... )</td>
+          <td style="padding: 6px; font-weight: bold; color: #0284c7;">( ..... )</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 6px; font-size: 9.5px; color: #475569; font-style: italic;">
+      * Neden 36'nın çarpan sayısı tektir? Açıklayınız: ..........................................................................................................................
+    </div>
+  </div>
+
+  <!-- Alt Bilgi / Puanlama -->
+  <div style="padding: 8px 12px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; font-size: 10px; color: #9a3412; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Alan Modelleri (40P) + Fire Dedektifi (30P) + Tablo Analizi (30P) = 100 Puan. (SDB1.2 / E3.3 Maarif Modeli)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-6-1-1-rhythmic-jumps',
+    title: 'Etkinlik 2: "Ritmik Sıçrama ve Katlar Çizgisi" (MAT.6.1.1)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.1',
+    outcomeTitle: 'Bir Doğal Sayının Çarpanlarını ve Katlarını Belirleyebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve İyilik Lojistiği Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 285,
+    tags: ['Etkinlik Kağıdı', 'Katlar', 'Sayı Doğrusu', 'Ritmik Sayma', 'MAT.6.1.1', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); padding: 10px; border-radius: 12px; border: 1px solid #99f6e4;">
+    <div style="display: inline-block; background: #0d9488; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🐸 RİTMİK SIÇRAMA &amp; KATLAR (6. SINIF - MAT.6.1.1)
+    </div>
+    <h2 style="color: #115e59; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      RİTMİK SIÇRAMA VE KATLAR ÇİZGİSİ
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Sayı doğrusu üzerinde ritmik adımlarla ilerleyerek katlar kümesini ve ortak durakları belirleyiniz.
+    </p>
+  </div>
+
+  <!-- A BÖLÜMÜ: 12'NİN VE 8'İN KATLARI -->
+  <div style="border: 2px solid #0d9488; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ccfbf1; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #0f766e; font-size: 11.5px;">
+        📌 A) SAYI DOĞRUSUNDA 12'NİN VE 8'İN İLK 10 KATI
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #f0fdfa; color: #0d9488; padding: 1px 5px; border-radius: 4px; border: 1px solid #99f6e4;">
+        40 Puan
+      </span>
+    </div>
+    <p style="font-size: 10.5px; color: #334155; line-height: 1.35; margin: 0 0 8px 0;">
+      Her 12 dakikada bir kalkan yardım tırlarının kalkış dakikalarını ve 8'er metrelik aralıklarla dikilen fidan noktalarını tamamlayınız:
+    </p>
+
+    <div style="space-y: 6px; font-size: 10px;">
+      <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px;">
+        <strong style="color: #0f766e;">12'nin Pozitif Katları:</strong> 12, 24, ....., 48, ....., 72, ....., 96, ....., 120...
+        <div style="color: #64748b; font-size: 9px; margin-top: 2px;">12'nin 100'den küçük en büyük katı: <strong>( ..... )</strong></div>
+      </div>
+      <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; padding: 6px 10px;">
+        <strong style="color: #0f766e;">8'in Pozitif Katları:</strong> 8, 16, ....., 32, ....., 48, ....., 64, ....., 80...
+        <div style="color: #64748b; font-size: 9px; margin-top: 2px;">8'in 50 ile 90 arasındaki katları: <strong>( ...................................................... )</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B BÖLÜMÜ: ORTAK İYİLİK SEFERLERİ -->
+  <div style="border: 2px solid #7c3aed; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #6d28d9; font-size: 11.5px;">
+        🤝 B) ORTAK İYİLİK SEFERLERİ (ORTAK KAT KEŞFİ)
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 1px 5px; border-radius: 4px; border: 1px solid #ddd6fe;">
+        30 Puan
+      </span>
+    </div>
+    <p style="font-size: 10.5px; color: #334155; line-height: 1.35; margin: 0 0 6px 0;">
+      Aşevinden sıcak yemek servisi yapan Minibüs 1 her 6 dakikada bir, Minibüs 2 her 8 dakikada bir merkezden hareket etmektedir.
+    </p>
+    <div style="background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 8px; font-size: 10px;">
+      <div>1. Birlikte ilk aynı anda hareket dakikası: <strong>( ..... ) . dakika</strong></div>
+      <div style="margin-top: 3px;">2. Birlikte ikinci aynı anda hareket dakikası: <strong>( ..... ) . dakika</strong></div>
+      <div style="margin-top: 3px;">3. Birlikte üçüncü aynı anda hareket dakikası: <strong>( ..... ) . dakika</strong></div>
+      <div style="margin-top: 5px; color: #6d28d9; font-weight: bold;">
+        Sonuç Çıkarımı: İki sayının ortak katları, en küçük ortak katın katları şeklinde devam eder: [ Doğru / Yanlış ]
+      </div>
+    </div>
+  </div>
+
+  <!-- C BÖLÜMÜ: ÇARPAN VE KAT KARŞILAŞTIRMA ÖNERMELERİ -->
+  <div style="border: 2px solid #0284c7; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #e0f2fe; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #0369a1; font-size: 11.5px;">
+        💡 C) MATEMATİKSEL AKIL YÜRÜTME (DOĞRU / YANLIŞ)
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #f0f9ff; color: #0284c7; padding: 1px 5px; border-radius: 4px; border: 1px solid #bae6fd;">
+        30 Puan
+      </span>
+    </div>
+    <div style="space-y: 4px; font-size: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; background: #f8fafc; border-radius: 4px; margin-bottom: 4px;">
+        <span>[ &nbsp;&nbsp;&nbsp; ] 1. Bir doğal sayının pozitif çarpan sayısı sınırlıdır fakat pozitif katları sonsuzdur.</span>
+        <strong style="color: #0369a1;">( D / Y )</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; background: #f8fafc; border-radius: 4px; margin-bottom: 4px;">
+        <span>[ &nbsp;&nbsp;&nbsp; ] 2. Bir doğal sayının en küçük pozitif katı 0'dır.</span>
+        <strong style="color: #0369a1;">( D / Y )</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; background: #f8fafc; border-radius: 4px; margin-bottom: 4px;">
+        <span>[ &nbsp;&nbsp;&nbsp; ] 3. 7 × 9 = 63 eşitliğinde 63 sayısı 7 ve 9'un bir katıdır.</span>
+        <strong style="color: #0369a1;">( D / Y )</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; background: #f8fafc; border-radius: 4px;">
+        <span>[ &nbsp;&nbsp;&nbsp; ] 4. 15 sayısının 100'den küçük kat sayısı toplam 6 adettir.</span>
+        <strong style="color: #0369a1;">( D / Y )</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alt Bilgi / Puanlama -->
+  <div style="padding: 8px 12px; background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; font-size: 10px; color: #115e59; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Ritmik Katlar (40P) + Ortak Seferler (30P) + Akıl Yürütme (30P) = 100 Puan. (SDB3.3 / E3.3 Maarif Modeli)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-6-1-1-rainbow-cipher',
+    title: 'Etkinlik 3: "Çarpan Gökkuşağı Şifresi ve Problem Çözme" (MAT.6.1.1)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.6.1.1',
+    outcomeTitle: 'Bir Doğal Sayının Çarpanlarını ve Katlarını Belirleyebilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Maarif Matematik ve İyilik Lojistiği Atölyesi',
+    pageCount: 1,
+    createdAt: '2026-09-10T10:00:00Z',
+    fileSizeKb: 295,
+    tags: ['Etkinlik Kağıdı', 'Çarpan Gökkuşağı', 'Şifre Çözme', 'Problem Çözme', 'MAT.6.1.1', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f5f3ff, #ede9fe); padding: 10px; border-radius: 12px; border: 1px solid #ddd6fe;">
+    <div style="display: inline-block; background: #8b5cf6; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🌈 GÖKKUŞAĞI ŞİFRESİ &amp; PROBLEM ÇÖZME (6. SINIF - MAT.6.1.1)
+    </div>
+    <h2 style="color: #5b21b6; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      ÇARPAN GÖKKUŞAĞI ŞİFRESİ VE PROBLEM ÇÖZME
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Çarpan gökkuşağındaki simetri sırrını kullanarak kilitleri açınız ve günlük hayat problemlerini çözünüz.
+    </p>
+  </div>
+
+  <!-- A BÖLÜMÜ: 60 SAYISININ ÇARPAN GÖKKUŞAĞI -->
+  <div style="border: 2px solid #8b5cf6; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #6d28d9; font-size: 11.5px;">
+        📌 A) 60 SAYISININ ÇARPAN GÖKKUŞAĞI VE HARF ŞİFRESİ
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #f5f3ff; color: #8b5cf6; padding: 1px 5px; border-radius: 4px; border: 1px solid #ddd6fe;">
+        40 Puan
+      </span>
+    </div>
+    <p style="font-size: 10.5px; color: #334155; line-height: 1.35; margin: 0 0 8px 0;">
+      60 sayısının tüm çarpanları küçükten büyüğe sıralanmış ancak bazıları harflerle gizlenmiştir:
+    </p>
+
+    <!-- Dizilim -->
+    <div style="text-align: center; padding: 10px; background: #faf5ff; border: 1.5px dashed #c084fc; border-radius: 10px; margin-bottom: 8px;">
+      <span style="font-family: monospace; font-size: 13px; font-weight: 900; color: #581c87; letter-spacing: 2px;">
+        1 , 2 , 3 , <span style="color: #dc2626; background: #fee2e2; padding: 2px 6px; border-radius: 4px;">A</span> , 5 , 6 , 10 , 12 , <span style="color: #0284c7; background: #e0f2fe; padding: 2px 6px; border-radius: 4px;">B</span> , 20 , <span style="color: #16a34a; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">C</span> , 60
+      </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 10.5px; text-align: center;">
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 6px;">
+        <strong style="color: #dc2626;">A Çarpanı:</strong> ( ..... )
+      </div>
+      <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 6px;">
+        <strong style="color: #0284c7;">B Çarpanı:</strong> ( ..... )
+      </div>
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 6px;">
+        <strong style="color: #16a34a;">C Çarpanı:</strong> ( ..... )
+      </div>
+    </div>
+    <div style="margin-top: 8px; padding: 6px 10px; background: #f8fafc; border-radius: 6px; font-size: 10.5px; font-weight: bold; color: #334155; text-align: center;">
+      Şifre Hesaplama: <strong>A + B + C = ..... + ..... + ..... = ( ..... )</strong>
+    </div>
+  </div>
+
+  <!-- B BÖLÜMÜ: GERÇEK HAYAT PROBLEM ÇÖZÜMLERİ -->
+  <div style="border: 2px solid #ea580c; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ffedd5; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #c2410c; font-size: 11.5px;">
+        🛒 B) GERÇEK HAYAT PROBLEM ÇÖZÜMLERİ
+      </span>
+      <span style="font-size: 9px; font-weight: bold; background: #fff7ed; color: #ea580c; padding: 1px 5px; border-radius: 4px; border: 1px solid #fed7aa;">
+        60 Puan
+      </span>
+    </div>
+
+    <!-- Problem 1 -->
+    <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px; font-size: 10px; margin-bottom: 8px;">
+      <strong style="color: #9a3412;">Problem 1 (Aşevi Pirinç Paylaşımı):</strong><br/>
+      45 kg pirinç hiç artmayacak şekilde eşit ağırlıkta torbalara doldurulacaktır. Torbalar 3 kg'dan ağır ve 15 kg'dan hafif olacağına göre, bir torbanın alabileceği ağırlıkları bulunuz.<br/>
+      <div style="margin-top: 4px; color: #475569;">
+        45'in bölenleri: 1, 3, 5, 9, 15, 45<br/>
+        Şarta uygun torba ağırlıkları: <strong>( .................................................... )</strong> (Toplam: ..... farklı değer)
+      </div>
+    </div>
+
+    <!-- Problem 2 -->
+    <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px; font-size: 10px;">
+      <strong style="color: #9a3412;">Problem 2 (Dikdörtgen Bahçe Çiti):</strong><br/>
+      Alanı 40 m² olan dikdörtgen şeklindeki bir yardım deposu tabanının kenar uzunlukları birer doğal sayıdır. Bu tabanın çevre uzunluğu EN AZ kaç metre olabilir?<br/>
+      <div style="margin-top: 4px; color: #475569;">
+        Kenar çarpan çiftleri: (1,40), (2,20), (4,10), (5,8)<br/>
+        Çevre = 2 × (Kısa Kenar + Uzun Kenar)<br/>
+        En küçük çevre için seçilen kenarlar: ..... m ve ..... m ⟹ Çevre = 2 × ( ..... + ..... ) = <strong>( ..... ) m</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alt Bilgi / Puanlama -->
+  <div style="padding: 8px 12px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; font-size: 10px; color: #5b21b6; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Gökkuşağı Şifresi (40P) + Problemler (60P) = 100 Puan. (SDB3.3 / E3.3 Maarif Modeli)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
