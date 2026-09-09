@@ -119,6 +119,19 @@ export function ActivitySheetView({
     (selectedSheetId.includes('stations') ||
       fileRecord?.id?.includes('stations') ||
       fileRecord?.title?.includes('Açı Ölçüm İstasyonları'));
+  const isLinesRelationsActivity =
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isDeductionDetective &&
+    !isErrorDetectiveActivity &&
+    !isAngleConstructionActivity &&
+    !isMeasuringStationsActivity &&
+    (selectedSheetId.includes('lines-relations') ||
+      selectedSheetId.includes('5-3-4') ||
+      fileRecord?.id?.includes('lines-relations') ||
+      fileRecord?.title?.includes('Doğruların Birbirine Göre Durumları') ||
+      outcomeCode === 'MAT.5.3.4');
   const isProtractorAnatomyActivity =
     !isRailwayActivity &&
     !isBridgeActivity &&
@@ -127,10 +140,73 @@ export function ActivitySheetView({
     !isErrorDetectiveActivity &&
     !isMeasuringStationsActivity &&
     !isAngleConstructionActivity &&
+    !isLinesRelationsActivity &&
     (selectedSheetId.includes('anatomy') ||
       fileRecord?.id?.includes('anatomy') ||
       fileRecord?.title?.includes('İletkinin Anatomisi') ||
       outcomeCode === 'MAT.5.3.3');
+
+  // Interactive state for MAT.5.3.4 "DOĞRULARIN BİRBİRİNE GÖRE DURUMLARI"
+  const [linesActiveTab, setLinesActiveTab] = useState<'overview' | 'intersecting' | 'perpendicular' | 'parallel' | 'transversal'>('overview');
+  const [intersectingAngle, setIntersectingAngle] = useState<number>(60);
+  const [parallelDistance, setParallelDistance] = useState<number>(45);
+  const [transversalAngle, setTransversalAngle] = useState<number>(65);
+  const [showRightAngles, setShowRightAngles] = useState<boolean>(true);
+  const [highlightTransversalAngles, setHighlightTransversalAngles] = useState<'all' | 'alternate' | 'corresponding'>('all');
+  const [linesAnswers, setLinesAnswers] = useState<{
+    q1_angles: string;
+    q1_points: string;
+    q2_deg: string;
+    q2_sym: string;
+    q3_points: string;
+    q3_sym: string;
+    q4_name: string;
+    q4_angles: string;
+  }>({
+    q1_angles: '',
+    q1_points: '',
+    q2_deg: '',
+    q2_sym: '',
+    q3_points: '',
+    q3_sym: '',
+    q4_name: '',
+    q4_angles: ''
+  });
+  const [linesChecked, setLinesChecked] = useState<boolean>(false);
+  const [linesScore, setLinesScore] = useState<number>(0);
+  const [linesPointsAwarded, setLinesPointsAwarded] = useState<boolean>(false);
+
+  const handleCheckLinesAnswers = () => {
+    let score = 0;
+    if (linesAnswers.q1_angles === '4') score += 12.5;
+    if (linesAnswers.q1_points === '1') score += 12.5;
+    if (linesAnswers.q2_deg === '90') score += 12.5;
+    if (linesAnswers.q2_sym === 'perp') score += 12.5;
+    if (linesAnswers.q3_points === '0') score += 12.5;
+    if (linesAnswers.q3_sym === 'parallel') score += 12.5;
+    if (linesAnswers.q4_name === 'kesen') score += 12.5;
+    if (linesAnswers.q4_angles === '8') score += 12.5;
+
+    const finalScore = Math.round(score);
+    setLinesScore(finalScore);
+    setLinesChecked(true);
+
+    if (finalScore >= 75) {
+      playSound('success');
+      if (!linesPointsAwarded) {
+        addPoints(finalScore);
+        setLinesPointsAwarded(true);
+        if (finalScore === 100) {
+          unlockBadge('maarif-genius');
+        }
+        try {
+          confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    } else {
+      playSound('click');
+    }
+  };
 
   // Interactive state for MAT.5.3.3 "HATA DEDEKTİFİ" VE ÖZ DEĞERLENDİRME
   const [detectiveError1Answer, setDetectiveError1Answer] = useState<string>('');
@@ -553,19 +629,26 @@ export function ActivitySheetView({
               const isRailway = sheet.id.includes('railway') || sheet.title.includes('Tren Rayı');
               const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
               const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
+              const isLinesRelations =
+                sheet.id.includes('lines-relations') ||
+                sheet.id.includes('5-3-4') ||
+                sheet.title.includes('Doğruların Birbirine Göre Durumları') ||
+                sheet.title.includes('Doğruların Durumları');
               const isErrorDetective =
-                sheet.id.includes('error-detective') || sheet.id.includes('hata-dedektifi') || sheet.title.includes('Hata Dedektifi');
+                (sheet.id.includes('error-detective') || sheet.id.includes('hata-dedektifi') || sheet.title.includes('Hata Dedektifi')) && !isLinesRelations;
               const isDetective =
-                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway && !isErrorDetective;
+                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway && !isErrorDetective && !isLinesRelations;
               const isConstruction =
-                (sheet.id.includes('angle-construction') || sheet.id.includes('rotani-kendin-ciz') || sheet.title.includes('Rotanı Kendin Çiz')) && !isErrorDetective;
+                (sheet.id.includes('angle-construction') || sheet.id.includes('rotani-kendin-ciz') || sheet.title.includes('Rotanı Kendin Çiz')) && !isErrorDetective && !isLinesRelations;
               const isStations =
-                (sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm')) && !isConstruction && !isErrorDetective;
+                (sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm')) && !isConstruction && !isErrorDetective && !isLinesRelations;
               const isAnatomy =
-                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction && !isErrorDetective;
+                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction && !isErrorDetective && !isLinesRelations;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
-              const icon = isRailway
+              const icon = isLinesRelations
+                ? '📐'
+                : isRailway
                 ? '🚆'
                 : isBridge
                 ? '🏛️'
@@ -582,7 +665,9 @@ export function ActivitySheetView({
                 : isAnatomy
                 ? '📐'
                 : '📏';
-              const title = isRailway
+              const title = isLinesRelations
+                ? 'Doğruların Durumları'
+                : isRailway
                 ? 'Tren Rayı Mühendisliği'
                 : isBridge
                 ? 'Tarihi Köprü Restorasyonu'
@@ -600,7 +685,9 @@ export function ActivitySheetView({
                 ? 'İletkinin Anatomisi'
                 : 'Aşamalı İnşa İstasyonları';
 
-              const badge = isRailway
+              const badge = isLinesRelations
+                ? 'Gözlem & Sınıflandırma'
+                : isRailway
                 ? 'Büyük Görev'
                 : isBridge
                 ? 'Büyük Görev'
@@ -618,7 +705,9 @@ export function ActivitySheetView({
                 ? 'Aracı Tanıma'
                 : `Etkinlik ${index + 1}`;
 
-              const tag = isRailway
+              const tag = isLinesRelations
+                ? '4 Temel Durum (//, ⊥, Kesen)'
+                : isRailway
                 ? 'Gönye ile Paralel Doğru'
                 : isBridge
                 ? '4 Restorasyon Adımı'
@@ -646,7 +735,9 @@ export function ActivitySheetView({
                   }}
                   className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer text-left border ${
                     isActive
-                      ? isRailway
+                      ? isLinesRelations
+                        ? 'bg-blue-600 text-white border-blue-500 shadow-md scale-[1.01]'
+                        : isRailway
                         ? 'bg-indigo-600 text-white border-indigo-500 shadow-md scale-[1.01]'
                         : isBridge
                         ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md scale-[1.01]'
@@ -705,7 +796,9 @@ export function ActivitySheetView({
       {/* 1. Header Banner & Quick Action Buttons */}
       <div
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
-          isRailwayActivity
+          isLinesRelationsActivity
+            ? 'bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-950'
+            : isRailwayActivity
             ? 'bg-gradient-to-br from-indigo-950 via-slate-900 to-amber-950'
             : isBridgeActivity
             ? 'bg-gradient-to-br from-amber-950 via-amber-900 to-slate-950'
@@ -727,7 +820,9 @@ export function ActivitySheetView({
         {/* Background Decorative Patterns */}
         <div
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-            isRailwayActivity
+            isLinesRelationsActivity
+              ? 'bg-blue-500/20'
+              : isRailwayActivity
               ? 'bg-indigo-500/20'
               : isBridgeActivity
               ? 'bg-amber-500/10'
@@ -748,7 +843,9 @@ export function ActivitySheetView({
         />
         <div
           className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
-            isRailwayActivity
+            isLinesRelationsActivity
+              ? 'bg-indigo-500/20'
+              : isRailwayActivity
               ? 'bg-amber-500/15'
               : isBridgeActivity
               ? 'bg-orange-500/10'
@@ -773,7 +870,9 @@ export function ActivitySheetView({
           <div className="space-y-2 max-w-2xl">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
-                isRailwayActivity
+                isLinesRelationsActivity
+                  ? 'bg-blue-400/20 border-blue-300/30 text-blue-200'
+                  : isRailwayActivity
                   ? 'bg-indigo-400/20 border-indigo-300/30 text-indigo-200'
                   : isBridgeActivity
                   ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
@@ -792,7 +891,12 @@ export function ActivitySheetView({
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
-              {isRailwayActivity ? (
+              {isLinesRelationsActivity ? (
+                <>
+                  <Layers className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Gözlem & Sınıflandırma (4. Hafta - MAT.5.3.4)</span>
+                </>
+              ) : isRailwayActivity ? (
                 <>
                   <Layers className="w-3.5 h-3.5 text-indigo-300" />
                   <span>Büyük Görev • Gönye ile Paralel Doğru İnşası (SDB2.2 / E3.7)</span>
@@ -841,7 +945,9 @@ export function ActivitySheetView({
             </div>
             
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              {isRailwayActivity
+              {isLinesRelationsActivity
+                ? 'Etkinlik: "DOĞRULARIN BİRBİRİNE GÖRE DURUMLARI" (Gözlem ve Sınıflandırma)'
+                : isRailwayActivity
                 ? 'Büyük Görev: "TREN RAYI MÜHENDİSLİĞİ" (Gönye ile Paralel Doğru İnşası)'
                 : isBridgeActivity
                 ? 'Büyük Görev: Tarihi Köprü Restorasyonu'
@@ -861,7 +967,13 @@ export function ActivitySheetView({
             </h2>
             
             {/* Kurgu Paneli / Açıklama */}
-            {isRailwayActivity ? (
+            {isLinesRelationsActivity ? (
+              <div className="p-3 bg-blue-950/60 border border-blue-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-blue-100 font-medium leading-relaxed">
+                  📐 <strong>Doğruların Konum Rehberi:</strong> &ldquo;Düzlemde iki veya üç doğrunun birbirine göre durumlarını inceleyerek ortak nokta sayılarını, açı özelliklerini ve matematiksel sembollerini keşfet!&rdquo;
+                </p>
+              </div>
+            ) : isRailwayActivity ? (
               <div className="p-3 bg-indigo-950/60 border border-indigo-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-indigo-100 font-medium italic leading-relaxed">
                   🚂 <strong>Kurgu Paneli:</strong> &ldquo;Tren raylarının birbirine çarpmaması ve trenin raydan çıkmaması için rayların aralarındaki dik mesafenin her noktada aynı olması gerekir. Kendi tren rayını gönye ve cetvelle inşa et!&rdquo;
@@ -2548,6 +2660,813 @@ export function ActivitySheetView({
                 </g>
               </svg>
             </div>
+          </div>
+
+        </div>
+      ) : isLinesRelationsActivity ? (
+        /* ========================================================================= */
+        /* ETKİNLİK: "DOĞRULARIN BİRBİRİNE GÖRE DURUMLARI" (MAT.5.3.4)               */
+        /* ========================================================================= */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          
+          {/* 1. Kontrol ve Mod Seçici Butonları */}
+          <div className="bg-slate-900 dark:bg-slate-900 border-2 border-blue-500/50 rounded-3xl p-6 shadow-xl space-y-4 text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="text-2xl">📐</span>
+                <span className="text-base sm:text-lg font-black text-white tracking-wide">
+                  GÖZLEM MASASI: &ldquo;DOĞRULARIN KONUM VE AÇI DEDEKTİFİ&rdquo;
+                </span>
+                <span className="bg-blue-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-blue-400">
+                  4. Hafta • MAT.5.3.4
+                </span>
+              </div>
+              
+              {/* Durum Filtresi */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-xs font-bold text-slate-400 mr-1">İnceleme Modu:</span>
+                {[
+                  { id: 'overview', label: '🌟 Tümü (Özet)', icon: '📋' },
+                  { id: 'intersecting', label: '1. Kesişen', icon: '✖️' },
+                  { id: 'perpendicular', label: '2. Dik (⊥)', icon: '📐' },
+                  { id: 'parallel', label: '3. Paralel (//)', icon: '🛤️' },
+                  { id: 'transversal', label: '4. Kesen (t)', icon: '⚡' }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      playSound('click');
+                      setLinesActiveTab(tab.id as any);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      linesActiveTab === tab.id
+                        ? 'bg-blue-600 text-white border-blue-400 shadow-md shadow-blue-600/30'
+                        : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed font-medium">
+              💡 <strong>Temel Geometri İlkesi:</strong> Düzlemdeki iki doğru ya <strong>tek bir noktada kesişir</strong> (eğer açı 90° ise <strong>dik kesişir</strong>), ya da hiçbir noktada kesişmeyip aralarındaki mesafeyi koruyarak <strong>paralel</strong> kalır. Paralel doğruları farklı noktalarda kesen doğruya ise <strong>kesen doğru</strong> denir.
+            </p>
+          </div>
+
+          {/* 2. DÖRT TEMEL DURUM KARTLARI (Simülatör & İnteraktif Deneyler) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* KART 1: KESİŞEN DOĞRULAR */}
+            {(linesActiveTab === 'overview' || linesActiveTab === 'intersecting') && (
+              <div className="bg-white rounded-3xl p-6 border-2 border-blue-500/40 shadow-sm flex flex-col justify-between space-y-4 relative overflow-hidden group">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-blue-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center font-bold text-sm">
+                        ✖️
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-blue-900">1. KESİŞEN DOĞRULAR</h3>
+                        <span className="text-[10px] font-mono text-blue-600 font-bold">d₁ ∩ d₂ = {'{K}'}</span>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 font-bold text-[10px] border border-blue-200">
+                      1 Ortak Nokta • 4 Açı
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Düzlemde yalnız <strong>tek bir ortak noktası (K)</strong> olan iki doğruya kesişen doğrular denir. Kesiştikleri noktada 4 adet açı oluşur.
+                  </p>
+
+                  {/* İnteraktif Açı Simülatörü Slider */}
+                  <div className="bg-blue-50/60 p-3 rounded-2xl border border-blue-100 space-y-2">
+                    <div className="flex items-center justify-between text-xs font-bold text-blue-900">
+                      <span>Kesişme Açısını Ayarla (θ):</span>
+                      <span className="font-mono bg-blue-600 text-white px-2 py-0.5 rounded-md text-[11px]">
+                        {intersectingAngle}° (Dar) / {180 - intersectingAngle}° (Geniş)
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={25}
+                      max={155}
+                      step={5}
+                      value={intersectingAngle}
+                      onChange={(e) => setIntersectingAngle(Number(e.target.value))}
+                      className="w-full accent-blue-600 cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Dinamik İnteraktif SVG */}
+                  <div className="border-2 border-dashed border-blue-200 rounded-2xl h-56 bg-slate-50 relative overflow-hidden flex items-center justify-center select-none">
+                    <svg viewBox="0 0 340 220" width="100%" height="100%">
+                      <defs>
+                        <pattern id="grid_intersecting" width="16" height="16" patternUnits="userSpaceOnUse">
+                          <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e2e8f0" stroke-width="0.8" />
+                        </pattern>
+                      </defs>
+                      <rect width="340" height="220" fill="url(#grid_intersecting)" />
+
+                      {/* Sabit Yatay Doğru d1 (Y=110) */}
+                      <line x1="30" y1="110" x2="310" y2="110" stroke="#2563eb" stroke-width="3" />
+                      <polygon points="305,106 315,110 305,114" fill="#2563eb" />
+                      <polygon points="35,106 25,110 35,114" fill="#2563eb" />
+                      <text x="318" y="114" font-family="monospace" font-size="12" font-weight="900" fill="#1d4ed8">d₁</text>
+
+                      {/* Dönen Doğru d2 (Merkez: 170, 110) */}
+                      {(() => {
+                        const cx = 170;
+                        const cy = 110;
+                        const len = 120;
+                        const rad = (intersectingAngle * Math.PI) / 180;
+                        const x1 = cx - len * Math.cos(rad);
+                        const y1 = cy + len * Math.sin(rad);
+                        const x2 = cx + len * Math.cos(rad);
+                        const y2 = cy - len * Math.sin(rad);
+
+                        return (
+                          <g>
+                            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#0ea5e9" stroke-width="3" />
+                            <circle cx={x2} cy={y2} r="3" fill="#0ea5e9" />
+                            <text x={x2 + 8} y={y2 + 4} font-family="monospace" font-size="12" font-weight="900" fill="#0284c7">d₂</text>
+
+                            {/* Kesişim Noktası K */}
+                            <circle cx={cx} cy={cy} r="6" fill="#ef4444" stroke="#ffffff" stroke-width="2" />
+                            <text x={cx} y={cy - 12} font-family="system-ui" font-size="12" font-weight="900" fill="#dc2626" text-anchor="middle">K</text>
+                            
+                            {/* Açı Yayları ve Değerler */}
+                            <text x={cx + 38} y={cy - 10} font-family="system-ui" font-size="10" font-weight="bold" fill="#1e40af">
+                              {intersectingAngle}°
+                            </text>
+                            <text x={cx - 55} y={cy - 10} font-family="system-ui" font-size="10" font-weight="bold" fill="#0369a1">
+                              {180 - intersectingAngle}°
+                            </text>
+                            <text x={cx - 55} y={cy + 22} font-family="system-ui" font-size="10" font-weight="bold" fill="#1e40af">
+                              {intersectingAngle}°
+                            </text>
+                            <text x={cx + 38} y={cy + 22} font-family="system-ui" font-size="10" font-weight="bold" fill="#0369a1">
+                              {180 - intersectingAngle}°
+                            </text>
+                          </g>
+                        );
+                      })()}
+                    </svg>
+                  </div>
+
+                  {/* Soru Kontrol Alanı */}
+                  <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-700 font-bold">1. Kesiştiği noktada kaç açı oluşur?</span>
+                      <select
+                        value={linesAnswers.q1_angles}
+                        onChange={(e) => setLinesAnswers((a) => ({ ...a, q1_angles: e.target.value }))}
+                        className={`p-1.5 rounded-lg border text-xs font-bold ${
+                          linesChecked
+                            ? linesAnswers.q1_angles === '4'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-400'
+                              : 'bg-rose-50 text-rose-900 border-rose-400'
+                            : 'bg-slate-50 text-slate-800 border-slate-300'
+                        }`}
+                      >
+                        <option value="">Seçiniz...</option>
+                        <option value="2">2 Açı</option>
+                        <option value="3">3 Açı</option>
+                        <option value="4">4 Açı (Doğru)</option>
+                        <option value="6">6 Açı</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-700 font-bold">2. Ortak nokta sayısı kaçtır?</span>
+                      <select
+                        value={linesAnswers.q1_points}
+                        onChange={(e) => setLinesAnswers((a) => ({ ...a, q1_points: e.target.value }))}
+                        className={`p-1.5 rounded-lg border text-xs font-bold ${
+                          linesChecked
+                            ? linesAnswers.q1_points === '1'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-400'
+                              : 'bg-rose-50 text-rose-900 border-rose-400'
+                            : 'bg-slate-50 text-slate-800 border-slate-300'
+                        }`}
+                      >
+                        <option value="">Seçiniz...</option>
+                        <option value="0">0 (Yoktur)</option>
+                        <option value="1">1 (Yalnızca K)</option>
+                        <option value="2">2 Nokta</option>
+                        <option value="sonsuz">Sonsuz</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <span>Geometrik Durum: <strong>Kesişen Doğrular</strong></span>
+                  <span className="text-blue-700 font-bold">25 Puan</span>
+                </div>
+              </div>
+            )}
+
+            {/* KART 2: DİK DOĞRULAR */}
+            {(linesActiveTab === 'overview' || linesActiveTab === 'perpendicular') && (
+              <div className="bg-white rounded-3xl p-6 border-2 border-emerald-500/40 shadow-sm flex flex-col justify-between space-y-4 relative overflow-hidden group">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-emerald-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                        📐
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-emerald-900">2. DİK DOĞRULAR</h3>
+                        <span className="text-[10px] font-mono text-emerald-600 font-bold">m ⊥ n (90° Açılı Kesişim)</span>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-bold text-[10px] border border-emerald-200">
+                      4 Dik Açı (90°) • ⊥ Sembolü
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Kesişirken <strong>90°'lik dik açı</strong> oluşturan doğrulara dik doğrular denir. 4 açının her biri tam 90°'dir ve <code>⊥</code> sembolüyle gösterilir.
+                  </p>
+
+                  {/* Diklik Sembolü Açma/Kapama */}
+                  <div className="bg-emerald-50/60 p-3 rounded-2xl border border-emerald-100 flex items-center justify-between">
+                    <span className="text-xs font-bold text-emerald-900">90° Diklik İşaretlerini Göster:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSound('select');
+                        setShowRightAngles(!showRightAngles);
+                      }}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                        showRightAngles
+                          ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm'
+                          : 'bg-white text-slate-600 border-slate-300'
+                      }`}
+                    >
+                      {showRightAngles ? '✓ 4 Dik Açı Açık' : 'Kapalı'}
+                    </button>
+                  </div>
+
+                  {/* Dinamik SVG */}
+                  <div className="border-2 border-dashed border-emerald-200 rounded-2xl h-56 bg-slate-50 relative overflow-hidden flex items-center justify-center select-none">
+                    <svg viewBox="0 0 340 220" width="100%" height="100%">
+                      <defs>
+                        <pattern id="grid_perp" width="16" height="16" patternUnits="userSpaceOnUse">
+                          <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e2e8f0" stroke-width="0.8" />
+                        </pattern>
+                      </defs>
+                      <rect width="340" height="220" fill="url(#grid_perp)" />
+
+                      {/* Yatay Doğru m (Y=110) */}
+                      <line x1="30" y1="110" x2="310" y2="110" stroke="#059669" stroke-width="3" />
+                      <polygon points="305,106 315,110 305,114" fill="#059669" />
+                      <polygon points="35,106 25,110 35,114" fill="#059669" />
+                      <text x="318" y="114" font-family="monospace" font-size="12" font-weight="900" fill="#047857">m</text>
+
+                      {/* Düşey Doğru n (X=170) */}
+                      <line x1="170" y1="20" x2="170" y2="200" stroke="#10b981" stroke-width="3" />
+                      <polygon points="166,28 170,18 174,28" fill="#10b981" />
+                      <polygon points="166,192 170,202 174,192" fill="#10b981" />
+                      <text x="176" y="28" font-family="monospace" font-size="12" font-weight="900" fill="#059669">n</text>
+
+                      {/* 4 Köşedeki 90° Diklik Sembolleri */}
+                      {showRightAngles && (
+                        <g>
+                          {/* 1. Bölge (Sağ Üst) */}
+                          <rect x="170" y="86" width="24" height="24" fill="#ecfdf5" stroke="#059669" stroke-width="1.8" />
+                          <circle cx="182" cy="98" r="2.5" fill="#059669" />
+                          <text x="200" y="96" font-family="system-ui" font-size="10" font-weight="900" fill="#047857">90°</text>
+
+                          {/* 2. Bölge (Sol Üst) */}
+                          <rect x="146" y="86" width="24" height="24" fill="#ecfdf5" stroke="#059669" stroke-width="1.8" />
+                          <circle cx="158" cy="98" r="2.5" fill="#059669" />
+                          <text x="125" y="96" font-family="system-ui" font-size="10" font-weight="900" fill="#047857">90°</text>
+
+                          {/* 3. Bölge (Sol Alt) */}
+                          <rect x="146" y="110" width="24" height="24" fill="#ecfdf5" stroke="#059669" stroke-width="1.8" />
+                          <circle cx="158" cy="122" r="2.5" fill="#059669" />
+                          <text x="125" y="132" font-family="system-ui" font-size="10" font-weight="900" fill="#047857">90°</text>
+
+                          {/* 4. Bölge (Sağ Alt) */}
+                          <rect x="170" y="110" width="24" height="24" fill="#ecfdf5" stroke="#059669" stroke-width="1.8" />
+                          <circle cx="182" cy="122" r="2.5" fill="#059669" />
+                          <text x="200" y="132" font-family="system-ui" font-size="10" font-weight="900" fill="#047857">90°</text>
+                        </g>
+                      )}
+
+                      {/* Merkez Vurgusu */}
+                      <circle cx="170" cy="110" r="4" fill="#047857" />
+                    </svg>
+                  </div>
+
+                  {/* Soru Kontrol Alanı */}
+                  <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-700 font-bold">1. Oluşan 4 açının her birinin ölçüsü:</span>
+                      <select
+                        value={linesAnswers.q2_deg}
+                        onChange={(e) => setLinesAnswers((a) => ({ ...a, q2_deg: e.target.value }))}
+                        className={`p-1.5 rounded-lg border text-xs font-bold ${
+                          linesChecked
+                            ? linesAnswers.q2_deg === '90'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-400'
+                              : 'bg-rose-50 text-rose-900 border-rose-400'
+                            : 'bg-slate-50 text-slate-800 border-slate-300'
+                        }`}
+                      >
+                        <option value="">Seçiniz...</option>
+                        <option value="45">45° (Dar Açı)</option>
+                        <option value="60">60° (Dar Açı)</option>
+                        <option value="90">90° (Dik Açı)</option>
+                        <option value="180">180° (Doğru Açı)</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-700 font-bold">2. Diklik sembolü ile gösterimi:</span>
+                      <select
+                        value={linesAnswers.q2_sym}
+                        onChange={(e) => setLinesAnswers((a) => ({ ...a, q2_sym: e.target.value }))}
+                        className={`p-1.5 rounded-lg border text-xs font-bold ${
+                          linesChecked
+                            ? linesAnswers.q2_sym === 'perp'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-400'
+                              : 'bg-rose-50 text-rose-900 border-rose-400'
+                            : 'bg-slate-50 text-slate-800 border-slate-300'
+                        }`}
+                      >
+                        <option value="">Seçiniz...</option>
+                        <option value="perp">m ⊥ n (Doğru)</option>
+                        <option value="parallel">m // n</option>
+                        <option value="equal">m = n</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <span>Geometrik Durum: <strong>Dik Doğrular</strong></span>
+                  <span className="text-emerald-700 font-bold">25 Puan</span>
+                </div>
+              </div>
+            )}
+
+            {/* KART 3: PARALEL DOĞRULAR */}
+            {(linesActiveTab === 'overview' || linesActiveTab === 'parallel') && (
+              <div className="bg-white rounded-3xl p-6 border-2 border-purple-500/40 shadow-sm flex flex-col justify-between space-y-4 relative overflow-hidden group">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-purple-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-bold text-sm">
+                        🛤️
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-purple-900">3. PARALEL DOĞRULAR</h3>
+                        <span className="text-[10px] font-mono text-purple-600 font-bold">p // r (Sıfır Ortak Nokta)</span>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 font-bold text-[10px] border border-purple-200">
+                      0 Ortak Nokta • // Sembolü
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Düzlemde <strong>birbirini hiçbir zaman kesmeyen</strong> ve aralarındaki dik mesafe daima sabit kalan iki doğruya paralel doğrular denir. <code>p // r</code> şeklinde gösterilir.
+                  </p>
+
+                  {/* Ray Mesafesi Ayar Kaydırıcısı */}
+                  <div className="bg-purple-50/60 p-3 rounded-2xl border border-purple-100 space-y-2">
+                    <div className="flex items-center justify-between text-xs font-bold text-purple-900">
+                      <span>Raylar Arası Dik Mesafeyi Değiştir:</span>
+                      <span className="font-mono bg-purple-600 text-white px-2 py-0.5 rounded-md text-[11px]">
+                        d = {parallelDistance} px (Sabit Mesafe)
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={25}
+                      max={65}
+                      step={5}
+                      value={parallelDistance}
+                      onChange={(e) => setParallelDistance(Number(e.target.value))}
+                      className="w-full accent-purple-600 cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Dinamik SVG */}
+                  <div className="border-2 border-dashed border-purple-200 rounded-2xl h-56 bg-slate-50 relative overflow-hidden flex items-center justify-center select-none">
+                    <svg viewBox="0 0 340 220" width="100%" height="100%">
+                      <defs>
+                        <pattern id="grid_parallel" width="16" height="16" patternUnits="userSpaceOnUse">
+                          <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e2e8f0" stroke-width="0.8" />
+                        </pattern>
+                      </defs>
+                      <rect width="340" height="220" fill="url(#grid_parallel)" />
+
+                      {/* Üst Doğru p (Y = 110 - d/2) */}
+                      {(() => {
+                        const yTop = 110 - parallelDistance;
+                        const yBottom = 110 + parallelDistance;
+
+                        return (
+                          <g>
+                            {/* Üst Ray */}
+                            <line x1="30" y1={yTop} x2="310" y2={yTop} stroke="#7c3aed" stroke-width="3" />
+                            <polygon points={`${305},${yTop-4} ${315},${yTop} ${305},${yTop+4}`} fill="#7c3aed" />
+                            <polygon points={`${35},${yTop-4} ${25},${yTop} ${35},${yTop+4}`} fill="#7c3aed" />
+                            <text x="318" y={yTop + 4} font-family="monospace" font-size="12" font-weight="900" fill="#6d28d9">p</text>
+
+                            {/* Alt Ray */}
+                            <line x1="30" y1={yBottom} x2="310" y2={yBottom} stroke="#8b5cf6" stroke-width="3" />
+                            <polygon points={`${305},${yBottom-4} ${315},${yBottom} ${305},${yBottom+4}`} fill="#8b5cf6" />
+                            <polygon points={`${35},${yBottom-4} ${25},${yBottom} ${35},${yBottom+4}`} fill="#8b5cf6" />
+                            <text x="318" y={yBottom + 4} font-family="monospace" font-size="12" font-weight="900" fill="#6d28d9">r</text>
+
+                            {/* Eşit Dik Mesafe Çizgileri */}
+                            {/* Sol Dikme */}
+                            <line x1="100" y1={yTop} x2="100" y2={yBottom} stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 2" />
+                            <rect x="100" y={yTop} width="8" height="8" fill="none" stroke="#94a3b8" stroke-width="1" />
+                            <rect x="100" y={yBottom - 8} width="8" height="8" fill="none" stroke="#94a3b8" stroke-width="1" />
+                            
+                            {/* Sağ Dikme */}
+                            <line x1="240" y1={yTop} x2="240" y2={yBottom} stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 2" />
+                            <rect x="240" y={yTop} width="8" height="8" fill="none" stroke="#94a3b8" stroke-width="1" />
+                            <rect x="240" y={yBottom - 8} width="8" height="8" fill="none" stroke="#94a3b8" stroke-width="1" />
+
+                            {/* Açıklama Kutusu Ortada */}
+                            <rect x="130" y="96" width="80" height="28" rx="6" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.2" />
+                            <text x="170" y="114" font-family="system-ui" font-size="10" font-weight="900" fill="#6d28d9" text-anchor="middle">
+                              p // r (d = {parallelDistance})
+                            </text>
+                          </g>
+                        );
+                      })()}
+                    </svg>
+                  </div>
+
+                  {/* Soru Kontrol Alanı */}
+                  <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-700 font-bold">1. Bu doğruların ortak noktası var mıdır?</span>
+                      <select
+                        value={linesAnswers.q3_points}
+                        onChange={(e) => setLinesAnswers((a) => ({ ...a, q3_points: e.target.value }))}
+                        className={`p-1.5 rounded-lg border text-xs font-bold ${
+                          linesChecked
+                            ? linesAnswers.q3_points === '0'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-400'
+                              : 'bg-rose-50 text-rose-900 border-rose-400'
+                            : 'bg-slate-50 text-slate-800 border-slate-300'
+                        }`}
+                      >
+                        <option value="">Seçiniz...</option>
+                        <option value="0">Hayır (0 Ortak Nokta)</option>
+                        <option value="1">Evet (1 Ortak Nokta)</option>
+                        <option value="2">2 Ortak Nokta</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-700 font-bold">2. Paralellik sembolü ile gösterimi:</span>
+                      <select
+                        value={linesAnswers.q3_sym}
+                        onChange={(e) => setLinesAnswers((a) => ({ ...a, q3_sym: e.target.value }))}
+                        className={`p-1.5 rounded-lg border text-xs font-bold ${
+                          linesChecked
+                            ? linesAnswers.q3_sym === 'parallel'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-400'
+                              : 'bg-rose-50 text-rose-900 border-rose-400'
+                            : 'bg-slate-50 text-slate-800 border-slate-300'
+                        }`}
+                      >
+                        <option value="">Seçiniz...</option>
+                        <option value="parallel">p // r (Doğru)</option>
+                        <option value="perp">p ⊥ r</option>
+                        <option value="intersect">p ∩ r</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <span>Geometrik Durum: <strong>Paralel Doğrular</strong></span>
+                  <span className="text-purple-700 font-bold">25 Puan</span>
+                </div>
+              </div>
+            )}
+
+            {/* KART 4: KESEN DOĞRU */}
+            {(linesActiveTab === 'overview' || linesActiveTab === 'transversal') && (
+              <div className="bg-white rounded-3xl p-6 border-2 border-amber-500/40 shadow-sm flex flex-col justify-between space-y-4 relative overflow-hidden group">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-amber-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center font-bold text-sm">
+                        ⚡
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-amber-900">4. KESEN DOĞRU</h3>
+                        <span className="text-[10px] font-mono text-amber-600 font-bold">k₁ // k₂ ve t keseni</span>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 font-bold text-[10px] border border-amber-200">
+                      2 Kesim Noktası • 8 Açı (4+4)
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Birbirine paralel iki doğruyu farklı noktalarda (A ve B) kesen üçüncü bir doğruya <strong>kesen doğru</strong> (transversal) denir. Kesen doğru toplam <strong>8 açı</strong> oluşturur.
+                  </p>
+
+                  {/* Eğim Açısı Ayar Kaydırıcısı */}
+                  <div className="bg-amber-50/60 p-3 rounded-2xl border border-amber-100 space-y-2">
+                    <div className="flex items-center justify-between text-xs font-bold text-amber-900">
+                      <span>Kesen Doğrunun (t) Eğim Açısı:</span>
+                      <span className="font-mono bg-amber-600 text-white px-2 py-0.5 rounded-md text-[11px]">
+                        θ = {transversalAngle}°
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={35}
+                      max={85}
+                      step={5}
+                      value={transversalAngle}
+                      onChange={(e) => setTransversalAngle(Number(e.target.value))}
+                      className="w-full accent-amber-600 cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Dinamik SVG */}
+                  <div className="border-2 border-dashed border-amber-200 rounded-2xl h-56 bg-slate-50 relative overflow-hidden flex items-center justify-center select-none">
+                    <svg viewBox="0 0 340 220" width="100%" height="100%">
+                      <defs>
+                        <pattern id="grid_trans" width="16" height="16" patternUnits="userSpaceOnUse">
+                          <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e2e8f0" stroke-width="0.8" />
+                        </pattern>
+                      </defs>
+                      <rect width="340" height="220" fill="url(#grid_trans)" />
+
+                      {/* Üst Paralel k1 (Y=65) */}
+                      <line x1="30" y1="65" x2="310" y2="65" stroke="#d97706" stroke-width="3" />
+                      <polygon points="305,61 315,65 305,69" fill="#d97706" />
+                      <polygon points="35,61 25,65 35,69" fill="#d97706" />
+                      <text x="318" y="69" font-family="monospace" font-size="12" font-weight="900" fill="#b45309">k₁</text>
+
+                      {/* Alt Paralel k2 (Y=155) */}
+                      <line x1="30" y1="155" x2="310" y2="155" stroke="#d97706" stroke-width="3" />
+                      <polygon points="305,151 315,155 305,159" fill="#d97706" />
+                      <polygon points="35,151 25,155 35,159" fill="#d97706" />
+                      <text x="318" y="159" font-family="monospace" font-size="12" font-weight="900" fill="#b45309">k₂</text>
+
+                      {/* Kesen Doğru t (A=(xA, 65), B=(xB, 155)) */}
+                      {(() => {
+                        const cyA = 65;
+                        const cyB = 155;
+                        const midY = 110;
+                        const midX = 170;
+                        const dy = (cyB - cyA) / 2; // 45
+                        const rad = (transversalAngle * Math.PI) / 180;
+                        const dx = dy / Math.tan(rad);
+                        const cxA = midX - dx;
+                        const cxB = midX + dx;
+
+                        // Uzatılmış hat
+                        const extLen = 35;
+                        const extDx = extLen / Math.tan(rad);
+                        const topX = cxA - extDx;
+                        const topY = cyA - extLen;
+                        const botX = cxB + extDx;
+                        const botY = cyB + extLen;
+
+                        return (
+                          <g>
+                            <line x1={topX} y1={topY} x2={botX} y2={botY} stroke="#dc2626" stroke-width="3" />
+                            <polygon points={`${botX-6},${botY-4} ${botX+4},${botY+4} ${botX-2},${botY-8}`} fill="#dc2626" />
+                            <polygon points={`${topX+6},${topY+4} ${topX-4},${topY-4} ${topX+2},${topY+8}`} fill="#dc2626" />
+                            <text x={botX + 8} y={botY + 4} font-family="monospace" font-size="12" font-weight="900" fill="#dc2626">t (Kesen)</text>
+
+                            {/* A Noktası */}
+                            <circle cx={cxA} cy={cyA} r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.5" />
+                            <text x={cxA - 12} y={cyA - 8} font-family="system-ui" font-size="11" font-weight="900" fill="#dc2626">A</text>
+                            
+                            {/* B Noktası */}
+                            <circle cx={cxB} cy={cyB} r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.5" />
+                            <text x={cxB + 10} y={cyB + 16} font-family="system-ui" font-size="11" font-weight="900" fill="#dc2626">B</text>
+
+                            {/* A ve B etrafındaki 4+4 Açı Yayları */}
+                            <text x={cxA + 16} y={cyA - 4} font-family="system-ui" font-size="9" font-weight="bold" fill="#0369a1">1</text>
+                            <text x={cxA - 18} y={cyA - 4} font-family="system-ui" font-size="9" font-weight="bold" fill="#0369a1">2</text>
+                            <text x={cxA - 18} y={cyA + 14} font-family="system-ui" font-size="9" font-weight="bold" fill="#0369a1">3</text>
+                            <text x={cxA + 16} y={cyA + 14} font-family="system-ui" font-size="9" font-weight="bold" fill="#0369a1">4</text>
+
+                            <text x={cxB + 16} y={cyB - 4} font-family="system-ui" font-size="9" font-weight="bold" fill="#b45309">5</text>
+                            <text x={cxB - 18} y={cyB - 4} font-family="system-ui" font-size="9" font-weight="bold" fill="#b45309">6</text>
+                            <text x={cxB - 18} y={cyB + 14} font-family="system-ui" font-size="9" font-weight="bold" fill="#b45309">7</text>
+                            <text x={cxB + 16} y={cyB + 14} font-family="system-ui" font-size="9" font-weight="bold" fill="#b45309">8</text>
+                          </g>
+                        );
+                      })()}
+                    </svg>
+                  </div>
+
+                  {/* Soru Kontrol Alanı */}
+                  <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-700 font-bold">1. İki paralel doğruyu kesen 3. doğruya ne ad verilir?</span>
+                      <select
+                        value={linesAnswers.q4_name}
+                        onChange={(e) => setLinesAnswers((a) => ({ ...a, q4_name: e.target.value }))}
+                        className={`p-1.5 rounded-lg border text-xs font-bold ${
+                          linesChecked
+                            ? linesAnswers.q4_name === 'kesen'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-400'
+                              : 'bg-rose-50 text-rose-900 border-rose-400'
+                            : 'bg-slate-50 text-slate-800 border-slate-300'
+                        }`}
+                      >
+                        <option value="">Seçiniz...</option>
+                        <option value="kesen">Kesen Doğru (Transversal)</option>
+                        <option value="dikme">Dikme</option>
+                        <option value="paralel">Paralel Doğru</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-700 font-bold">2. Kesen doğrunun oluşturduğu toplam açı sayısı:</span>
+                      <select
+                        value={linesAnswers.q4_angles}
+                        onChange={(e) => setLinesAnswers((a) => ({ ...a, q4_angles: e.target.value }))}
+                        className={`p-1.5 rounded-lg border text-xs font-bold ${
+                          linesChecked
+                            ? linesAnswers.q4_angles === '8'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-400'
+                              : 'bg-rose-50 text-rose-900 border-rose-400'
+                            : 'bg-slate-50 text-slate-800 border-slate-300'
+                        }`}
+                      >
+                        <option value="">Seçiniz...</option>
+                        <option value="4">4 Açı</option>
+                        <option value="6">6 Açı</option>
+                        <option value="8">8 Açı (4+4 Doğru)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <span>Geometrik Durum: <strong>Kesen Doğru</strong></span>
+                  <span className="text-amber-700 font-bold">25 Puan</span>
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* 3. ÖĞRENCİ KONTROL VE DEĞERLENDİRME MASASI */}
+          <div className="bg-white rounded-3xl p-6 border-2 border-blue-500/30 shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center font-bold text-lg">
+                  🏆
+                </div>
+                <div>
+                  <h4 className="text-sm font-black text-slate-900">ÖĞRENCİ KONTROL &amp; ETKİNLİK PUANLAMA MASASI</h4>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Yukarıdaki 4 geometrik durumun sorularını cevaplayıp &ldquo;Cevapları Kontrol Et&rdquo; butonuna basınız.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                {linesChecked && (
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-50 border border-blue-200 font-black text-blue-900 text-sm">
+                    <span>Puan:</span>
+                    <span className="text-base text-blue-700">{linesScore} / 100</span>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleCheckLinesAnswers}
+                  className="px-6 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Cevapları Kontrol Et &amp; Puanla</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Başarı Bildirimi */}
+            {linesChecked && (
+              <div
+                className={`p-4 rounded-2xl border text-xs font-semibold leading-relaxed flex items-center gap-3 animate-in fade-in ${
+                  linesScore === 100
+                    ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                    : linesScore >= 75
+                    ? 'bg-blue-50 text-blue-900 border-blue-200'
+                    : 'bg-amber-50 text-amber-900 border-amber-200'
+                }`}
+              >
+                <span className="text-xl">
+                  {linesScore === 100 ? '🎉' : linesScore >= 75 ? '👏' : '💡'}
+                </span>
+                <div>
+                  {linesScore === 100 ? (
+                    <div>
+                      <strong>TEBRİKLER! 100 TAM PUAN!</strong> Düzlemde iki ve üç doğrunun tüm durumlarını (Kesişen, Dik, Paralel, Kesen), ortak nokta sayılarını ve açı kurallarını eksiksiz öğrendiniz!
+                    </div>
+                  ) : linesScore >= 75 ? (
+                    <div>
+                      <strong>ÇOK İYİ! {linesScore} Puan aldınız.</strong> Yanlış veya boş bıraktığınız soruları kontrol ederek düzeltip tekrar deneyebilirsiniz.
+                    </div>
+                  ) : (
+                    <div>
+                      <strong>{linesScore} Puan aldınız.</strong> Doğruların durumlarını ve ortak nokta sayılarını simülatörden tekrar inceleyip cevaplarınızı güncelleyiniz.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 4. SONUÇ VE KARŞILAŞTIRMA MATRİSİ TABLOSU */}
+          <div className="bg-white rounded-3xl p-6 border-2 border-slate-200 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">📊</span>
+                <h4 className="text-sm font-black text-slate-900">4. HAFTA GEOMETRİ MATRİSİ: DOĞRULARIN ÖZETİ</h4>
+              </div>
+              <span className="text-[11px] font-bold text-slate-500 font-mono">MAT.5.3.4</span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-black">
+                    <th className="p-3">Doğru Durumu</th>
+                    <th className="p-3">Ortak Nokta</th>
+                    <th className="p-3">Oluşan Açı Özelliği</th>
+                    <th className="p-3">Sembolik Gösterim</th>
+                    <th className="p-3">Gerçek Yaşam Örneği</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  <tr className="hover:bg-blue-50/40 transition-colors">
+                    <td className="p-3 font-bold text-blue-900 flex items-center gap-1.5">
+                      <span>✖️</span> 1. Kesişen Doğrular
+                    </td>
+                    <td className="p-3 font-bold text-blue-700">1 Ortak Nokta (K)</td>
+                    <td className="p-3">4 Açı (Karşılıklı ters açılar birbirine eşit)</td>
+                    <td className="p-3 font-mono font-bold text-blue-800">d₁ ∩ d₂ = {'{K}'}</td>
+                    <td className="p-3 text-slate-500">Açık Makas, Dörtyol Kavşağı</td>
+                  </tr>
+                  <tr className="hover:bg-emerald-50/40 transition-colors">
+                    <td className="p-3 font-bold text-emerald-900 flex items-center gap-1.5">
+                      <span>📐</span> 2. Dik Doğrular
+                    </td>
+                    <td className="p-3 font-bold text-emerald-700">1 Ortak Nokta</td>
+                    <td className="p-3">4 Açının her biri tam 90° (Dik Açı)</td>
+                    <td className="p-3 font-mono font-bold text-emerald-800">m ⊥ n</td>
+                    <td className="p-3 text-slate-500">Kapı/Pencere Köşeleri, Artı (+) İşareti</td>
+                  </tr>
+                  <tr className="hover:bg-purple-50/40 transition-colors">
+                    <td className="p-3 font-bold text-purple-900 flex items-center gap-1.5">
+                      <span>🛤️</span> 3. Paralel Doğrular
+                    </td>
+                    <td className="p-3 font-bold text-purple-700">0 (Yoktur)</td>
+                    <td className="p-3">Kesişmedikleri için aralarında açı oluşmaz</td>
+                    <td className="p-3 font-mono font-bold text-purple-800">p // r</td>
+                    <td className="p-3 text-slate-500">Tren Rayları, Elektrik Telleri, Merdiven Kolları</td>
+                  </tr>
+                  <tr className="hover:bg-amber-50/40 transition-colors">
+                    <td className="p-3 font-bold text-amber-900 flex items-center gap-1.5">
+                      <span>⚡</span> 4. Kesen Doğru
+                    </td>
+                    <td className="p-3 font-bold text-amber-700">2 Nokta (A ve B)</td>
+                    <td className="p-3">Toplam 8 Açı (4 A noktasında, 4 B noktasında)</td>
+                    <td className="p-3 font-mono font-bold text-amber-800">k₁ // k₂ ve t keseni</td>
+                    <td className="p-3 text-slate-500">Rayları kesen yaya geçidi / Karayolu köprüsü</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* 5. Alt Bilgi & Puanlama */}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+            <span className="flex items-center gap-1.5 font-semibold">
+              <Award className="w-4 h-4 text-blue-500" />
+              <span>
+                <strong>Değerlendirme:</strong> 4 Bölüm x 25 Puan = Toplam 100 Puan (SDB3.3 / E3.7 Maarif Geometri Modeli)
+              </span>
+            </span>
+            <span className="font-mono font-bold text-slate-400">www.maarifakademi.com.tr</span>
           </div>
 
         </div>
@@ -5325,7 +6244,9 @@ export function ActivitySheetView({
             <span>Sıradaki Aşama: Öz Değerlendirme Rubriği</span>
           </div>
           <p className="text-xs text-slate-500">
-            {isErrorDetectiveActivity
+            {isLinesRelationsActivity
+              ? 'Doğruların Birbirine Göre Durumları (Kesişen, Dik, Paralel, Kesen) gözlem ve sınıflandırma adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi geometrik çıkarım becerilerinizi değerlendiriniz.'
+              : isErrorDetectiveActivity
               ? 'Hata Dedektifi ve Öz Değerlendirme adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı ölçüm ve analiz becerilerinizi değerlendiriniz.'
               : isAngleConstructionActivity
               ? 'Rotanı Kendin Çiz açı inşası adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı çizim becerilerinizi değerlendiriniz.'

@@ -1835,6 +1835,274 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-4-lines-relations',
+    title: 'Etkinlik: "Doğruların Birbirine Göre Durumları" (Gözlem ve Sınıflandırma - MAT.5.3.4)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.4',
+    outcomeTitle: 'Düzlemde İki veya Üç Doğrunun Durumuna Bağlı Olarak Oluşabilecek Açılara Dair Çıkarım Yapabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-10T08:00:00Z',
+    fileSizeKb: 275,
+    tags: ['Etkinlik Kağıdı', 'Doğruların Durumları', 'Kesişen Doğrular', 'Dik Doğrular', 'Paralel Doğrular', 'Kesen Doğru', 'MAT.5.3.4', 'Gözlem ve Sınıflandırma', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #3b82f6; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #eff6ff, #dbeafe); padding: 10px; border-radius: 12px; border: 1px solid #bfdbfe;">
+    <div style="display: inline-block; background: #2563eb; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🔍 GÖZLEM &amp; SINIFLANDIRMA (4. HAFTA - MAT.5.3.4)
+    </div>
+    <h2 style="color: #1e40af; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      DOĞRULARIN BİRBİRİNE GÖRE DURUMLARI (GÖZLEM VE SINIFLANDIRMA)
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Aşağıda verilen doğru çiftlerini inceleyerek ortak nokta sayılarını ve açı durumlarını belirleyiniz.
+    </p>
+  </div>
+
+  <!-- 4 Doğru Durumu (2x2 Grid) -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+    
+    <!-- 1. KESİŞEN DOĞRULAR -->
+    <div style="border: 2px solid #3b82f6; border-radius: 10px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #dbeafe; padding-bottom: 4px; margin-bottom: 6px;">
+          <span style="font-weight: 900; color: #1d4ed8; font-size: 11.5px;">1. KESİŞEN DOĞRULAR</span>
+          <span style="font-size: 9px; font-weight: bold; background: #eff6ff; color: #2563eb; padding: 1px 5px; border-radius: 4px; border: 1px solid #bfdbfe;">25 Puan</span>
+        </div>
+        <p style="font-size: 10px; color: #334155; line-height: 1.35; margin: 0 0 6px 0;">
+          Düzlemde yalnız tek bir ortak noktası olan iki doğru:
+        </p>
+
+        <!-- SVG Çizim Alanı -->
+        <div style="border: 1px dashed #cbd5e1; border-radius: 6px; height: 110px; background: #f8fafc; position: relative; overflow: hidden; margin-bottom: 6px;">
+          <svg viewBox="0 0 240 110" width="100%" height="100%">
+            <!-- Grid çizgileri -->
+            <line x1="20" y1="85" x2="220" y2="25" stroke="#2563eb" stroke-width="2.5" />
+            <polygon points="215,22 225,24 220,32" fill="#2563eb" />
+            <polygon points="25,78 15,86 20,94" fill="#2563eb" />
+            <text x="228" y="28" font-family="monospace" font-size="10" font-weight="bold" fill="#1d4ed8">d₁</text>
+
+            <line x1="30" y1="20" x2="210" y2="90" stroke="#0ea5e9" stroke-width="2.5" />
+            <polygon points="205,82 215,92 205,96" fill="#0ea5e9" />
+            <polygon points="35,16 25,18 30,26" fill="#0ea5e9" />
+            <text x="218" y="96" font-family="monospace" font-size="10" font-weight="bold" fill="#0284c7">d₂</text>
+
+            <!-- Kesişim Noktası K (120, 55) -->
+            <circle cx="120" cy="55" r="4" fill="#ef4444" />
+            <text x="120" y="44" font-family="system-ui" font-size="10" font-weight="900" fill="#dc2626" text-anchor="middle">K</text>
+
+            <!-- Açı Yayları -->
+            <path d="M 140 49 A 20 20 0 0 0 135 61" fill="none" stroke="#64748b" stroke-width="1.2" />
+            <path d="M 100 61 A 20 20 0 0 0 105 49" fill="none" stroke="#64748b" stroke-width="1.2" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Sorular & Cevap Alanı -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; font-size: 9.5px; color: #1e293b;">
+        <div style="font-weight: 700; margin-bottom: 3px;">❓ <strong>Sorular:</strong></div>
+        <div style="margin-bottom: 2px;">• Kesiştiği noktada oluşan açı sayısı: <span style="border-bottom: 1.5px solid #3b82f6; min-width: 40px; display: inline-block;">&nbsp;</span></div>
+        <div>• Doğruların ortak nokta sayısı: <span style="border-bottom: 1.5px solid #3b82f6; min-width: 40px; display: inline-block;">&nbsp;</span></div>
+      </div>
+    </div>
+
+    <!-- 2. DİK DOĞRULAR -->
+    <div style="border: 2px solid #10b981; border-radius: 10px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #d1fae5; padding-bottom: 4px; margin-bottom: 6px;">
+          <span style="font-weight: 900; color: #047857; font-size: 11.5px;">2. DİK DOĞRULAR</span>
+          <span style="font-size: 9px; font-weight: bold; background: #ecfdf5; color: #059669; padding: 1px 5px; border-radius: 4px; border: 1px solid #a7f3d0;">25 Puan</span>
+        </div>
+        <p style="font-size: 10px; color: #334155; line-height: 1.35; margin: 0 0 6px 0;">
+          Kesişirken 90°'lik açı oluşturan iki doğru:
+        </p>
+
+        <!-- SVG Çizim Alanı -->
+        <div style="border: 1px dashed #cbd5e1; border-radius: 6px; height: 110px; background: #f8fafc; position: relative; overflow: hidden; margin-bottom: 6px;">
+          <svg viewBox="0 0 240 110" width="100%" height="100%">
+            <!-- Yatay Doğru m -->
+            <line x1="20" y1="55" x2="220" y2="55" stroke="#059669" stroke-width="2.5" />
+            <polygon points="215,51 225,55 215,59" fill="#059669" />
+            <polygon points="25,51 15,55 25,59" fill="#059669" />
+            <text x="228" y="59" font-family="monospace" font-size="10" font-weight="bold" fill="#047857">m</text>
+
+            <!-- Düşey Doğru n -->
+            <line x1="120" y1="12" x2="120" y2="98" stroke="#10b981" stroke-width="2.5" />
+            <polygon points="116,18 120,8 124,18" fill="#10b981" />
+            <polygon points="116,92 120,102 124,92" fill="#10b981" />
+            <text x="126" y="16" font-family="monospace" font-size="10" font-weight="bold" fill="#047857">n</text>
+
+            <!-- 90° Diklik Sembolü (120, 55) -->
+            <rect x="120" y="37" width="16" height="18" fill="none" stroke="#047857" stroke-width="1.5" />
+            <circle cx="128" cy="46" r="2" fill="#047857" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Sorular & Cevap Alanı -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; font-size: 9.5px; color: #1e293b;">
+        <div style="font-weight: 700; margin-bottom: 3px;">❓ <strong>Sorular:</strong></div>
+        <div style="margin-bottom: 2px;">• Oluşan 4 açının ölçüsü: <span style="border-bottom: 1.5px solid #10b981; min-width: 40px; display: inline-block;">&nbsp;</span></div>
+        <div>• Diklik sembolü (⊥) ile gösterimi: <span style="border-bottom: 1.5px solid #10b981; min-width: 50px; display: inline-block;">&nbsp;</span></div>
+      </div>
+    </div>
+
+    <!-- 3. PARALEL DOĞRULAR -->
+    <div style="border: 2px solid #8b5cf6; border-radius: 10px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 4px; margin-bottom: 6px;">
+          <span style="font-weight: 900; color: #6d28d9; font-size: 11.5px;">3. PARALEL DOĞRULAR</span>
+          <span style="font-size: 9px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 1px 5px; border-radius: 4px; border: 1px solid #ddd6fe;">25 Puan</span>
+        </div>
+        <p style="font-size: 10px; color: #334155; line-height: 1.35; margin: 0 0 6px 0;">
+          Birbirini hiçbir zaman kesmeyen iki doğru:
+        </p>
+
+        <!-- SVG Çizim Alanı -->
+        <div style="border: 1px dashed #cbd5e1; border-radius: 6px; height: 110px; background: #f8fafc; position: relative; overflow: hidden; margin-bottom: 6px;">
+          <svg viewBox="0 0 240 110" width="100%" height="100%">
+            <!-- Üst Doğru p -->
+            <line x1="20" y1="35" x2="220" y2="35" stroke="#7c3aed" stroke-width="2.5" />
+            <polygon points="215,31 225,35 215,39" fill="#7c3aed" />
+            <polygon points="25,31 15,35 25,39" fill="#7c3aed" />
+            <text x="228" y="39" font-family="monospace" font-size="10" font-weight="bold" fill="#6d28d9">p</text>
+
+            <!-- Alt Doğru r -->
+            <line x1="20" y1="75" x2="220" y2="75" stroke="#8b5cf6" stroke-width="2.5" />
+            <polygon points="215,71 225,75 215,79" fill="#8b5cf6" />
+            <polygon points="25,71 15,75 25,79" fill="#8b5cf6" />
+            <text x="228" y="79" font-family="monospace" font-size="10" font-weight="bold" fill="#6d28d9">r</text>
+
+            <!-- Sabit Mesafe Göstergesi (d) -->
+            <line x1="120" y1="35" x2="120" y2="75" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 2" />
+            <rect x="120" y="35" width="6" height="6" fill="none" stroke="#94a3b8" stroke-width="1" />
+            <rect x="120" y="69" width="6" height="6" fill="none" stroke="#94a3b8" stroke-width="1" />
+            <text x="130" y="58" font-family="system-ui" font-size="8.5" font-weight="bold" fill="#64748b">Eşit Mesafe</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Sorular & Cevap Alanı -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; font-size: 9.5px; color: #1e293b;">
+        <div style="font-weight: 700; margin-bottom: 3px;">❓ <strong>Sorular:</strong></div>
+        <div style="margin-bottom: 2px;">• Ortak noktası var mıdır? (Kaç adet?): <span style="border-bottom: 1.5px solid #8b5cf6; min-width: 40px; display: inline-block;">&nbsp;</span></div>
+        <div style="margin-bottom: 2px;">• Aralarında açı oluşur mu? Neden?: <span style="border-bottom: 1.5px solid #8b5cf6; min-width: 50px; display: inline-block;">&nbsp;</span></div>
+        <div>• Paralellik sembolü ile gösterimi: <span style="border-bottom: 1.5px solid #8b5cf6; min-width: 40px; display: inline-block;">&nbsp;</span> <em>(Örn: p // r)</em></div>
+      </div>
+    </div>
+
+    <!-- 4. KESEN DOĞRU -->
+    <div style="border: 2px solid #f59e0b; border-radius: 10px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #fef3c7; padding-bottom: 4px; margin-bottom: 6px;">
+          <span style="font-weight: 900; color: #d97706; font-size: 11.5px;">4. KESEN DOĞRU</span>
+          <span style="font-size: 9px; font-weight: bold; background: #fffbeb; color: #d97706; padding: 1px 5px; border-radius: 4px; border: 1px solid #fde68a;">25 Puan</span>
+        </div>
+        <p style="font-size: 10px; color: #334155; line-height: 1.35; margin: 0 0 6px 0;">
+          Birbirine paralel iki doğruyu farklı noktalarda kesen üçüncü bir doğru:
+        </p>
+
+        <!-- SVG Çizim Alanı -->
+        <div style="border: 1px dashed #cbd5e1; border-radius: 6px; height: 110px; background: #f8fafc; position: relative; overflow: hidden; margin-bottom: 6px;">
+          <svg viewBox="0 0 240 110" width="100%" height="100%">
+            <!-- Paralel Doğru k1 -->
+            <line x1="20" y1="35" x2="220" y2="35" stroke="#d97706" stroke-width="2.5" />
+            <polygon points="215,31 225,35 215,39" fill="#d97706" />
+            <polygon points="25,31 15,35 25,39" fill="#d97706" />
+            <text x="228" y="39" font-family="monospace" font-size="10" font-weight="bold" fill="#b45309">k₁</text>
+
+            <!-- Paralel Doğru k2 -->
+            <line x1="20" y1="80" x2="220" y2="80" stroke="#d97706" stroke-width="2.5" />
+            <polygon points="215,76 225,80 215,84" fill="#d97706" />
+            <polygon points="25,76 15,80 25,84" fill="#d97706" />
+            <text x="228" y="84" font-family="monospace" font-size="10" font-weight="bold" fill="#b45309">k₂</text>
+
+            <!-- Kesen Doğru t -->
+            <line x1="60" y1="15" x2="180" y2="100" stroke="#dc2626" stroke-width="2.5" />
+            <polygon points="175,93 185,103 172,103" fill="#dc2626" />
+            <polygon points="65,12 55,10 68,22" fill="#dc2626" />
+            <text x="188" y="102" font-family="monospace" font-size="10" font-weight="bold" fill="#dc2626">t</text>
+
+            <!-- Kesişim Noktaları A ve B -->
+            <circle cx="88" cy="35" r="3.5" fill="#dc2626" />
+            <text x="80" y="30" font-family="system-ui" font-size="9.5" font-weight="900" fill="#dc2626">A</text>
+
+            <circle cx="152" cy="80" r="3.5" fill="#dc2626" />
+            <text x="160" y="93" font-family="system-ui" font-size="9.5" font-weight="900" fill="#dc2626">B</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Sorular & Cevap Alanı -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; font-size: 9.5px; color: #1e293b;">
+        <div style="font-weight: 700; margin-bottom: 3px;">❓ <strong>Sorular:</strong></div>
+        <div style="margin-bottom: 2px;">• İki paralel doğruyu kesen 3. doğruya ne ad verilir?: <span style="border-bottom: 1.5px solid #f59e0b; min-width: 50px; display: inline-block;">&nbsp;</span></div>
+        <div>• Kesen doğrunun oluşturduğu toplam açı sayısı: <span style="border-bottom: 1.5px solid #f59e0b; min-width: 40px; display: inline-block;">&nbsp;</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sonuç / Karşılaştırma Matrisi -->
+  <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 12px; margin-bottom: 8px;">
+    <div style="font-size: 10.5px; font-weight: 900; color: #1e293b; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+      📊 <strong>SONUÇ &amp; ÇIKARIM TABLOSU:</strong>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; text-align: center;">
+      <thead>
+        <tr style="background: #f1f5f9; color: #334155; font-weight: bold; border-bottom: 1px solid #cbd5e1;">
+          <th style="padding: 4px 6px; text-align: left;">Doğru Durumu</th>
+          <th style="padding: 4px 6px;">Ortak Nokta Sayısı</th>
+          <th style="padding: 4px 6px;">Açı Özelliği</th>
+          <th style="padding: 4px 6px;">Sembolik Gösterim</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 4px 6px; text-align: left; font-weight: 700; color: #1d4ed8;">1. Kesişen Doğrular</td>
+          <td style="padding: 4px 6px;">1</td>
+          <td style="padding: 4px 6px;">4 Açı Oluşur (Karşılıklı ters açılar eşit)</td>
+          <td style="padding: 4px 6px; font-family: monospace;">d₁ ∩ d₂ = {K}</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+          <td style="padding: 4px 6px; text-align: left; font-weight: 700; color: #047857;">2. Dik Doğrular</td>
+          <td style="padding: 4px 6px;">1</td>
+          <td style="padding: 4px 6px;">4 Açı da 90° (Dik Açı)</td>
+          <td style="padding: 4px 6px; font-family: monospace;">m ⊥ n</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 4px 6px; text-align: left; font-weight: 700; color: #6d28d9;">3. Paralel Doğrular</td>
+          <td style="padding: 4px 6px;">0 (Yoktur)</td>
+          <td style="padding: 4px 6px;">Kesişmedikleri için açı oluşmaz</td>
+          <td style="padding: 4px 6px; font-family: monospace;">p // r</td>
+        </tr>
+        <tr style="background: #ffffff;">
+          <td style="padding: 4px 6px; text-align: left; font-weight: 700; color: #d97706;">4. Kesen Doğru</td>
+          <td style="padding: 4px 6px;">2 (A ve B)</td>
+          <td style="padding: 4px 6px;">Toplam 8 Açı Oluşur (4 + 4)</td>
+          <td style="padding: 4px 6px; font-family: monospace;">k₁ // k₂, t kesen</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Alt Bilgi / Puanlama -->
+  <div style="padding: 8px 12px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; font-size: 10px; color: #1e40af; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> 4 Bölüm x 25P = 100 Puan. (SDB3.3 / E3.7 Maarif Geometri Atölyesi)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
