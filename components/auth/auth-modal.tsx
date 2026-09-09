@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { TeacherRegisterWizard } from './teacher-register-wizard';
@@ -90,8 +91,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
             
             {/* Header & Tabs */}
             <div className="space-y-4 text-center">
-              <div className="w-16 h-16 rounded-3xl bg-teal-50 border-2 border-teal-200 text-teal-700 text-3xl flex items-center justify-center mx-auto shadow-inner">
-                🏛️
+              <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-lg mx-auto shrink-0">
+                <Image
+                  src="/logo-192.png"
+                  alt="Maarif Akademi Logo"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">

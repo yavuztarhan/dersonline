@@ -1655,12 +1655,20 @@ export function WhiteboardModal({
                 {/* Compact Minimalist Maarif Header on Page 1 */}
                 {pIdx === 0 && (
                   <div className="px-6 py-2 border-b border-slate-200/60 flex items-center justify-between pointer-events-none select-none bg-slate-50/40">
-                    <div>
-                      <div className="text-[9px] font-black text-teal-800 uppercase tracking-wide">
-                        MEB • TÜRKİYE YÜZYILI MAARİF MODELİ
-                      </div>
-                      <div className="text-xs font-extrabold text-slate-900 leading-tight">
-                        Matematik Dersi Beyaz Tahta Notları • {outcomeCode}
+                    <div className="flex items-center gap-2.5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/logo-192.png"
+                        alt="Logo"
+                        className="w-6 h-6 rounded-md object-cover border border-amber-500/30 shrink-0"
+                      />
+                      <div>
+                        <div className="text-[9px] font-black text-teal-800 uppercase tracking-wide">
+                          MEB • TÜRKİYE YÜZYILI MAARİF MODELİ
+                        </div>
+                        <div className="text-xs font-extrabold text-slate-900 leading-tight">
+                          Matematik Dersi Beyaz Tahta Notları • {outcomeCode}
+                        </div>
                       </div>
                     </div>
 

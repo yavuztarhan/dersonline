@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '@/lib/store';
 import { useAuth } from '@/lib/auth-store';
@@ -77,8 +78,15 @@ export function Navbar() {
               className="flex items-center gap-3 group text-left transition-transform active:scale-95"
               title="Ana Sayfaya Dön"
             >
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-all">
-                <GraduationCap className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-xl overflow-hidden shadow-md shadow-red-950/20 group-hover:scale-105 transition-all shrink-0 border border-amber-500/30">
+                <Image
+                  src="/logo-192.png"
+                  alt="Maarif Akademi Logo"
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
               <div>
                 <div className="flex items-center gap-2">

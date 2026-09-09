@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { GoogleSignInModal } from '@/components/auth/google-sign-in-modal';
 import { useAuth } from '@/lib/auth-store';
@@ -71,10 +72,22 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
 
         <div className="relative z-10 max-w-4xl space-y-6">
           
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-black uppercase tracking-wider">
-            <Sparkles className="w-4 h-4 text-teal-400" />
-            <span>Türkiye Yüzyılı Maarif Modeli • 5. Sınıf Matematik</span>
+          {/* Badge & Logo */}
+          <div className="flex items-center gap-3.5 flex-wrap">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg border border-amber-500/40 shrink-0 bg-slate-950">
+              <Image
+                src="/logo-192.png"
+                alt="Maarif Akademi Logo"
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
+                priority
+              />
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-black uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-teal-400" />
+              <span>Türkiye Yüzyılı Maarif Modeli • 5. Sınıf Matematik</span>
+            </div>
           </div>
 
           {/* Headline */}
