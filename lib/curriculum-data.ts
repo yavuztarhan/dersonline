@@ -1599,8 +1599,8 @@ export const CURRICULUM_DATA: Grade[] = [
                               text: 'Bir sayıyı kalansız bölen her pozitif tam sayı, o sayının bir ÇARPANI veya BÖLENİDİR. 36 şişeyi 1\'erli, 2\'şerli, 3\'erli, 4\'erli, 6\'şarlı, 9\'arlı, 12\'şerli, 18\'erli veya 36\'şarlı paketleyebiliriz!'
                             },
                             visualScene: {
-                              type: 'intersecting-lines',
-                              caption: '36 birimlik alan: 1×36, 2×18, 3×12, 4×9 ve 6×6 dikdörtgenleri ile modellenir.'
+                              type: 'factors-area-model',
+                              caption: '36 şişelik zeytinyağı kolisi: 1×36, 2×18, 3×12, 4×9 ve 6×6 dikdörtgenleri ile modellenir.'
                             },
                             interactiveAction: {
                               prompt: '36 şişenin tüm çarpan ikililerini keşfederek eksiksiz koli planı oluşturun!',
@@ -1622,8 +1622,8 @@ export const CURRICULUM_DATA: Grade[] = [
                               text: 'Gözlerime inanamıyorum! En dıştaki 1 ile 36\'nın çarpımı 36, bir içteki 2 ile 18\'in çarpımı 36, 3 ile 12\'nin çarpımı 36, 4 ile 9\'un çarpımı 36! Tam ortadaki 6 ise kendisiyle çarpılınca (6×6=36) kalbi oluşturuyor!'
                             },
                             visualScene: {
-                              type: 'intersecting-lines',
-                              caption: 'Çarpan Gökkuşağı: Karşılıklı yayların uçlarındaki sayıların çarpımı daima ana sayıyı verir.'
+                              type: 'factors-rainbow-arc',
+                              caption: '36 sayısının çarpan gökkuşağı: Karşılıklı yayların uçlarındaki sayıların çarpımı daima 36\'yı verir.'
                             },
                             interactiveAction: {
                               prompt: 'Gökkuşağı yaylarını birleştirerek eksik kalan çarpan çiftini yakalayın!',
@@ -1645,8 +1645,8 @@ export const CURRICULUM_DATA: Grade[] = [
                               text: '12\'nin 1 katı 12. dakika, 2 katı 24. dakika, 3 katı 36. dakika, 4 katı 48. dakika, 5 katı 60. dakika (yani 1. saat)! Bir sayının pozitif tam sayılarla (1, 2, 3...) çarpılmasıyla elde edilen sayılara o sayının KATLARI denir.'
                             },
                             visualScene: {
-                              type: 'intersecting-lines',
-                              caption: 'Sayı doğrusunda 12 birimlik eşit sıçramalar 12\'nin katlarını oluşturur.'
+                              type: 'multiples-number-line',
+                              caption: 'Yardım tırlarının 12 dakikada bir hareketi: Sayı doğrusunda 12\'nin katları (12, 24, 36, 48, 60, 72, 84, 96...).'
                             },
                             interactiveAction: {
                               prompt: '12\'nin 100\'den küçük en büyük katını sayı doğrusunda bulun!',
@@ -1668,8 +1668,8 @@ export const CURRICULUM_DATA: Grade[] = [
                               text: 'Eğer 6 ile 8\'i çarptığımızda 48 buluyorsak; 6 ve 8 sayıları 48\'in ÇARPANI (BÖLENİ), 48 sayısı ise hem 6\'nın hem de 8\'in bir KATIDIR!'
                             },
                             visualScene: {
-                              type: 'intersecting-lines',
-                              caption: 'Çarpan ve kat madalyonun iki yüzü gibidir: Parçalardan bütüne (çarpan), bütünden ritmik ilerlemeye (kat).'
+                              type: 'factors-multiples-duality',
+                              caption: 'Çarpan ve kat madalyonun iki yüzüdür: 6 × 8 = 48 eşitliğinde 6 ve 8 çarpan, 48 ise kattır.'
                             },
                             interactiveAction: {
                               prompt: 'Çarpan ve kat ilişkisini özetleyen formülü onaylayın!',

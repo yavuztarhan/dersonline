@@ -47,6 +47,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [scene43Tested, setScene43Tested] = useState(false);
   const [scene44Tested, setScene44Tested] = useState(false);
   const [scene45Tested, setScene45Tested] = useState(false);
+  // 6. Sınıf MAT.6.1.1 interactive states
+  const [selectedFactorAreaIndex, setSelectedFactorAreaIndex] = useState(3); // 0: 1x36, 1: 2x18, 2: 3x12, 3: 4x9, 4: 6x6
+  const [activeRainbowPair, setActiveRainbowPair] = useState<number | null>(3); // 0: 1-36, 1: 2-18, 2: 3-12, 3: 4-9, 4: 6-6
+  const [selectedMultipleIndex, setSelectedMultipleIndex] = useState(4); // 12x5 = 60
+  const [dualityFlipped, setDualityFlipped] = useState(false);
 
   const pages: StorybookPage[] = data.pages || [
     {
@@ -1068,6 +1073,404 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   </svg>
                 )}
 
+                {/* SCENE 9: 6. SINIF MAT.6.1.1 - KOLİLEME DÜZENİ & ALAN MODELLERİ */}
+                {currentPage.visualScene.type === 'factors-area-model' && (
+                  <div className="w-full h-full p-3 bg-slate-950 flex flex-col justify-between select-none">
+                    {/* Top Configuration Selector */}
+                    <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
+                      <span className="text-[11px] font-black text-amber-400 flex items-center gap-1">
+                        <span>📦 36 Şişe Koli Düzeni:</span>
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {[
+                          { w: 1, h: 36, label: '1×36' },
+                          { w: 2, h: 18, label: '2×18' },
+                          { w: 3, h: 12, label: '3×12' },
+                          { w: 4, h: 9, label: '4×9' },
+                          { w: 6, h: 6, label: '6×6' }
+                        ].map((cfg, idx) => (
+                          <button
+                            key={cfg.label}
+                            onClick={() => {
+                              setSelectedFactorAreaIndex(idx);
+                              playSound('select');
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                              selectedFactorAreaIndex === idx
+                                ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {cfg.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Interactive 2D Grid Visual Scene */}
+                    <div className="flex-1 flex items-center justify-center p-2">
+                      {(() => {
+                        const configs = [
+                          { w: 1, h: 36, rows: 1, cols: 36 },
+                          { w: 2, h: 18, rows: 2, cols: 18 },
+                          { w: 3, h: 12, rows: 3, cols: 12 },
+                          { w: 4, h: 9, rows: 4, cols: 9 },
+                          { w: 6, h: 6, rows: 6, cols: 6 }
+                        ];
+                        const active = configs[selectedFactorAreaIndex] || configs[3];
+
+                        return (
+                          <div className="flex flex-col items-center gap-2">
+                            {/* Dimension Labels */}
+                            <div className="flex items-center gap-2 text-xs font-mono font-black text-slate-300">
+                              <span className="text-amber-400">{active.rows} Sıra</span>
+                              <span>×</span>
+                              <span className="text-cyan-400">{active.cols} Sütun</span>
+                              <span>=</span>
+                              <span className="text-emerald-400 font-bold bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/40">
+                                36 Şişe (Alan)
+                              </span>
+                            </div>
+
+                            {/* Rendered Box Grid */}
+                            <div
+                              className="bg-slate-900 border-2 border-amber-500/50 rounded-xl p-2.5 shadow-xl flex flex-col gap-1 max-h-[140px] overflow-auto"
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: `repeat(${active.cols}, minmax(0, 1fr))`,
+                                gap: '3px'
+                              }}
+                            >
+                              {Array.from({ length: 36 }).map((_, i) => (
+                                <div
+                                  key={i}
+                                  className={`w-3.5 h-3.5 rounded-sm flex items-center justify-center text-[7px] font-bold ${
+                                    selectedFactorAreaIndex === 4
+                                      ? 'bg-purple-500 text-white'
+                                      : 'bg-amber-400/90 text-slate-950'
+                                  } shadow-xs transition-transform hover:scale-125`}
+                                  title={`Şişe #${i + 1}`}
+                                >
+                                  🫒
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Bottom Fact Banner */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-2 text-center text-[10px] text-slate-300">
+                      <span className="text-amber-300 font-bold">🎯 Çıkarım: </span>
+                      36 sayısının çarpanları (bölenleri):{' '}
+                      <span className="font-mono text-emerald-300 font-black">
+                        {'{ 1, 2, 3, 4, 6, 9, 12, 18, 36 }'}
+                      </span>{' '}
+                      (9 Adet firesiz koli düzeni)
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE 10: 6. SINIF MAT.6.1.1 - ÇARPAN GÖKKUŞAĞI & SİMETRİ YAYLARI */}
+                {currentPage.visualScene.type === 'factors-rainbow-arc' && (
+                  <svg className="w-full h-full select-none" viewBox="0 0 400 280">
+                    <rect width="400" height="280" fill="#080c1a" />
+                    
+                    {/* Stars / Dust in Background */}
+                    <circle cx="50" cy="40" r="1.5" fill="#fde047" opacity="0.4" />
+                    <circle cx="350" cy="50" r="1.5" fill="#fde047" opacity="0.4" />
+                    <circle cx="200" cy="20" r="2" fill="#38bdf8" opacity="0.5" />
+
+                    {/* Title Tag */}
+                    <rect x="100" y="12" width="200" height="24" rx="12" fill="#1e1b4b" stroke="#6366f1" strokeWidth="1.2" />
+                    <text x="200" y="28" fill="#c7d2fe" fontSize="11" fontWeight="900" textAnchor="middle">
+                      🌈 36 Sayısının Çarpan Gökkuşağı
+                    </text>
+
+                    {/* Interactive Rainbow Arcs */}
+                    {/* Arc 0: 1 - 36 (Rose) */}
+                    <path
+                      d="M 50 195 A 150 130 0 0 1 350 195"
+                      fill="none"
+                      stroke={activeRainbowPair === 0 ? '#f43f5e' : '#f43f5e55'}
+                      strokeWidth={activeRainbowPair === 0 ? '4' : '2'}
+                      className="cursor-pointer transition-all"
+                      onClick={() => { setActiveRainbowPair(0); playSound('select'); }}
+                    />
+                    {/* Arc 1: 2 - 18 (Amber) */}
+                    <path
+                      d="M 85 195 A 115 100 0 0 1 315 195"
+                      fill="none"
+                      stroke={activeRainbowPair === 1 ? '#f59e0b' : '#f59e0b55'}
+                      strokeWidth={activeRainbowPair === 1 ? '4' : '2'}
+                      className="cursor-pointer transition-all"
+                      onClick={() => { setActiveRainbowPair(1); playSound('select'); }}
+                    />
+                    {/* Arc 2: 3 - 12 (Emerald) */}
+                    <path
+                      d="M 120 195 A 80 70 0 0 1 280 195"
+                      fill="none"
+                      stroke={activeRainbowPair === 2 ? '#10b981' : '#10b98155'}
+                      strokeWidth={activeRainbowPair === 2 ? '4' : '2'}
+                      className="cursor-pointer transition-all"
+                      onClick={() => { setActiveRainbowPair(2); playSound('select'); }}
+                    />
+                    {/* Arc 3: 4 - 9 (Cyan) */}
+                    <path
+                      d="M 155 195 A 45 40 0 0 1 245 195"
+                      fill="none"
+                      stroke={activeRainbowPair === 3 ? '#06b6d4' : '#06b6d455'}
+                      strokeWidth={activeRainbowPair === 3 ? '4' : '2'}
+                      className="cursor-pointer transition-all"
+                      onClick={() => { setActiveRainbowPair(3); playSound('select'); }}
+                    />
+                    {/* Loop 4: 6 x 6 (Purple Heart Loop) */}
+                    <circle
+                      cx="200"
+                      cy="175"
+                      r="16"
+                      fill={activeRainbowPair === 4 ? '#8b5cf644' : 'none'}
+                      stroke={activeRainbowPair === 4 ? '#a855f7' : '#8b5cf655'}
+                      strokeWidth={activeRainbowPair === 4 ? '3.5' : '2'}
+                      strokeDasharray="3,3"
+                      className="cursor-pointer transition-all"
+                      onClick={() => { setActiveRainbowPair(4); playSound('select'); }}
+                    />
+
+                    {/* Nodes & Factor Numbers along the line */}
+                    {[
+                      { num: 1, x: 50, pair: 0, color: '#f43f5e' },
+                      { num: 2, x: 85, pair: 1, color: '#f59e0b' },
+                      { num: 3, x: 120, pair: 2, color: '#10b981' },
+                      { num: 4, x: 155, pair: 3, color: '#06b6d4' },
+                      { num: 6, x: 200, pair: 4, color: '#a855f7' },
+                      { num: 9, x: 245, pair: 3, color: '#06b6d4' },
+                      { num: 12, x: 280, pair: 2, color: '#10b981' },
+                      { num: 18, x: 315, pair: 1, color: '#f59e0b' },
+                      { num: 36, x: 350, pair: 0, color: '#f43f5e' }
+                    ].map((node) => {
+                      const isActive = activeRainbowPair === node.pair;
+                      return (
+                        <g
+                          key={node.num}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setActiveRainbowPair(node.pair);
+                            playSound('select');
+                          }}
+                        >
+                          <circle
+                            cx={node.x}
+                            cy="195"
+                            r={isActive ? '14' : '11'}
+                            fill={isActive ? node.color : '#1e293b'}
+                            stroke={node.color}
+                            strokeWidth="2"
+                            className="transition-all"
+                          />
+                          <text
+                            x={node.x}
+                            y="200"
+                            fill={isActive ? '#0f172a' : '#ffffff'}
+                            fontSize={isActive ? '13' : '11'}
+                            fontWeight="900"
+                            textAnchor="middle"
+                          >
+                            {node.num}
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Active Equation Pill */}
+                    <g transform="translate(200, 248)">
+                      <rect x="-140" y="-14" width="280" height="28" rx="10" fill="#0f172a" stroke="#8b5cf6" strokeWidth="1.5" />
+                      <text x="0" y="5" fill="#fbcfe8" fontSize="12" fontWeight="black" textAnchor="middle">
+                        {activeRainbowPair === 0 && '✨ 1 × 36 = 36 (En Dış Yay)'}
+                        {activeRainbowPair === 1 && '✨ 2 × 18 = 36 (2. Simetrik Yay)'}
+                        {activeRainbowPair === 2 && '✨ 3 × 12 = 36 (3. Simetrik Yay)'}
+                        {activeRainbowPair === 3 && '✨ 4 × 9 = 36 (4. Simetrik Yay)'}
+                        {activeRainbowPair === 4 && '💖 6 × 6 = 36 (Tam Kare Kalbi / Tek Çarpan)'}
+                      </text>
+                    </g>
+                  </svg>
+                )}
+
+                {/* SCENE 11: 6. SINIF MAT.6.1.1 - RİTMİK SEFERLER & SAYI DOĞRUSUNDA KATLAR */}
+                {currentPage.visualScene.type === 'multiples-number-line' && (
+                  <svg className="w-full h-full select-none" viewBox="0 0 400 280">
+                    <rect width="400" height="280" fill="#0b132b" />
+                    
+                    {/* Title */}
+                    <rect x="80" y="10" width="240" height="24" rx="12" fill="#042f2e" stroke="#10b981" strokeWidth="1.2" />
+                    <text x="200" y="26" fill="#6ee7b7" fontSize="11" fontWeight="900" textAnchor="middle">
+                      ⏱️ 12'nin Katları: İyilik Tırı Sefer Saatleri
+                    </text>
+
+                    {/* Road / Base Line (y = 180) */}
+                    <line x1="20" y1="180" x2="380" y2="180" stroke="#475569" strokeWidth="6" strokeLinecap="round" />
+                    <line x1="20" y1="180" x2="380" y2="180" stroke="#fde047" strokeWidth="2" strokeDasharray="8,6" strokeLinecap="round" />
+
+                    {/* Arrow at the end (Infinite Multiples) */}
+                    <polygon points="390,180 375,173 375,187" fill="#475569" />
+                    <text x="385" y="165" fill="#fde047" fontSize="10" fontWeight="900">∞</text>
+
+                    {/* Multiples Stops: 0, 12, 24, 36, 48, 60, 72, 84, 96, 108, 120 */}
+                    {[
+                      { step: 0, val: 0, x: 30, k: '0' },
+                      { step: 1, val: 12, x: 65, k: '1k' },
+                      { step: 2, val: 24, x: 100, k: '2k' },
+                      { step: 3, val: 36, x: 135, k: '3k' },
+                      { step: 4, val: 48, x: 170, k: '4k' },
+                      { step: 5, val: 60, x: 205, k: '5k (1 Saat)' },
+                      { step: 6, val: 72, x: 240, k: '6k' },
+                      { step: 7, val: 84, x: 275, k: '7k' },
+                      { step: 8, val: 96, x: 310, k: '8k' },
+                      { step: 9, val: 108, x: 345, k: '9k' }
+                    ].map((stop, idx) => {
+                      const isSelected = selectedMultipleIndex === idx;
+                      const prevX = idx > 0 ? 30 + (idx - 1) * 35 : 30;
+
+                      return (
+                        <g
+                          key={stop.val}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setSelectedMultipleIndex(idx);
+                            playSound('select');
+                          }}
+                        >
+                          {/* Jump Arc from prev to current if > 0 */}
+                          {idx > 0 && (
+                            <path
+                              d={`M ${prevX} 180 Q ${(prevX + stop.x) / 2} 120 ${stop.x} 180`}
+                              fill="none"
+                              stroke={isSelected ? '#10b981' : '#10b98144'}
+                              strokeWidth={isSelected ? '3' : '1.5'}
+                            />
+                          )}
+
+                          {/* Stop Node */}
+                          <circle
+                            cx={stop.x}
+                            cy="180"
+                            r={isSelected ? '7' : '4.5'}
+                            fill={isSelected ? '#10b981' : '#334155'}
+                            stroke={isSelected ? '#ffffff' : '#10b981'}
+                            strokeWidth="2"
+                          />
+
+                          {/* Minute Label */}
+                          <text
+                            x={stop.x}
+                            y="202"
+                            fill={isSelected ? '#34d399' : '#94a3b8'}
+                            fontSize={isSelected ? '11' : '9'}
+                            fontWeight={isSelected ? '900' : 'bold'}
+                            textAnchor="middle"
+                          >
+                            {stop.val}'
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Relief Truck Animated Icon at Selected Stop */}
+                    {(() => {
+                      const stops = [30, 65, 100, 135, 170, 205, 240, 275, 310, 345];
+                      const curX = stops[selectedMultipleIndex] || 205;
+                      const curVal = selectedMultipleIndex * 12;
+
+                      return (
+                        <g transform={`translate(${curX - 16}, 90)`} className="transition-all duration-300">
+                          <text fontSize="26">🚛</text>
+                          <rect x="-10" y="-22" width="56" height="20" rx="6" fill="#042f2e" stroke="#10b981" />
+                          <text x="18" y="-8" fill="#34d399" fontSize="10" fontWeight="900" textAnchor="middle">
+                            {curVal}. dk
+                          </text>
+                        </g>
+                      );
+                    })()}
+
+                    {/* Bottom Formula Banner */}
+                    <g transform="translate(200, 248)">
+                      <rect x="-155" y="-14" width="310" height="28" rx="10" fill="#0f172a" stroke="#10b981" strokeWidth="1.5" />
+                      <text x="0" y="5" fill="#6ee7b7" fontSize="11" fontWeight="black" textAnchor="middle">
+                        🚚 {selectedMultipleIndex}. Sefer: 12 × {selectedMultipleIndex} = {selectedMultipleIndex * 12}. Dakika
+                        {selectedMultipleIndex === 5 && ' (Tam 1 Saat!)'}
+                        {selectedMultipleIndex === 8 && ' (100\'den küçük en büyük kat!)'}
+                      </text>
+                    </g>
+                  </svg>
+                )}
+
+                {/* SCENE 12: 6. SINIF MAT.6.1.1 - LOJİSTİK ŞİFRESİ: ÇARPAN VE KATIN DANSI */}
+                {currentPage.visualScene.type === 'factors-multiples-duality' && (
+                  <div className="w-full h-full p-4 bg-slate-950 flex flex-col justify-between items-center select-none">
+                    
+                    {/* Header Seal Badge */}
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-black">
+                        🔐 Çarpan ve Katın Çift Yönlü Dengesi
+                      </span>
+                    </div>
+
+                    {/* Central Interactive Duality Card */}
+                    <div
+                      onClick={() => {
+                        setDualityFlipped(!dualityFlipped);
+                        playSound('select');
+                      }}
+                      className="cursor-pointer w-full max-w-sm bg-gradient-to-br from-slate-900 to-indigo-950 border-2 border-amber-500/60 rounded-2xl p-4 shadow-2xl transition-all hover:scale-102 flex flex-col items-center justify-between text-center space-y-3"
+                    >
+                      {/* Main Formula */}
+                      <div className="text-2xl sm:text-3xl font-mono font-black text-amber-400 tracking-wider">
+                        6 × 8 = 48
+                      </div>
+
+                      {/* Dynamic Flip View */}
+                      {!dualityFlipped ? (
+                        <div className="space-y-1.5 animate-in fade-in duration-200">
+                          <span className="px-3 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-black uppercase tracking-wider border border-cyan-500/40">
+                            1. BAKIŞ: PARÇALAR ⟹ BÖLENLER
+                          </span>
+                          <p className="text-xs font-extrabold text-white">
+                            <span className="text-cyan-400 font-mono text-sm">6</span> ve{' '}
+                            <span className="text-cyan-400 font-mono text-sm">8</span> sayıları,{' '}
+                            <span className="text-amber-400 font-mono text-sm">48</span>'in{' '}
+                            <span className="underline decoration-cyan-400">ÇARPANI (BÖLENİDİR)</span>.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5 animate-in fade-in duration-200">
+                          <span className="px-3 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-wider border border-emerald-500/40">
+                            2. BAKIŞ: BÜTÜN ⟹ KATLAR
+                          </span>
+                          <p className="text-xs font-extrabold text-white">
+                            <span className="text-amber-400 font-mono text-sm">48</span> sayısı, hem{' '}
+                            <span className="text-emerald-400 font-mono text-sm">6</span>'nın hem de{' '}
+                            <span className="text-emerald-400 font-mono text-sm">8</span>'in bir{' '}
+                            <span className="underline decoration-emerald-400">KATIDIR</span>.
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                        <span>🔄 Bakış Açısını Değiştirmek İçin Tıkla</span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Summary Pill */}
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-center text-[10px] text-slate-300">
+                      <span className="text-amber-400 font-bold">a · b = c</span> eşitliğinde{' '}
+                      <span className="text-cyan-300 font-bold">a ve b</span> çarpan,{' '}
+                      <span className="text-emerald-300 font-bold">c</span> ise ortak kattır!
+                    </div>
+
+                  </div>
+                )}
+
                 {/* GENERIC GEOMETRIC CHALKBOARD SCENE FALLBACK (For any unexpected scene type) */}
                 {![
                   'point-map',
@@ -1089,7 +1492,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   'supplementary-angles',
                   'perpendicular-complementary',
                   'parallel-lines-noangle',
-                  'transversal-angles'
+                  'transversal-angles',
+                  'factors-area-model',
+                  'factors-rainbow-arc',
+                  'multiples-number-line',
+                  'factors-multiples-duality'
                 ].includes(currentPage.visualScene.type) && (
                   <div className="w-full h-full p-5 bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 flex flex-col items-center justify-center text-center space-y-3">
                     <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border-2 border-teal-400 text-teal-300 flex items-center justify-center">
@@ -1212,22 +1619,16 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                 "{data.scenario}"
               </p>
 
-              <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xl mb-1">📍</div>
-                  <div className="font-bold text-slate-800">Nokta</div>
-                  <div className="text-[10px] text-slate-500">Konum / Başlangıç</div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xl mb-1">📏</div>
-                  <div className="font-bold text-slate-800">Doğru Parçası</div>
-                  <div className="text-[10px] text-slate-500">Köprü Kirişi</div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xl mb-1">🔦</div>
-                  <div className="font-bold text-slate-800">Işın</div>
-                  <div className="text-[10px] text-slate-500">Fener Işığı</div>
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                {pages.map((p, i) => (
+                  <div key={p.id || i} className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div className="text-xl mb-1">
+                      {i === 0 ? '📦' : i === 1 ? '🌈' : i === 2 ? '⏱️' : '🔐'}
+                    </div>
+                    <div className="font-black text-slate-900 text-xs line-clamp-1">{p.conceptBadge || p.conceptTitle}</div>
+                    <div className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">{p.symbolicCode || `Bölüm ${i + 1}`}</div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -1291,14 +1692,14 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                 }}
                 className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-sm shadow-md shadow-teal-600/20 transition-all flex items-center justify-center gap-2 active:scale-95"
               >
-                <span>2. Aşamaya Geç: Çizim Atölyesi</span>
+                <span>2. Aşamaya Geç: Atölye</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
             {reflectionRevealed && (
               <div className="mt-3 p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 animate-in fade-in duration-200">
-                <strong>Öğretmen İpucu:</strong> Işığın uzayda kesintisiz devam ettiği için uzunluğunun sonlu olamayacağını, köprü kirişinin ise iki nokta arasında sabit kalarak ölçülebilir olduğunu vurgulayınız.
+                <strong>Öğretmen İpucu:</strong> {data.keyTakeaway || 'Öğrencilerin kavramsal gerekçelerini günlük hayat modelleriyle ilişkilendirerek ifade etmelerini destekleyiniz.'}
               </div>
             )}
           </div>
