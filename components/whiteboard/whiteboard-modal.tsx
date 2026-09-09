@@ -460,6 +460,7 @@ export function WhiteboardModal({
   const [selectedObjectId, setSelectedObjectId] = useState<{ type: 'image' | 'shape'; id: string } | null>(null);
   const [shapesDropdownOpen, setShapesDropdownOpen] = useState(false);
   const [symbolsDropdownOpen, setSymbolsDropdownOpen] = useState(false);
+  const [showHeader, setShowHeader] = useState<boolean>(true);
 
   // Modals & UI States
   const [webImageModalOpen, setWebImageModalOpen] = useState(false);
@@ -831,6 +832,7 @@ export function WhiteboardModal({
 
   const insertImageToActivePage = (imageUrl: string) => {
     playSound('success');
+    setActiveMode('text');
     const newImage: WhiteboardImageItem = {
       id: `img-${Date.now()}`,
       url: imageUrl,
@@ -891,6 +893,7 @@ export function WhiteboardModal({
   // --- GEOMETRIC SHAPES MANAGEMENT & 8-HANDLE RESIZING ---
   const handleInsertShape = (shapeData: typeof GEOMETRIC_SHAPES_DATA[0]) => {
     playSound('success');
+    setActiveMode('text');
     const newShape: WhiteboardShapeItem = {
       id: `shape-${Date.now()}`,
       type: shapeData.type,
@@ -933,16 +936,15 @@ export function WhiteboardModal({
     const shape = activePage.shapes?.find((s) => s.id === shapeId);
     if (!shape) return;
     playSound('select');
+    setActiveMode('text');
     const cloned: WhiteboardShapeItem = {
       ...shape,
       id: `shape-${Date.now()}`,
-      x: shape.x + 30,
-      y: shape.y + 30
+      x: Math.min(650, shape.x + 20),
+      y: Math.min(950, shape.y + 20)
     };
     setPages((prev) =>
-      prev.map((p, i) =>
-        i === activePageIndex ? { ...p, shapes: [...(p.shapes || []), cloned] } : p
-      )
+      prev.map((p, i) => (i === activePageIndex ? { ...p, shapes: [...(p.shapes || []), cloned] } : p))
     );
     setSelectedObjectId({ type: 'shape', id: cloned.id });
   };
@@ -1120,40 +1122,63 @@ export function WhiteboardModal({
             </div>
           </div>
 
-          {/* Center: Mode Switch (Çizim vs Metin) */}
-          <div className="flex items-center bg-slate-800 p-1 rounded-2xl border border-slate-700 shadow-inner">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveMode('pen');
-                setSelectedObjectId(null);
-                playSound('click');
-              }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeMode === 'pen'
-                  ? 'bg-teal-500 text-slate-950 shadow-md scale-102'
-                  : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              <PenTool className="w-4 h-4" />
-              <span>Elle Çizim Modu</span>
-            </button>
+          {/* Center: Mode Switch (Çizim vs Metin) & Üstbilgi Toggle */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center bg-slate-800 p-1 rounded-2xl border border-slate-700 shadow-inner">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveMode('pen');
+                  setSelectedObjectId(null);
+                  playSound('click');
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activeMode === 'pen'
+                    ? 'bg-teal-500 text-slate-950 shadow-md scale-102'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                <PenTool className="w-4 h-4" />
+                <span>Elle Çizim Modu</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setActiveMode('text');
-                playSound('click');
-              }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeMode === 'text'
-                  ? 'bg-teal-500 text-slate-950 shadow-md scale-102'
-                  : 'text-slate-300 hover:text-white'
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveMode('text');
+                  playSound('click');
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activeMode === 'text'
+                    ? 'bg-teal-500 text-slate-950 shadow-md scale-102'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                <Type className="w-4 h-4" />
+                <span>Klavye & Metin Modu</span>
+              </button>
+            </div>
+
+            {/* Üstbilgi (Header) Onay Butonu / Checkbox */}
+            <label
+              className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all select-none ${
+                showHeader
+                  ? 'bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-sm'
+                  : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:text-slate-200'
               }`}
+              title={showHeader ? 'Sayfa üst bilgisini gizle (Komple boş sayfa)' : 'Sayfa üst bilgisini göster'}
             >
-              <Type className="w-4 h-4" />
-              <span>Klavye & Metin Modu</span>
-            </button>
+              <input
+                type="checkbox"
+                checked={showHeader}
+                onChange={(e) => {
+                  setShowHeader(e.target.checked);
+                  playSound('click');
+                }}
+                className="w-3.5 h-3.5 rounded accent-teal-500 cursor-pointer"
+              />
+              <span>Üstbilgi</span>
+            </label>
           </div>
 
           {/* Right: Actions (Class, Archive, Save, PDF, Close) */}
@@ -1761,8 +1786,8 @@ export function WhiteboardModal({
                 }}
               >
                 
-                {/* Compact Minimalist Maarif Header on Page 1 */}
-                {pIdx === 0 && (
+                {/* Compact Minimalist Maarif Header on Page 1 (Can be toggled via Üstbilgi checkbox) */}
+                {pIdx === 0 && showHeader && (
                   <div className="px-6 py-2 border-b border-slate-200/60 flex items-center justify-between pointer-events-none select-none bg-slate-50/40">
                     <div className="flex items-center gap-2.5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
