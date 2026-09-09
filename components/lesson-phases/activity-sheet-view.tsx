@@ -2557,15 +2557,20 @@ export function ActivitySheetView({
         /* ========================================================================= */
         <div className="space-y-6 animate-in fade-in duration-300">
           
-          {/* Üst Bilgilendirme ve Büyüteç Kontrolleri */}
-          <div className="bg-gradient-to-r from-rose-500/15 via-red-500/10 to-amber-500/10 border-2 border-rose-500/30 rounded-3xl p-5 shadow-sm space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5 text-rose-950 dark:text-rose-200 font-black text-sm sm:text-base">
-                <span className="text-xl">🕵️‍♂️</span>
-                <span>DEDEKTİFLİK MASASI: "ÖLÇÜM HATASINI ÇÖZ"</span>
+          {/* Üst Bilgilendirme ve Büyüteç Kontrolleri (Yüksek Kontrastlı Tasarım) */}
+          <div className="bg-slate-900 dark:bg-slate-900 border-2 border-rose-500/50 rounded-3xl p-6 shadow-xl space-y-4 text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="text-2xl">🕵️‍♂️</span>
+                <span className="text-base sm:text-lg font-black text-white tracking-wide">
+                  DEDEKTİFLİK MASASI: &ldquo;ÖLÇÜM HATASINI ÇÖZ&rdquo;
+                </span>
+                <span className="bg-rose-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-rose-400">
+                  Dedektif Dosyası
+                </span>
               </div>
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 mr-1">Büyüteç Odağı:</span>
+                <span className="text-xs font-bold text-slate-400 mr-1">Büyüteç Odağı:</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -2574,11 +2579,11 @@ export function ActivitySheetView({
                   }}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     detectiveHighlight === 'all'
-                      ? 'bg-rose-600 text-white border-rose-500 shadow-sm'
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                      ? 'bg-rose-600 text-white border-rose-400 shadow-md scale-105'
+                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
                   }`}
                 >
-                  🔍 Tüm Çizim
+                  🔍 Genel Görünüm
                 </button>
                 <button
                   type="button"
@@ -2588,11 +2593,11 @@ export function ActivitySheetView({
                   }}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     detectiveHighlight === 'center'
-                      ? 'bg-red-600 text-white border-red-500 shadow-sm'
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                      ? 'bg-sky-600 text-white border-sky-400 shadow-md scale-105'
+                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
                   }`}
                 >
-                  📍 1. Hata: Merkez Kayması
+                  📍 1. Odak: Merkez Bölgesi
                 </button>
                 <button
                   type="button"
@@ -2602,49 +2607,49 @@ export function ActivitySheetView({
                   }}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     detectiveHighlight === 'scale'
-                      ? 'bg-amber-600 text-white border-amber-500 shadow-sm'
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                      ? 'bg-amber-600 text-white border-amber-400 shadow-md scale-105'
+                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
                   }`}
                 >
-                  🎯 2. Hata: Çift Ölçek Tuzağı
+                  🎯 2. Odak: Ölçek Bölgesi
                 </button>
               </div>
             </div>
 
-            <p className="text-xs text-rose-900/90 dark:text-rose-200/90 leading-relaxed font-medium">
-              Aşağıdaki görselde bir öğrenci açıölçer (iletki) kullanarak çizilmiş dar açıyı ölçmeye çalışmıştır. Ancak <strong>2 kritik hata</strong> yapmış ve açının ölçüsünü yanlış bulmuştur. Görseli büyüteçle incele, hataları teşhis et ve öz değerlendirmeni yap!
+            <p className="text-xs sm:text-sm text-slate-200 dark:text-slate-200 leading-relaxed font-normal">
+              Aşağıdaki çizimde bir öğrenci dar açıyı iletkiyle ölçmüş ancak <strong className="text-white font-bold">2 kritik hata</strong> yaparak sonucu yanlış bulmuştur. Şemayı dikkatle incele, büyüteç araçlarıyla odaklan ve bu 2 hatayı kendi gözleminle tespit et!
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* SOL KOLON: İNTERAKTİF DEDEKTİF SVG ALANI (lg:col-span-6) */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-6 border-2 border-rose-500/30 shadow-sm space-y-4 flex flex-col justify-between">
+            <div className="lg:col-span-6 bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-6 border-2 border-slate-200 dark:border-slate-700 shadow-sm space-y-4 flex flex-col justify-between">
               <div className="space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-rose-100 dark:border-rose-900/50">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
                   <div className="flex items-center gap-2">
                     <span className="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 font-bold flex items-center justify-center text-xs">
                       🔍
                     </span>
-                    <span className="font-black text-sm text-rose-950 dark:text-rose-100">
-                      Şüpheli Ölçüm Kanıtı
+                    <span className="font-black text-sm text-slate-900 dark:text-white">
+                      İncelenecek Ölçüm Çizimi
                     </span>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-xs font-black bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
-                    Öğrenci Sonucu: 140° ❌
+                  <span className="px-2.5 py-1 rounded-full text-xs font-black bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                    Öğrencinin Okuduğu Değer: 140°
                   </span>
                 </div>
 
                 {/* Konuşma Balonu */}
-                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-2xl p-3 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+                <div className="bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 text-xs text-slate-800 dark:text-slate-200 flex items-start gap-2.5">
                   <span className="text-xl shrink-0">🧑‍🎓</span>
                   <div>
-                    <strong className="block font-bold">Öğrencinin Açıklaması:</strong>
-                    <em>&ldquo;İletkiyi kâğıdın üzerine koydum, ibre 140 çizgisini gösteriyordu. Demek ki bu açı 140°!&rdquo;</em>
+                    <strong className="block font-bold text-slate-900 dark:text-white">Öğrenci Can:</strong>
+                    <em>&ldquo;İletkiyi kâğıdın üzerine koydum, ibrenin kolu 140 çizgisini gösteriyordu. Bu yüzden açının ölçüsüne 140° yazdım.&rdquo;</em>
                   </div>
                 </div>
 
-                {/* Hatalı Ölçüm İnteraktif SVG */}
+                {/* Hatalı Ölçüm İnteraktif SVG (İpuçsuz / Net Şema) */}
                 <div className="h-72 bg-slate-900 rounded-2xl p-2 border border-slate-800 relative overflow-hidden flex items-center justify-center select-none shadow-inner">
                   <svg viewBox="0 0 460 260" className="w-full h-full">
                     <defs>
@@ -2652,48 +2657,45 @@ export function ActivitySheetView({
                         <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#334155" strokeWidth="0.6" opacity="0.4" />
                       </pattern>
                       <radialGradient id="detProtGlass" cx="50%" cy="100%" r="90%">
-                        <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.25" />
-                        <stop offset="80%" stopColor="#0284c7" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#0369a1" stopOpacity="0.6" />
+                        <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.2" />
+                        <stop offset="80%" stopColor="#0284c7" stopOpacity="0.35" />
+                        <stop offset="100%" stopColor="#0369a1" stopOpacity="0.55" />
                       </radialGradient>
                     </defs>
                     <rect width="460" height="260" fill="url(#det_grid)" />
 
-                    {/* 40°'lik Gerçek Dar Açı (Tepe Noktası O=(110, 215)) */}
+                    {/* 40°'lik Dar Açı (Tepe Noktası O=(110, 215)) */}
                     {/* Taban Kolu OA */}
                     <line x1="110" y1="215" x2="410" y2="215" stroke="#f8fafc" strokeWidth="3.5" />
                     <polygon points="405,210 417,215 405,220" fill="#f8fafc" />
-                    <circle cx="360" cy="215" r="4.5" fill="#f8fafc" />
+                    <circle cx="360" cy="215" r="4" fill="#f8fafc" />
                     <text x="360" y="235" fontFamily="system-ui" fontSize="12" fontWeight="800" fill="#94a3b8" textAnchor="middle">A</text>
 
-                    {/* 40° Eğik Kol OB (Tepe (110, 215), len=270 -> dx=207, dy=-173.5 -> (317, 41.5)) */}
+                    {/* 40° Eğik Kol OB */}
                     <line x1="110" y1="215" x2="317" y2="41.5" stroke="#f8fafc" strokeWidth="3.5" />
                     <polygon points="310,38 322,37 319,50" fill="#f8fafc" />
-                    <circle cx="265" cy="85" r="4.5" fill="#f8fafc" />
+                    <circle cx="265" cy="85" r="4" fill="#f8fafc" />
                     <text x="280" y="82" fontFamily="system-ui" fontSize="12" fontWeight="800" fill="#94a3b8">B</text>
 
-                    {/* Gerçek Açı Yayı (40°) */}
-                    <path d="M 170 215 A 60 60 0 0 0 156 176" fill="none" stroke="#22c55e" strokeWidth="3" />
-                    <text x="180" y="195" fontFamily="system-ui" fontSize="12" fontWeight="900" fill="#4ade80">40° (Gerçek)</text>
-
-                    {/* Gerçek Tepe Noktası [O */}
-                    <circle cx="110" cy="215" r="6.5" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
+                    {/* Açının Köşesi [O */}
+                    <circle cx="110" cy="215" r="6" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
                     <text x="90" y="220" textAnchor="end" fontFamily="system-ui" fontSize="14" fontWeight="900" fill="#38bdf8">[O</text>
                     <text x="110" y="248" textAnchor="middle" fontFamily="system-ui" fontSize="10" fontWeight="800" fill="#38bdf8">
-                      (Açının Gerçek Köşesi)
+                      Açının Köşesi (O)
                     </text>
 
-                    {/* HATALI İLETKİ ŞEMASI: Merkez (110, 165) -> 50px (1 cm) YUKARIDA! */}
+                    {/* İLETKİ (Merkez (110, 165)) */}
                     <g transform="translate(0, 0)" opacity="0.92">
                       {/* İletki Yarım Daire Gövdesi */}
                       <path d="M 20 165 A 110 110 0 0 1 240 165 Z" fill="url(#detProtGlass)" stroke="#38bdf8" strokeWidth="2" />
                       <line x1="20" y1="165" x2="240" y2="165" stroke="#38bdf8" strokeWidth="1.8" />
 
-                      {/* İletkinin Hatalı Orijin Merkezi (110, 165) */}
-                      <circle cx="110" cy="165" r="5" fill="#ef4444" stroke="#ffffff" strokeWidth="1.5" />
-                      <circle cx="110" cy="165" r="10" fill="none" stroke="#ef4444" strokeWidth="2" strokeDasharray="3 2" className="animate-pulse" />
-                      <text x="50" y="158" textAnchor="end" fontFamily="system-ui" fontSize="11" fontWeight="900" fill="#f87171">
-                        İletki Merkezi ❌
+                      {/* İletkinin Merkez Noktası (110, 165) */}
+                      <circle cx="110" cy="165" r="4" fill="#38bdf8" stroke="#ffffff" strokeWidth="1" />
+                      <line x1="102" y1="165" x2="118" y2="165" stroke="#ffffff" strokeWidth="1.2" />
+                      <line x1="110" y1="157" x2="110" y2="173" stroke="#ffffff" strokeWidth="1.2" />
+                      <text x="45" y="158" textAnchor="end" fontFamily="system-ui" fontSize="9.5" fontWeight="800" fill="#7dd3fc">
+                        İletki Merkez Noktası
                       </text>
 
                       {/* İletki Derece Yayları ve Rakamları */}
@@ -2702,40 +2704,31 @@ export function ActivitySheetView({
                       <text x="110" y="70" fontFamily="system-ui" fontSize="10" fontWeight="bold" fill="#bae6fd" textAnchor="middle">90°</text>
                       <text x="35" y="161" fontFamily="system-ui" fontSize="9" fontWeight="bold" fill="#bae6fd">180° / 0°</text>
 
-                      {/* Yanlış Okunan 140° Noktası (cos 140 = -0.766, sin 140 = 0.643 -> (110 - 84, 165 - 71) = (26, 94)) */}
-                      <circle cx="50" cy="98" r="13" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4 2" className="animate-pulse" />
-                      <text x="48" y="78" fontFamily="system-ui" fontSize="11" fontWeight="900" fill="#fbbf24" textAnchor="middle">
-                        140° (Yanlış Ölçek! ❌)
+                      {/* 140° / 40° Derece Çizgisi */}
+                      <circle cx="50" cy="98" r="7" fill="none" stroke="#fcd34d" strokeWidth="1.8" />
+                      <text x="46" y="80" fontFamily="system-ui" fontSize="10" fontWeight="800" fill="#fde047" textAnchor="middle">
+                        140° / 40°
                       </text>
                     </g>
 
-                    {/* VURGU KATMANI 1: MERKEZ KAYMASI */}
-                    {(detectiveHighlight === 'all' || detectiveHighlight === 'center') && (
+                    {/* BÜYÜTEÇ ODAĞI 1: MERKEZ BÖLGESİ VURGUSU */}
+                    {detectiveHighlight === 'center' && (
                       <g className="animate-in fade-in duration-200">
-                        <line x1="110" y1="172" x2="110" y2="207" stroke="#ef4444" strokeWidth="2.5" strokeDasharray="4 2" />
-                        <polygon points="106,204 110,212 114,204" fill="#ef4444" />
-                        <rect x="122" y="180" width="125" height="24" rx="6" fill="#450a0a" stroke="#ef4444" strokeWidth="1.2" />
-                        <text x="128" y="196" fontFamily="system-ui" fontSize="10.5" fontWeight="900" fill="#fca5a5">
-                          ⚠️ 1 cm Yukarıda!
+                        <circle cx="110" cy="190" r="32" fill="none" stroke="#38bdf8" strokeWidth="2.5" strokeDasharray="4 3" className="animate-pulse" />
+                        <rect x="150" y="178" width="165" height="26" rx="6" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1.2" />
+                        <text x="158" y="195" fontFamily="system-ui" fontSize="10" fontWeight="900" fill="#e0f2fe">
+                          🔍 Odak 1: İletki Merkezi vs Köşe
                         </text>
                       </g>
                     )}
 
-                    {/* VURGU KATMANI 2: ÇİFT ÖLÇEK TUZAĞI */}
-                    {(detectiveHighlight === 'all' || detectiveHighlight === 'scale') && (
+                    {/* BÜYÜTEÇ ODAĞI 2: ÖLÇEK BÖLGESİ VURGUSU */}
+                    {detectiveHighlight === 'scale' && (
                       <g className="animate-in fade-in duration-200">
-                        <rect x="290" y="115" width="160" height="72" rx="10" fill="#451a03" stroke="#f59e0b" strokeWidth="1.5" />
-                        <text x="300" y="133" fontFamily="system-ui" fontSize="10.5" fontWeight="900" fill="#fcd34d">
-                          ⚠️ ÇİFT ÖLÇEK TUZAĞI:
-                        </text>
-                        <text x="300" y="150" fontFamily="system-ui" fontSize="9.5" fontWeight="700" fill="#fef3c7">
-                          Açı dar açı (&lt;90°) iken
-                        </text>
-                        <text x="300" y="165" fontFamily="system-ui" fontSize="9.5" fontWeight="700" fill="#fef3c7">
-                          dış ölçekteki geniş değer
-                        </text>
-                        <text x="300" y="180" fontFamily="system-ui" fontSize="10" fontWeight="900" fill="#f87171">
-                          (140°) okunmuştur!
+                        <circle cx="50" cy="98" r="24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4 3" className="animate-pulse" />
+                        <rect x="180" y="55" width="190" height="26" rx="6" fill="#451a03" stroke="#f59e0b" strokeWidth="1.2" />
+                        <text x="188" y="72" fontFamily="system-ui" fontSize="10" fontWeight="900" fill="#fef3c7">
+                          🔍 Odak 2: Açı Türü vs İbre Değeri
                         </text>
                       </g>
                     )}
@@ -2743,9 +2736,9 @@ export function ActivitySheetView({
                 </div>
               </div>
 
-              {/* Alt İpucu Kutusu */}
-              <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
-                💡 <em><strong>Dedektif İpucu:</strong> İletkinin merkez deliği açının tepe noktasına tam oturmalı ve açı dar açıysa $90^\circ$'den küçük ölçek ($40^\circ$) okunmalıdır.</em>
+              {/* Alt Bilgi */}
+              <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
+                💡 <em>İletkinin konumunu ve okunan 140° değerini açının dar/geniş durumuyla karşılaştırarak aşağıdaki soruları yanıtla.</em>
               </div>
             </div>
 
@@ -2753,13 +2746,13 @@ export function ActivitySheetView({
             <div className="lg:col-span-6 space-y-5">
               
               {/* GÖREV 1: 2 BÜYÜK HATAYI TESPİT ET */}
-              <div className="bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-6 border-2 border-rose-500/30 shadow-sm space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-rose-100 dark:border-rose-900/50">
+              <div className="bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-6 border-2 border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
                   <div className="flex items-center gap-2">
                     <span className="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 font-bold flex items-center justify-center text-xs">
                       1
                     </span>
-                    <span className="font-black text-sm text-rose-950 dark:text-rose-100">
+                    <span className="font-black text-sm text-slate-900 dark:text-white">
                       GÖREV 1: 2 Büyük Hatayı Teşhis Et
                     </span>
                   </div>
@@ -2777,31 +2770,28 @@ export function ActivitySheetView({
                 </div>
 
                 <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                  ❓ <strong>Soru:</strong> Bu çizimdeki <strong>2 büyük hatayı</strong> tespit et ve doğrusunu seç:
+                  ❓ <strong>Dedektiflik Sorusu:</strong> Çizimdeki <strong>2 büyük hatayı</strong> tespit et ve doğru seçenekleri işaretle:
                 </p>
 
                 {/* HATA 1 TEŞHİSİ */}
-                <div className="space-y-2 p-3.5 bg-rose-50/70 dark:bg-rose-950/20 rounded-2xl border border-rose-200 dark:border-rose-800/50">
-                  <span className="text-xs font-black text-rose-900 dark:text-rose-300 flex items-center gap-1.5">
-                    <span>🚩</span> <span>HATA 1 (Merkez Noktası Hizalama Hatası):</span>
+                <div className="space-y-2 p-3.5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-700">
+                  <span className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>🚩</span> <span>1. HATA (Merkez Konumu ile İlgili Hata):</span>
                   </span>
                   
                   <div className="space-y-1.5">
                     {[
                       {
                         id: 'center',
-                        text: 'İletkinin merkezi açının tepe noktasına (O) oturtulmamış, 1 cm yukarıda bırakılmıştır. (Doğrusu: Merkez tam köşeyle çakışmalıdır)',
-                        correct: true
+                        text: 'İletkinin merkezi açının tepe noktasına (O) oturtulmamış, yukarı kaydırılmıştır.'
                       },
                       {
                         id: 'arms',
-                        text: 'Açının kolları cetvel kullanılmadan kısa çizilmiştir.',
-                        correct: false
+                        text: 'Açının kolları cetvel kullanılmadan kısa çizilmiştir.'
                       },
                       {
                         id: 'rotate',
-                        text: 'İletki 180 derece ters çevrilip tersten tutulmuştur.',
-                        correct: false
+                        text: 'İletki 180 derece ters çevrilip tutulmuştur.'
                       }
                     ].map((opt) => (
                       <label
@@ -2809,7 +2799,7 @@ export function ActivitySheetView({
                         className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
                           detectiveError1Answer === opt.id
                             ? 'bg-rose-600 text-white border-rose-600 font-bold shadow-xs'
-                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-rose-50/50'
+                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/50'
                         }`}
                       >
                         <input
@@ -2829,27 +2819,24 @@ export function ActivitySheetView({
                 </div>
 
                 {/* HATA 2 TEŞHİSİ */}
-                <div className="space-y-2 p-3.5 bg-amber-50/70 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-800/50">
-                  <span className="text-xs font-black text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
-                    <span>🚩</span> <span>HATA 2 (Ölçek Okuma & Çift Ölçek Tuzağı):</span>
+                <div className="space-y-2 p-3.5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-700">
+                  <span className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>🚩</span> <span>2. HATA (Ölçek Okuma ile İlgili Hata):</span>
                   </span>
                   
                   <div className="space-y-1.5">
                     {[
                       {
                         id: 'scale',
-                        text: 'Açı dar açı (40°) iken dış/yanlış ölçekten 140° (geniş açı) okunmuştur. (Doğrusu: Doğru ölçekten 40° okunmalıdır)',
-                        correct: true
+                        text: 'Açı dar açı (90°\'den küçük) iken geniş açı gösteren dış ölçekten 140° okunmuştur.'
                       },
                       {
                         id: 'straight',
-                        text: 'Açı geniş açı olduğu halde dik açı (90°) olarak adlandırılmıştır.',
-                        correct: false
+                        text: 'Açı geniş açı olduğu halde dik açı (90°) olarak adlandırılmıştır.'
                       },
                       {
                         id: 'baseline',
-                        text: 'Taban çizgisi 0° yerine tam 90° çizgisine hizalanmıştır.',
-                        correct: false
+                        text: 'Taban çizgisi 0° yerine tam 90° çizgisine hizalanmıştır.'
                       }
                     ].map((opt) => (
                       <label
@@ -2857,7 +2844,7 @@ export function ActivitySheetView({
                         className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
                           detectiveError2Answer === opt.id
                             ? 'bg-amber-600 text-white border-amber-600 font-bold shadow-xs'
-                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-amber-50/50'
+                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/50'
                         }`}
                       >
                         <input
@@ -2884,7 +2871,7 @@ export function ActivitySheetView({
                   <textarea
                     value={detectiveNotes}
                     onChange={(e) => setDetectiveNotes(e.target.value)}
-                    placeholder="Örn: İletkinin deliği O noktasına oturmalıydı ve dar açı olduğu için 140 değil 40 derece seçilmeliydi..."
+                    placeholder="Örn: İletkinin merkez deliği O köşesiyle tam çakışmalıydı ve açı dar olduğu için iç ölçekten 40° okunmalıydı..."
                     className="w-full text-xs p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 min-h-[55px]"
                   />
                 </div>
@@ -2913,22 +2900,28 @@ export function ActivitySheetView({
 
                 {detectiveCheckSubmitted && (
                   <div
-                    className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in ${
+                    className={`p-3.5 rounded-2xl text-xs space-y-2 animate-in fade-in ${
                       detectiveError1Answer === 'center' && detectiveError2Answer === 'scale'
-                        ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
-                        : 'bg-rose-100 text-rose-900 border border-rose-300'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-200 border-2 border-emerald-300 dark:border-emerald-800'
+                        : 'bg-rose-50 dark:bg-rose-950/40 text-rose-950 dark:text-rose-200 border-2 border-rose-300 dark:border-rose-800'
                     }`}
                   >
                     {detectiveError1Answer === 'center' && detectiveError2Answer === 'scale' ? (
                       <>
-                        <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>Tebrikler Dedektif! 2 kritik hatayı da eksiksiz tespit ettin (+50 Puan).</span>
+                        <div className="flex items-center gap-2 font-black text-emerald-800 dark:text-emerald-300 text-sm">
+                          <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Tebrikler Dedektif! 2 Hatayı da Kusursuz Çözdün (+50 Puan)</span>
+                        </div>
+                        <div className="space-y-1 text-xs text-emerald-900 dark:text-emerald-300 leading-relaxed">
+                          <div><strong>✓ 1. Hatanın Doğrusu:</strong> İletkinin merkez deliği açının köşe noktasına (O) sıfıra sıfır oturtulmalıdır.</div>
+                          <div><strong>✓ 2. Hatanın Doğrusu:</strong> Çizilen açı dik açıdan dar olduğu için iç ölçekteki <strong>40°</strong> okunmalıdır. (140° çift ölçek tuzağıdır!)</div>
+                        </div>
                       </>
                     ) : (
-                      <>
+                      <div className="flex items-center gap-2 font-bold text-rose-800 dark:text-rose-300">
                         <RotateCcw className="w-4 h-4 text-rose-600 shrink-0" />
-                        <span>Bazı teşhisler hatalı görünüyor. Lütfen yukarıdaki büyüteç ipuçlarını tekrar incele!</span>
-                      </>
+                        <span>Bazı teşhislerin hatalı görünüyor. Lütfen yukarıdaki büyüteç odaklarını inceleyerek tekrar dene!</span>
+                      </div>
                     )}
                   </div>
                 )}

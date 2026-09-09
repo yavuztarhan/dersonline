@@ -1676,7 +1676,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
   <div style="border: 2px solid #ef4444; border-radius: 12px; padding: 12px; background: #ffffff; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #fee2e2; padding-bottom: 6px; margin-bottom: 8px;">
       <span style="font-weight: 900; color: #b91c1c; font-size: 12px; display: flex; align-items: center; gap: 4px;">
-        🔍 DEDEKTİFLİK GÖREVİ (HATALI ÇİZİMİ BUL)
+        🔍 DEDEKTİFLİK GÖREVİ: "HATALI ÇİZİMİ BUL"
       </span>
       <span style="font-size: 9.5px; font-weight: bold; background: #fef2f2; color: #dc2626; padding: 2px 6px; border-radius: 4px; border: 1px solid #fecaca;">
         50 Puan
@@ -1684,10 +1684,10 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
     </div>
 
     <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; font-size: 10.5px; color: #92400e; font-weight: 600;">
-      🗣️ <strong>Öğrenci Açıklaması:</strong> <em>"İletkiyi kâğıda koydum ve açının kolunun 140'ı gösterdiğini görünce açının ölçüsüne 140° yazdım."</em>
+      🗣️ <strong>Öğrenci Can:</strong> <em>"İletkiyi kâğıdın üzerine koydum, ibrenin kolu 140 çizgisini gösteriyordu. Bu yüzden açının ölçüsüne 140° yazdım."</em>
     </div>
 
-    <!-- Hatalı Ölçüm SVG Görseli -->
+    <!-- Hatalı Ölçüm SVG Görseli (İpuçsuz / Öğrencinin İncelemesi İçin Net Şema) -->
     <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 210px; background: #f8fafc; position: relative; overflow: hidden; margin-bottom: 10px;">
       <svg viewBox="0 0 520 210" width="100%" height="100%" style="display: block;">
         <defs>
@@ -1704,7 +1704,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
         <circle cx="380" cy="180" r="3.5" fill="#0f172a" />
         <text x="380" y="196" font-family="system-ui" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="middle">A</text>
 
-        <!-- 40° Eğik Kol OB (cos 40 = 0.766, sin 40 = 0.643, len=260 -> dx=199, dy=-167 -> (329, 13)) -->
+        <!-- 40° Eğik Kol OB (Tepe (130, 180), len=260 -> dx=199, dy=-167 -> (329, 13)) -->
         <line x1="130" y1="180" x2="330" y2="13" stroke="#0f172a" stroke-width="3" />
         <polygon points="323,12 334,10 332,22" fill="#0f172a" />
         <circle cx="280" cy="54" r="3.5" fill="#0f172a" />
@@ -1713,64 +1713,55 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
         <!-- Tepe Noktası O (130, 180) -->
         <circle cx="130" cy="180" r="5" fill="#0284c7" />
         <text x="110" y="185" text-anchor="end" font-family="system-ui" font-size="12" font-weight="900" fill="#0369a1">[O</text>
-        <text x="130" y="200" font-family="system-ui" font-size="9.5" font-weight="800" fill="#0284c7" text-anchor="middle">(Açının Gerçek Köşesi)</text>
+        <text x="130" y="200" font-family="system-ui" font-size="9.5" font-weight="800" fill="#0284c7" text-anchor="middle">Açının Köşesi (O)</text>
 
-        <!-- HATALI YERLEŞTİRİLMİŞ İLETKİ (Merkez (130, 140) -> 40px YUKARI KAYIK!) -->
-        <g opacity="0.88">
+        <!-- YERLEŞTİRİLMİŞ İLETKİ (Merkez (130, 140)) -->
+        <g opacity="0.9">
           <!-- İletki Gövdesi -->
-          <path d="M 30 140 A 100 100 0 0 1 230 140 Z" fill="#ecfeff" stroke="#0891b2" stroke-width="1.8" stroke-dasharray="none" />
+          <path d="M 30 140 A 100 100 0 0 1 230 140 Z" fill="#ecfeff" stroke="#0891b2" stroke-width="1.8" />
           <line x1="30" y1="140" x2="230" y2="140" stroke="#0891b2" stroke-width="1.5" />
           
-          <!-- Hatalı Merkez Noktası (130, 140) -->
-          <circle cx="130" cy="140" r="4.5" fill="#dc2626" />
-          <circle cx="130" cy="140" r="9" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3 2" />
-          <text x="75" y="134" font-family="system-ui" font-size="9.5" font-weight="900" fill="#dc2626" text-anchor="end">İletki Merkezi ❌</text>
+          <!-- İletki Merkez İşareti (130, 140) -->
+          <circle cx="130" cy="140" r="3.5" fill="#0891b2" />
+          <line x1="124" y1="140" x2="136" y2="140" stroke="#0891b2" stroke-width="1.2" />
+          <line x1="130" y1="134" x2="130" y2="146" stroke="#0891b2" stroke-width="1.2" />
+          <text x="120" y="132" font-family="system-ui" font-size="8.5" font-weight="700" fill="#0891b2" text-anchor="end">İletki Merkez Noktası</text>
 
-          <!-- İletki Ölçek Dereceleri (Örnek Yay & Rakamlar) -->
+          <!-- İletki Ölçek Çizgileri ve Rakamları -->
           <path d="M 50 140 A 80 80 0 0 1 210 140" fill="none" stroke="#0891b2" stroke-width="0.8" />
-          <text x="215" y="136" font-family="system-ui" font-size="7.5" font-weight="bold" fill="#0891b2">0°/180°</text>
+          <text x="215" y="136" font-family="system-ui" font-size="7.5" font-weight="bold" fill="#0891b2">0° / 180°</text>
           <text x="130" y="55" font-family="system-ui" font-size="8" font-weight="bold" fill="#0891b2" text-anchor="middle">90°</text>
-          <text x="45" y="136" font-family="system-ui" font-size="7.5" font-weight="bold" fill="#0891b2">180°/0°</text>
+          <text x="45" y="136" font-family="system-ui" font-size="7.5" font-weight="bold" fill="#0891b2">180° / 0°</text>
 
-          <!-- 140° Hatalı Okuma Noktası (cos 140 = -0.766, sin 140 = 0.643 -> (130-76.6, 140-64.3) = (53.4, 75.7)) -->
-          <circle cx="69" cy="76" r="11" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="3 2" />
-          <text x="69" y="60" font-family="system-ui" font-size="9" font-weight="900" fill="#dc2626" text-anchor="middle">140° (Okunan Yanlış Değer ❌)</text>
+          <!-- İletki Üzerindeki 140°/40° Hattı -->
+          <circle cx="69" cy="76" r="6" fill="none" stroke="#0891b2" stroke-width="1.5" />
+          <text x="69" y="66" font-family="system-ui" font-size="8.5" font-weight="bold" fill="#0891b2" text-anchor="middle">140° / 40°</text>
         </g>
 
-        <!-- HATA 1 OKU: Merkez Kayması -->
-        <line x1="130" y1="145" x2="130" y2="173" stroke="#dc2626" stroke-width="2" stroke-dasharray="3 2" />
-        <polygon points="127,170 130,178 133,170" fill="#dc2626" />
-        <text x="142" y="162" font-family="system-ui" font-size="9" font-weight="900" fill="#dc2626">1 cm Yukarıda! ⚠️</text>
-
-        <!-- HATA 2 BİLGİ KUTUSU (Sağ Üst) -->
-        <rect x="345" y="25" width="165" height="65" rx="8" fill="#fef2f2" stroke="#f87171" stroke-width="1.2" />
-        <text x="355" y="42" font-family="system-ui" font-size="9" font-weight="900" fill="#991b1b">⚠️ ÇİFT ÖLÇEK TUZAĞI:</text>
-        <text x="355" y="57" font-family="system-ui" font-size="8.5" font-weight="600" fill="#7f1d1d">Açı 90°'den dar (40°)</text>
-        <text x="355" y="70" font-family="system-ui" font-size="8.5" font-weight="600" fill="#7f1d1d">olmasına rağmen geniş ölçek</text>
-        <text x="355" y="83" font-family="system-ui" font-size="8.5" font-weight="800" fill="#dc2626">(140°) okunmuştur!</text>
+        <!-- Can'ın Ölçüm Notu Kutusu (Sağ Üst) -->
+        <rect x="345" y="25" width="165" height="55" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+        <text x="355" y="42" font-family="system-ui" font-size="9.5" font-weight="900" fill="#1e293b">📋 ÖĞRENCİ ÖLÇÜMÜ:</text>
+        <text x="355" y="58" font-family="system-ui" font-size="9" font-weight="600" fill="#334155">Okunan Değer: <strong>s(AOB) = 140°</strong></text>
+        <text x="355" y="70" font-family="system-ui" font-size="8" font-weight="600" fill="#64748b">Durum: Dedektif incelemesi bekleniyor</text>
       </svg>
     </div>
 
-    <!-- Soru & Tespit Yazma Alanları -->
-    <p style="font-size: 11px; color: #0f172a; font-weight: 800; margin: 0 0 6px 0;">
-      ❓ <strong>Soru:</strong> Bu çizimdeki <strong>2 büyük hatayı</strong> tespit et ve doğrusunu yaz.
+    <!-- Soru & Boş Tespit Yazma Alanları -->
+    <p style="font-size: 11px; color: #0f172a; font-weight: 800; margin: 0 0 8px 0;">
+      ❓ <strong>Dedektiflik Sorusu:</strong> Yukarıdaki çizimi ve iletkinin konumunu dikkatle inceleyiniz. Can'ın yaptığı <strong>2 büyük hatayı</strong> tespit edip doğrularını yazınız.
     </p>
 
-    <div style="space-y: 6px; font-size: 11px;">
-      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-bottom: 6px;">
-        <span style="font-weight: 900; color: #dc2626;">🚩 HATA 1 (Merkez Hizalama Hatası):</span>
-        <div style="border-bottom: 1.5px dotted #94a3b8; height: 22px; margin-top: 2px;"></div>
-        <div style="font-size: 9.5px; color: #64748b; margin-top: 3px;">
-          <em>İpucu / Doğrusu: İletkinin merkez noktası açının köşe noktasına tam oturtulmalıdır (yukarıda bırakılmamalıdır).</em>
-        </div>
+    <div style="space-y: 8px; font-size: 11px;">
+      <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px;">
+        <div style="font-weight: 900; color: #b91c1c; margin-bottom: 4px;">🚩 1. HATA (Merkez Konumu ile İlgili Hata):</div>
+        <div style="font-size: 10px; color: #334155; margin-bottom: 3px;">Hata: ......................................................................................................................................................................................................................</div>
+        <div style="font-size: 10px; color: #0f766e;">Doğrusu: .................................................................................................................................................................................................................</div>
       </div>
 
-      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px;">
-        <span style="font-weight: 900; color: #dc2626;">🚩 HATA 2 (Ölçek Okuma / Çift Ölçek Tuzağı Hatası):</span>
-        <div style="border-bottom: 1.5px dotted #94a3b8; height: 22px; margin-top: 2px;"></div>
-        <div style="font-size: 9.5px; color: #64748b; margin-top: 3px;">
-          <em>İpucu / Doğrusu: Açı dar açı (90°'den küçük) olduğu için dış/yanlış ölçekten 140° değil, doğru ölçekten 40° okunmalıdır.</em>
-        </div>
+      <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px 10px;">
+        <div style="font-weight: 900; color: #b91c1c; margin-bottom: 4px;">🚩 2. HATA (Ölçek Okuma ile İlgili Hata):</div>
+        <div style="font-size: 10px; color: #334155; margin-bottom: 3px;">Hata: ......................................................................................................................................................................................................................</div>
+        <div style="font-size: 10px; color: #0f766e;">Doğrusu: .................................................................................................................................................................................................................</div>
       </div>
     </div>
   </div>
