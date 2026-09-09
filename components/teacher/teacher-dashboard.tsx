@@ -11,7 +11,8 @@ import { TeacherRubricAnalytics } from '@/components/teacher/teacher-rubric-anal
 import {
   ClassroomFileRecord,
   getStoredClassroomFiles,
-  deleteClassroomFile
+  deleteClassroomFile,
+  exportClassroomFileToPdf
 } from '@/lib/class-files-store';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
 import jsPDF from 'jspdf';
@@ -155,86 +156,7 @@ export function TeacherDashboard() {
     try {
       setDownloadingFileId(file.id);
       playSound('select');
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-
-      for (let i = 0; i < file.pages.length; i++) {
-        const page = file.pages[i];
-
-        const pageContainer = document.createElement('div');
-        pageContainer.style.width = '794px';
-        pageContainer.style.minHeight = '1123px';
-        pageContainer.style.padding = '40px';
-        pageContainer.style.backgroundColor = page.backgroundType === 'dark' ? '#0f172a' : '#ffffff';
-        pageContainer.style.color = page.backgroundType === 'dark' ? '#f8fafc' : '#0f172a';
-        pageContainer.style.fontFamily = 'Inter, sans-serif';
-        pageContainer.style.boxSizing = 'border-box';
-        pageContainer.style.position = 'relative';
-
-        pageContainer.innerHTML = `
-          <div style="border-bottom: 2px solid #0d9488; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
-            <div>
-              <div style="font-size: 10px; font-weight: 800; color: #0f766e; text-transform: uppercase;">
-                ${file.school || teacher?.school || 'Edirne Selimiye İmam Hatip Ortaokulu'} • ${file.classSection} Şubesi
-              </div>
-              <div style="font-size: 14px; font-weight: 900; color: #0f172a; margin-top: 2px;">
-                ${file.title}
-              </div>
-              <div style="font-size: 10px; color: #64748b; font-weight: 600;">
-                Kazanım: ${file.outcomeCode} - ${file.outcomeTitle}
-              </div>
-            </div>
-            <div style="text-align: right; font-size: 10px; font-weight: 700; color: #64748b;">
-              Sayfa ${page.pageNumber} / ${file.pageCount}
-            </div>
-          </div>
-
-          <div style="min-height: 850px; font-size: 13px; line-height: 1.6;">
-            ${page.textContent || ''}
-          </div>
-
-          <div style="border-top: 1px solid #cbd5e1; padding-top: 10px; margin-top: 20px; display: flex; justify-content: space-between; font-size: 9.5px; color: #64748b;">
-            <span>Hazırlayan: <strong>${file.authorName}</strong></span>
-            <span>Tarih: ${new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
-          </div>
-        `;
-
-        if (page.drawingDataUrl) {
-          const img = document.createElement('img');
-          img.src = page.drawingDataUrl;
-          img.style.position = 'absolute';
-          img.style.top = '0';
-          img.style.left = '0';
-          img.style.width = '100%';
-          img.style.height = '100%';
-          img.style.pointerEvents = 'none';
-          pageContainer.appendChild(img);
-        }
-
-        document.body.appendChild(pageContainer);
-
-        const canvas = await html2canvas(pageContainer, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: page.backgroundType === 'dark' ? '#0f172a' : '#ffffff'
-        });
-
-        document.body.removeChild(pageContainer);
-
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        if (i > 0) pdf.addPage('a4', 'portrait');
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-      }
-
-      const cleanTitle = file.title.trim().replace(/\s+/g, '_');
-      pdf.save(`${file.classSection}_${file.outcomeCode}_${cleanTitle}.pdf`);
+      await exportClassroomFileToPdf(file, teacher?.school);
       playSound('success');
     } catch (err) {
       console.error('PDF indirme hatası:', err);
