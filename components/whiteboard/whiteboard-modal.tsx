@@ -48,7 +48,9 @@ import {
   Loader2,
   Shapes,
   Maximize2,
-  Move
+  Move,
+  Lock,
+  Unlock
 } from 'lucide-react';
 
 interface WhiteboardModalProps {
@@ -271,7 +273,7 @@ export function WhiteboardModal({
       id: 'page-1',
       pageNumber: 1,
       backgroundType: 'grid',
-      textContent: `<h2 style="color: #0f766e; font-weight: 900; margin-bottom: 8px;">📐 ${outcomeCode} - ${outcomeTitle}</h2><p>Ders Notları & Çizim Alanı</p><p>Buraya klavye ile doğrudan yazabilir, yukarıdaki Word araç çubuğu ve geometrik şekillerle çalışma yapabilirsiniz.</p>`,
+      textContent: `<h2 style="color: #0f766e; font-weight: 800; margin-bottom: 6px; font-size: 14pt;">📐 ${outcomeCode} - ${outcomeTitle}</h2><p>Ders Notları & Çalışma Alanı</p><p>Buraya klavye ile yazabilir, üst araç çubuğundaki geometrik şekilleri, görselleri ve kalem araçlarını kullanabilirsiniz.</p>`,
       images: [],
       shapes: []
     }
@@ -359,8 +361,12 @@ export function WhiteboardModal({
           return;
         }
         if (selectedObjectId.type === 'shape') {
+          const shape = activePage.shapes?.find((s) => s.id === selectedObjectId.id);
+          if (shape?.isLocked) return;
           handleDeleteShape(selectedObjectId.id);
         } else if (selectedObjectId.type === 'image') {
+          const img = activePage.images?.find((i) => i.id === selectedObjectId.id);
+          if (img?.isLocked) return;
           handleDeleteImage(selectedObjectId.id);
         }
       }
@@ -368,7 +374,7 @@ export function WhiteboardModal({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedObjectId, activePageIndex]);
+  }, [selectedObjectId, activePageIndex, activePage]);
 
   if (!isOpen) return null;
 
@@ -554,7 +560,7 @@ export function WhiteboardModal({
     }
   };
 
-  // Math Symbol Insertion Right At Cursor
+  // Math Symbol Insertion Right At Cursor & Cursor Advanced
   const insertMathSymbol = (sym: string) => {
     playSound('click');
     setActiveMode('text');
@@ -565,10 +571,12 @@ export function WhiteboardModal({
     editorEl.focus();
 
     const sel = window.getSelection();
-    if (savedRangeRef.current) {
+    let currentRange = savedRangeRef.current;
+
+    if (currentRange && editorEl.contains(currentRange.commonAncestorContainer)) {
       try {
         sel?.removeAllRanges();
-        sel?.addRange(savedRangeRef.current);
+        sel?.addRange(currentRange);
       } catch (e) {}
     }
 
@@ -577,13 +585,28 @@ export function WhiteboardModal({
       range.deleteContents();
       const textNode = document.createTextNode(sym);
       range.insertNode(textNode);
-      range.setStartAfter(textNode);
-      range.setEndAfter(textNode);
+
+      // Create new range right after the inserted textNode
+      const newRange = document.createRange();
+      newRange.setStartAfter(textNode);
+      newRange.setEndAfter(textNode);
+      newRange.collapse(true);
+
       sel.removeAllRanges();
-      sel.addRange(range);
-      savedRangeRef.current = range.cloneRange();
+      sel.addRange(newRange);
+      savedRangeRef.current = newRange.cloneRange();
     } else {
-      editorEl.innerHTML += sym;
+      const textNode = document.createTextNode(sym);
+      editorEl.appendChild(textNode);
+
+      const newRange = document.createRange();
+      newRange.setStartAfter(textNode);
+      newRange.setEndAfter(textNode);
+      newRange.collapse(true);
+
+      sel?.removeAllRanges();
+      sel?.addRange(newRange);
+      savedRangeRef.current = newRange.cloneRange();
     }
 
     setPages((prev) =>
@@ -615,7 +638,8 @@ export function WhiteboardModal({
       x: 60,
       y: 120,
       width: 240,
-      height: 180
+      height: 180,
+      isLocked: false
     };
 
     setPages((prev) =>
@@ -649,6 +673,22 @@ export function WhiteboardModal({
     );
   };
 
+  const handleToggleLockImage = (imgId: string) => {
+    playSound('click');
+    setPages((prev) =>
+      prev.map((p, i) =>
+        i === activePageIndex
+          ? {
+              ...p,
+              images: (p.images || []).map((img) =>
+                img.id === imgId ? { ...img, isLocked: !img.isLocked } : img
+              )
+            }
+          : p
+      )
+    );
+  };
+
   // --- GEOMETRIC SHAPES MANAGEMENT & 8-HANDLE RESIZING ---
   const handleInsertShape = (shapeData: typeof GEOMETRIC_SHAPES_DATA[0]) => {
     playSound('success');
@@ -663,7 +703,8 @@ export function WhiteboardModal({
       strokeWidth: penWidth > 1 ? penWidth : 3,
       fillColor: shapeData.type === 'disc' ? '#14b8a625' : 'transparent',
       isDashed: false,
-      label: shapeData.label
+      label: shapeData.label,
+      isLocked: false
     };
 
     setPages((prev) =>
@@ -717,6 +758,22 @@ export function WhiteboardModal({
     );
   };
 
+  const handleToggleLockShape = (shapeId: string) => {
+    playSound('click');
+    setPages((prev) =>
+      prev.map((p, i) =>
+        i === activePageIndex
+          ? {
+              ...p,
+              shapes: (p.shapes || []).map((s) =>
+                s.id === shapeId ? { ...s, isLocked: !s.isLocked } : s
+              )
+            }
+          : p
+      )
+    );
+  };
+
   // --- SAVE TO CLASSROOM FILES ---
   const handleSaveToClassroomFiles = async () => {
     try {
@@ -756,7 +813,7 @@ export function WhiteboardModal({
     try {
       setIsExportingPdf(true);
       playSound('select');
-      setSelectedObjectId(null); // deselect to hide handles in screenshot
+      setSelectedObjectId(null);
       saveCurrentCanvasData();
 
       const pdf = new jsPDF({
@@ -835,14 +892,14 @@ export function WhiteboardModal({
     <div className="fixed inset-0 z-[100] bg-slate-950/85 backdrop-blur-md flex flex-col select-none animate-in fade-in duration-200">
       
       {/* 1. TOP WORD-STYLE TOOLBAR & HEADER */}
-      <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-2.5 shadow-xl flex flex-col gap-2 shrink-0 z-50">
+      <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-2 shadow-xl flex flex-col gap-2 shrink-0 z-50 relative overflow-visible">
         
         {/* Top Row: Title, Class, Mode Switch, Save & PDF */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
           
           {/* Left: Branding & Editable Title */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-teal-300 font-black shadow-inner">
+            <div className="w-9 h-9 rounded-xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-teal-300 font-black shadow-inner text-base">
               📐
             </div>
             <div>
@@ -850,7 +907,7 @@ export function WhiteboardModal({
                 type="text"
                 value={documentTitle}
                 onChange={(e) => setDocumentTitle(e.target.value)}
-                className="bg-transparent text-sm sm:text-base font-black text-white hover:bg-slate-800/60 focus:bg-slate-800 px-2 py-0.5 rounded-lg outline-none border border-transparent focus:border-teal-400 max-w-[280px] sm:max-w-md"
+                className="bg-transparent text-xs sm:text-sm font-black text-white hover:bg-slate-800/60 focus:bg-slate-800 px-2 py-0.5 rounded-lg outline-none border border-transparent focus:border-teal-400 max-w-[260px] sm:max-w-md"
                 title="Belge Başlığı (Düzenlemek için tıklayın)"
               />
               <div className="flex items-center gap-2 text-[10px] text-teal-300 font-mono px-2">
@@ -959,7 +1016,7 @@ export function WhiteboardModal({
         </div>
 
         {/* Bottom Row: Context Ribbon (Pen vs Word Typography + Geometric Shapes + Media) */}
-        <div className="flex items-center justify-between gap-3 overflow-x-auto pt-1 border-t border-slate-800 text-xs">
+        <div className="flex items-center justify-between gap-3 pt-1 border-t border-slate-800 text-xs relative overflow-visible">
           
           {/* Mode A: Drawing Tools Ribbon */}
           {activeMode === 'pen' ? (
@@ -1178,7 +1235,7 @@ export function WhiteboardModal({
           )}
 
           {/* Shared Tools: 12 Geometric Shapes Dropdown + Math Symbols + Images */}
-          <div className="flex items-center gap-2 flex-wrap shrink-0">
+          <div className="flex items-center gap-2 flex-wrap shrink-0 relative overflow-visible">
             
             {/* GEOMETRIC SHAPES DROPDOWN (12 Shapes) */}
             <div className="relative">
@@ -1200,42 +1257,48 @@ export function WhiteboardModal({
                 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
               </button>
 
-              {/* 12 Shapes Grid Popover */}
+              {/* 12 Shapes Grid Popover (Fixed Overlay over canvas) */}
               {shapesDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 z-50 w-72 sm:w-80 bg-slate-900 border border-teal-500/40 rounded-2xl p-3 shadow-2xl animate-in zoom-in-95 space-y-2">
-                  <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[11px] font-black text-teal-300">
-                    <span>Geometrik Şekil Seç & Ekle</span>
-                    <button
-                      type="button"
-                      onClick={() => setShapesDropdownOpen(false)}
-                      className="text-slate-400 hover:text-white"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-72 overflow-y-auto pr-1">
-                    {GEOMETRIC_SHAPES_DATA.map((shapeItem) => (
+                <>
+                  <div
+                    className="fixed inset-0 z-[110]"
+                    onClick={() => setShapesDropdownOpen(false)}
+                  />
+                  <div className="absolute top-full right-0 sm:left-0 mt-2 z-[120] w-72 sm:w-80 bg-slate-900 border-2 border-teal-400/80 rounded-2xl p-3 shadow-2xl animate-in zoom-in-95 space-y-2">
+                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[11px] font-black text-teal-300">
+                      <span>Geometrik Şekil Seç & Ekle</span>
                       <button
-                        key={shapeItem.type}
                         type="button"
-                        onClick={() => handleInsertShape(shapeItem)}
-                        className="p-2 rounded-xl bg-slate-800/90 hover:bg-teal-500/20 hover:border-teal-400 border border-slate-700/80 flex flex-col items-center justify-center gap-1 text-center transition-all group cursor-pointer"
+                        onClick={() => setShapesDropdownOpen(false)}
+                        className="text-slate-400 hover:text-white"
                       >
-                        <div className="p-1.5 rounded-lg bg-slate-900/80 group-hover:scale-110 transition-transform">
-                          {shapeItem.previewSvg}
-                        </div>
-                        <span className="text-[10px] font-bold text-slate-200 group-hover:text-teal-300 leading-tight">
-                          {shapeItem.label}
-                        </span>
+                        ✕
                       </button>
-                    ))}
-                  </div>
+                    </div>
 
-                  <div className="text-[9.5px] text-slate-400 pt-1 border-t border-slate-800 text-center">
-                    💡 Şekli ekledikten sonra köşelerinden tutup büyütebilir ve uzatabilirsiniz.
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-72 overflow-y-auto pr-1">
+                      {GEOMETRIC_SHAPES_DATA.map((shapeItem) => (
+                        <button
+                          key={shapeItem.type}
+                          type="button"
+                          onClick={() => handleInsertShape(shapeItem)}
+                          className="p-2 rounded-xl bg-slate-800/90 hover:bg-teal-500/20 hover:border-teal-400 border border-slate-700/80 flex flex-col items-center justify-center gap-1 text-center transition-all group cursor-pointer"
+                        >
+                          <div className="p-1.5 rounded-lg bg-slate-900/80 group-hover:scale-110 transition-transform">
+                            {shapeItem.previewSvg}
+                          </div>
+                          <span className="text-[10px] font-bold text-slate-200 group-hover:text-teal-300 leading-tight">
+                            {shapeItem.label}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="text-[9.5px] text-slate-400 pt-1 border-t border-slate-800 text-center">
+                      💡 Şekli ekledikten sonra köşelerinden tutup büyütebilir ve kilitleyebilirsiniz.
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
 
@@ -1401,24 +1464,22 @@ export function WhiteboardModal({
                 }}
               >
                 
-                {/* Official Maarif Header on Page 1 */}
+                {/* Compact Minimalist Maarif Header on Page 1 */}
                 {pIdx === 0 && (
-                  <div className="p-6 border-b border-slate-200/80 flex items-center justify-between pointer-events-none select-none">
+                  <div className="px-6 py-2 border-b border-slate-200/60 flex items-center justify-between pointer-events-none select-none bg-slate-50/40">
                     <div>
-                      <div className="text-[10px] font-black text-teal-800 uppercase tracking-wider">
-                        T.C. MİLLÎ EĞİTİM BAKANLIĞI • TÜRKİYE YÜZYILI MAARİF MODELİ
+                      <div className="text-[9px] font-black text-teal-800 uppercase tracking-wide">
+                        MEB • TÜRKİYE YÜZYILI MAARİF MODELİ
                       </div>
-                      <div className="text-sm font-black text-slate-900 mt-0.5">
-                        Matematik Dersi Akıllı Tahta & Beyaz Tahta Notları
-                      </div>
-                      <div className="text-[10px] font-bold text-slate-500 font-mono">
-                        Kazanım: {outcomeCode} • {selectedClass} Şubesi
+                      <div className="text-xs font-extrabold text-slate-900 leading-tight">
+                        Matematik Dersi Beyaz Tahta Notları • {outcomeCode}
                       </div>
                     </div>
 
-                    <div className="text-right text-[10px] text-slate-400 font-bold">
-                      <div>Tarih: {new Date().toLocaleDateString('tr-TR')}</div>
-                      <div>Öğretmen: {currentUser?.name || 'Ahmet Yılmaz'}</div>
+                    <div className="text-right text-[9px] text-slate-400 font-bold flex items-center gap-2">
+                      <span>{selectedClass} Şubesi</span>
+                      <span>•</span>
+                      <span>{new Date().toLocaleDateString('tr-TR')}</span>
                     </div>
                   </div>
                 )}
@@ -1441,7 +1502,7 @@ export function WhiteboardModal({
                     );
                   }}
                   dangerouslySetInnerHTML={{ __html: page.textContent || '' }}
-                  className="p-8 outline-none min-h-[900px] text-slate-900"
+                  className="p-6 sm:p-8 outline-none min-h-[900px] text-slate-900 relative z-0"
                   style={{
                     fontFamily: fontFamily,
                     fontSize: fontSize,
@@ -1452,34 +1513,7 @@ export function WhiteboardModal({
                   }}
                 />
 
-                {/* Freehand Drawing Overlay Canvas */}
-                {isCurrentActive ? (
-                  <canvas
-                    ref={canvasRef}
-                    width={794}
-                    height={1123}
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                    onTouchStart={startDrawing}
-                    onTouchMove={draw}
-                    onTouchEnd={stopDrawing}
-                    className={`absolute inset-0 z-10 ${
-                      activeMode === 'pen' ? 'cursor-crosshair pointer-events-auto' : 'pointer-events-none'
-                    }`}
-                  />
-                ) : (
-                  page.drawingDataUrl && (
-                    <img
-                      src={page.drawingDataUrl}
-                      alt="Drawing Layer"
-                      className="absolute inset-0 w-full h-full pointer-events-none z-10"
-                    />
-                  )
-                )}
-
-                {/* 12 GEOMETRIC SHAPES WITH 8-HANDLE SCALING & WORD-STYLE TRANSFORM */}
+                {/* 12 GEOMETRIC SHAPES WITH 8-HANDLE SCALING & LOCK FEATURE */}
                 {page.shapes &&
                   page.shapes.map((shape) => {
                     const isSelected =
@@ -1493,6 +1527,7 @@ export function WhiteboardModal({
                         width={shape.width}
                         height={shape.height}
                         isSelected={isSelected}
+                        isLocked={shape.isLocked}
                         onSelect={() => {
                           setSelectedObjectId({ type: 'shape', id: shape.id });
                           playSound('click');
@@ -1516,87 +1551,106 @@ export function WhiteboardModal({
                               {shape.label || 'Şekil'}
                             </span>
 
-                            {/* Border Color */}
-                            <div className="flex items-center gap-1 border-l border-slate-700 pl-2">
-                              {['#0f172a', '#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'].map((c) => (
-                                <button
-                                  key={c}
-                                  type="button"
-                                  onClick={() => updateShapeTransform(shape.id, { strokeColor: c })}
-                                  className={`w-3.5 h-3.5 rounded-full border border-white/40 ${
-                                    shape.strokeColor === c ? 'scale-125 ring-2 ring-teal-400' : ''
-                                  }`}
-                                  style={{ backgroundColor: c }}
-                                  title="Çerçeve Rengi"
-                                />
-                              ))}
-                            </div>
-
-                            {/* Fill Color Picker */}
-                            <select
-                              value={shape.fillColor}
-                              onChange={(e) => updateShapeTransform(shape.id, { fillColor: e.target.value })}
-                              className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-teal-300 outline-none"
-                              title="Dolgu Rengi"
-                            >
-                              {FILL_COLORS.map((fc) => (
-                                <option key={fc.id} value={fc.id}>
-                                  {fc.label}
-                                </option>
-                              ))}
-                            </select>
-
-                            {/* Thickness */}
+                            {/* Lock / Unlock Button */}
                             <button
                               type="button"
-                              onClick={() => {
-                                const nextWidth = shape.strokeWidth >= 6 ? 2 : shape.strokeWidth + 2;
-                                updateShapeTransform(shape.id, { strokeWidth: nextWidth });
-                              }}
-                              className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-bold text-slate-300 hover:text-white"
-                              title="Çizgi Kalınlığı"
-                            >
-                              {shape.strokeWidth}px
-                            </button>
-
-                            {/* Dashed toggle */}
-                            <button
-                              type="button"
-                              onClick={() => updateShapeTransform(shape.id, { isDashed: !shape.isDashed })}
-                              className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                shape.isDashed ? 'bg-teal-500 text-slate-950' : 'bg-slate-800 text-slate-300'
+                              onClick={() => handleToggleLockShape(shape.id)}
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 transition-colors ${
+                                shape.isLocked
+                                  ? 'bg-amber-400 text-slate-950 ring-1 ring-amber-300'
+                                  : 'bg-slate-800 text-slate-300 hover:text-white'
                               }`}
-                              title="Kesikli Çizgi"
+                              title={shape.isLocked ? 'Kilidi Kaldır' : 'Şekli Kilitle (Hareketi ve Boyutlandırmayı Sabitle)'}
                             >
-                              - - -
+                              {shape.isLocked ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                              <span>{shape.isLocked ? 'Kilitli' : 'Kilitle'}</span>
                             </button>
 
-                            {/* Duplicate */}
-                            <button
-                              type="button"
-                              onClick={() => handleDuplicateShape(shape.id)}
-                              className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
-                              title="Şekli Çoğalt"
-                            >
-                              <Copy className="w-3 h-3" />
-                            </button>
+                            {!shape.isLocked && (
+                              <>
+                                {/* Border Color */}
+                                <div className="flex items-center gap-1 border-l border-slate-700 pl-2">
+                                  {['#0f172a', '#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'].map((c) => (
+                                    <button
+                                      key={c}
+                                      type="button"
+                                      onClick={() => updateShapeTransform(shape.id, { strokeColor: c })}
+                                      className={`w-3.5 h-3.5 rounded-full border border-white/40 ${
+                                        shape.strokeColor === c ? 'scale-125 ring-2 ring-teal-400' : ''
+                                      }`}
+                                      style={{ backgroundColor: c }}
+                                      title="Çerçeve Rengi"
+                                    />
+                                  ))}
+                                </div>
 
-                            {/* Delete */}
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteShape(shape.id)}
-                              className="p-1 rounded bg-rose-900/80 hover:bg-rose-700 text-rose-200"
-                              title="Şekli Sil"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
+                                {/* Fill Color Picker */}
+                                <select
+                                  value={shape.fillColor}
+                                  onChange={(e) => updateShapeTransform(shape.id, { fillColor: e.target.value })}
+                                  className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-teal-300 outline-none"
+                                  title="Dolgu Rengi"
+                                >
+                                  {FILL_COLORS.map((fc) => (
+                                    <option key={fc.id} value={fc.id}>
+                                      {fc.label}
+                                    </option>
+                                  ))}
+                                </select>
+
+                                {/* Thickness */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const nextWidth = shape.strokeWidth >= 6 ? 2 : shape.strokeWidth + 2;
+                                    updateShapeTransform(shape.id, { strokeWidth: nextWidth });
+                                  }}
+                                  className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-bold text-slate-300 hover:text-white"
+                                  title="Çizgi Kalınlığı"
+                                >
+                                  {shape.strokeWidth}px
+                                </button>
+
+                                {/* Dashed toggle */}
+                                <button
+                                  type="button"
+                                  onClick={() => updateShapeTransform(shape.id, { isDashed: !shape.isDashed })}
+                                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                    shape.isDashed ? 'bg-teal-500 text-slate-950' : 'bg-slate-800 text-slate-300'
+                                  }`}
+                                  title="Kesikli Çizgi"
+                                >
+                                  - - -
+                                </button>
+
+                                {/* Duplicate */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleDuplicateShape(shape.id)}
+                                  className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
+                                  title="Şekli Çoğalt"
+                                >
+                                  <Copy className="w-3 h-3" />
+                                </button>
+
+                                {/* Delete */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteShape(shape.id)}
+                                  className="p-1 rounded bg-rose-900/80 hover:bg-rose-700 text-rose-200"
+                                  title="Şekli Sil"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         )}
                       </TransformableObjectWrapper>
                     );
                   })}
 
-                {/* EMBEDDED IMAGES WITH 8-HANDLE SCALING & WORD-STYLE SQUARE RESIZING */}
+                {/* EMBEDDED IMAGES WITH 8-HANDLE SCALING & LOCK FEATURE */}
                 {page.images &&
                   page.images.map((img) => {
                     const isSelected =
@@ -1610,6 +1664,7 @@ export function WhiteboardModal({
                         width={img.width}
                         height={img.height}
                         isSelected={isSelected}
+                        isLocked={img.isLocked}
                         onSelect={() => {
                           setSelectedObjectId({ type: 'image', id: img.id });
                           playSound('click');
@@ -1635,22 +1690,66 @@ export function WhiteboardModal({
                               {Math.round(img.width)} × {Math.round(img.height)} px
                             </span>
 
+                            {/* Lock / Unlock Button */}
                             <button
                               type="button"
-                              onClick={() => handleDeleteImage(img.id)}
-                              className="p-1 rounded bg-rose-900/80 hover:bg-rose-700 text-rose-200"
-                              title="Resmi Sil"
+                              onClick={() => handleToggleLockImage(img.id)}
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 transition-colors ${
+                                img.isLocked
+                                  ? 'bg-amber-400 text-slate-950 ring-1 ring-amber-300'
+                                  : 'bg-slate-800 text-slate-300 hover:text-white'
+                              }`}
+                              title={img.isLocked ? 'Görsel Kilidini Kaldır' : 'Görseli Kilitle'}
                             >
-                              <Trash2 className="w-3 h-3" />
+                              {img.isLocked ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                              <span>{img.isLocked ? 'Kilitli' : 'Kilitle'}</span>
                             </button>
+
+                            {!img.isLocked && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteImage(img.id)}
+                                className="p-1 rounded bg-rose-900/80 hover:bg-rose-700 text-rose-200"
+                                title="Resmi Sil"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            )}
                           </div>
                         )}
                       </TransformableObjectWrapper>
                     );
                   })}
 
+                {/* Freehand Drawing Overlay Canvas (Rendered at z-30 ON TOP of images & shapes when drawing) */}
+                {isCurrentActive ? (
+                  <canvas
+                    ref={canvasRef}
+                    width={794}
+                    height={1123}
+                    onMouseDown={startDrawing}
+                    onMouseMove={draw}
+                    onMouseUp={stopDrawing}
+                    onMouseLeave={stopDrawing}
+                    onTouchStart={startDrawing}
+                    onTouchMove={draw}
+                    onTouchEnd={stopDrawing}
+                    className={`absolute inset-0 z-30 ${
+                      activeMode === 'pen' ? 'cursor-crosshair pointer-events-auto' : 'pointer-events-none'
+                    }`}
+                  />
+                ) : (
+                  page.drawingDataUrl && (
+                    <img
+                      src={page.drawingDataUrl}
+                      alt="Drawing Layer"
+                      className="absolute inset-0 w-full h-full pointer-events-none z-25"
+                    />
+                  )
+                )}
+
                 {/* Page Footer */}
-                <div className="absolute bottom-3 left-6 right-6 border-t border-slate-200/80 pt-2 flex items-center justify-between text-[10px] text-slate-400 pointer-events-none">
+                <div className="absolute bottom-2 left-6 right-6 border-t border-slate-200/60 pt-1.5 flex items-center justify-between text-[9px] text-slate-400 pointer-events-none">
                   <span>Maarif Dijital Defteri • dersonline.meb</span>
                   <span>Sayfa {page.pageNumber}</span>
                 </div>
@@ -1701,7 +1800,7 @@ export function WhiteboardModal({
 }
 
 // ---------------------------------------------------------------------------
-// 8-HANDLE TRANSFORMABLE OBJECT WRAPPER (Word "Kare" Serbest Ölçeklendirme)
+// 8-HANDLE TRANSFORMABLE OBJECT WRAPPER (Word "Kare" Serbest Ölçeklendirme & Kilit)
 // ---------------------------------------------------------------------------
 interface TransformableObjectProps {
   x: number;
@@ -1709,6 +1808,7 @@ interface TransformableObjectProps {
   width: number;
   height: number;
   isSelected: boolean;
+  isLocked?: boolean;
   onSelect: () => void;
   onChangeTransform: (updates: { x?: number; y?: number; width?: number; height?: number }) => void;
   children: React.ReactNode;
@@ -1722,6 +1822,7 @@ function TransformableObjectWrapper({
   width,
   height,
   isSelected,
+  isLocked = false,
   onSelect,
   onChangeTransform,
   children
@@ -1734,6 +1835,8 @@ function TransformableObjectWrapper({
   const handleMouseDownBody = (e: React.MouseEvent) => {
     e.stopPropagation();
     onSelect();
+    if (isLocked) return;
+
     isDragging.current = true;
     startPos.current = {
       clientX: e.clientX,
@@ -1745,7 +1848,7 @@ function TransformableObjectWrapper({
     };
 
     const handleMouseMove = (moveEvt: MouseEvent) => {
-      if (!isDragging.current) return;
+      if (!isDragging.current || isLocked) return;
       const deltaX = moveEvt.clientX - startPos.current.clientX;
       const deltaY = moveEvt.clientY - startPos.current.clientY;
 
@@ -1768,6 +1871,8 @@ function TransformableObjectWrapper({
   // Resize start from any of the 8 handles
   const handleMouseDownResize = (e: React.MouseEvent, handle: HandleDirection) => {
     e.stopPropagation();
+    if (isLocked) return;
+
     resizeHandle.current = handle;
     startPos.current = {
       clientX: e.clientX,
@@ -1779,7 +1884,7 @@ function TransformableObjectWrapper({
     };
 
     const handleMouseMove = (moveEvt: MouseEvent) => {
-      if (!resizeHandle.current) return;
+      if (!resizeHandle.current || isLocked) return;
       const deltaX = moveEvt.clientX - startPos.current.clientX;
       const deltaY = moveEvt.clientY - startPos.current.clientY;
       const dir = resizeHandle.current;
@@ -1830,20 +1935,31 @@ function TransformableObjectWrapper({
     <div
       onMouseDown={handleMouseDownBody}
       className={`absolute z-20 group/obj transition-shadow ${
-        isSelected ? 'ring-2 ring-teal-500 ring-offset-2' : 'hover:ring-1 hover:ring-teal-400/60'
+        isSelected
+          ? isLocked
+            ? 'ring-2 ring-amber-400 ring-offset-2'
+            : 'ring-2 ring-teal-500 ring-offset-2'
+          : 'hover:ring-1 hover:ring-teal-400/60'
       }`}
       style={{
         top: `${y}px`,
         left: `${x}px`,
         width: `${width}px`,
         height: `${height}px`,
-        cursor: isSelected ? 'move' : 'pointer'
+        cursor: isLocked ? 'default' : isSelected ? 'move' : 'pointer'
       }}
     >
       {children}
 
-      {/* 8 RESIZE HANDLES (Corners + Midpoints) */}
-      {isSelected && (
+      {/* Lock Badge indicator if locked */}
+      {isLocked && (
+        <div className="absolute top-1 right-1 w-5 h-5 bg-amber-500 text-slate-950 rounded-full flex items-center justify-center text-[10px] shadow-md z-30 font-bold">
+          🔒
+        </div>
+      )}
+
+      {/* 8 RESIZE HANDLES (Corners + Midpoints) - Only active when NOT locked */}
+      {isSelected && !isLocked && (
         <>
           {/* Top-Left (NW) */}
           <div

@@ -26,6 +26,7 @@ export interface WhiteboardShapeItem {
   fillColor: string;
   isDashed?: boolean;
   label?: string;
+  isLocked?: boolean;
 }
 
 export interface WhiteboardImageItem {
@@ -36,6 +37,7 @@ export interface WhiteboardImageItem {
   width: number;
   height: number;
   rotation?: number;
+  isLocked?: boolean;
 }
 
 export interface WhiteboardPageData {
