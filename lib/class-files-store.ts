@@ -1015,8 +1015,8 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
     </div>
 
     <!-- SVG Protractor Schematic -->
-    <div style="width: 100%; height: 210px; background: #f8fafc; border-radius: 8px; border: 1px dashed #94a3b8; overflow: hidden; position: relative;">
-      <svg viewBox="0 0 720 210" width="100%" height="100%" style="display: block;">
+    <div style="width: 100%; height: 260px; background: #f8fafc; border-radius: 8px; border: 1px dashed #94a3b8; overflow: hidden; position: relative;">
+      <svg viewBox="0 0 720 260" width="100%" height="100%" style="display: block;">
         <defs>
           <radialGradient id="protGlass" cx="50%" cy="100%" r="90%">
             <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
@@ -1025,78 +1025,81 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
           </radialGradient>
         </defs>
 
-        <!-- Protractor Body Semi-Circle -->
-        <path d="M 120 180 A 240 240 0 0 1 600 180 Z" fill="url(#protGlass)" stroke="#0d9488" stroke-width="3" />
-        <path d="M 230 180 A 130 130 0 0 1 490 180 Z" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
+        <!-- Protractor Body Semi-Circle (Center 360, 215, Radius 170) -->
+        <path d="M 190 215 A 170 170 0 0 1 530 215 Z" fill="url(#protGlass)" stroke="#0d9488" stroke-width="3" />
+        <path d="M 280 215 A 80 80 0 0 1 440 215 Z" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
 
         <!-- Degree Tick Marks & Labels -->
-        <!-- Center at (360, 180) -->
-        <!-- Radius Outer = 240, Radius Inner = 175 -->
         ${(() => {
           let ticks = '';
           for (let deg = 0; deg <= 180; deg += 10) {
             const rad = (deg * Math.PI) / 180;
             const cos = Math.cos(rad);
             const sin = Math.sin(rad);
+            const isMajor = deg % 30 === 0;
+            const rTick = isMajor ? 150 : 158;
             // Outer tick
-            const x1 = 360 - 240 * cos;
-            const y1 = 180 - 240 * sin;
-            const x2 = 360 - 222 * cos;
-            const y2 = 180 - 222 * sin;
-            ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#0f766e" stroke-width="${deg % 30 === 0 ? '2' : '1'}" />`;
+            const x1 = 360 - 170 * cos;
+            const y1 = 215 - 170 * sin;
+            const x2 = 360 - rTick * cos;
+            const y2 = 215 - rTick * sin;
+            ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#0f766e" stroke-width="${isMajor ? '2' : '1'}" />`;
 
-            // Outer scale text (0 to 180 counter-clockwise, from right to left)
-            if (deg % 30 === 0) {
-              const tx = 360 - 208 * cos;
-              const ty = 180 - 208 * sin + 3;
-              ticks += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="system-ui" font-size="9" font-weight="900" fill="#0369a1" text-anchor="middle">${deg}°</text>`;
+            // Outer scale text (0 to 180 counter-clockwise)
+            if (isMajor) {
+              const tx = 360 - 136 * cos;
+              const ty = 215 - 136 * sin + 3.5;
+              ticks += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="monospace" font-size="9" font-weight="900" fill="#0369a1" text-anchor="middle">${deg}°</text>`;
             }
 
             // Inner scale text (180 to 0 counter-clockwise / 0 to 180 clockwise)
-            if (deg % 30 === 0) {
-              const tx2 = 360 - 155 * cos;
-              const ty2 = 180 - 155 * sin + 3;
-              ticks += `<text x="${tx2.toFixed(1)}" y="${ty2.toFixed(1)}" font-family="system-ui" font-size="9" font-weight="900" fill="#b45309" text-anchor="middle">${180 - deg}°</text>`;
+            if (isMajor) {
+              const tx2 = 360 - 104 * cos;
+              const ty2 = 215 - 104 * sin + 3.5;
+              ticks += `<text x="${tx2.toFixed(1)}" y="${ty2.toFixed(1)}" font-family="monospace" font-size="9" font-weight="900" fill="#b45309" text-anchor="middle">${180 - deg}°</text>`;
             }
           }
           return ticks;
         })()}
 
         <!-- Baseline (0° Line) -->
-        <line x1="120" y1="180" x2="600" y2="180" stroke="#0f172a" stroke-width="2.5" />
+        <line x1="140" y1="215" x2="580" y2="215" stroke="#0f172a" stroke-width="2.5" />
+
+        <!-- 90° Perpendicular Center Guide -->
+        <line x1="360" y1="215" x2="360" y2="35" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5" />
 
         <!-- Center Crosshair (Origin) -->
-        <circle cx="360" cy="180" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" />
-        <line x1="360" y1="170" x2="360" y2="185" stroke="#ef4444" stroke-width="2" />
-        <line x1="345" y1="180" x2="375" y2="180" stroke="#ef4444" stroke-width="2" />
+        <circle cx="360" cy="215" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" />
+        <line x1="360" y1="205" x2="360" y2="225" stroke="#ef4444" stroke-width="2" />
+        <line x1="350" y1="215" x2="370" y2="215" stroke="#ef4444" stroke-width="2" />
 
         <!-- Callout 1: Merkez Noktası (Orijin) -->
-        <line x1="360" y1="180" x2="360" y2="198" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2 2" />
-        <circle cx="360" cy="198" r="3" fill="#ef4444" />
-        <rect x="270" y="190" width="180" height="18" rx="4" fill="#fef2f2" stroke="#ef4444" stroke-width="1" />
-        <text x="360" y="202" font-family="system-ui" font-size="8.5" font-weight="900" fill="#991b1b" text-anchor="middle">
+        <line x1="360" y1="220" x2="360" y2="236" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2 2" />
+        <circle cx="360" cy="236" r="3" fill="#ef4444" />
+        <rect x="260" y="235" width="200" height="20" rx="4" fill="#fef2f2" stroke="#ef4444" stroke-width="1" />
+        <text x="360" y="249" font-family="system-ui" font-size="8.5" font-weight="900" fill="#991b1b" text-anchor="middle">
           [ 1. MERKEZ NOKTASI (ORİJİN) ]
         </text>
 
         <!-- Callout 2: Taban Çizgisi (0° Hattı) -->
-        <line x1="530" y1="180" x2="530" y2="198" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2 2" />
-        <circle cx="530" cy="198" r="3" fill="#0284c7" />
-        <rect x="470" y="190" width="170" height="18" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1" />
-        <text x="555" y="202" font-family="system-ui" font-size="8.5" font-weight="900" fill="#0369a1" text-anchor="middle">
+        <line x1="510" y1="215" x2="510" y2="236" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2 2" />
+        <circle cx="510" cy="236" r="3" fill="#0284c7" />
+        <rect x="475" y="235" width="190" height="20" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1" />
+        <text x="570" y="249" font-family="system-ui" font-size="8.5" font-weight="900" fill="#0369a1" text-anchor="middle">
           [ 2. TABAN ÇİZGİSİ (0° HATTI) ]
         </text>
 
         <!-- Callout 3: Dış Ölçek (0° -> 180° Soldan Sağa) -->
-        <path d="M 230 45 Q 260 20 300 20" fill="none" stroke="#0284c7" stroke-width="1.5" marker-end="url(#arrowBlue)" />
-        <rect x="150" y="8" width="145" height="22" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1" />
-        <text x="222" y="22" font-family="system-ui" font-size="8.5" font-weight="900" fill="#0369a1" text-anchor="middle">
+        <path d="M 250 75 Q 230 45 200 35" fill="none" stroke="#0284c7" stroke-width="1.5" />
+        <rect x="80" y="10" width="190" height="22" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1" />
+        <text x="175" y="25" font-family="system-ui" font-size="8.5" font-weight="900" fill="#0369a1" text-anchor="middle">
           [ 4. DIŞ ÖLÇEK (0° → 180°) ]
         </text>
 
         <!-- Callout 4: İç Ölçek (0° -> 180° Sağdan Sola) -->
-        <path d="M 480 60 Q 450 45 420 50" fill="none" stroke="#d97706" stroke-width="1.5" />
-        <rect x="425" y="40" width="145" height="22" rx="4" fill="#fffbeb" stroke="#d97706" stroke-width="1" />
-        <text x="497" y="54" font-family="system-ui" font-size="8.5" font-weight="900" fill="#92400e" text-anchor="middle">
+        <path d="M 470 95 Q 490 55 520 35" fill="none" stroke="#d97706" stroke-width="1.5" />
+        <rect x="450" y="10" width="190" height="22" rx="4" fill="#fffbeb" stroke="#d97706" stroke-width="1" />
+        <text x="545" y="25" font-family="system-ui" font-size="8.5" font-weight="900" fill="#92400e" text-anchor="middle">
           [ 3. İÇ ÖLÇEK (0° → 180°) ]
         </text>
       </svg>
