@@ -606,7 +606,7 @@ export function LinesAnglesBench() {
               <div>
                 <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
                   <Sliders className="w-5 h-5 text-teal-600" />
-                  İki Paralel Doğru (d₁ ∥ d₂) ve d₃ Keseni
+                  İki Paralel Doğru (d₁ // d₂) ve d₃ Keseni
                 </h3>
                 <p className="text-xs text-slate-500">
                   Kesen doğrunun açısını değiştirerek paralel hatlar üzerinde oluşan 8 açıyı karşılaştırın.
@@ -642,7 +642,7 @@ export function LinesAnglesBench() {
 
                 {/* Parallel line d2 (y = 210) */}
                 <line x1="50" y1="210" x2="510" y2="210" stroke="#0ea5e9" strokeWidth="4" strokeLinecap="round" />
-                <text x="520" y="214" fill="#0ea5e9" fontSize="13" fontWeight="bold">d₂ (∥ d₁)</text>
+                <text x="520" y="214" fill="#0ea5e9" fontSize="13" fontWeight="bold">d₂ (// d₁)</text>
 
                 {/* Transversal line d3 cutting at (240, 90) and (320, 210) approx depending on angle */}
                 {(() => {

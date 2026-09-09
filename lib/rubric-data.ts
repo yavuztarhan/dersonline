@@ -187,7 +187,7 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
         levelDescriptions: {
           1: 'Paralel doğruların arasındaki mesafenin her yerde eşit olması gerektiğini karıştırıyorum.',
           2: 'Gönyeyle eşit uzaklıkta noktalar alabiliyorum ancak bunları birleştirerek paralel ray modeli oluşturmakta desteğe ihtiyaç duyuyorum.',
-          3: 'Bir doğruya gönye ile eşit mesafede noktalar belirleyip birleştirerek paralel doğru (d₁ ∥ d₂) inşa ediyor ve tren rayı modeliyle ilişkilendiriyorum.',
+          3: 'Bir doğruya gönye ile eşit mesafede noktalar belirleyip birleştirerek paralel doğru (d₁ // d₂) inşa ediyor ve tren rayı modeliyle ilişkilendiriyorum.',
           4: 'Dinamik geometri simülasyonunda mesafe değişse bile paralelliğin bozulmadığını (OB2) ve doğruların hiçbir zaman kesişmeyeceğini tam açıklıyorum.'
         }
       }

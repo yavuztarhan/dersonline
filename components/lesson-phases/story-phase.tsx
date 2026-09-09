@@ -480,7 +480,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     {/* Parallel Distance Arrows */}
                     <line x1="125" y1="120" x2="275" y2="120" stroke="#38bdf8" strokeWidth="2" strokeDasharray="4,4" />
                     <rect x="160" y="105" width="80" height="26" rx="8" fill="#0c4a6e" stroke="#0284c7" />
-                    <text fill="#38bdf8" fontSize="11" fontWeight="900" x="200" y="122" textAnchor="middle">d1 ∥ d2 (Paralel)</text>
+                    <text fill="#38bdf8" fontSize="11" fontWeight="900" x="200" y="122" textAnchor="middle">d1 // d2 (Paralel)</text>
 
                     <text fill="#fde047" fontSize="10" fontWeight="bold" x="200" y="260" textAnchor="middle">Aynı tabana dik (90°) olan minareler asla kesişmez!</text>
                   </svg>
@@ -698,7 +698,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     ))}
 
                     <text fill="#fde047" fontSize="14" fontWeight="900" x="200" y="45" textAnchor="middle">
-                      🚂 Tren Rayı Modeli: d1 ∥ d2 (Paralel Doğrular)
+                      🚂 Tren Rayı Modeli: d1 // d2 (Paralel Doğrular)
                     </text>
 
                     {/* Badge */}
@@ -849,9 +849,9 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     </div>
 
                     <div className="bg-slate-800/90 p-2.5 rounded-xl border border-slate-700 flex flex-col justify-between">
-                      <div className="font-extrabold text-purple-400">∥ PARALELLİK</div>
+                      <div className="font-extrabold text-purple-400">// PARALELLİK</div>
                       <div className="text-[11px] text-slate-300">Aynı doğruya dik iki doğru asla kesişmez.</div>
-                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-purple-200">d1 ∥ d2</div>
+                      <div className="font-mono bg-slate-950 py-0.5 rounded text-[10px] text-purple-200">d1 // d2</div>
                     </div>
                   </div>
                 )}
@@ -1019,7 +1019,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     <g transform="translate(200, 240)">
                       <rect x="-165" y="-16" width="330" height="30" rx="10" fill="#1e1b4b" stroke="#c084fc" strokeWidth="1.5" />
                       <text x="0" y="4" fill="#e9d5ff" fontSize="11" fontWeight="black" textAnchor="middle">
-                        ⏸️ d₁ ∥ d₂ (Paralel Doğrular Kesişmez • Açı Oluşmaz!)
+                        ⏸️ d₁ // d₂ (Paralel Doğrular Kesişmez • Açı Oluşmaz!)
                       </text>
                     </g>
                   </svg>
@@ -1036,7 +1036,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
 
                     {/* Parallel line 2 */}
                     <line x1="40" y1="185" x2="360" y2="185" stroke="#00f0ff" strokeWidth="4" strokeLinecap="round" />
-                    <text x="365" y="189" fill="#00f0ff" fontSize="12" fontWeight="bold">d₂ (∥ d₁)</text>
+                    <text x="365" y="189" fill="#00f0ff" fontSize="12" fontWeight="bold">d₂ (// d₁)</text>
 
                     {/* Transversal Line d3 (Amber) */}
                     <line x1="120" y1="240" x2="280" y2="30" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />

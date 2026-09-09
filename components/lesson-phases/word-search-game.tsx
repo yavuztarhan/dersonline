@@ -105,7 +105,7 @@ const MAT_5_3_2_CLUES: WordClue[] = [
     id: 'mat2-c5',
     question: 'Bir doğruya eşit uzaklıktaki dikmelerin birleştirilmesiyle elde edilen ve uzatıldığında hiçbir zaman kesişmeyen doğrulara ne denir?',
     word: 'PARALEL',
-    hint: '7 Harfli • Sembolü (∥) • Tren rayı modeli',
+    hint: '7 Harfli • Sembolü (//) • Tren rayı modeli',
     color: '#ec4899'
   },
   {
@@ -204,7 +204,7 @@ const MAT_5_3_4_CLUES: WordClue[] = [
     id: 'mat4-c6',
     question: 'Aynı düzlemde bulunan ve uzatıldığında hiçbir zaman kesişmeyip açı oluşturmayan doğrulara ne denir?',
     word: 'PARALEL',
-    hint: '7 Harfli • Sembolü (∥)',
+    hint: '7 Harfli • Sembolü (//)',
     color: '#ef4444'
   }
 ];

@@ -511,7 +511,7 @@ export function ActivitySheetView({
               <span>•</span>
               <span>
                 {isRailwayActivity
-                  ? 'd ∥ k Paralel Doğrular'
+                  ? 'd // k Paralel Doğrular'
                   : isBridgeActivity
                   ? 'Geniş Milimetrik Grid'
                   : isSteppingWorkshop
@@ -722,7 +722,7 @@ export function ActivitySheetView({
               </div>
               <h4 className="font-black text-slate-900 text-xs">Paralel Ray Doğrusu (k)</h4>
               <p className="text-[11px] text-slate-600 leading-relaxed">
-                Dikmelerin tepe noktalarını (<code>A', B', C'</code>) cetvelle birleştirerek yeni bir <code>k</code> doğrusu çiz (<code>d ∥ k</code>).
+                Dikmelerin tepe noktalarını (<code>A', B', C'</code>) cetvelle birleştirerek yeni bir <code>k</code> doğrusu çiz (<code>d // k</code>).
               </p>
               <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-indigo-700">
                 <span>Araç: Ölçüsüz Cetvel</span>
@@ -922,7 +922,7 @@ export function ActivitySheetView({
                     {/* Paralellik Rozeti */}
                     <rect x="635" y="125" width="130" height="34" rx="8" fill="#eef2ff" stroke="#4f46e5" strokeWidth="2" />
                     <text x="700" y="147" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#3730a3" text-anchor="middle">
-                      d ∥ k (Paralel)
+                      d // k (Paralel)
                     </text>
 
                     {/* Ray Üzerinde Hareket Eden Tren Emojisi / İkonu */}
@@ -998,7 +998,7 @@ export function ActivitySheetView({
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-bold text-xs">B) Paralel Doğrular (d ∥ k)</span>
+                  <span className="font-bold text-xs">B) Paralel Doğrular (d // k)</span>
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
                       railQuestionAnswer === 'parallel'
@@ -1093,7 +1093,7 @@ export function ActivitySheetView({
 
                 <p className="text-xs leading-relaxed font-medium">
                   {railQuestionAnswer === 'parallel'
-                    ? 'Bir doğru üzerindeki noktalardan aynı yöne çıkılan eşit uzunluktaki dikmelerin (h = 4 br) uç noktaları birleştirildiğinde elde edilen doğru, ilk doğruya PARALELDİR (d ∥ k). Aralarındaki dik uzaklık sabit olduğu için sonsuza kadar uzatılsalar bile hiçbir zaman kesişmezler!'
+                    ? 'Bir doğru üzerindeki noktalardan aynı yöne çıkılan eşit uzunluktaki dikmelerin (h = 4 br) uç noktaları birleştirildiğinde elde edilen doğru, ilk doğruya PARALELDİR (d // k). Aralarındaki dik uzaklık sabit olduğu için sonsuza kadar uzatılsalar bile hiçbir zaman kesişmezler!'
                     : 'Çıktığımız 3 dikme de aynı uzunlukta (4 birim) olduğundan, rayların arasındaki dik mesafe hiçbir noktada değişmez. Bu iki doğru birbirine ne yaklaşır ne de uzaklaşır.'}
                 </p>
               </div>

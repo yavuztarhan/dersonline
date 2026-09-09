@@ -318,7 +318,7 @@ export function JunctionArchitectGame({ onGameComplete, onBackToMenu }: Junction
     setIsParallelMode(true);
     setLabLine1Angle(0);
     setLabLine2Angle(0);
-    setParallelNotice('⚡ Paralel Doğrular (d₁ ∥ d₂) Hiçbir Noktada Kesişmez ve Açı Oluşturmaz!');
+    setParallelNotice('⚡ Paralel Doğrular (d₁ // d₂) Hiçbir Noktada Kesişmez ve Açı Oluşturmaz!');
     playSynthesizerSound('snap');
   };
 
@@ -751,7 +751,7 @@ export function JunctionArchitectGame({ onGameComplete, onBackToMenu }: Junction
                 </span>
                 {isParallelMode && (
                   <span className="px-3 py-1 rounded-xl bg-amber-950 border border-amber-500 text-amber-300 text-xs font-black animate-pulse">
-                    d₁ ∥ d₂ (Paralel)
+                    d₁ // d₂ (Paralel)
                   </span>
                 )}
               </div>
@@ -769,7 +769,7 @@ export function JunctionArchitectGame({ onGameComplete, onBackToMenu }: Junction
                   onClick={snapToParallel}
                   className="px-3 py-1.5 rounded-xl bg-amber-950/80 hover:bg-amber-900 border border-amber-500/50 text-amber-300 text-xs font-bold transition-all flex items-center gap-1 active:scale-95"
                 >
-                  <span>Paralel Yap (∥)</span>
+                  <span>Paralel Yap (//)</span>
                 </button>
 
                 <button
@@ -857,7 +857,7 @@ export function JunctionArchitectGame({ onGameComplete, onBackToMenu }: Junction
                     
                     {/* d2 */}
                     <line x1="40" y1="250" x2="560" y2="250" stroke="#00f0ff" strokeWidth="5" filter="url(#glow-cyan)" />
-                    <text x="570" y="255" fill="#00f0ff" fontSize="13" fontWeight="bold">d₂ (∥ d₁)</text>
+                    <text x="570" y="255" fill="#00f0ff" fontSize="13" fontWeight="bold">d₂ (// d₁)</text>
 
                     {/* Distance indicator */}
                     <line x1="300" y1="130" x2="300" y2="250" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" />
@@ -1091,7 +1091,7 @@ export function JunctionArchitectGame({ onGameComplete, onBackToMenu }: Junction
                 <div className="text-[11px] text-slate-300 space-y-1.5 pt-2 border-t border-slate-800 animate-in fade-in">
                   <p>🔹 <strong>Ters Açılar:</strong> Kesişen iki doğrudan zıt yönlü olanlar eştir ($a = c, b = d$).</p>
                   <p>🔹 <strong>Komşu Bütünler:</strong> Bir doğru üzerinde ortak bir kolu olan açıların toplamı $180^\circ$dir.</p>
-                  <p>🔹 <strong>Paralel Doğrular ($d_1 \parallel d_2$):</strong> Hiçbir noktada kesişmez, açı oluşturmaz.</p>
+                  <p>🔹 <strong>Paralel Doğrular ($d_1 // d_2$):</strong> Hiçbir noktada kesişmez, açı oluşturmaz.</p>
                   <p>🔹 <strong>Dik Doğrular ($d_1 \perp d_2$):</strong> $90^\circ$lik dik açıyla kesişir.</p>
                 </div>
               )}

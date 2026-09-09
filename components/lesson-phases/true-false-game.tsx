@@ -82,7 +82,7 @@ const MAT_5_3_2_TF: TFQuestion[] = [
   },
   {
     id: 'tf-mat2-5',
-    statement: 'Bir doğruya eşit uzaklıktaki dikmelerin uç noktaları birleştirildiğinde oluşan yeni doğru, ilk doğruya paraleldir (d1 ∥ d2) ve asla kesişmez.',
+    statement: 'Bir doğruya eşit uzaklıktaki dikmelerin uç noktaları birleştirildiğinde oluşan yeni doğru, ilk doğruya paraleldir (d1 // d2) ve asla kesişmez.',
     isTrue: true,
     explanation: 'Aralarındaki dik mesafe sabit kalan doğrular paraleldir; tren rayları gibi sonsuza uzatılsa bile kesişmezler.'
   }

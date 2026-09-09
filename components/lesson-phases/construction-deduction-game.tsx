@@ -53,7 +53,7 @@ const BALANCE_STATEMENTS: BalanceStatement[] = [
     id: 2,
     statement: 'Bir doğruya eşit uzaklıktaki noktaların birleşimi paralel bir doğru oluşturur.',
     isCorrect: true,
-    explanation: 'DOĞRU! Bir taban doğrusuna dik mesafesi hep eşit (h) olan tüm noktalar birleştirildiğinde paralel bir doğru (d₁ ∥ d₂) oluşur.',
+    explanation: 'DOĞRU! Bir taban doğrusuna dik mesafesi hep eşit (h) olan tüm noktalar birleştirildiğinde paralel bir doğru (d₁ // d₂) oluşur.',
     toolHint: '🚂 Tren Rayı Kuralı: Raylar arasındaki dik mesafe her noktada sabittir.'
   },
   {
@@ -513,7 +513,7 @@ export function ConstructionDeductionGame({
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl">
                 Bozuk bir tren yolunun alt rayı (<span className="font-mono font-bold text-teal-700">d₁</span>) verilmiştir.
-                Gönyeyi taban noktalarına yerleştirerek eşit dikmeler (<span className="font-bold text-amber-700">h = 60 px / 10 cm</span>) çıkar ve tepe noktalarından cetvelle geçerek paralel rayı (<span className="font-mono font-bold text-teal-700">d₂ ∥ d₁</span>) tamamla!
+                Gönyeyi taban noktalarına yerleştirerek eşit dikmeler (<span className="font-bold text-amber-700">h = 60 px / 10 cm</span>) çıkar ve tepe noktalarından cetvelle geçerek paralel rayı (<span className="font-mono font-bold text-teal-700">d₂ // d₁</span>) tamamla!
               </p>
             </div>
 
@@ -555,7 +555,7 @@ export function ConstructionDeductionGame({
                 ) : (
                   <span className="text-emerald-700 font-black flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    Paralel Ray İnşa Edildi (d₁ ∥ d₂)! Tren güvenle geçebilir.
+                    Paralel Ray İnşa Edildi (d₁ // d₂)! Tren güvenle geçebilir.
                   </span>
                 )}
               </span>
@@ -689,7 +689,7 @@ export function ConstructionDeductionGame({
                     </text>
                     {/* Parallel symbol marker */}
                     <text x="390" y="95" fill="#0f766e" fontSize="13" fontWeight="900">
-                      d₁ ∥ d₂ (Sabit 10 cm)
+                      d₁ // d₂ (Sabit 10 cm)
                     </text>
                   </g>
                 )}
@@ -781,7 +781,7 @@ export function ConstructionDeductionGame({
             <Sparkles className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
             <div className="text-xs sm:text-sm text-teal-900 leading-relaxed">
               <span className="font-extrabold">Geometrik Çıkarım: </span>
-              Bir taban doğrusuna gönye yardımıyla eşit dik uzaklıktaki (<span className="font-bold">h = 10 cm</span>) noktalar belirlenip cetvelle birleştirildiğinde oluşan yeni doğru, taban doğrusuna <span className="font-black underline">paraleldir (d₁ ∥ d₂)</span> ve raylar boyunca mesafe hep sabittir!
+              Bir taban doğrusuna gönye yardımıyla eşit dik uzaklıktaki (<span className="font-bold">h = 10 cm</span>) noktalar belirlenip cetvelle birleştirildiğinde oluşan yeni doğru, taban doğrusuna <span className="font-black underline">paraleldir (d₁ // d₂)</span> ve raylar boyunca mesafe hep sabittir!
             </div>
           </div>
         </div>
@@ -1228,7 +1228,7 @@ export function ConstructionDeductionGame({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                 <div className="p-3.5 rounded-2xl bg-white/10 border border-white/20 text-xs space-y-1">
                   <div className="font-black text-amber-300">1. Çıkarım (Raylar & Paralellik)</div>
-                  <div className="text-emerald-100">Bir doğruya eşit uzaklıktaki noktaların birleşimi paralel doğru oluşturur (d₁ ∥ d₂).</div>
+                  <div className="text-emerald-100">Bir doğruya eşit uzaklıktaki noktaların birleşimi paralel doğru oluşturur (d₁ // d₂).</div>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-white/10 border border-white/20 text-xs space-y-1">
                   <div className="font-black text-cyan-300">2. Çıkarım (Pergel & Kollar)</div>

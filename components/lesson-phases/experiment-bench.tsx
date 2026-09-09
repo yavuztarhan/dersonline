@@ -696,7 +696,7 @@ export function ExperimentBench() {
                 Dinamik Geometri Yazılımı (OB2)
               </span>
               <h3 className="text-xl font-black text-slate-900">
-                Gönye ile Dikme ve Paralel Doğrular (d₁ ∥ d₂)
+                Gönye ile Dikme ve Paralel Doğrular (d₁ // d₂)
               </h3>
               <p className="text-xs text-slate-500 max-w-xl">
                 Taban doğrusuna dışarıdaki bir noktadan gönye ile tek dikme indirin; eşit uzaklıktaki noktaları birleştirip paralel rayları simüle edin.
@@ -715,7 +715,7 @@ export function ExperimentBench() {
                 onClick={handleDrawParallel}
                 className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
               >
-                <span>Paralel Doğruyu İnşa Et (∥)</span>
+                <span>Paralel Doğruyu İnşa Et (//)</span>
               </button>
 
               <button
@@ -826,7 +826,7 @@ export function ExperimentBench() {
 
                     {/* Train track sleepers simulation */}
                     <text x="300" y={parallelY - 14} fill="#10b396" fontSize="12" fontWeight="black" textAnchor="middle">
-                      🚂 Tren Rayları Modeli: d₁ ∥ d₂ (Kesişmez)
+                      🚂 Tren Rayları Modeli: d₁ // d₂ (Kesişmez)
                     </text>
                   </g>
                 );
@@ -840,10 +840,10 @@ export function ExperimentBench() {
             <Sparkles className="w-6 h-6 text-teal-600 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <h4 className="font-black text-teal-950 text-sm">
-                💡 Maarif Çıkarımı 4 & 5: Tek Dikme ve Paralel Doğrular (d₁ ∥ d₂)
+                💡 Maarif Çıkarımı 4 & 5: Tek Dikme ve Paralel Doğrular (d₁ // d₂)
               </h4>
               <p className="text-xs text-teal-900 leading-relaxed">
-                Bir doğruya dışındaki sabit bir noktadan <strong>yalnız 1 dikme</strong> çizilebilir. Bir doğruya eşit dik uzaklıktaki tüm noktaların birleşimi ise ilk doğruya <strong>paralel bir doğru (d₁ ∥ d₂)</strong> oluşturur. Tren rayları gibi hiçbir zaman kesişmezler.
+                Bir doğruya dışındaki sabit bir noktadan <strong>yalnız 1 dikme</strong> çizilebilir. Bir doğruya eşit dik uzaklıktaki tüm noktaların birleşimi ise ilk doğruya <strong>paralel bir doğru (d₁ // d₂)</strong> oluşturur. Tren rayları gibi hiçbir zaman kesişmezler.
               </p>
             </div>
           </div>

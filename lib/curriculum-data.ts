@@ -534,12 +534,12 @@ export const CURRICULUM_DATA: Grade[] = [
                             pageNumber: 5,
                             chapterTitle: '5. Bölüm: Eşit Uzaklıktaki Noktalar ve Tren Rayları',
                             conceptTitle: 'Paralel Doğru İnşası ve Çıkarım Özeti',
-                            conceptBadge: 'Paralel Doğrular (∥)',
-                            symbolicCode: 'd₁ ∥ d₂ (Sabit Mesafe)',
+                            conceptBadge: 'Paralel Doğrular (//)',
+                            symbolicCode: 'd₁ // d₂ (Sabit Mesafe)',
                             narrativeText: 'Son olarak Hasan, taban doğrusuna gönye yardımıyla hep 10 cm uzaklıkta 3 farklı nokta belirledi ve bu noktaları cetvelle birleştirdi.',
                             characterDialogue: {
                               speaker: 'Hasan & Sinan',
-                              text: 'Tıpkı tren rayları gibi! Bir doğruya eşit uzaklıktaki tüm noktaların oluşturduğu doğru, ilk doğruyla asla kesişmez; bu doğrular PARALELDİR (d₁ ∥ d₂)!'
+                              text: 'Tıpkı tren rayları gibi! Bir doğruya eşit uzaklıktaki tüm noktaların oluşturduğu doğru, ilk doğruyla asla kesişmez; bu doğrular PARALELDİR (d₁ // d₂)!'
                             },
                             visualScene: {
                               type: 'parallel-tracks',
@@ -548,9 +548,9 @@ export const CURRICULUM_DATA: Grade[] = [
                             interactiveAction: {
                               prompt: 'Eşit uzaklıktaki noktaları birleştirip paralel rayları oluşturun!',
                               actionLabel: 'Paralel Doğruyu İnşa Et ⏸️',
-                              feedbackRevealed: 'Mükemmel! Bir doğruya eşit uzaklıktaki noktaların oluşturduğu yeni doğru, taban doğrusuna paraleldir (d₁ ∥ d₂).'
+                              feedbackRevealed: 'Mükemmel! Bir doğruya eşit uzaklıktaki noktaların oluşturduğu yeni doğru, taban doğrusuna paraleldir (d₁ // d₂).'
                             },
-                            mathTakeaway: 'Çıkarım 5: Gönye ile bir doğruya eşit uzaklıktaki noktalar belirlenip birleştirildiğinde oluşan doğru, ilk doğruya paraleldir (d₁ ∥ d₂).'
+                            mathTakeaway: 'Çıkarım 5: Gönye ile bir doğruya eşit uzaklıktaki noktalar belirlenip birleştirildiğinde oluşan doğru, ilk doğruya paraleldir (d₁ // d₂).'
                           }
                         ]
                       },
@@ -601,7 +601,7 @@ export const CURRICULUM_DATA: Grade[] = [
                           {
                             id: 'pz-2-5',
                             concept: 'Paralel Doğrular',
-                            symbol: 'd₁ ∥ d₂ (Tren Rayları)',
+                            symbol: 'd₁ // d₂ (Tren Rayları)',
                             definition: 'Bir doğruya eşit uzaklıktaki noktaların birleşmesiyle oluşan ve asla kesişmeyen doğrular.',
                             visualType: 'line'
                           }
@@ -674,12 +674,12 @@ export const CURRICULUM_DATA: Grade[] = [
                             context: 'Paralel Doğru İnşası (Tren Rayı Modeli)',
                             options: [
                               'A) Birbirine diktirler (d₁ ⊥ d₂).',
-                              'B) Birbirine paraleldirler (d₁ ∥ d₂) ve hiçbir zaman kesişmezler.',
+                              'B) Birbirine paraleldirler (d₁ // d₂) ve hiçbir zaman kesişmezler.',
                               'C) İleride 45 derecelik açıyla kesişirler.',
                               'D) Uzunlukları birbirinden farklıdır.'
                             ],
                             correctOptionIndex: 1,
-                            explanation: 'Bir doğruya eşit uzaklıktaki noktaların birleştirilmesiyle elde edilen doğru, ilk doğruya paraleldir (d₁ ∥ d₂); aralarındaki dik mesafe hep 8 cm kalır ve asla kesişmezler.',
+                            explanation: 'Bir doğruya eşit uzaklıktaki noktaların birleştirilmesiyle elde edilen doğru, ilk doğruya paraleldir (d₁ // d₂); aralarındaki dik mesafe hep 8 cm kalır ve asla kesişmezler.',
                             bloomLevel: 'Modelleme ve Çıkarım'
                           }
                         ]
@@ -1030,7 +1030,7 @@ export const CURRICULUM_DATA: Grade[] = [
                         'd) Sunduğu önermelerin, üçten fazla doğrunun birbirine göre durumuna bağlı oluşabilecek açıların incelenmesine katkısına dair gerekçe sunar.'
                       ],
                       learningGoals: [
-                        'Düzlemde yalnız bir ortak noktası bulunan doğruları "Kesişen Doğrular", dik açı oluşturanları "Dik Doğrular (d₁ ⊥ d₂)", ortak noktası bulunmayanları "Paralel Doğrular (d₁ ∥ d₂)", tüm noktaları ortak olanları "Çakışık Doğrular" olarak adlandırır.',
+                        'Düzlemde yalnız bir ortak noktası bulunan doğruları "Kesişen Doğrular", dik açı oluşturanları "Dik Doğrular (d₁ ⊥ d₂)", ortak noktası bulunmayanları "Paralel Doğrular (d₁ // d₂)", tüm noktaları ortak olanları "Çakışık Doğrular" olarak adlandırır.',
                         'İki doğruyu farklı birer noktada kesen üçüncü bir doğruyu "Kesen Doğru" olarak tanımlar.',
                         'İki doğrunun kesişiminde karşılıklı duran açıların "Ters Açılar" olduğunu ve ölçülerinin daima birbirine eşit olduğunu (a = c, b = d) keşfeder.',
                         'Ortak bir kolu ve ortak köşesi olan açıları "Komşu Açılar", ölçüleri toplamı 90° olanları "Tümler Açılar", ölçüleri toplamı 180° olanları "Bütünler Açılar" olarak tanımlar.',
@@ -1142,12 +1142,12 @@ export const CURRICULUM_DATA: Grade[] = [
                             pageNumber: 4,
                             chapterTitle: '4. Bölüm: Asla Kesişmeyen Köprü Halatları',
                             conceptTitle: 'Paralel Doğrular ve Açı Oluşmama İlkesi',
-                            conceptBadge: 'Paralel Doğrular (∥)',
-                            symbolicCode: 'd₁ ∥ d₂ (Ortak Nokta Yok)',
+                            conceptBadge: 'Paralel Doğrular (//)',
+                            symbolicCode: 'd₁ // d₂ (Ortak Nokta Yok)',
                             narrativeText: 'Asma köprünün devasa çelik taşıyıcı halatları gökyüzüne doğru yan yana uzanıyordu. Aralarındaki mesafe her noktada 15 metreydi.',
                             characterDialogue: {
                               speaker: 'Şehir Plancısı Selim',
-                              text: 'Bu iki halat sonsuza kadar uzasa bile asla birbirine değmez ve kesişmez! Kesişmedikleri için aralarında hiçbir açı oluşmaz; bunlar PARALEL DOĞRULARDIR (d₁ ∥ d₂)!'
+                              text: 'Bu iki halat sonsuza kadar uzasa bile asla birbirine değmez ve kesişmez! Kesişmedikleri için aralarında hiçbir açı oluşmaz; bunlar PARALEL DOĞRULARDIR (d₁ // d₂)!'
                             },
                             visualScene: {
                               type: 'parallel-lines-noangle',
@@ -1156,7 +1156,7 @@ export const CURRICULUM_DATA: Grade[] = [
                             interactiveAction: {
                               prompt: 'Paralel doğruları uzatarak aralarındaki mesafenin hep sabit kaldığını test edin!',
                               actionLabel: 'Paralelliği İncele ⏸️',
-                              feedbackRevealed: 'Harika çıkarım! Ortak noktası bulunmayan paralel doğrular (d₁ ∥ d₂) hiçbir zaman açı oluşturmaz.'
+                              feedbackRevealed: 'Harika çıkarım! Ortak noktası bulunmayan paralel doğrular (d₁ // d₂) hiçbir zaman açı oluşturmaz.'
                             },
                             mathTakeaway: 'Çıkarım 4: Düzlemde ortak noktası bulunmayan doğrular paralel doğrulardır ve aralarında açı oluşmaz.'
                           },
@@ -1239,7 +1239,7 @@ export const CURRICULUM_DATA: Grade[] = [
                           {
                             id: 'pz-4-6',
                             concept: 'Paralel Doğrular',
-                            symbol: 'd₁ ∥ d₂ (Açı = 0° / Yok)',
+                            symbol: 'd₁ // d₂ (Açı = 0° / Yok)',
                             definition: 'Aynı düzlemde bulunan, hiçbir ortak noktası olmayan ve bu nedenle açı oluşturmayan doğrulardır.',
                             visualType: 'line'
                           },
@@ -1311,12 +1311,12 @@ export const CURRICULUM_DATA: Grade[] = [
                             questionText: 'Düzlemdeki d₁ ve d₂ doğruları hakkında "Aralarında hiçbir ortak nokta yoktur ve hiçbir açı oluşturmazlar" bilgisi veriliyor. Bu iki doğru için aşağıdakilerden hangisi söylenebilir?',
                             options: [
                               'A) d₁ ve d₂ dik doğrulardır (d₁ ⊥ d₂)',
-                              'B) d₁ ve d₂ paralel doğrulardır (d₁ ∥ d₂)',
+                              'B) d₁ ve d₂ paralel doğrulardır (d₁ // d₂)',
                               'C) d₁ ve d₂ çakışık doğrulardır',
                               'D) d₁ doğrusu d₂ doğrusunun kesenidir'
                             ],
                             correctOptionIndex: 1,
-                            explanation: 'Aynı düzlemde hiçbir ortak noktası bulunmayan ve kesişmeyen doğrular PARALEL DOĞRULARDIR (d₁ ∥ d₂) ve açı oluşturmazlar.',
+                            explanation: 'Aynı düzlemde hiçbir ortak noktası bulunmayan ve kesişmeyen doğrular PARALEL DOĞRULARDIR (d₁ // d₂) ve açı oluşturmazlar.',
                             bloomLevel: 'Analiz & Akıl Yürütme',
                             context: 'Tren Rayları Modeli'
                           },
@@ -1336,7 +1336,7 @@ export const CURRICULUM_DATA: Grade[] = [
                           },
                           {
                             id: 'q-4-6',
-                            questionText: 'Düzlemde iki paralel doğruyu (d₁ ∥ d₂) farklı iki noktadan kesen üçüncü bir d₃ doğrusuna ne ad verilir?',
+                            questionText: 'Düzlemde iki paralel doğruyu (d₁ // d₂) farklı iki noktadan kesen üçüncü bir d₃ doğrusuna ne ad verilir?',
                             options: [
                               'A) Kesen Doğru',
                               'B) Dikme',
