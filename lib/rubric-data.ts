@@ -13,10 +13,10 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
         title: 'Çarpan Kavramını Anlama (Bölen İlişkisi & Kalansız Bölme)',
         category: 'Kavramsal Anlama & Alan Modeli',
         levelDescriptions: {
-          1: 'Sayının çarpanlarını bulurken eksik bırakır, kalansız bölme ilişkisini kuramaz.',
-          2: 'Küçük sayıların çarpanlarını bulur, büyük sayılarda bazı çarpanları atlar.',
-          3: 'Bir doğal sayının tüm pozitif çarpanlarını sistematik (alan/gökkuşağı) olarak bulur.',
-          4: 'Çarpan sayısı ile sayının geometrik modelleri arasında bağıntı kurar ve geneller.'
+          1: 'Sayının çarpanlarını bulurken eksik bırakıyorum, kalansız bölme ilişkisini kuramıyorum.',
+          2: 'Küçük sayıların çarpanlarını bulabiliyorum ancak büyük sayılarda bazı çarpanları atlıyorum.',
+          3: 'Bir doğal sayının tüm pozitif çarpanlarını sistematik (alan/gökkuşağı) olarak bulabiliyorum.',
+          4: 'Çarpan sayısı ile sayının geometrik modelleri arasında bağıntı kurup genelliyorum.'
         }
       },
       {
@@ -24,10 +24,10 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
         title: 'Kat Kavramını Uygulama (Ritmik Sayma & Aralık Sınırlamaları)',
         category: 'Matematiksel Uygulama & Örüntü',
         levelDescriptions: {
-          1: 'Bir sayının katlarını ritmik saymada zorlanır, işlem hatası yapar.',
-          2: 'Sayının ardışık katlarını yazar fakat aralık sınırlamalarında (örn: 50 ile 100 arası) zorlanır.',
-          3: 'İstenen aralıktaki katları eksiksiz listeler ve kat ilişkisini doğru yorumlar.',
-          4: 'Farklı iki sayının kat örüntülerini karşılaştırarak ortak kat mantığını açıklar.'
+          1: 'Bir sayının katlarını ritmik saymada zorlanıyorum, işlem hatası yapıyorum.',
+          2: 'Sayının ardışık katlarını yazabiliyorum fakat aralık sınırlamalarında (örn: 50 ile 100 arası) zorlanıyorum.',
+          3: 'İstenen aralıktaki katları eksiksiz listeliyor ve kat ilişkisini doğru yorumluyorum.',
+          4: 'Farklı iki sayının kat örüntülerini karşılaştırarak ortak kat mantığını açıkça açıklayabiliyorum.'
         }
       },
       {
@@ -35,10 +35,10 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
         title: 'Problem Durumunda Muhakeme (İyilik Kolisi & Paylaştırma)',
         category: 'Problem Çözme & Karar Verme',
         levelDescriptions: {
-          1: 'Verilen bağlamda çarpan mı kat mı kullanacağına karar veremez.',
-          2: 'Öğretmen rehberliğinde çarpan/kat ilişkisini probleme uygular.',
-          3: 'Günlük hayat problemlerinde çarpan ve katları bağımsız olarak doğru modeller.',
-          4: 'Problemi birden fazla stratejiyle çözer, gerekçelendirir ve yeni problem kurgular.'
+          1: 'Verilen problem durumunda çarpan mı kat mı kullanacağıma karar vermekte zorlanıyorum.',
+          2: 'Öğretmenimin veya ipuçlarının rehberliğinde çarpan/kat ilişkisini probleme uygulayabiliyorum.',
+          3: 'Günlük hayat problemlerinde çarpan ve katları bağımsız olarak doğru modelliyorum.',
+          4: 'Problemi birden fazla stratejiyle çözüyor, gerekçelendiriyor ve yeni problem kurgulayabiliyorum.'
         }
       },
       {
@@ -46,10 +46,21 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
         title: 'Matematiksel Temsil ve Dil (Alan Modeli, Gökkuşağı, Sayı Doğrusu)',
         category: 'Temsil & Matematiksel Dil',
         levelDescriptions: {
-          1: 'Çarpanları rastgele yazar, gösterim modellerini kullanamaz.',
-          2: 'Sadece liste yöntemini kullanır, modelleme araçlarını sınırlı kullanır.',
-          3: 'Alan modeli, gökkuşağı ve sayı doğrusu temsillerini amacına uygun kullanır.',
-          4: 'Temsiller arası geçiş yapar ve çıkarımlarını matematiksel önermelerle ifade eder.'
+          1: 'Çarpanları rastgele yazıyorum, gösterim modellerini (alan/gökkuşağı) kullanmakta zorlanıyorum.',
+          2: 'Sadece liste yöntemini kullanabiliyorum, modelleme araçlarını sınırlı kullanıyorum.',
+          3: 'Alan modeli, gökkuşağı ve sayı doğrusu temsillerini amacına uygun ve doğru kullanıyorum.',
+          4: 'Temsiller arası geçiş yapabiliyor ve çıkarımlarımı matematiksel önermelerle ifade ediyorum.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Öz Düzenleme ve Öğrenme Sorumluluğu (SDB1.2 - SDB1.3)',
+        category: 'Süreç Becerileri & Yansıtma',
+        levelDescriptions: {
+          1: 'Çarpan ve kat bulma adımlarında rastgele tahminler yapıyor, kontrol etmiyorum.',
+          2: 'Hata yaptığımda ipucu ile düzeltiyorum ancak nedenini matematiksel olarak açıklamakta zorlanıyorum.',
+          3: 'Çarpan ağacı ve alan modelleriyle çözümlerimi sabırla kontrol ediyor, eksiklerimi fark ediyorum.',
+          4: 'Kendi öğrenme sürecimi eleştirel değerlendiriyor, çarpan-kat çıkarımlarımı öğrenme günlüğüne derinlikli aktarıyorum.'
         }
       }
     ],
@@ -123,6 +134,13 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
           4: 'Kendi öğrenme sürecimi eleştirel değerlendiriyor, geometrik varsayımlarımı kanıtlayıp öğrenme günlüğüne derinlikli çıkarımlar aktarıyorum.'
         }
       }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Düzlemde kesişen, paralel ve dik doğruların farklarını biliyorum.' },
+      { id: 'chk2', text: 'Kesişen iki doğrudan oluşan ters açıların ölçülerinin eşit olduğunu anladım.' },
+      { id: 'chk3', text: 'Tümler (90°) ve bütünler (180°) açı hesaplamalarını doğru yapabiliyorum.' },
+      { id: 'chk4', text: 'Komşu açıların ortak bir ışını paylaştığını ve iç bölgelerinin ayrık olduğunu fark ettim.' },
+      { id: 'chk5', text: 'Üç doğrunun tek noktada kesişiminde oluşan açıları tablo üzerinde analiz edebiliyorum.' }
     ]
   },
   'MAT.5.3.3': {
@@ -187,6 +205,13 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
           4: 'Kendi öğrenme sürecimi eleştirel değerlendiriyor, hata nedenini (iç/dış ölçek, merkez kayması) anında fark edip düzeltiyorum.'
         }
       }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Açıyı köşe harfi ortada olacak şekilde sembolle doğru isimlendirebiliyorum.' },
+      { id: 'chk2', text: 'İletkinin merkezini açının köşesine yerleştirip doğru cetvelden dereceyi okuyabiliyorum.' },
+      { id: 'chk3', text: 'Açıları dar, dik, geniş ve doğru açı olarak hatasız sınıflandırabiliyorum.' },
+      { id: 'chk4', text: 'Işın kollarının uzunluğu değişse bile açının ölçüsünün değişmediğini biliyorum.' },
+      { id: 'chk5', text: 'Dijital radar ve simülasyon araçlarıyla açı ölçümlerimi kontrol edebiliyorum.' }
     ]
   },
   'MAT.5.3.2': {
@@ -251,6 +276,13 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
           4: 'Dinamik geometri simülasyonunda mesafe değişse bile paralelliğin bozulmadığını (OB2) ve doğruların hiçbir zaman kesişmeyeceğini tam açıklıyorum.'
         }
       }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Ölçüsüz cetvelle iki farklı noktadan sadece tek bir doğru geçebileceğini anladım.' },
+      { id: 'chk2', text: 'Pergel kullanarak merkezden eşit uzaklıktaki noktalar kümesini (çember) çizebiliyorum.' },
+      { id: 'chk3', text: 'Bir ışın veya açı kolu üzerinde pergel açıklığıyla eşit parçalar kesebiliyorum.' },
+      { id: 'chk4', text: 'Gönye yardımıyla bir doğruya dışındaki noktadan tek dikme çizebiliyorum.' },
+      { id: 'chk5', text: 'Eşit uzaklıktaki noktaları birleştirerek paralel doğrular inşa edebiliyorum.' }
     ]
   },
   'MAT.5.3.1': {
@@ -315,6 +347,13 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
           4: 'Öğrenme günlüğüne matematiksel çıkarımlarımı ve şaşırtıcı keşiflerimi detaylı ve özgün şekilde yansıtıyorum.'
         }
       }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Nokta, doğru, doğru parçası ve ışın arasındaki sınır farklarını biliyorum.' },
+      { id: 'chk2', text: '[AB], [AB ve AB sembollerini modelleriyle hatasız eşleştirebiliyorum.' },
+      { id: 'chk3', text: 'Çevremdeki nesneleri (lazer ışını, cetvel, tren rayı) geometrik modellerle ilişkilendirebiliyorum.' },
+      { id: 'chk4', text: 'Cetvel ve dijital çizim araçlarıyla doğru, doğru parçası ve ışın çizebiliyorum.' },
+      { id: 'chk5', text: 'Öğrenme günlüğümde güçlü ve geliştirmem gereken yönlerimi ifade edebiliyorum.' }
     ]
   }
 };
@@ -389,6 +428,13 @@ export function getRubricForOutcome(outcomeId: string, outcomeTitle: string, out
           4: 'Öğrenme hedeflerimi belirliyor, öğrenme günlüğünde derinlikli yansıtma yapıyor ve sorumluluk alıyorum.'
         }
       }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Bu kazanıma ait temel kavram ve tanımları anladım.' },
+      { id: 'chk2', text: 'Matematiksel ve dijital araçları bağımsız olarak kullanabiliyorum.' },
+      { id: 'chk3', text: 'Öğrendiğim kavramları günlük hayat problemlerine uygulayabiliyorum.' },
+      { id: 'chk4', text: 'Kavram yanılgılarını fark edip doğru çözümleri gerekçelendirebiliyorum.' },
+      { id: 'chk5', text: 'Öğrenme sürecimi ve gelişimimi kendi dilimle değerlendirebiliyorum.' }
     ]
   };
 }
