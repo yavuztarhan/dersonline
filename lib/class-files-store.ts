@@ -1221,10 +1221,10 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-      <!-- Açı 1: 45° Dar Açı -->
+      <!-- Açı 1 -->
       <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
         <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #0369a1; margin-bottom: 4px;">
-          <span>AÇI 1 (Dar Açı)</span>
+          <span>AÇI 1</span>
           <span style="color: #64748b;">[İletkiyi Koy]</span>
         </div>
         <div style="height: 100px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
@@ -1244,15 +1244,15 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
           </svg>
         </div>
         <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
-          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #0284c7; color: #0369a1; font-weight: 900;">( 45° )</span>
+          Ölçülen Değer: <span style="display: inline-block; min-width: 55px; border-bottom: 1.5px solid #0284c7; color: #0369a1; font-weight: 900;">( ..........° )</span>
         </div>
       </div>
 
-      <!-- Açı 2: 90° Dik Açı -->
+      <!-- Açı 2 -->
       <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
         <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #0f766e; margin-bottom: 4px;">
-          <span>AÇI 2 (Dik Açı)</span>
-          <span style="color: #64748b;">[Diklik Sembolü]</span>
+          <span>AÇI 2</span>
+          <span style="color: #64748b;">[İletkiyi Koy]</span>
         </div>
         <div style="height: 100px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
           <svg viewBox="0 0 180 100" width="100%" height="100%">
@@ -1271,14 +1271,14 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
           </svg>
         </div>
         <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
-          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #0d9488; color: #0f766e; font-weight: 900;">( 90° )</span>
+          Ölçülen Değer: <span style="display: inline-block; min-width: 55px; border-bottom: 1.5px solid #0d9488; color: #0f766e; font-weight: 900;">( ..........° )</span>
         </div>
       </div>
 
-      <!-- Açı 3: 135° Geniş Açı -->
+      <!-- Açı 3 -->
       <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
         <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #b45309; margin-bottom: 4px;">
-          <span>AÇI 3 (Geniş Açı)</span>
+          <span>AÇI 3</span>
           <span style="color: #64748b;">[Çift Ölçek Ayrımı]</span>
         </div>
         <div style="height: 100px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
@@ -1298,7 +1298,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
           </svg>
         </div>
         <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
-          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #d97706; color: #b45309; font-weight: 900;">( 135° )</span>
+          Ölçülen Değer: <span style="display: inline-block; min-width: 55px; border-bottom: 1.5px solid #d97706; color: #b45309; font-weight: 900;">( ..........° )</span>
         </div>
       </div>
     </div>
@@ -1321,10 +1321,10 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-      <!-- Açı 4: Sağa Eğik 60° Açı -->
+      <!-- Açı 4 -->
       <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
         <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #6d28d9; margin-bottom: 4px;">
-          <span>AÇI 4: Sağa Eğik (60°)</span>
+          <span>AÇI 4: Sağa Eğik Radar</span>
           <span style="color: #7c3aed;">İletkiyi Döndür</span>
         </div>
         <div style="height: 120px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
@@ -1336,24 +1336,24 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
             <line x1="60" y1="95" x2="190" y2="40" stroke="#334155" stroke-width="2.5" />
             <polygon points="183,37 194,38 188,48" fill="#334155" />
             <text x="195" y="55" font-family="monospace" font-size="8" fill="#64748b">Kol 1</text>
-            <!-- Kol 2 (90° dikey yukarı -> aradaki açı 60°) -->
+            <!-- Kol 2 (90° dikey yukarı) -->
             <line x1="60" y1="95" x2="135" y2="10" stroke="#7c3aed" stroke-width="2.5" />
             <polygon points="127,10 137,7 137,18" fill="#7c3aed" />
             <text x="145" y="20" font-family="monospace" font-size="8" fill="#7c3aed">Kol 2</text>
-            <!-- Açı Yayı (30° to 90°) -->
+            <!-- Açı Yayı -->
             <path d="M 95 80 A 40 40 0 0 0 78 58" fill="none" stroke="#7c3aed" stroke-width="1.8" />
             <text x="95" y="65" font-family="monospace" font-size="9" font-weight="bold" fill="#6d28d9">?</text>
           </svg>
         </div>
         <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
-          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #7c3aed; color: #6d28d9; font-weight: 900;">( 60° )</span>
+          Ölçülen Değer: <span style="display: inline-block; min-width: 55px; border-bottom: 1.5px solid #7c3aed; color: #6d28d9; font-weight: 900;">( ..........° )</span>
         </div>
       </div>
 
-      <!-- Açı 5: Aşağıya Doğru Açılan (Baş Aşağı 120°) -->
+      <!-- Açı 5 -->
       <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
         <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #e11d48; margin-bottom: 4px;">
-          <span>AÇI 5: Baş Aşağı (120°)</span>
+          <span>AÇI 5: Baş Aşağı Radar</span>
           <span style="color: #e11d48;">Ters İletki</span>
         </div>
         <div style="height: 120px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
@@ -1361,19 +1361,19 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
             <!-- Vertex O5 (120, 25) -->
             <circle cx="120" cy="25" r="4" fill="#e11d48" />
             <text x="120" y="15" font-family="system-ui" font-size="9" font-weight="bold" fill="#be123c" text-anchor="middle">O₅ (Tepe)</text>
-            <!-- Sol Aşağı Kol (120° açılma) -->
+            <!-- Sol Aşağı Kol -->
             <line x1="120" y1="25" x2="45" y2="100" stroke="#e11d48" stroke-width="2.5" />
             <polygon points="43,90 40,105 53,100" fill="#e11d48" />
             <!-- Sağ Aşağı Kol -->
             <line x1="120" y1="25" x2="195" y2="100" stroke="#334155" stroke-width="2.5" />
             <polygon points="187,100 200,105 197,90" fill="#334155" />
-            <!-- Açı Yayı (Aşağı doğru) -->
+            <!-- Açı Yayı -->
             <path d="M 90 55 A 40 40 0 0 0 150 55" fill="none" stroke="#e11d48" stroke-width="1.8" />
             <text x="120" y="65" font-family="monospace" font-size="9" font-weight="bold" fill="#e11d48" text-anchor="middle">?</text>
           </svg>
         </div>
         <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
-          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #e11d48; color: #be123c; font-weight: 900;">( 120° )</span>
+          Ölçülen Değer: <span style="display: inline-block; min-width: 55px; border-bottom: 1.5px solid #e11d48; color: #be123c; font-weight: 900;">( ..........° )</span>
         </div>
       </div>
     </div>
@@ -1393,10 +1393,10 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
     <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: center;">
       <thead>
         <tr style="background: #f0fdf4; color: #065f46; border-bottom: 2px solid #a7f3d0;">
-          <th style="padding: 6px 8px; text-align: left; width: 30%;">Gerçek Yaşam Şekli</th>
-          <th style="padding: 6px 8px; width: 30%;">1. Göz Kararı Tahminim<br/><span style="font-weight: normal; font-size: 8.5px;">(Dar/Geniş/Kaç Derece?)</span></th>
-          <th style="padding: 6px 8px; width: 22%;">2. İletki ile Gerçek Ölçüm</th>
-          <th style="padding: 6px 8px; width: 18%;">3. Fark<br/><span style="font-weight: normal; font-size: 8.5px;">(Hata Payı)</span></th>
+          <th style="padding: 6px 8px; text-align: left; width: 28%;">Gerçek Yaşam Şekli</th>
+          <th style="padding: 6px 8px; width: 32%;">1. Göz Kararı Tahminim<br/><span style="font-weight: normal; font-size: 8.5px;">(Dar / Dik / Geniş &amp; Derece)</span></th>
+          <th style="padding: 6px 8px; width: 20%;">2. İletki ile Gerçek Ölçüm</th>
+          <th style="padding: 6px 8px; width: 20%;">3. Fark<br/><span style="font-weight: normal; font-size: 8.5px;">(Hata Payı: |Tahmin - Gerçek|)</span></th>
         </tr>
       </thead>
       <tbody>
@@ -1407,13 +1407,13 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
             <span style="font-size: 8.5px; color: #64748b;">(Kesici ağız açıklığı)</span>
           </td>
           <td style="padding: 8px; color: #047857; font-weight: 700;">
-            [ Dar Açı ~ ..........° ]
+            [ Türü: ................ / Tahminim: .......° ]
           </td>
           <td style="padding: 8px; font-weight: 900; color: #0f766e; background: #f8fafc;">
-            35°
+            ( .........° )
           </td>
           <td style="padding: 8px; font-weight: 900; color: #64748b;">
-            | ... - 35 | = ...°
+            | ... - ... | = .....°
           </td>
         </tr>
 
@@ -1424,13 +1424,13 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
             <span style="font-size: 8.5px; color: #64748b;">(Akrep ile Yelkovan)</span>
           </td>
           <td style="padding: 8px; color: #047857; font-weight: 700;">
-            [ Dik Açı ~ ..........° ]
+            [ Türü: ................ / Tahminim: .......° ]
           </td>
           <td style="padding: 8px; font-weight: 900; color: #0f766e; background: #f8fafc;">
-            90°
+            ( .........° )
           </td>
           <td style="padding: 8px; font-weight: 900; color: #64748b;">
-            | ... - 90 | = ...°
+            | ... - ... | = .....°
           </td>
         </tr>
 
@@ -1441,13 +1441,13 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
             <span style="font-size: 8.5px; color: #64748b;">(Ev çatı makası açısı)</span>
           </td>
           <td style="padding: 8px; color: #047857; font-weight: 700;">
-            [ Geniş Açı ~ ..........° ]
+            [ Türü: ................ / Tahminim: .......° ]
           </td>
           <td style="padding: 8px; font-weight: 900; color: #0f766e; background: #f8fafc;">
-            120°
+            ( .........° )
           </td>
           <td style="padding: 8px; font-weight: 900; color: #64748b;">
-            | ... - 120 | = ...°
+            | ... - ... | = .....°
           </td>
         </tr>
       </tbody>
