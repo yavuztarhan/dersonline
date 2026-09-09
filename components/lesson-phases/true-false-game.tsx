@@ -150,7 +150,7 @@ const MAT_5_3_4_TF: TFQuestion[] = [
   },
   {
     id: 'tf-mat4-5',
-    statement: 'Düzlemde iki veya daha fazla doğruyu farklı noktalarda kesen üçüncü bir doğruya kesen (transversal) denir.',
+    statement: 'Düzlemde iki veya daha fazla doğruyu farklı noktalarda kesen üçüncü bir doğruya kesen doğru denir.',
     isTrue: true,
     explanation: 'İki paralel doğruyu kesen üçüncü doğruya kesen denir ve paralel hatlar üzerinde yöndeş, ters ve eş açılar meydana getirir.'
   }

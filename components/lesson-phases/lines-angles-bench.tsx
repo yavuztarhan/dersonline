@@ -44,7 +44,7 @@ export function LinesAnglesBench() {
   const [exp2Completed, setExp2Completed] = useState(false);
 
   // ==========================================
-  // EXP 3: İki Paralel Doğru ve Bir Kesen (Transversal & 8 Açı)
+  // EXP 3: İki Paralel Doğru ve Bir Kesen Doğru (8 Açı)
   // ==========================================
   const [exp3TransversalDeg, setExp3TransversalDeg] = useState(55); // Angle of transversal d3
   const [exp3ParallelDist, setExp3ParallelDist] = useState(110);
@@ -774,7 +774,7 @@ export function LinesAnglesBench() {
               {exp3DeductionRevealed ? (
                 <div className="space-y-2 text-xs text-slate-700 animate-in fade-in">
                   <p className="font-semibold text-teal-950">
-                    💡 <strong>Kesen Doğru (Transversal):</strong> Düzlemdeki iki veya daha fazla doğruyu farklı noktalarda kesen üçüncü doğruya kesen denir.
+                    💡 <strong>Kesen Doğru:</strong> Düzlemdeki iki veya daha fazla doğruyu farklı noktalarda kesen üçüncü doğruya kesen denir.
                   </p>
                   <p className="text-slate-600">
                     💡 <strong>Açı Uyumu:</strong> Paralel iki doğruyu kesen bir doğru üst ve alt kesişim noktalarında birbirine eşit yöndeş, ters ve bütünler açılar meydana getirir.

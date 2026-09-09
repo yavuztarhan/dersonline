@@ -1031,7 +1031,7 @@ export const CURRICULUM_DATA: Grade[] = [
                       ],
                       learningGoals: [
                         'Düzlemde yalnız bir ortak noktası bulunan doğruları "Kesişen Doğrular", dik açı oluşturanları "Dik Doğrular (d₁ ⊥ d₂)", ortak noktası bulunmayanları "Paralel Doğrular (d₁ ∥ d₂)", tüm noktaları ortak olanları "Çakışık Doğrular" olarak adlandırır.',
-                        'İki doğruyu farklı birer noktada kesen üçüncü bir doğruyu "Kesen (Transversal)" olarak tanımlar.',
+                        'İki doğruyu farklı birer noktada kesen üçüncü bir doğruyu "Kesen Doğru" olarak tanımlar.',
                         'İki doğrunun kesişiminde karşılıklı duran açıların "Ters Açılar" olduğunu ve ölçülerinin daima birbirine eşit olduğunu (a = c, b = d) keşfeder.',
                         'Ortak bir kolu ve ortak köşesi olan açıları "Komşu Açılar", ölçüleri toplamı 90° olanları "Tümler Açılar", ölçüleri toplamı 180° olanları "Bütünler Açılar" olarak tanımlar.',
                         'Bir doğru üzerindeki komşu iki açının "Komşu Bütünler Açılar" olduğunu ve toplamlarının daima 180° ettiğini çıkarır.',
@@ -1164,8 +1164,8 @@ export const CURRICULUM_DATA: Grade[] = [
                             id: 'p4-5',
                             pageNumber: 5,
                             chapterTitle: '5. Bölüm: İki Paraleli Kesen Üçüncü Doğru',
-                            conceptTitle: 'Kesen Doğru (Transversal) ve Üç Doğrunun Kesişimi',
-                            conceptBadge: 'Kesen Doğru (Transversal)',
+                            conceptTitle: 'Kesen Doğru ve Üç Doğrunun Kesişimi',
+                            conceptBadge: 'Kesen Doğru',
                             symbolicCode: 'd₃ Keseni (8 Açı Modeli)',
                             narrativeText: 'Son olarak Selim, paralel iki demiryolu hattını verev kesen üçüncü bir bağlantı yolu (d₃ keseni) çizdi.',
                             characterDialogue: {
@@ -1245,7 +1245,7 @@ export const CURRICULUM_DATA: Grade[] = [
                           },
                           {
                             id: 'pz-4-7',
-                            concept: 'Kesen Doğru (Transversal)',
+                            concept: 'Kesen Doğru',
                             symbol: 'd₃ (Kesen)',
                             definition: 'Düzlemdeki iki veya daha fazla doğruyu farklı noktalardan kesen üçüncü doğrudur.',
                             visualType: 'line'
@@ -1338,7 +1338,7 @@ export const CURRICULUM_DATA: Grade[] = [
                             id: 'q-4-6',
                             questionText: 'Düzlemde iki paralel doğruyu (d₁ ∥ d₂) farklı iki noktadan kesen üçüncü bir d₃ doğrusuna ne ad verilir?',
                             options: [
-                              'A) Kesen (Transversal)',
+                              'A) Kesen Doğru',
                               'B) Dikme',
                               'C) Işın',
                               'D) Çakışık doğru'

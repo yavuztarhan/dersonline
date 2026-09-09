@@ -197,7 +197,7 @@ const MAT_5_3_4_CLUES: WordClue[] = [
     id: 'mat4-c5',
     question: 'İki veya daha fazla doğruyu farklı noktalarda kesen üçüncü doğruya ne ad verilir?',
     word: 'KESEN',
-    hint: '5 Harfli • Transversal doğru',
+    hint: '5 Harfli • İki doğruyu kesen doğru',
     color: '#ec4899'
   },
   {

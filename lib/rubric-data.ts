@@ -14,7 +14,7 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
         category: 'Kavramsal Anlama & Sınıflandırma',
         levelDescriptions: {
           1: 'Kesişen, paralel, dik ve kesen doğruların özelliklerini ve aralarındaki farkları karıştırıyorum.',
-          2: 'Paralel ve dik doğruları ayırt ediyorum fakat kesen (transversal) doğrunun oluşturduğu açıları açıklamakta zorlanıyorum.',
+          2: 'Paralel ve dik doğruları ayırt ediyorum fakat kesen doğrunun oluşturduğu açıları açıklamakta zorlanıyorum.',
           3: 'Kesişen, dik, paralel, çakışık ve kesen doğruları doğru tanımlıyor; paralel doğruların açı oluşturmadığını biliyorum.',
           4: 'Düzlemde iki ve üç doğrunun tüm durumlarını eksiksiz sınıflandırıp modelleyebiliyor, kesişim noktaları ve açı oluşumunu tam açıklıyorum.'
         }

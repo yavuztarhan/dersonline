@@ -317,7 +317,7 @@ const MAT_5_3_4_PAIRS: MemoryPair[] = [
   },
   {
     id: 'mat4-p6',
-    concept: 'KESEN DOĞRU (TRANSVERSAL)',
+    concept: 'KESEN DOĞRU',
     symbol: 'd₃ Keseni',
     badge: '⚡ Kesen Doğru',
     definition: 'Düzlemdeki iki veya daha fazla doğruyu farklı noktalarda keserek geçen üçüncü doğrudur.',
