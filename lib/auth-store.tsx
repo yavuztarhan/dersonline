@@ -42,6 +42,7 @@ interface AuthContextType {
   addStudent: (student: StudentUser) => void;
   updateStudent: (student: StudentUser) => void;
   deleteStudent: (studentId: string) => void;
+  awardPointsToStudent: (studentId: string, pts: number) => void;
   getVisibleStudents: (user?: AuthUser | null) => StudentUser[];
 }
 
@@ -169,6 +170,7 @@ const SEED_TEACHERS: TeacherUser[] = [
 ];
 
 const SEED_STUDENTS: StudentUser[] = [
+  // 5-A Sınıfı
   {
     id: 'stu-201',
     name: 'Çırak Hasan',
@@ -182,8 +184,8 @@ const SEED_STUDENTS: StudentUser[] = [
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
     teacherId: 'tch-101',
-    points: 450,
-    unlockedBadges: ['first-step', 'geometry-master', 'maarif-genius'],
+    points: 620,
+    unlockedBadges: ['first-step', 'geometry-master', 'maarif-genius', 'hafiza_ustasi', 'puzzle-pro'],
     createdAt: '2026-09-03'
   },
   {
@@ -191,7 +193,7 @@ const SEED_STUDENTS: StudentUser[] = [
     name: 'Elif Çelik',
     email: 'elif.ogrenci@meb.k12.tr',
     role: 'student',
-    avatar: '🎓',
+    avatar: '👩‍🎓',
     studentNumber: '215',
     gradeLevel: 5,
     classSection: '5-A',
@@ -199,10 +201,63 @@ const SEED_STUDENTS: StudentUser[] = [
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
     teacherId: 'tch-101',
-    points: 380,
+    points: 540,
+    unlockedBadges: ['first-step', 'puzzle-pro', 'geometry-master'],
+    createdAt: '2026-09-03'
+  },
+  {
+    id: 'stu-204',
+    name: 'Ahmet Yılmaz',
+    email: 'ahmet.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '🧑‍🎓',
+    studentNumber: '108',
+    gradeLevel: 5,
+    classSection: '5-A',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-101',
+    points: 430,
     unlockedBadges: ['first-step', 'puzzle-pro'],
     createdAt: '2026-09-03'
   },
+  {
+    id: 'stu-205',
+    name: 'Zeynep Kaya',
+    email: 'zeynep.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '👩‍🎓',
+    studentNumber: '312',
+    gradeLevel: 5,
+    classSection: '5-A',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-101',
+    points: 360,
+    unlockedBadges: ['first-step'],
+    createdAt: '2026-09-04'
+  },
+  {
+    id: 'stu-206',
+    name: 'Ömer Faruk Demir',
+    email: 'omer.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '👨‍🎓',
+    studentNumber: '177',
+    gradeLevel: 5,
+    classSection: '5-A',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-101',
+    points: 280,
+    unlockedBadges: ['first-step'],
+    createdAt: '2026-09-05'
+  },
+
+  // 5-B Sınıfı
   {
     id: 'stu-203',
     name: 'Burak Polat',
@@ -216,9 +271,115 @@ const SEED_STUDENTS: StudentUser[] = [
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
     teacherId: 'tch-101',
-    points: 290,
+    points: 580,
+    unlockedBadges: ['first-step', 'geometry-master', 'puzzle-pro'],
+    createdAt: '2026-09-04'
+  },
+  {
+    id: 'stu-207',
+    name: 'Meryem Şen',
+    email: 'meryem.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '👩‍🎓',
+    studentNumber: '254',
+    gradeLevel: 5,
+    classSection: '5-B',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-101',
+    points: 490,
+    unlockedBadges: ['first-step', 'hafiza_ustasi'],
+    createdAt: '2026-09-04'
+  },
+  {
+    id: 'stu-208',
+    name: 'Emir Arda Öztürk',
+    email: 'emir.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '🧑‍🎓',
+    studentNumber: '189',
+    gradeLevel: 5,
+    classSection: '5-B',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-101',
+    points: 390,
+    unlockedBadges: ['first-step'],
+    createdAt: '2026-09-05'
+  },
+
+  // 5-C Sınıfı
+  {
+    id: 'stu-209',
+    name: 'Selin Koç',
+    email: 'selin.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '👩‍🎓',
+    studentNumber: '305',
+    gradeLevel: 5,
+    classSection: '5-C',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-102',
+    points: 510,
+    unlockedBadges: ['first-step', 'puzzle-pro'],
+    createdAt: '2026-09-03'
+  },
+  {
+    id: 'stu-210',
+    name: 'Kaan Aydın',
+    email: 'kaan.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '👨‍🎓',
+    studentNumber: '411',
+    gradeLevel: 5,
+    classSection: '5-C',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-102',
+    points: 440,
     unlockedBadges: ['first-step'],
     createdAt: '2026-09-04'
+  },
+
+  // 5-D Sınıfı
+  {
+    id: 'stu-211',
+    name: 'Defne Erdem',
+    email: 'defne.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '👩‍🎓',
+    studentNumber: '502',
+    gradeLevel: 5,
+    classSection: '5-D',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-101',
+    points: 570,
+    unlockedBadges: ['first-step', 'geometry-master'],
+    createdAt: '2026-09-04'
+  },
+  {
+    id: 'stu-212',
+    name: 'Yusuf Kerem Aksoy',
+    email: 'yusuf.ogrenci@meb.k12.tr',
+    role: 'student',
+    avatar: '🧑‍🎓',
+    studentNumber: '534',
+    gradeLevel: 5,
+    classSection: '5-D',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    teacherId: 'tch-101',
+    points: 460,
+    unlockedBadges: ['first-step', 'puzzle-pro'],
+    createdAt: '2026-09-05'
   }
 ];
 
@@ -781,6 +942,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStudents((prev) => prev.filter((s) => s.id !== studentId));
   };
 
+  const awardPointsToStudent = (studentId: string, pts: number) => {
+    setStudents((prev) =>
+      prev.map((s) => (s.id === studentId ? { ...s, points: Math.max(0, (s.points || 0) + pts) } : s))
+    );
+
+    if (currentUser && currentUser.id === studentId && currentUser.role === 'student') {
+      const updatedUser = {
+        ...currentUser,
+        points: Math.max(0, ((currentUser as StudentUser).points || 0) + pts)
+      };
+      setCurrentUser(updatedUser);
+      try {
+        localStorage.setItem('maarif_current_user', JSON.stringify(updatedUser));
+      } catch (e) {}
+    }
+  };
+
   const getVisibleStudents = (user?: AuthUser | null): StudentUser[] => {
     const target = user || currentUser;
     if (!target) return [];
@@ -857,6 +1035,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         addStudent,
         updateStudent,
         deleteStudent,
+        awardPointsToStudent,
         getVisibleStudents
       }}
     >

@@ -12,6 +12,7 @@ import {
 } from '@/lib/class-files-store';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import {
   GraduationCap,
   Sparkles,
@@ -30,7 +31,8 @@ import {
   Loader2,
   Search,
   Calendar,
-  FileText
+  FileText,
+  Trophy
 } from 'lucide-react';
 
 export function StudentDashboard() {
@@ -259,6 +261,9 @@ export function StudentDashboard() {
         </div>
 
       </div>
+
+      {/* Sınıf XP Liderlik Panosu & Sıralama */}
+      <ClassLeaderboard initialClassSection={studentClass} />
 
       {/* Classroom Files & Whiteboard Notes for Students */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">

@@ -15,6 +15,7 @@ import {
   exportClassroomFileToPdf
 } from '@/lib/class-files-store';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
+import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -43,14 +44,15 @@ import {
   Loader2,
   Search,
   Filter,
-  Eye
+  Eye,
+  Trophy
 } from 'lucide-react';
 
 export function TeacherDashboard() {
   const { currentUser, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
   const [activePlanOutcome, setActivePlanOutcome] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'plans' | 'files'>('analytics');
+  const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'leaderboard' | 'plans' | 'files'>('analytics');
 
   // Classroom Files State
   const [classroomFiles, setClassroomFiles] = useState<ClassroomFileRecord[]>([]);
@@ -297,6 +299,25 @@ export function TeacherDashboard() {
           type="button"
           onClick={() => {
             playSound('select');
+            setActiveSection('leaderboard');
+          }}
+          className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            activeSection === 'leaderboard'
+              ? 'bg-white text-amber-900 shadow-md border border-amber-300'
+              : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
+          }`}
+        >
+          <Trophy className="w-4 h-4 text-amber-500" />
+          <span>Sınıf XP Lider Tablosu</span>
+          <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black">
+            Liderler
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
             setActiveSection('plans');
           }}
           className={`px-4 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
@@ -329,6 +350,13 @@ export function TeacherDashboard() {
           </span>
         </button>
       </div>
+
+      {/* SECTION: CLASS LEADERBOARD & XP RANKINGS */}
+      {activeSection === 'leaderboard' && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <ClassLeaderboard initialClassSection={selectedClass} showTeacherControls={true} />
+        </div>
+      )}
 
       {/* SECTION 1: RUBRIC ANALYTICS & REPORTS */}
       {activeSection === 'analytics' && (

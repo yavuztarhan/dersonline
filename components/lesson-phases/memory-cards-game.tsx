@@ -500,6 +500,9 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
   const [isGameCompleted, setIsGameCompleted] = useState(false);
   const [wrongShakePair, setWrongShakePair] = useState<string[]>([]);
   const [previewAllMode, setPreviewAllMode] = useState(false);
+  const [earnedXp, setEarnedXp] = useState(0);
+  const [comboStreak, setComboStreak] = useState(0);
+  const [floatingToast, setFloatingToast] = useState<{ text: string; xp: number } | null>(null);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -553,6 +556,9 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
     setGameTimeSeconds(0);
     setIsGameCompleted(false);
     setWrongShakePair([]);
+    setEarnedXp(0);
+    setComboStreak(0);
+    setFloatingToast(null);
     setIsGameActive(true);
 
     if (timerRef.current) clearInterval(timerRef.current);
@@ -608,13 +614,30 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
           const newMatchedCount = matchedPairsCount + 1;
           setMatchedPairsCount(newMatchedCount);
 
+          // XP Calculation with Combo
+          const nextCombo = comboStreak + 1;
+          setComboStreak(nextCombo);
+          const baseMatchXp = 15;
+          const comboBonus = nextCombo > 1 ? (nextCombo - 1) * 10 : 0;
+          const totalMatchXp = baseMatchXp + comboBonus;
+
+          setEarnedXp((prev) => prev + totalMatchXp);
+          addPoints(totalMatchXp);
+
+          setFloatingToast({
+            text: nextCombo > 1 ? `${nextCombo}x Seri Kombo! 🔥` : 'Doğru Eşleşme! ✨',
+            xp: totalMatchXp
+          });
+          setTimeout(() => setFloatingToast(null), 1600);
+
           // Check if all matched
           if (newMatchedCount === pairCount) {
-            handleVictory();
+            handleVictory(totalMatchXp);
           }
         }, 500);
       } else {
-        // NO MATCH: brief delay, shake, and flip back
+        // NO MATCH: reset combo streak, shake, and flip back
+        setComboStreak(0);
         setTimeout(() => {
           playSound('clear');
           setWrongShakePair([firstCard.cardId, secondCard.cardId]);
@@ -634,13 +657,22 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
   };
 
   // Victory Celebration
-  const handleVictory = () => {
+  const handleVictory = (lastMatchXp: number = 15) => {
     setIsGameCompleted(true);
     setIsGameActive(false);
     if (timerRef.current) clearInterval(timerRef.current);
 
     playSound('bell');
-    addPoints(80);
+    
+    // Performance Bonus XP
+    const starsEarned = calculateStars();
+    const starBonus = starsEarned === 3 ? 30 : starsEarned === 2 ? 15 : 5;
+    const timeBonus = gameTimeSeconds < 60 ? 25 : gameTimeSeconds < 90 ? 15 : 5;
+    const completionBonus = 50;
+    const totalBonus = completionBonus + starBonus + timeBonus;
+
+    setEarnedXp((prev) => prev + totalBonus);
+    addPoints(totalBonus);
     unlockBadge('hafiza_ustasi');
 
     // Confetti Fireworks
@@ -779,9 +811,39 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
 
       </div>
 
-      {/* 2. STATS & STATUS RIBBON */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* Floating XP Toast */}
+      {floatingToast && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="px-5 py-2.5 rounded-2xl bg-slate-950/95 text-white border border-amber-400/80 shadow-2xl flex items-center gap-2 font-black text-sm backdrop-blur-md">
+            <span className="text-amber-400">⚡ +{floatingToast.xp} XP</span>
+            <span className="text-slate-200 text-xs font-bold">• {floatingToast.text}</span>
+          </div>
+        </div>
+      )}
+
+      {/* 2. STATS & STATUS RIBBON (5 Columns) */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         
+        {/* Live XP Score */}
+        <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent rounded-2xl p-4 border border-amber-300 shadow-xs flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-base shadow-sm">
+            ⚡
+          </div>
+          <div>
+            <div className="text-[10px] font-bold text-amber-700 uppercase flex items-center gap-1">
+              <span>Kazanılan XP</span>
+              {comboStreak > 1 && (
+                <span className="px-1.5 py-0.2 rounded bg-rose-500 text-white text-[9px] font-black animate-pulse">
+                  {comboStreak}x
+                </span>
+              )}
+            </div>
+            <div className="text-lg font-black text-amber-600">
+              +{earnedXp} <span className="text-xs font-bold text-amber-700">XP</span>
+            </div>
+          </div>
+        </div>
+
         {/* Timer */}
         <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
@@ -822,12 +884,12 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
         </div>
 
         {/* Performance Stars */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center gap-3">
+        <div className="col-span-2 sm:col-span-1 bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center font-bold">
             <Trophy className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] font-bold text-slate-400 uppercase">Hafıza Performansı</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase">Hafıza Yıldızı</div>
             <div className="flex items-center gap-1 mt-0.5">
               {[1, 2, 3].map((s) => (
                 <Star
@@ -860,8 +922,16 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
                   Tebrikler! Tüm Kavramları Eşleştirdin
                 </h4>
                 <p className="text-xs sm:text-sm text-emerald-100 max-w-xl">
-                  {movesCount} hamlede ve {formatTime(gameTimeSeconds)} sürede tüm kavram ve tanımları başarıyla buldun. <strong>+80 XP</strong> ve <strong>Hafıza Ustası Rozeti</strong> kazandın!
+                  {movesCount} hamlede ve {formatTime(gameTimeSeconds)} sürede tüm kavram ve tanımları başarıyla çözdün.
                 </p>
+                <div className="flex items-center gap-2 pt-1 flex-wrap justify-center sm:justify-start">
+                  <span className="px-3 py-1 rounded-xl bg-amber-400 text-slate-950 font-black text-xs shadow-md flex items-center gap-1">
+                    ⚡ Toplam: +{earnedXp} XP Kazandın
+                  </span>
+                  <span className="px-3 py-1 rounded-xl bg-white/20 text-white font-bold text-xs border border-white/30">
+                    🎖️ Hafıza Ustası Rozeti
+                  </span>
+                </div>
               </div>
             </div>
 

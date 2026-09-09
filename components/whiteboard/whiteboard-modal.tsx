@@ -399,7 +399,7 @@ const WhiteboardTextEditor = React.forwardRef<HTMLDivElement, WhiteboardTextEdit
           onSelectionChange();
           onContentChange(e.currentTarget.innerHTML);
         }}
-        className="p-6 sm:p-8 outline-none min-h-[900px] text-slate-900 relative z-0"
+        className="p-6 sm:p-8 outline-none min-h-[900px] text-slate-900 relative z-0 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-2 [&_li]:my-1 [&_li]:leading-relaxed"
         style={{
           fontFamily: fontFamily,
           fontSize: fontSize,
@@ -705,7 +705,17 @@ export function WhiteboardModal({
   // --- TEXT FORMATTING & WORD COMMANDS ---
   const applyTextCommand = (command: string, value: string = '') => {
     const editorEl = textEditorRefs.current[`page-${activePageIndex}`];
-    if (editorEl) editorEl.focus();
+    if (editorEl) {
+      editorEl.focus();
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || !editorEl.contains(selection.anchorNode)) {
+        const range = document.createRange();
+        range.selectNodeContents(editorEl);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+    }
     document.execCommand(command, false, value);
     playSound('click');
     if (editorEl) {
