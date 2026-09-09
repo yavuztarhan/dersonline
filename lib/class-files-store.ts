@@ -1551,7 +1551,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
           <polygon points="265,136 275,140 265,144" fill="#0f172a" />
           
           <circle cx="50" cy="140" r="4.5" fill="#0284c7" />
-          <text x="36" y="145" font-family="system-ui" font-size="12" font-weight="900" fill="#0369a1">[A</text>
+          <text x="36" y="145" text-anchor="end" font-family="system-ui" font-size="12" font-weight="900" fill="#0369a1">[A</text>
           
           <circle cx="210" cy="140" r="3.5" fill="#0f172a" />
           <text x="210" y="156" font-family="system-ui" font-size="11" font-weight="800" fill="#0f172a" text-anchor="middle">B</text>
@@ -1599,7 +1599,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
           <polygon points="265,136 275,140 265,144" fill="#0f172a" />
           
           <circle cx="50" cy="140" r="4.5" fill="#7c3aed" />
-          <text x="36" y="145" font-family="system-ui" font-size="12" font-weight="900" fill="#6d28d9">[K</text>
+          <text x="36" y="145" text-anchor="end" font-family="system-ui" font-size="12" font-weight="900" fill="#6d28d9">[K</text>
           
           <circle cx="210" cy="140" r="3.5" fill="#0f172a" />
           <text x="210" y="156" font-family="system-ui" font-size="11" font-weight="800" fill="#0f172a" text-anchor="middle">L</text>

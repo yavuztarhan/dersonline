@@ -2681,7 +2681,7 @@ export function ActivitySheetView({
 
                       {/* Vertex A & Nokta B */}
                       <circle cx="60" cy="160" r="6" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
-                      <text x="44" y="165" fontFamily="system-ui" fontSize="13" fontWeight="900" fill="#38bdf8">
+                      <text x="44" y="165" textAnchor="end" fontFamily="system-ui" fontSize="13" fontWeight="900" fill="#38bdf8">
                         [A
                       </text>
                       <circle cx="230" cy="160" r="4.5" fill="#f8fafc" />
@@ -2911,7 +2911,7 @@ export function ActivitySheetView({
 
                       {/* Vertex K & Nokta L */}
                       <circle cx="60" cy="160" r="6" fill="#7c3aed" stroke="#ffffff" strokeWidth="2" />
-                      <text x="44" y="165" fontFamily="system-ui" fontSize="13" fontWeight="900" fill="#a855f7">
+                      <text x="44" y="165" textAnchor="end" fontFamily="system-ui" fontSize="13" fontWeight="900" fill="#a855f7">
                         [K
                       </text>
                       <circle cx="230" cy="160" r="4.5" fill="#f8fafc" />
