@@ -3231,12 +3231,14 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 
   <div style="border: 2px solid #0d9488; border-radius: 10px; padding: 10px; background: #ffffff; margin-bottom: 10px;">
     <div style="font-size: 12px; font-weight: 900; color: #0f766e; margin-bottom: 6px;">
-      A BÖLÜMÜ: Bölen Kümeleri ve Kesişim Analizi (40 Puan)
+      A BÖLÜMÜ: Bölen Kümelerini Bulma ve Kesişim Analizi (40 Puan)
     </div>
     <div style="font-size: 11px; line-height: 1.6; color: #334155;">
-      24 Litre Zeytinyağının Bölenleri: <strong>A = { 1, 2, 3, 4, 6, 8, 12, 24 }</strong><br/>
-      36 Litre Nar Ekşisinin Bölenleri: <strong>B = { 1, 2, 3, 4, 6, 9, 12, 18, 36 }</strong><br/>
-      Her İki Sıvı İçin Kullanılabilecek Ortak Kap Hacimleri (A ∩ B):<br/>
+      <strong>1. Adım:</strong> 24 Litre Zeytinyağının Bölenleri Kümesini Yazınız:<br/>
+      <strong>A = { ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ) }</strong><br/><br/>
+      <strong>2. Adım:</strong> 36 Litre Nar Ekşisinin Bölenleri Kümesini Yazınız:<br/>
+      <strong>B = { ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ) }</strong><br/><br/>
+      <strong>3. Adım:</strong> Her İki Sıvı İçin Ortak Eşit Kap Hacimleri (A ∩ B Kesişim Kümesi):<br/>
       <strong>A ∩ B = { ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ), ( ..... ) }</strong> Litre
     </div>
   </div>

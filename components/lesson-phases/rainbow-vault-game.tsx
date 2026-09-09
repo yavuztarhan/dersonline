@@ -33,7 +33,7 @@ interface VaultLevel {
   optionsPool: number[];
 }
 
-const VAULT_LEVELS: VaultLevel[] = [
+const VAULT_LEVELS_MAT611: VaultLevel[] = [
   {
     id: 1,
     targetNumber: 28,
@@ -85,6 +85,173 @@ const VAULT_LEVELS: VaultLevel[] = [
   }
 ];
 
+const VAULT_LEVELS_MAT612: VaultLevel[] = [
+  {
+    id: 1,
+    targetNumber: 60,
+    title: 'Bölünebilme Kasası 1 (60: 2, 3, 4, 5, 6, 10 ile Kalansız)',
+    pairs: [
+      { a: 1, b: 60, correctA: 1, correctB: 60 },
+      { a: 2, b: null, correctA: 2, correctB: 30 },
+      { a: null, b: 20, correctA: 3, correctB: 20 },
+      { a: 4, b: null, correctA: 4, correctB: 15 },
+      { a: null, b: 12, correctA: 5, correctB: 12 },
+      { a: 6, b: null, correctA: 6, correctB: 10 }
+    ],
+    optionsPool: [3, 5, 10, 15, 25, 30, 35]
+  },
+  {
+    id: 2,
+    targetNumber: 84,
+    title: 'Bölünebilme Kasası 2 (84: 2, 3, 4, 6 ile Kalansız)',
+    pairs: [
+      { a: 1, b: 84, correctA: 1, correctB: 84 },
+      { a: null, b: 42, correctA: 2, correctB: 42 },
+      { a: 3, b: null, correctA: 3, correctB: 28 },
+      { a: 4, b: 21, correctA: 4, correctB: 21 },
+      { a: null, b: 14, correctA: 6, correctB: 14 },
+      { a: 7, b: null, correctA: 7, correctB: 12 }
+    ],
+    optionsPool: [2, 6, 9, 12, 18, 28, 32]
+  },
+  {
+    id: 3,
+    targetNumber: 90,
+    title: 'Bölünebilme Kasası 3 (90: 2, 3, 5, 6, 9, 10 ile Kalansız)',
+    pairs: [
+      { a: 1, b: null, correctA: 1, correctB: 90 },
+      { a: 2, b: 45, correctA: 2, correctB: 45 },
+      { a: null, b: 30, correctA: 3, correctB: 30 },
+      { a: 5, b: null, correctA: 5, correctB: 18 },
+      { a: 6, b: 15, correctA: 6, correctB: 15 },
+      { a: null, b: 10, correctA: 9, correctB: 10 }
+    ],
+    optionsPool: [3, 7, 9, 18, 20, 40, 90]
+  },
+  {
+    id: 4,
+    targetNumber: 120,
+    title: 'Bölünebilme Kasası 4 (120: Evrensel Bölünebilme Kasası)',
+    pairs: [
+      { a: 1, b: 120, correctA: 1, correctB: 120 },
+      { a: 2, b: null, correctA: 2, correctB: 60 },
+      { a: 3, b: 40, correctA: 3, correctB: 40 },
+      { a: null, b: 30, correctA: 4, correctB: 30 },
+      { a: 5, b: null, correctA: 5, correctB: 24 },
+      { a: 6, b: 20, correctA: 6, correctB: 20 },
+      { a: null, b: 15, correctA: 8, correctB: 15 },
+      { a: 10, b: null, correctA: 10, correctB: 12 }
+    ],
+    optionsPool: [4, 8, 12, 24, 25, 50, 60]
+  }
+];
+
+const VAULT_LEVELS_MAT613: VaultLevel[] = [
+  {
+    id: 1,
+    targetNumber: 60,
+    title: 'Asal Çarpan Kasası 1 (60 = 2² · 3 · 5)',
+    pairs: [
+      { a: 2, b: null, correctA: 2, correctB: 30 },
+      { a: null, b: 20, correctA: 3, correctB: 20 },
+      { a: 5, b: null, correctA: 5, correctB: 12 },
+      { a: 6, b: 10, correctA: 6, correctB: 10 }
+    ],
+    optionsPool: [3, 8, 12, 16, 25, 30]
+  },
+  {
+    id: 2,
+    targetNumber: 72,
+    title: 'Asal Çarpan Kasası 2 (72 = 2³ · 3²)',
+    pairs: [
+      { a: 2, b: 36, correctA: 2, correctB: 36 },
+      { a: null, b: 24, correctA: 3, correctB: 24 },
+      { a: 4, b: null, correctA: 4, correctB: 18 },
+      { a: null, b: 9, correctA: 8, correctB: 9 }
+    ],
+    optionsPool: [3, 6, 8, 12, 16, 18, 20]
+  },
+  {
+    id: 3,
+    targetNumber: 119,
+    title: 'Kripto Asal Kasa 3 (119 = 7 × 17 Asal Çarpımı)',
+    pairs: [
+      { a: 1, b: null, correctA: 1, correctB: 119 },
+      { a: null, b: 17, correctA: 7, correctB: 17 }
+    ],
+    optionsPool: [3, 7, 9, 13, 19, 119]
+  },
+  {
+    id: 4,
+    targetNumber: 221,
+    title: 'Kripto Asal Kasa 4 (221 = 13 × 17 Asal Çarpımı)',
+    pairs: [
+      { a: 1, b: 221, correctA: 1, correctB: 221 },
+      { a: null, b: null, correctA: 13, correctB: 17 }
+    ],
+    optionsPool: [7, 11, 13, 17, 19, 23]
+  }
+];
+
+const VAULT_LEVELS_MAT614: VaultLevel[] = [
+  {
+    id: 1,
+    targetNumber: 48,
+    title: 'Ortak Kat Kasası 1 (16 ve 24\'ün Ortak Katı: 48)',
+    pairs: [
+      { a: 1, b: 48, correctA: 1, correctB: 48 },
+      { a: 2, b: null, correctA: 2, correctB: 24 },
+      { a: null, b: 16, correctA: 3, correctB: 16 },
+      { a: 4, b: null, correctA: 4, correctB: 12 },
+      { a: 6, b: 8, correctA: 6, correctB: 8 }
+    ],
+    optionsPool: [3, 5, 12, 18, 24, 32]
+  },
+  {
+    id: 2,
+    targetNumber: 36,
+    title: 'Ortak Kat Kasası 2 (12 ve 18\'in Ortak Katı: 36)',
+    pairs: [
+      { a: 1, b: null, correctA: 1, correctB: 36 },
+      { a: 2, b: 18, correctA: 2, correctB: 18 },
+      { a: null, b: 12, correctA: 3, correctB: 12 },
+      { a: 4, b: null, correctA: 4, correctB: 9 },
+      { a: 6, b: 6, correctA: 6, correctB: 6 }
+    ],
+    optionsPool: [3, 8, 9, 14, 20, 36]
+  },
+  {
+    id: 3,
+    targetNumber: 60,
+    title: 'Ortak Kat Kasası 3 (12, 15 ve 20\'nin Ortak Katı: 60)',
+    pairs: [
+      { a: 1, b: 60, correctA: 1, correctB: 60 },
+      { a: null, b: 30, correctA: 2, correctB: 30 },
+      { a: 3, b: null, correctA: 3, correctB: 20 },
+      { a: 4, b: 15, correctA: 4, correctB: 15 },
+      { a: null, b: 12, correctA: 5, correctB: 12 },
+      { a: 6, b: null, correctA: 6, correctB: 10 }
+    ],
+    optionsPool: [2, 5, 8, 10, 18, 20, 25]
+  },
+  {
+    id: 4,
+    targetNumber: 120,
+    title: 'Ortak Kat Kasası 4 (24 ve 30\'un Ortak Katı: 120)',
+    pairs: [
+      { a: 1, b: null, correctA: 1, correctB: 120 },
+      { a: 2, b: 60, correctA: 2, correctB: 60 },
+      { a: null, b: 40, correctA: 3, correctB: 40 },
+      { a: 4, b: null, correctA: 4, correctB: 30 },
+      { a: 5, b: 24, correctA: 5, correctB: 24 },
+      { a: null, b: 20, correctA: 6, correctB: 20 },
+      { a: 8, b: 15, correctA: 8, correctB: 15 },
+      { a: 10, b: null, correctA: 10, correctB: 12 }
+    ],
+    optionsPool: [3, 6, 12, 25, 30, 50, 120]
+  }
+];
+
 const RAINBOW_COLORS = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
 interface RainbowVaultGameProps {
@@ -92,7 +259,19 @@ interface RainbowVaultGameProps {
 }
 
 export function RainbowVaultGame({ onBackToMenu }: RainbowVaultGameProps = {}) {
-  const { playSound, addPoints, unlockBadge } = useApp();
+  const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
+
+  const isDivisibility = selectedOutcome?.id === 'MAT.6.1.2' || selectedOutcome?.code?.includes('6.1.2');
+  const isPrimeFactors = selectedOutcome?.id === 'MAT.6.1.3' || selectedOutcome?.code?.includes('6.1.3');
+  const isCommon = selectedOutcome?.id === 'MAT.6.1.4' || selectedOutcome?.code?.includes('6.1.4');
+
+  const VAULT_LEVELS = isDivisibility
+    ? VAULT_LEVELS_MAT612
+    : isPrimeFactors
+    ? VAULT_LEVELS_MAT613
+    : isCommon
+    ? VAULT_LEVELS_MAT614
+    : VAULT_LEVELS_MAT611;
 
   const [levelIndex, setLevelIndex] = useState(0);
   const [gameState, setGameState] = useState<'ready' | 'playing' | 'level_won' | 'completed'>('ready');
@@ -100,6 +279,12 @@ export function RainbowVaultGame({ onBackToMenu }: RainbowVaultGameProps = {}) {
   const [score, setScore] = useState(0);
 
   const currentLevel = VAULT_LEVELS[levelIndex] || VAULT_LEVELS[0];
+
+  // Reset when outcome changes
+  useEffect(() => {
+    setLevelIndex(0);
+    setGameState('ready');
+  }, [selectedOutcome?.id]);
 
   // Initialize level
   useEffect(() => {
@@ -238,6 +423,13 @@ export function RainbowVaultGame({ onBackToMenu }: RainbowVaultGameProps = {}) {
         <div className="space-y-6">
           {/* Vault Body & Arc Visualization */}
           <div className="bg-slate-950 rounded-3xl p-6 sm:p-8 border-4 border-slate-800 shadow-2xl relative overflow-hidden flex flex-col items-center">
+            {/* Level Title */}
+            <div className="mb-4 text-center">
+              <span className="text-sm font-black text-indigo-300 uppercase tracking-wide">
+                {currentLevel.title}
+              </span>
+            </div>
+
             {/* Vault Dial Center */}
             <div className="w-28 h-28 rounded-full bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-4 border-indigo-400 flex flex-col items-center justify-center shadow-xl mb-6 relative">
               <span className="text-[10px] font-extrabold uppercase text-indigo-300 tracking-wider">Hedef Çarpım</span>

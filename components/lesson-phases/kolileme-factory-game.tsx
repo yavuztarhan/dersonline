@@ -21,7 +21,7 @@ import {
 
 interface BoxLevel {
   id: number;
-  targetNumber: number;
+  targetNumber: number | string;
   productName: string;
   unitText: string;
   allFactors: number[];
@@ -29,7 +29,7 @@ interface BoxLevel {
   timeLimit: number;
 }
 
-const LEVELS: BoxLevel[] = [
+const LEVELS_MAT611: BoxLevel[] = [
   {
     id: 1,
     targetNumber: 24,
@@ -68,12 +68,141 @@ const LEVELS: BoxLevel[] = [
   }
 ];
 
+const LEVELS_MAT612: BoxLevel[] = [
+  {
+    id: 1,
+    targetNumber: 48750,
+    productName: 'Lazer Tasnif Sandığı 1',
+    unitText: '48.750 Sayısını Kalansız Bölen Kriterler',
+    allFactors: [2, 3, 5, 6, 10],
+    distractors: [4, 9],
+    timeLimit: 45
+  },
+  {
+    id: 2,
+    targetNumber: 7324,
+    productName: 'Lazer Tasnif Sandığı 2',
+    unitText: '7.324 Sayısını Kalansız Bölen Kriterler',
+    allFactors: [2, 4],
+    distractors: [3, 5, 6, 9, 10],
+    timeLimit: 40
+  },
+  {
+    id: 3,
+    targetNumber: 9468,
+    productName: 'Lazer Tasnif Sandığı 3',
+    unitText: '9.468 Sayısını Kalansız Bölen Kriterler',
+    allFactors: [2, 3, 4, 6, 9],
+    distractors: [5, 10],
+    timeLimit: 40
+  },
+  {
+    id: 4,
+    targetNumber: 1235,
+    productName: 'Lazer Tasnif Sandığı 4',
+    unitText: '1.235 Sayısını Kalansız Bölen Kriterler',
+    allFactors: [5],
+    distractors: [2, 3, 4, 6, 9, 10],
+    timeLimit: 35
+  }
+];
+
+const LEVELS_MAT613: BoxLevel[] = [
+  {
+    id: 1,
+    targetNumber: 60,
+    productName: 'Asal Çarpan Sandığı 1 (60)',
+    unitText: '60 Sayısının ASAL Çarpanlarını Seç (Bileşikler Tuzaktır!)',
+    allFactors: [2, 3, 5],
+    distractors: [4, 6, 10, 12, 15, 20, 30],
+    timeLimit: 45
+  },
+  {
+    id: 2,
+    targetNumber: 84,
+    productName: 'Asal Çarpan Sandığı 2 (84)',
+    unitText: '84 Sayısının ASAL Çarpanlarını Seç',
+    allFactors: [2, 3, 7],
+    distractors: [4, 6, 12, 14, 21, 28, 42],
+    timeLimit: 45
+  },
+  {
+    id: 3,
+    targetNumber: 72,
+    productName: 'Asal Çarpan Sandığı 3 (72)',
+    unitText: '72 Sayısının ASAL Çarpanlarını Seç (72 = 2³ · 3²)',
+    allFactors: [2, 3],
+    distractors: [4, 6, 8, 9, 12, 18, 24, 36],
+    timeLimit: 40
+  },
+  {
+    id: 4,
+    targetNumber: 120,
+    productName: 'Asal Çarpan Sandığı 4 (120)',
+    unitText: '120 Sayısının ASAL Çarpanlarını Seç',
+    allFactors: [2, 3, 5],
+    distractors: [4, 6, 8, 10, 12, 15, 20, 24, 30],
+    timeLimit: 40
+  }
+];
+
+const LEVELS_MAT614: BoxLevel[] = [
+  {
+    id: 1,
+    targetNumber: '24 & 36',
+    productName: 'Ortak Bidon Sandığı 1',
+    unitText: '24L ve 36L Sıvıların ORTAK Bölenlerini Seç',
+    allFactors: [1, 2, 3, 4, 6, 12],
+    distractors: [8, 9, 18, 24, 36],
+    timeLimit: 45
+  },
+  {
+    id: 2,
+    targetNumber: '18 & 30',
+    productName: 'Ortak Bidon Sandığı 2',
+    unitText: '18 ve 30 Sayılarının ORTAK Bölenlerini Seç',
+    allFactors: [1, 2, 3, 6],
+    distractors: [4, 5, 9, 10, 15, 18],
+    timeLimit: 40
+  },
+  {
+    id: 3,
+    targetNumber: '40 & 60',
+    productName: 'Ortak Ağaçlandırma Sandığı 3',
+    unitText: '40m ve 60m Ortak Aralıklarını Seç',
+    allFactors: [1, 2, 4, 5, 10, 20],
+    distractors: [3, 6, 8, 12, 15, 30],
+    timeLimit: 40
+  },
+  {
+    id: 4,
+    targetNumber: '8 & 15',
+    productName: 'Aralarında Asallık Sandığı 4',
+    unitText: '8 ve 15 (Aralarında Asal) ORTAK Bölenini Seç',
+    allFactors: [1],
+    distractors: [2, 3, 4, 5, 8, 15],
+    timeLimit: 35
+  }
+];
+
 interface KolilemeFactoryGameProps {
   onBackToMenu?: () => void;
 }
 
 export function KolilemeFactoryGame({ onBackToMenu }: KolilemeFactoryGameProps = {}) {
-  const { playSound, addPoints, unlockBadge } = useApp();
+  const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
+
+  const isDivisibility = selectedOutcome?.id === 'MAT.6.1.2' || selectedOutcome?.code?.includes('6.1.2');
+  const isPrimeFactors = selectedOutcome?.id === 'MAT.6.1.3' || selectedOutcome?.code?.includes('6.1.3');
+  const isCommon = selectedOutcome?.id === 'MAT.6.1.4' || selectedOutcome?.code?.includes('6.1.4');
+
+  const LEVELS = isDivisibility
+    ? LEVELS_MAT612
+    : isPrimeFactors
+    ? LEVELS_MAT613
+    : isCommon
+    ? LEVELS_MAT614
+    : LEVELS_MAT611;
 
   const [levelIndex, setLevelIndex] = useState(0);
   const [gameState, setGameState] = useState<'ready' | 'playing' | 'level_won' | 'game_over' | 'completed'>('ready');

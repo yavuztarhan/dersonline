@@ -19,13 +19,13 @@ import {
 
 interface FrogLevel {
   id: number;
-  baseNumber: number;
+  baseNumber: number | string;
   targetCount: number;
   correctMultiples: number[];
   traps: Array<{ num: number; reason: string }>;
 }
 
-const FROG_LEVELS: FrogLevel[] = [
+const FROG_LEVELS_MAT611: FrogLevel[] = [
   {
     id: 1,
     baseNumber: 6,
@@ -80,12 +80,203 @@ const FROG_LEVELS: FrogLevel[] = [
   }
 ];
 
+const FROG_LEVELS_MAT612: FrogLevel[] = [
+  {
+    id: 1,
+    baseNumber: "3'e Kalansız Bölünenler",
+    targetCount: 5,
+    correctMultiples: [18, 27, 36, 42, 54, 72, 81],
+    traps: [
+      { num: 14, reason: "1+4=5, rakamları toplamı 3'ün katı değildir!" },
+      { num: 22, reason: "2+2=4, 3'ün katı değildir!" },
+      { num: 35, reason: "3+5=8, 3'ün katı değildir!" },
+      { num: 46, reason: "4+6=10, 3'ün katı değildir!" },
+      { num: 55, reason: "5+5=10, 3'ün katı değildir!" },
+      { num: 67, reason: "6+7=13, 3'ün katı değildir!" }
+    ]
+  },
+  {
+    id: 2,
+    baseNumber: "4'e Kalansız Bölünenler",
+    targetCount: 5,
+    correctMultiples: [16, 24, 36, 48, 64, 72, 84],
+    traps: [
+      { num: 18, reason: "Son iki basamak (18) 4'ün katı değildir!" },
+      { num: 26, reason: "26 sayısı 4'e tam bölünmez!" },
+      { num: 34, reason: "34 sayısı 4'e tam bölünmez!" },
+      { num: 42, reason: "42 sayısı 4'e tam bölünmez!" },
+      { num: 50, reason: "50 sayısı 4'e tam bölünmez!" },
+      { num: 62, reason: "62 sayısı 4'e tam bölünmez!" }
+    ]
+  },
+  {
+    id: 3,
+    baseNumber: "9'a Kalansız Bölünenler",
+    targetCount: 5,
+    correctMultiples: [27, 45, 63, 72, 81, 99, 108],
+    traps: [
+      { num: 21, reason: "2+1=3, 3'e bölünür ama 9'un katı değildir!" },
+      { num: 33, reason: "3+3=6, 9'a tam bölünmez!" },
+      { num: 48, reason: "4+8=12, 9'un katı değildir!" },
+      { num: 56, reason: "5+6=11, 9'un katı değildir!" },
+      { num: 75, reason: "7+5=12, 9'un katı değildir!" },
+      { num: 84, reason: "8+4=12, 9'un katı değildir!" }
+    ]
+  },
+  {
+    id: 4,
+    baseNumber: "6'ya Kalansız Bölünenler (Hem 2 hem 3)",
+    targetCount: 5,
+    correctMultiples: [18, 24, 36, 48, 66, 78, 90],
+    traps: [
+      { num: 15, reason: "15 sayısı 3'e bölünür ama tektir, 2'ye bölünemez!" },
+      { num: 20, reason: "20 çifttir ama 2+0=2 olup 3'e bölünemez!" },
+      { num: 33, reason: "33 sayısı tektir, 6'ya bölünemez!" },
+      { num: 44, reason: "44 çifttir ama 4+4=8 olup 3'e bölünemez!" },
+      { num: 55, reason: "55 tek sayıdır!" },
+      { num: 62, reason: "62 çifttir ama 6+2=8 olup 3'e bölünemez!" }
+    ]
+  }
+];
+
+const FROG_LEVELS_MAT613: FrogLevel[] = [
+  {
+    id: 1,
+    baseNumber: "1-30 Arası Asal Sayılar",
+    targetCount: 5,
+    correctMultiples: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29],
+    traps: [
+      { num: 1, reason: "1 asal sayı DEĞİLDİR (yalnızca 1 böleni vardır)!" },
+      { num: 9, reason: "9 = 3 × 3 (bileşik sayıdır)!" },
+      { num: 15, reason: "15 = 3 × 5 (bileşik sayıdır)!" },
+      { num: 21, reason: "21 = 3 × 7 (bileşik sayıdır)!" },
+      { num: 25, reason: "25 = 5 × 5 (bileşik sayıdır)!" },
+      { num: 27, reason: "27 = 3 × 9 (bileşik sayıdır)!" }
+    ]
+  },
+  {
+    id: 2,
+    baseNumber: "30-60 Arası Asal Sayılar",
+    targetCount: 5,
+    correctMultiples: [31, 37, 41, 43, 47, 53, 59],
+    traps: [
+      { num: 33, reason: "33 = 3 × 11 (bileşik sayıdır)!" },
+      { num: 35, reason: "35 = 5 × 7 (bileşik sayıdır)!" },
+      { num: 39, reason: "39 = 3 × 13 (bileşik sayıdır)!" },
+      { num: 45, reason: "45 = 5 × 9 (bileşik sayıdır)!" },
+      { num: 49, reason: "49 = 7 × 7 (bileşik sayıdır)!" },
+      { num: 51, reason: "51 = 3 × 17 (3'e bölünür, tuzak asal)!" },
+      { num: 57, reason: "57 = 3 × 19 (3'e bölünür, tuzak asal)!" }
+    ]
+  },
+  {
+    id: 3,
+    baseNumber: "60-100 Arası Asal Sayılar",
+    targetCount: 5,
+    correctMultiples: [61, 67, 71, 73, 79, 83, 89, 97],
+    traps: [
+      { num: 63, reason: "63 = 7 × 9 (bileşik sayıdır)!" },
+      { num: 65, reason: "65 = 5 × 13 (bileşik sayıdır)!" },
+      { num: 77, reason: "77 = 7 × 11 (bileşik sayıdır)!" },
+      { num: 81, reason: "81 = 9 × 9 (bileşik sayıdır)!" },
+      { num: 87, reason: "87 = 3 × 29 (3'e bölünür!)" },
+      { num: 91, reason: "91 = 7 × 13 (TUZAK: 91 asal DEĞİLDİR!)" },
+      { num: 93, reason: "93 = 3 × 31 (3'e bölünür!)" }
+    ]
+  },
+  {
+    id: 4,
+    baseNumber: "Kritik Asallar ve Güvenlik",
+    targetCount: 5,
+    correctMultiples: [17, 19, 23, 29, 31, 71, 89, 97],
+    traps: [
+      { num: 51, reason: "51 = 3 × 17 (3'e bölünür!)" },
+      { num: 57, reason: "57 = 3 × 19 (3'e bölünür!)" },
+      { num: 91, reason: "91 = 7 × 13 (7 ve 13'e bölünür!)" },
+      { num: 87, reason: "87 = 3 × 29 (3'e bölünür!)" },
+      { num: 119, reason: "119 = 7 × 17 (7 ve 17'ye bölünür!)" }
+    ]
+  }
+];
+
+const FROG_LEVELS_MAT614: FrogLevel[] = [
+  {
+    id: 1,
+    baseNumber: "6 ve 8'in Ortak Katları",
+    targetCount: 5,
+    correctMultiples: [24, 48, 72, 96, 120],
+    traps: [
+      { num: 12, reason: "12 sayısı 6'nın katıdır ama 8'in katı değildir!" },
+      { num: 16, reason: "16 sayısı 8'in katıdır ama 6'nın katı değildir!" },
+      { num: 30, reason: "30 sayısı 6'nın katıdır ama 8'in katı değildir!" },
+      { num: 32, reason: "32 sayısı 8'in katıdır ama 6'nın katı değildir!" },
+      { num: 36, reason: "36 sayısı 6'nın katıdır ama 8'in katı değildir!" },
+      { num: 40, reason: "40 sayısı 8'in katıdır ama 6'nın katı değildir!" }
+    ]
+  },
+  {
+    id: 2,
+    baseNumber: "4 ve 6'nın Ortak Katları",
+    targetCount: 5,
+    correctMultiples: [12, 24, 36, 48, 60, 72],
+    traps: [
+      { num: 8, reason: "8 sayısı 4'ün katıdır ama 6'nın katı değildir!" },
+      { num: 16, reason: "16 sayısı 4'ün katıdır ama 6'nın katı değildir!" },
+      { num: 18, reason: "18 sayısı 6'nın katıdır ama 4'ün katı değildir!" },
+      { num: 20, reason: "20 sayısı 4'ün katıdır ama 6'nın katı değildir!" },
+      { num: 28, reason: "28 sayısı 4'ün katıdır ama 6'nın katı değildir!" },
+      { num: 30, reason: "30 sayısı 6'nın katıdır ama 4'ün katı değildir!" }
+    ]
+  },
+  {
+    id: 3,
+    baseNumber: "15 ve 20'nin Ortak Katları",
+    targetCount: 4,
+    correctMultiples: [60, 120, 180, 240],
+    traps: [
+      { num: 30, reason: "30 sayısı 15'in katıdır ama 20'nin katı değildir!" },
+      { num: 40, reason: "40 sayısı 20'nin katıdır ama 15'in katı değildir!" },
+      { num: 45, reason: "45 sayısı 15'in katıdır ama 20'nin katı değildir!" },
+      { num: 75, reason: "75 sayısı 15'in katıdır ama 20'nin katı değildir!" },
+      { num: 80, reason: "80 sayısı 20'nin katıdır ama 15'in katı değildir!" },
+      { num: 90, reason: "90 sayısı 15'in katıdır ama 20'nin katı değildir!" },
+      { num: 100, reason: "100 sayısı 20'nin katıdır ama 15'in katı değildir!" }
+    ]
+  },
+  {
+    id: 4,
+    baseNumber: "10 ve 15'in Ortak Katları",
+    targetCount: 5,
+    correctMultiples: [30, 60, 90, 120, 150],
+    traps: [
+      { num: 20, reason: "20 sayısı 10'un katıdır ama 15'in katı değildir!" },
+      { num: 40, reason: "40 sayısı 10'un katıdır ama 15'in katı değildir!" },
+      { num: 45, reason: "45 sayısı 15'in katıdır ama 10'un katı değildir!" },
+      { num: 50, reason: "50 sayısı 10'un katıdır ama 15'in katı değildir!" },
+      { num: 70, reason: "70 sayısı 10'un katıdır ama 15'in katı değildir!" },
+      { num: 75, reason: "75 sayısı 15'in katıdır ama 10'un katı değildir!" }
+    ]
+  }
+];
+
 interface FrogJumpGameProps {
   onBackToMenu?: () => void;
 }
 
 export function FrogJumpGame({ onBackToMenu }: FrogJumpGameProps = {}) {
-  const { playSound, addPoints, unlockBadge } = useApp();
+  const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
+
+  const isDivisibility = selectedOutcome?.id === 'MAT.6.1.2' || selectedOutcome?.code?.includes('6.1.2');
+  const isPrimeFactors = selectedOutcome?.id === 'MAT.6.1.3' || selectedOutcome?.code?.includes('6.1.3');
+  const isCommon = selectedOutcome?.id === 'MAT.6.1.4' || selectedOutcome?.code?.includes('6.1.4');
+
+  const FROG_LEVELS = isDivisibility
+    ? FROG_LEVELS_MAT612
+    : isPrimeFactors
+    ? FROG_LEVELS_MAT613
+    : isCommon
+    ? FROG_LEVELS_MAT614
+    : FROG_LEVELS_MAT611;
 
   const [levelIndex, setLevelIndex] = useState(0);
   const [gameState, setGameState] = useState<'ready' | 'playing' | 'level_won' | 'game_over' | 'completed'>('ready');
@@ -97,6 +288,12 @@ export function FrogJumpGame({ onBackToMenu }: FrogJumpGameProps = {}) {
   const [shuffledLilies, setShuffledLilies] = useState<Array<{ num: number; isMultiple: boolean; reason?: string }>>([]);
 
   const currentLevel = FROG_LEVELS[levelIndex] || FROG_LEVELS[0];
+
+  // Reset when outcome changes
+  useEffect(() => {
+    setLevelIndex(0);
+    setGameState('ready');
+  }, [selectedOutcome?.id]);
 
   // Initialize level
   useEffect(() => {
@@ -127,7 +324,8 @@ export function FrogJumpGame({ onBackToMenu }: FrogJumpGameProps = {}) {
       const nextCollected = [...collectedMultiples, item.num];
       setCollectedMultiples(nextCollected);
       setScore((prev) => prev + 20);
-      setLastFeedback(`Harika! ${item.num} sayısı ${currentLevel.baseNumber}'in katıdır.`);
+      const isNum = typeof currentLevel.baseNumber === 'number';
+      setLastFeedback(`Harika! ${item.num} sayısı ${isNum ? `${currentLevel.baseNumber}'in katıdır.` : 'hedef kritere uygundur.'}`);
 
       if (nextCollected.length >= currentLevel.targetCount) {
         handleLevelComplete();
@@ -252,10 +450,12 @@ export function FrogJumpGame({ onBackToMenu }: FrogJumpGameProps = {}) {
               </div>
               <div>
                 <div className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400">
-                  Görev Sayısı
+                  Hedef Kriter
                 </div>
                 <div className="text-2xl font-black text-white">
-                  {currentLevel.baseNumber}&apos;in Katlarını Bul!
+                  {typeof currentLevel.baseNumber === 'number'
+                    ? `${currentLevel.baseNumber}'in Katlarını Bul!`
+                    : currentLevel.baseNumber}
                 </div>
               </div>
             </div>
@@ -325,7 +525,7 @@ export function FrogJumpGame({ onBackToMenu }: FrogJumpGameProps = {}) {
           <div className="space-y-2">
             <h3 className="text-2xl font-black text-white">Harika Sıçrayış!</h3>
             <p className="text-xs sm:text-sm text-slate-300">
-              <strong>{currentLevel.baseNumber}</strong> sayısının katlarını başarıyla buldunuz ve kurbağayı karşı kıyıya ulaştırdınız!
+              <strong>{currentLevel.baseNumber}</strong> {typeof currentLevel.baseNumber === 'number' ? 'sayısının katlarını' : 'kriterine uyan sayıları'} başarıyla buldunuz ve kurbağayı karşı kıyıya ulaştırdınız!
             </p>
           </div>
           <button

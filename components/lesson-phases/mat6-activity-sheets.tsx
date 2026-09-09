@@ -2812,6 +2812,8 @@ export function CommonDivisorsActivityView() {
   const { playSound, addPoints, unlockBadge } = useApp();
 
   const [answers, setAnswers] = useState({
+    divs24: '',
+    divs36: '',
     commonList: '',
     maxCapacity: '',
     totalCans: ''
@@ -2823,9 +2825,16 @@ export function CommonDivisorsActivityView() {
 
   const handleCheck = () => {
     let earned = 0;
-    const cleanList = answers.commonList.replace(/\s+/g, '');
-    if (cleanList.includes('1,2,3,4,6,12') || cleanList.includes('12,6,4,3,2,1')) earned += 40;
-    else if (cleanList.includes('12')) earned += 20;
+    const clean24 = answers.divs24.replace(/\s+/g, '');
+    const clean36 = answers.divs36.replace(/\s+/g, '');
+    const cleanCommon = answers.commonList.replace(/\s+/g, '');
+
+    // 24 bölenleri (10P)
+    if (['1', '2', '3', '4', '6', '8', '12', '24'].every((d) => clean24.includes(d))) earned += 10;
+    // 36 bölenleri (10P)
+    if (['1', '2', '3', '4', '6', '9', '12', '18', '36'].every((d) => clean36.includes(d))) earned += 10;
+    // Ortak bölenler (20P)
+    if (['1', '2', '3', '4', '6', '12'].every((d) => cleanCommon.includes(d))) earned += 20;
 
     if (answers.maxCapacity.trim() === '12') earned += 30;
     if (answers.totalCans.trim() === '5') earned += 30; // 24/12=2, 36/12=3 => 2+3=5
@@ -2847,6 +2856,8 @@ export function CommonDivisorsActivityView() {
 
   const handleReset = () => {
     setAnswers({
+      divs24: '',
+      divs36: '',
       commonList: '',
       maxCapacity: '',
       totalCans: ''
@@ -2866,26 +2877,49 @@ export function CommonDivisorsActivityView() {
           Zeytinyağı ve Nar Ekşisi Ortak Bidonlama (Ortak Bölenler)
         </h3>
         <p className="text-xs text-slate-500 mt-1">
-          24 Litre ve 36 Litre sıvıların ortak bölenler kümesini ve en uygun bidonlama hacmini bulunuz.
+          24 Litre ve 36 Litre sıvıların bölen kümelerini listeleyip kesişim kümesini (ortak bölenleri) ve en uygun bidonlama hacmini bulunuz.
         </p>
       </div>
 
       <div className="p-4 rounded-2xl bg-teal-50/50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 space-y-3">
         <h4 className="text-xs font-black text-teal-900 dark:text-teal-300 uppercase">
-          A Bölümü: Ortak Bölenler Kümesi (40 Puan)
+          A Bölümü: Bölen Kümelerini Bulma ve Kesişim Analizi (40 Puan)
         </h4>
-        <div className="text-xs space-y-2">
-          <p className="text-slate-700 dark:text-slate-300">
-            24'ün bölenleri: {'{1, 2, 3, 4, 6, 8, 12, 24}'} | 36'nın bölenleri: {'{1, 2, 3, 4, 6, 9, 12, 18, 36}'}
-          </p>
-          <div className="flex items-center gap-2">
-            <span>Ortak Bölenler (Virgülle ayırarak yazınız):</span>
+        <div className="text-xs space-y-3">
+          <div>
+            <div className="font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              1. 24 Litre Zeytinyağının Bölenleri Kümesi (A):
+            </div>
+            <input
+              type="text"
+              placeholder="1, 2, 3, 4, 6, 8, 12, 24"
+              value={answers.divs24}
+              onChange={(e) => setAnswers({ ...answers, divs24: e.target.value })}
+              className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold"
+            />
+          </div>
+          <div>
+            <div className="font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              2. 36 Litre Nar Ekşisinin Bölenleri Kümesi (B):
+            </div>
+            <input
+              type="text"
+              placeholder="1, 2, 3, 4, 6, 9, 12, 18, 36"
+              value={answers.divs36}
+              onChange={(e) => setAnswers({ ...answers, divs36: e.target.value })}
+              className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold"
+            />
+          </div>
+          <div>
+            <div className="font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              3. Her İki Sıvı İçin Ortak Eşit Kap Hacimleri (A ∩ B Kesişim Kümesi):
+            </div>
             <input
               type="text"
               placeholder="1, 2, 3, 4, 6, 12"
               value={answers.commonList}
               onChange={(e) => setAnswers({ ...answers, commonList: e.target.value })}
-              className="w-48 p-1.5 rounded-xl border text-center font-bold"
+              className="w-full p-2 rounded-xl border border-teal-300 dark:border-teal-700 dark:bg-slate-800 font-bold text-teal-600 dark:text-teal-400"
             />
           </div>
         </div>
