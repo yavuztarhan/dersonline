@@ -209,6 +209,52 @@ const MAT_5_3_4_CLUES: WordClue[] = [
   }
 ];
 
+// 5. MAT.6.1.1 Clues (6. Sınıf: Bir Doğal Sayının Çarpanları ve Katları)
+const MAT_6_1_1_CLUES: WordClue[] = [
+  {
+    id: 'mat6-c1',
+    question: 'Bir doğal sayıyı kalansız bölebilen pozitif tam sayılara ne denir?',
+    word: 'ÇARPAN',
+    hint: '6 Harfli • Bölen ile eş anlamlıdır',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat6-c2',
+    question: 'Bir sayının çarpanları ile tamamen aynı anlama gelen matematiksel kavrama ne ad verilir?',
+    word: 'BÖLEN',
+    hint: '5 Harfli • Kalansız bölme yapar',
+    color: '#10b396'
+  },
+  {
+    id: 'mat6-c3',
+    question: 'Bir doğal sayının pozitif tam sayılarla (1, 2, 3...) çarpılmasıyla elde edilen sayılara o sayının neyi denir?',
+    word: 'KAT',
+    hint: '3 Harfli • Ritmik ilerleyen sonsuz sayılar',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat6-c4',
+    question: 'Bir sayının çarpanlarının küçükten büyüğe dizilip dıştan içe eşleştirildiği simetrik modele ne denir?',
+    word: 'GÖKKUŞAĞI',
+    hint: '9 Harfli • Çarpan yayları',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat6-c5',
+    question: 'Kenar uzunlukları çarpan çiftleri olan bir dikdörtgenin kapsadığı toplam birimkare büyüklüğüne ne denir?',
+    word: 'ALAN',
+    hint: '4 Harfli • Dikdörtgensel koli tabanı',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat6-c6',
+    question: 'Aynı iki çarpanın çarpımı olan (örn. 6×6=36) ve pozitif çarpan sayısı tek olan sayılara ne denir?',
+    word: 'TAMKARE',
+    hint: '7 Harfli • a² modeli',
+    color: '#ef4444'
+  }
+];
+
 const TURKISH_CHARS = [
   'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
   'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
@@ -315,11 +361,21 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE): { grid: string[]
 export function WordSearchGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
-  const isLinesAnglesTopic = selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4');
-  const isAngleTopic = selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3');
-  const isSelimiyeTopic = selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2');
+  const isFactorsTopic =
+    selectedOutcome?.id === 'MAT.6.1.1' ||
+    selectedOutcome?.code?.includes('6.1.1') ||
+    selectedOutcome?.title?.toLowerCase().includes('çarpan') ||
+    selectedOutcome?.title?.toLowerCase().includes('kat');
+  const isLinesAnglesTopic =
+    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4'));
+  const isAngleTopic =
+    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3'));
+  const isSelimiyeTopic =
+    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2'));
 
-  const activeClues = isLinesAnglesTopic
+  const activeClues = isFactorsTopic
+    ? MAT_6_1_1_CLUES
+    : isLinesAnglesTopic
     ? MAT_5_3_4_CLUES
     : isAngleTopic
     ? MAT_5_3_3_CLUES

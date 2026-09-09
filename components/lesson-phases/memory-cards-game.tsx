@@ -422,6 +422,84 @@ const MAT_5_1_1_PAIRS: MemoryPair[] = [
   }
 ];
 
+// ---------------------------------------------------------------------------
+// 6. MAT.6.1.1: Bir Doğal Sayının Çarpanları ve Katları (6. Sınıf)
+// ---------------------------------------------------------------------------
+const MAT_6_1_1_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat6-p1',
+    concept: 'ÇARPAN (BÖLEN)',
+    symbol: 'a | c',
+    badge: '📦 Çarpan',
+    definition: 'Bir doğal sayıyı kalansız olarak bölebilen pozitif tam sayıların her biridir.',
+    example: '24\'ün çarpanları: 1, 2, 3, 4, 6, 8, 12, 24.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat6-p2',
+    concept: 'DOĞAL SAYININ KATI',
+    symbol: 'k · n (k ∈ Z⁺)',
+    badge: '🚀 Katlar',
+    definition: 'Bir doğal sayının 1, 2, 3, 4... gibi pozitif tam sayılarla çarpılmasıyla elde edilen sonsuz sayılar kümesidir.',
+    example: '12\'nin katları: 12, 24, 36, 48, 60, 72, 84, 96...',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat6-p3',
+    concept: 'ÇARPAN GÖKKUŞAĞI',
+    symbol: '1·n = a·b = c·d',
+    badge: '🌈 Gökkuşağı',
+    definition: 'Çarpanların küçükten büyüğe sıralanıp baştan ve sondan eşit uzaklıktaki çiftlerin yaylarla eşleştirildiği simetrik modeldir.',
+    example: '36 için: 1-36, 2-18, 3-12, 4-9 ve merkezde 6-6.',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat6-p4',
+    concept: 'ALAN MODELİ',
+    symbol: 'A = w · h',
+    badge: '📐 Alan Modeli',
+    definition: 'Birim karelerle firesiz dikdörtgenler oluşturarak kenar uzunluklarından sayının çarpanlarını bulma yöntemidir.',
+    example: '24 birimkarelik kutular: 1×24, 2×12, 3×8, 4×6 tabanları.',
+    color: '#10b981'
+  },
+  {
+    id: 'mat6-p5',
+    concept: 'TAM KARE SAYI',
+    symbol: 'n = a²',
+    badge: '⭐ Tam Kare',
+    definition: 'Kendisiyle çarpımı sayıyı veren ve pozitif çarpan sayısı tek olan özel doğal sayılardır.',
+    example: '36 = 6×6 (9 çarpan), 25 = 5×5 (3 çarpan).',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat6-p6',
+    concept: 'ORTAK KAT',
+    symbol: 'EKOK (Ortak Seferler)',
+    badge: '🤝 Ortak Kat',
+    definition: 'İki veya daha fazla doğal sayının katları arasında aynı anda ortak bulunan buluşma duraklarıdır.',
+    example: '6 ve 8 dakikada kalkan araçların ortak kalkışları: 24, 48, 72. dakikalardır.',
+    color: '#14b8a6'
+  },
+  {
+    id: 'mat6-p7',
+    concept: 'EN KÜÇÜK VE EN BÜYÜK ÇARPAN',
+    symbol: '1 ve n',
+    badge: '🎯 Sınır Çarpanlar',
+    definition: 'Her pozitif doğal sayının en küçük pozitif çarpanı 1, en büyük çarpanı ise sayının KENDİSİDİR.',
+    example: '48\'in en küçük çarpanı 1, en büyük çarpanı 48\'dir.',
+    color: '#6366f1'
+  },
+  {
+    id: 'mat6-p8',
+    concept: 'ÇİFT VE TEK ÇARPANLAR',
+    symbol: '2k / 2k+1',
+    badge: '⚖️ Çift & Tek',
+    definition: 'Bir sayının çarpanları arasından 2\'ye tam bölünenlere çift çarpan, bölünemeyenlere tek çarpan denir.',
+    example: '48\'in tek çarpanları: {1, 3}, çift çarpanları: {2, 4, 6, 8, 12, 16, 24, 48}.',
+    color: '#ef4444'
+  }
+];
+
 // Helper to resolve pairs and topic info
 function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTitle?: string): { code: string; title: string; pairs: MemoryPair[] } {
   const id = outcomeId || '';
@@ -429,6 +507,14 @@ function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTi
   const title = (outcomeTitle || '').toLowerCase();
 
   // 1. Direct ID / Code Check (Exact topic matching)
+  if (id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpan') || title.includes('kat')) {
+    return {
+      code: 'MAT.6.1.1',
+      title: 'Bir Doğal Sayının Çarpanları ve Katları',
+      pairs: MAT_6_1_1_PAIRS
+    };
+  }
+
   if (id === 'MAT.5.3.4' || code.includes('5.3.4')) {
     return {
       code: 'MAT.5.3.4',

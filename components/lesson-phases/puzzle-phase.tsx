@@ -289,9 +289,13 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   baseGamesList.push(
     {
       id: 'memorycards',
-      title: 'Kavram & Tanım Hafıza Kartları',
+      title: isFactorsMultiplesTopic
+        ? 'Çarpanlar & Katlar Hafıza Kartları'
+        : 'Kavram & Tanım Hafıza Kartları',
       tagline: 'Kavramsal Eşleştirme & Bellek',
-      description: 'Bir kartta kavramın adı & sembolü, diğerinde tanımı! Kartları çevirerek geometrik kavram-tanım çiftlerini hafızanda eşleştir.',
+      description: isFactorsMultiplesTopic
+        ? 'Çarpan, kat, bölen, tam kare ve gökkuşağı kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
+        : 'Bir kartta kavramın adı & sembolü, diğerinde tanımı! Kartları çevirerek geometrik kavram-tanım çiftlerini hafızanda eşleştir.',
       icon: <Layers className="w-8 h-8" />,
       badge: '12 / 16 Kart • 3D Çevirme',
       gradient: 'from-amber-500 via-rose-600 to-indigo-800',
@@ -299,13 +303,17 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'matching',
-      title: isLinesAnglesTopic
+      title: isFactorsMultiplesTopic
+        ? 'Çarpanlar & Katlar Eşleştirme'
+        : isLinesAnglesTopic
         ? 'Doğrular & Açı Çıkarımları Eşleştirme'
         : isAngleTopic
         ? 'Açı Çeşitleri & İletki Eşleştirme'
         : 'Kavram & Sembol Eşleştirme',
-      tagline: 'Geometrik Modelleri Tanı',
-      description: isLinesAnglesTopic
+      tagline: isFactorsMultiplesTopic ? 'Matematiksel Modelleri Tanı' : 'Geometrik Modelleri Tanı',
+      description: isFactorsMultiplesTopic
+        ? 'Çarpan, kat, alan ve gökkuşağı kavramlarını sembol ve tanımlarıyla eşleştirin.'
+        : isLinesAnglesTopic
         ? 'Ters, komşu, tümler, bütünler açıları ve doğruların durumlarını sembol ve tanımlarıyla eşleştirin.'
         : isAngleTopic
         ? 'Açı çeşitleri, ışın ve köşe kavramlarını görsel modelleri ve sembolik formülleriyle eşleştir.'
@@ -317,9 +325,11 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'wordsearch',
-      title: 'Matematiksel Kelime Avı',
+      title: isFactorsMultiplesTopic ? 'Çarpan & Kat Kelime Avı' : 'Matematiksel Kelime Avı',
       tagline: 'Soru Odaklı Akıl Yürütme',
-      description: 'Soruları ve ipuçlarını oku, gizli geometrik kavramları dinamik bulmaca ızgarasında bulup yakala!',
+      description: isFactorsMultiplesTopic
+        ? 'İpuçlarını oku, gizli çarpan, kat, bölen ve gökkuşağı kavramlarını bulmaca ızgarasında yakala!'
+        : 'Soruları ve ipuçlarını oku, gizli geometrik kavramları dinamik bulmaca ızgarasında bulup yakala!',
       icon: <Search className="w-8 h-8" />,
       badge: '6 Soru • Rastgele Izgara',
       gradient: 'from-blue-600 via-indigo-700 to-slate-900',
@@ -327,11 +337,13 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'truefalse',
-      title: 'Hızlı Doğru / Yanlış Testi',
+      title: isFactorsMultiplesTopic ? 'Çarpanlar & Katlar D/Y Testi' : 'Hızlı Doğru / Yanlış Testi',
       tagline: 'Hız ve Kavramsal Refleks',
-      description: 'Geometrik önermeleri hızlıca değerlendir, pedagojik gerekçelerini öğren ve puanları topla!',
+      description: isFactorsMultiplesTopic
+        ? 'Çarpan ve kat önermelerini hızlıca değerlendir, matematiksel gerekçelerini öğren ve puanları topla!'
+        : 'Geometrik önermeleri hızlıca değerlendir, pedagojik gerekçelerini öğren ve puanları topla!',
       icon: <Zap className="w-8 h-8" />,
-      badge: '5 Önerme • Hız & Refleks',
+      badge: '7 Önerme • Hız & Refleks',
       gradient: 'from-purple-600 via-pink-700 to-rose-800',
       reward: '+100 XP'
     }

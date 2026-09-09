@@ -156,14 +156,70 @@ const MAT_5_3_4_TF: TFQuestion[] = [
   }
 ];
 
+// 5. MAT.6.1.1 (6. Sınıf: Bir Doğal Sayının Çarpanları ve Katları)
+const MAT_6_1_1_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat6-1',
+    statement: 'Her pozitif doğal sayının en küçük çarpanı 1, en büyük çarpanı ise sayının KENDİSİDİR.',
+    isTrue: true,
+    explanation: '1 bütün pozitif sayıları kalansız böler; bir sayının kendisinden daha büyük bir pozitif böleni olamaz.'
+  },
+  {
+    id: 'tf-mat6-2',
+    statement: 'Bir doğal sayının "çarpanı" ile "böleni" ifadeleri tamamen aynı anlama gelir.',
+    isTrue: true,
+    explanation: 'Bir sayıyı kalansız bölen sayılar ile o sayının çarpanları tamamen özdeş bir kümedir.'
+  },
+  {
+    id: 'tf-mat6-3',
+    statement: 'Bir doğal sayının pozitif katlarının sayısı sınırlıdır ve sayının büyüklüğüne göre bir yerde biter.',
+    isTrue: false,
+    explanation: 'Bir sayının çarpanları sonlu/sınırlıdır, ancak pozitif tam sayı katları (12, 24, 36...) sonsuza kadar devam eder.'
+  },
+  {
+    id: 'tf-mat6-4',
+    statement: '36 sayısı tam kare bir sayı olduğu için pozitif çarpan sayısı TEKTİR (9 adettir).',
+    isTrue: true,
+    explanation: 'Ortadaki 6 çarpanı kendisiyle eşleştiği için (6×6=36), 36\'nın çarpanları 9 adettir (tek sayıdır).'
+  },
+  {
+    id: 'tf-mat6-5',
+    statement: 'Bir doğal sayının en küçük pozitif tam sayı katı 0\'dır.',
+    isTrue: false,
+    explanation: 'Pozitif katlar 1 ile çarpılarak başlar (12×1=12). Dolayısıyla en küçük pozitif kat sayının KENDİSİDİR.'
+  },
+  {
+    id: 'tf-mat6-6',
+    statement: '6 × 8 = 48 eşitliğinde 48 sayısı hem 6\'nın hem 8\'in bir KATI, 6 ve 8 ise 48\'in bir ÇARPANIDIR.',
+    isTrue: true,
+    explanation: 'Çarpma işleminde çarpanlar parçaları, çarpım ise ortak katı oluşturur.'
+  },
+  {
+    id: 'tf-mat6-7',
+    statement: 'Büyük sayıların çarpan sayısı her zaman küçük sayılardan daha fazladır.',
+    isTrue: false,
+    explanation: 'Örneğin 24\'ün 8 çarpanı varken, 24\'ten daha büyük olan 25\'in sadece 3 çarpanı vardır (1, 5, 25).'
+  }
+];
+
 export function TrueFalseGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
-  const isLinesAnglesTopic = selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4');
-  const isAngleTopic = selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3');
-  const isSelimiyeTopic = selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2');
+  const isFactorsTopic =
+    selectedOutcome?.id === 'MAT.6.1.1' ||
+    selectedOutcome?.code?.includes('6.1.1') ||
+    selectedOutcome?.title?.toLowerCase().includes('çarpan') ||
+    selectedOutcome?.title?.toLowerCase().includes('kat');
+  const isLinesAnglesTopic =
+    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.4' || selectedOutcome?.code?.includes('5.3.4'));
+  const isAngleTopic =
+    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.3' || selectedOutcome?.code?.includes('5.3.3'));
+  const isSelimiyeTopic =
+    !isFactorsTopic && (selectedOutcome?.id === 'MAT.5.3.2' || selectedOutcome?.code?.includes('5.3.2'));
 
-  const questions = isLinesAnglesTopic
+  const questions = isFactorsTopic
+    ? MAT_6_1_1_TF
+    : isLinesAnglesTopic
     ? MAT_5_3_4_TF
     : isAngleTopic
     ? MAT_5_3_3_TF
