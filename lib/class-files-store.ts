@@ -330,39 +330,148 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
       </span>
     </div>
 
-    <div style="border: 1.5px dashed #94a3b8; border-radius: 8px; height: 320px; background-color: #fcfbf7; background-image: radial-gradient(#d4d4d8 1px, transparent 1px); background-size: 16px 16px; position: relative; overflow: hidden; padding: 10px;">
-      <div style="position: absolute; top: 18px; left: 40px; border: 1.5px solid #94a3b8; background: #fefce8; padding: 6px 10px; border-radius: 6px; border-left: 4px solid #2563eb;">
-        <div style="font-size: 10px; font-weight: 900; color: #1d4ed8;">🏰 Kule Gözetleme Çatısı</div>
-        <div style="font-size: 8.5px; color: #475569; margin-top: 2px;">İletkiyi 'T' köşesine koyup çatı açısını (45°/60°) doğrula.</div>
-        <div style="font-size: 9px; font-weight: bold; color: #2563eb; font-family: monospace; margin-top: 2px;">T Tepe Noktası (İletki Kontrolü) •</div>
-      </div>
+    <div style="border: 1.5px dashed #94a3b8; border-radius: 8px; min-height: 320px; background-color: #fcfbf7; padding: 6px; position: relative;">
+      <svg viewBox="0 0 800 320" width="100%" height="100%" style="display: block; overflow: visible;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid_store" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1.2" fill="#cbd5e1" />
+          </pattern>
+          <linearGradient id="pierGrad_store" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#fde68a" />
+            <stop offset="50%" stop-color="#fef3c7" />
+            <stop offset="100%" stop-color="#fde68a" />
+          </linearGradient>
+          <linearGradient id="waterGrad_store" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.8" />
+            <stop offset="100%" stop-color="#bae6fd" stop-opacity="0.3" />
+          </linearGradient>
+        </defs>
 
-      <div style="position: absolute; bottom: 85px; left: 130px; font-size: 9.5px; font-weight: 900; color: #c2410c;">
-        Ayak 1: [A1-Z1] ⊥ Zemin (Gönye ile 90°)
-      </div>
-      <div style="position: absolute; bottom: 42px; left: 155px; width: 4px; height: 40px; border-left: 2px dashed #ea580c;"></div>
+        <rect x="0" y="0" width="800" height="320" fill="#fcfbf7" />
+        <rect x="0" y="0" width="800" height="320" fill="url(#grid_store)" />
 
-      <div style="position: absolute; bottom: 42px; left: 260px; text-align: center;">
-        <div style="width: 8px; height: 8px; border-radius: 50%; background: #6d28d9; margin: 0 auto; border: 1.5px solid #ffffff; box-shadow: 0 0 0 1px #6d28d9;"></div>
-        <div style="font-size: 9px; font-weight: 900; color: #6d28d9; margin-top: 2px;">K (Kemer Merkezi)</div>
-        <div style="font-size: 8px; color: #7c3aed; font-family: monospace;">Pergel İğnesi (r = 5 cm)</div>
-      </div>
+        <!-- Su Alanı (Nehir Yatağı) -->
+        <rect x="30" y="250" width="740" height="60" fill="url(#waterGrad_store)" rx="8" />
+        <path d="M 50 280 Q 90 273 130 280 T 210 280 T 290 280 T 370 280 T 450 280 T 530 280 T 610 280 T 690 280 T 750 280" fill="none" stroke="#38bdf8" stroke-width="1.5" opacity="0.7" />
+        <text x="400" y="298" font-family="system-ui, sans-serif" font-size="11" fill="#0284c7" text-anchor="middle" font-weight="600">
+          ~~~~ Tunca / Meriç Nehri Su Yatağı ~~~~
+        </text>
 
-      <div style="position: absolute; bottom: 42px; left: 160px; width: 200px; height: 100px; border-top: 2px dashed #a855f7; border-left: 2px dashed #a855f7; border-right: 2px dashed #a855f7; border-top-left-radius: 100px; border-top-right-radius: 100px; pointer-events: none; opacity: 0.6;"></div>
+        <!-- ADIM 1: NEHİR ZEMİN DOĞRUSU (CETVEL) -->
+        <line x1="40" y1="250" x2="760" y2="250" stroke="#0d9488" stroke-width="3.5" stroke-linecap="round" />
+        <polygon points="36,250 48,245 48,255" fill="#0d9488" />
+        <polygon points="764,250 752,245 752,255" fill="#0d9488" />
+        <text x="50" y="240" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#0f766e">
+          ◄ Düz Nehir Zemin Doğrusu (Cetvel)
+        </text>
+        <text x="750" y="240" font-family="monospace" font-size="11" font-weight="900" fill="#0f766e" text-anchor="end">
+          d_nehir ►
+        </text>
 
-      <div style="position: absolute; bottom: 85px; right: 130px; font-size: 9.5px; font-weight: 900; color: #c2410c; text-align: right;">
-        Ayak 2: [A2-Z2] ⊥ Zemin (Gönye ile 90°)
-      </div>
-      <div style="position: absolute; bottom: 42px; right: 155px; width: 4px; height: 40px; border-right: 2px dashed #ea580c;"></div>
+        <!-- Cetvel Çentikleri -->
+        <g stroke="#0f766e" stroke-width="1" opacity="0.6">
+          <line x1="100" y1="247" x2="100" y2="253" />
+          <line x1="250" y1="245" x2="250" y2="255" stroke-width="2" />
+          <line x1="400" y1="245" x2="400" y2="255" stroke-width="2" />
+          <line x1="550" y1="245" x2="550" y2="255" stroke-width="2" />
+          <line x1="700" y1="247" x2="700" y2="253" />
+        </g>
 
-      <div style="position: absolute; bottom: 40px; left: 20px; right: 20px; height: 2.5px; background: #0d9488;">
-        <div style="position: absolute; left: 0; top: -18px; font-size: 9.5px; font-weight: 900; color: #0f766e;">◄ Düz Nehir Zemin Doğrusu (Cetvel ile Çiz)</div>
-        <div style="position: absolute; right: 0; top: -18px; font-size: 9.5px; font-weight: 900; color: #0f766e;">d_nehir ►</div>
-      </div>
+        <!-- ADIM 4: KULE GÖZETLEME ÇATISI (İLETKİ) -->
+        <g>
+          <rect x="90" y="90" width="60" height="160" fill="#fef3c7" stroke="#b45309" stroke-width="2" rx="2" />
+          <rect x="110" y="120" width="20" height="30" rx="10" fill="#78350f" opacity="0.7" />
+          <polygon points="120,25 80,90 160,90" fill="#fed7aa" stroke="#ea580c" stroke-width="2" />
+          <circle cx="120" cy="25" r="5" fill="#2563eb" stroke="#ffffff" stroke-width="2" />
+          <text x="120" y="16" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#1d4ed8" text-anchor="middle">
+            T (Tepe Noktası)
+          </text>
+          <path d="M 100 57 A 38 38 0 0 0 140 57" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="3 3" />
+          <text x="120" y="72" font-family="monospace" font-size="10" font-weight="900" fill="#2563eb" text-anchor="middle">
+            60° (İletki)
+          </text>
+        </g>
 
-      <div style="position: absolute; bottom: 12px; left: 20px; right: 20px; display: flex; justify-content: space-around; font-size: 11px; color: #38bdf8; opacity: 0.7;">
-        <span>~~~ Meriç / Tunca Nehri Su Seviyesi ~~~</span>
-      </div>
+        <!-- ADIM 2: SOL AYAK (AYAK 1 - GÖNYE) -->
+        <g>
+          <rect x="235" y="150" width="30" height="100" fill="url(#pierGrad_store)" stroke="#d97706" stroke-width="2" rx="2" />
+          <text x="250" y="205" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#92400e" text-anchor="middle">
+            AYAK 1
+          </text>
+          <circle cx="250" cy="150" r="4" fill="#c2410c" />
+          <text x="228" y="145" font-family="monospace" font-size="10" font-weight="900" fill="#c2410c">
+            A1
+          </text>
+          <path d="M 265 240 L 275 240 L 275 250" fill="none" stroke="#ea580c" stroke-width="1.8" />
+          <circle cx="270" cy="245" r="1.5" fill="#ea580c" />
+          <text x="250" y="125" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#c2410c" text-anchor="middle">
+            [A1-Z1] ⊥ d (90°)
+          </text>
+        </g>
+
+        <!-- ADIM 2: SAĞ AYAK (AYAK 2 - GÖNYE) -->
+        <g>
+          <rect x="535" y="150" width="30" height="100" fill="url(#pierGrad_store)" stroke="#d97706" stroke-width="2" rx="2" />
+          <text x="550" y="205" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#92400e" text-anchor="middle">
+            AYAK 2
+          </text>
+          <circle cx="550" cy="150" r="4" fill="#c2410c" />
+          <text x="568" y="145" font-family="monospace" font-size="10" font-weight="900" fill="#c2410c">
+            A2
+          </text>
+          <path d="M 535 240 L 525 240 L 525 250" fill="none" stroke="#ea580c" stroke-width="1.8" />
+          <circle cx="530" cy="245" r="1.5" fill="#ea580c" />
+          <text x="550" y="125" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#c2410c" text-anchor="middle">
+            [A2-Z2] ⊥ d (90°)
+          </text>
+        </g>
+
+        <!-- ADIM 3: KEMER MERKEZİ K VE KEMER YAYI (PERGEL) -->
+        <!-- 1. Kesik Çizgili Kemer Yayı (Merkezi K=(400,150) olan tam yarıçap R=150 dairesel yay) -->
+        <path d="M 250 150 A 150 150 0 0 1 550 150" fill="none" stroke="#7c3aed" stroke-width="3" stroke-dasharray="6 4" />
+
+        <!-- 2. Kemer Üst Taş Sınırı (Korkuluk Yolu) -->
+        <path d="M 80 90 L 250 130 A 165 165 0 0 1 550 130 L 720 90" fill="none" stroke="#b45309" stroke-width="2" stroke-dasharray="4 4" opacity="0.5" />
+
+        <!-- 3. Yarıçap (Radius) Çizgileri -->
+        <line x1="400" y1="150" x2="400" y2="0" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3 3" />
+        <line x1="400" y1="150" x2="506" y2="44" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3 3" />
+        <circle cx="506" cy="44" r="3" fill="#7c3aed" />
+
+        <!-- Yarıçap Etiketi -->
+        <g transform="translate(460, 90)">
+          <rect x="-4" y="-12" width="90" height="18" fill="#ffffff" stroke="#ddd6fe" rx="4" />
+          <text x="41" y="1" font-family="monospace" font-size="10" font-weight="bold" fill="#6d28d9" text-anchor="middle">
+            r = 5 cm (Pergel)
+          </text>
+        </g>
+
+        <!-- Kemer Tepe Etiketi -->
+        <g transform="translate(400, 20)">
+          <rect x="-80" y="-14" width="160" height="22" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5" rx="6" />
+          <text x="0" y="1" font-family="system-ui, sans-serif" font-size="10.5" font-weight="900" fill="#6d28d9" text-anchor="middle">
+            Dairesel Kemer Yayı (Yay Tepe: P)
+          </text>
+        </g>
+
+        <!-- 4. K Noktası (Kemer Merkezi - Pergel Batırma İğnesi) -->
+        <line x1="250" y1="150" x2="550" y2="150" stroke="#6d28d9" stroke-width="1" stroke-dasharray="2 2" opacity="0.4" />
+        <circle cx="400" cy="150" r="14" fill="#ede9fe" stroke="#6d28d9" stroke-width="2" />
+        <circle cx="400" cy="150" r="4" fill="#6d28d9" />
+        <line x1="388" y1="150" x2="412" y2="150" stroke="#6d28d9" stroke-width="1.5" />
+        <line x1="400" y1="138" x2="400" y2="162" stroke="#6d28d9" stroke-width="1.5" />
+
+        <!-- K Noktası Etiketi -->
+        <g transform="translate(400, 180)">
+          <rect x="-75" y="-12" width="150" height="24" fill="#f5f3ff" stroke="#6d28d9" stroke-width="1.5" rx="6" />
+          <text x="0" y="3" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#5b21b6" text-anchor="middle">
+            K (Kemer Merkezi)
+          </text>
+          <text x="0" y="24" font-family="system-ui, sans-serif" font-size="9" font-weight="700" fill="#7c3aed" text-anchor="middle">
+            📍 Pergel İğnesi Batırma Noktası
+          </text>
+        </g>
+      </svg>
     </div>
   </div>
 
