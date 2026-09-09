@@ -1176,6 +1176,292 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-3-measuring-stations',
+    title: 'Etkinlik: Aşamalı Açı Ölçüm İstasyonları (Uygulama - MAT.5.3.3)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.3',
+    outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-09T14:00:00Z',
+    fileSizeKb: 260,
+    tags: ['Etkinlik Kağıdı', 'Açı Ölçüm İstasyonları', 'İletki', 'Dönen Radarlar', 'Tahmin Et Ölç', 'MAT.5.3.3', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); padding: 12px; border-radius: 12px; border: 1px solid #99f6e4;">
+    <div style="display: inline-block; background: #0d9488; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px;">
+      🧭 UYGULAMA &amp; ÖLÇME ATÖLYESİ (SDB1.2 / SB1.1)
+    </div>
+    <h2 style="color: #115e59; font-size: 17px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      ETKİNLİK: "AŞAMALI AÇI ÖLÇÜM İSTASYONLARI" (MAT.5.3.3)
+    </h2>
+    <p style="color: #334155; font-size: 11px; margin: 4px 0 0 0; font-weight: 600;">
+      Farklı zorluk seviyelerinde 3 istasyonda açıları iletki ile ölç, dönen radarları hizala ve tahminlerini gerçek ölçümlerle karşılaştır!
+    </p>
+  </div>
+
+  <!-- İSTASYON A: STANDART YATAY AÇILAR (Tabanı Düz Durumlar) -->
+  <div style="border: 2px solid #0284c7; border-radius: 12px; padding: 10px; background: #ffffff; margin-bottom: 12px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #e0f2fe; padding-bottom: 4px; margin-bottom: 8px;">
+      <span style="font-weight: 900; color: #0369a1; font-size: 12px;">
+        📍 İSTASYON A: STANDART YATAY AÇILAR (Tabanı Düz Durumlar)
+      </span>
+      <span style="font-size: 9.5px; font-weight: bold; background: #f0f9ff; color: #0284c7; padding: 2px 6px; border-radius: 4px; border: 1px solid #bae6fd;">
+        35 Puan
+      </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+      <!-- Açı 1: 45° Dar Açı -->
+      <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
+        <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #0369a1; margin-bottom: 4px;">
+          <span>AÇI 1 (Dar Açı)</span>
+          <span style="color: #64748b;">[İletkiyi Koy]</span>
+        </div>
+        <div style="height: 100px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 180 100" width="100%" height="100%">
+            <!-- Vertex O1 (30, 80) -->
+            <circle cx="30" cy="80" r="4" fill="#0284c7" />
+            <text x="20" y="85" font-family="system-ui" font-size="9" font-weight="bold" fill="#0369a1">O₁</text>
+            <!-- Taban Kolu -->
+            <line x1="30" y1="80" x2="165" y2="80" stroke="#334155" stroke-width="2.5" />
+            <polygon points="160,76 170,80 160,84" fill="#334155" />
+            <!-- 45° Kolu -->
+            <line x1="30" y1="80" x2="105" y2="5" stroke="#0284c7" stroke-width="2.5" />
+            <polygon points="100,2 110,5 108,16" fill="#0284c7" />
+            <!-- Açı Yayı -->
+            <path d="M 65 80 A 35 35 0 0 0 55 55" fill="none" stroke="#0284c7" stroke-width="1.8" />
+            <text x="70" y="65" font-family="monospace" font-size="8.5" font-weight="bold" fill="#0369a1">?</text>
+          </svg>
+        </div>
+        <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
+          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #0284c7; color: #0369a1; font-weight: 900;">( 45° )</span>
+        </div>
+      </div>
+
+      <!-- Açı 2: 90° Dik Açı -->
+      <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
+        <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #0f766e; margin-bottom: 4px;">
+          <span>AÇI 2 (Dik Açı)</span>
+          <span style="color: #64748b;">[Diklik Sembolü]</span>
+        </div>
+        <div style="height: 100px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 180 100" width="100%" height="100%">
+            <!-- Vertex O2 (40, 80) -->
+            <circle cx="40" cy="80" r="4" fill="#0d9488" />
+            <text x="25" y="85" font-family="system-ui" font-size="9" font-weight="bold" fill="#0f766e">O₂</text>
+            <!-- Taban Kolu -->
+            <line x1="40" y1="80" x2="165" y2="80" stroke="#334155" stroke-width="2.5" />
+            <polygon points="160,76 170,80 160,84" fill="#334155" />
+            <!-- 90° Dikey Kol -->
+            <line x1="40" y1="80" x2="40" y2="15" stroke="#0d9488" stroke-width="2.5" />
+            <polygon points="36,20 40,10 44,20" fill="#0d9488" />
+            <!-- Diklik Sembolü Kutusu (⊾) -->
+            <rect x="40" y="65" width="15" height="15" fill="none" stroke="#0d9488" stroke-width="1.8" />
+            <circle cx="47.5" cy="72.5" r="2" fill="#0d9488" />
+          </svg>
+        </div>
+        <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
+          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #0d9488; color: #0f766e; font-weight: 900;">( 90° )</span>
+        </div>
+      </div>
+
+      <!-- Açı 3: 135° Geniş Açı -->
+      <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
+        <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #b45309; margin-bottom: 4px;">
+          <span>AÇI 3 (Geniş Açı)</span>
+          <span style="color: #64748b;">[Çift Ölçek Ayrımı]</span>
+        </div>
+        <div style="height: 100px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 180 100" width="100%" height="100%">
+            <!-- Vertex O3 (120, 80) -->
+            <circle cx="120" cy="80" r="4" fill="#d97706" />
+            <text x="130" y="85" font-family="system-ui" font-size="9" font-weight="bold" fill="#b45309">O₃</text>
+            <!-- Taban Kolu (Sağa) -->
+            <line x1="120" y1="80" x2="175" y2="80" stroke="#334155" stroke-width="2.5" />
+            <polygon points="170,76 178,80 170,84" fill="#334155" />
+            <!-- 135° Kolu (Sola Yukarı) -->
+            <line x1="120" y1="80" x2="45" y2="15" stroke="#d97706" stroke-width="2.5" />
+            <polygon points="43,23 40,10 52,14" fill="#d97706" />
+            <!-- Açı Yayı -->
+            <path d="M 155 80 A 35 35 0 0 0 95 55" fill="none" stroke="#d97706" stroke-width="1.8" />
+            <text x="125" y="55" font-family="monospace" font-size="8.5" font-weight="bold" fill="#b45309">?</text>
+          </svg>
+        </div>
+        <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
+          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #d97706; color: #b45309; font-weight: 900;">( 135° )</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- İSTASYON B: DÖNEN RADARLAR (Eğik ve Baş Aşağı Açılar) -->
+  <div style="border: 2px solid #7c3aed; border-radius: 12px; padding: 10px; background: #ffffff; margin-bottom: 12px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 4px; margin-bottom: 6px;">
+      <span style="font-weight: 900; color: #6d28d9; font-size: 12px;">
+        🔄 İSTASYON B: DÖNEN RADARLAR (Eğik ve Baş Aşağı Açılar)
+      </span>
+      <span style="font-size: 9.5px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd6fe;">
+        35 Puan
+      </span>
+    </div>
+
+    <!-- Kritik Yönerge -->
+    <div style="background: #faf5ff; border: 1px solid #c084fc; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; font-size: 10px; color: #581c87; font-weight: 700;">
+      🧭 <strong>Yönerge:</strong> "Açıların tabanı yatay değil! İletkini veya kâğıdını çevirerek iletkinin taban çizgisini açının koluna tam hizala."
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+      <!-- Açı 4: Sağa Eğik 60° Açı -->
+      <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
+        <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #6d28d9; margin-bottom: 4px;">
+          <span>AÇI 4: Sağa Eğik (60°)</span>
+          <span style="color: #7c3aed;">İletkiyi Döndür</span>
+        </div>
+        <div style="height: 120px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 240 120" width="100%" height="100%">
+            <!-- Vertex O4 (60, 95) -->
+            <circle cx="60" cy="95" r="4" fill="#7c3aed" />
+            <text x="45" y="105" font-family="system-ui" font-size="9" font-weight="bold" fill="#6d28d9">O₄</text>
+            <!-- Eğik Kol 1 (30° eğimle sağa yukarı) -->
+            <line x1="60" y1="95" x2="190" y2="40" stroke="#334155" stroke-width="2.5" />
+            <polygon points="183,37 194,38 188,48" fill="#334155" />
+            <text x="195" y="55" font-family="monospace" font-size="8" fill="#64748b">Kol 1</text>
+            <!-- Kol 2 (90° dikey yukarı -> aradaki açı 60°) -->
+            <line x1="60" y1="95" x2="135" y2="10" stroke="#7c3aed" stroke-width="2.5" />
+            <polygon points="127,10 137,7 137,18" fill="#7c3aed" />
+            <text x="145" y="20" font-family="monospace" font-size="8" fill="#7c3aed">Kol 2</text>
+            <!-- Açı Yayı (30° to 90°) -->
+            <path d="M 95 80 A 40 40 0 0 0 78 58" fill="none" stroke="#7c3aed" stroke-width="1.8" />
+            <text x="95" y="65" font-family="monospace" font-size="9" font-weight="bold" fill="#6d28d9">?</text>
+          </svg>
+        </div>
+        <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
+          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #7c3aed; color: #6d28d9; font-weight: 900;">( 60° )</span>
+        </div>
+      </div>
+
+      <!-- Açı 5: Aşağıya Doğru Açılan (Baş Aşağı 120°) -->
+      <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; text-align: center;">
+        <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 900; color: #e11d48; margin-bottom: 4px;">
+          <span>AÇI 5: Baş Aşağı (120°)</span>
+          <span style="color: #e11d48;">Ters İletki</span>
+        </div>
+        <div style="height: 120px; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 240 120" width="100%" height="100%">
+            <!-- Vertex O5 (120, 25) -->
+            <circle cx="120" cy="25" r="4" fill="#e11d48" />
+            <text x="120" y="15" font-family="system-ui" font-size="9" font-weight="bold" fill="#be123c" text-anchor="middle">O₅ (Tepe)</text>
+            <!-- Sol Aşağı Kol (120° açılma) -->
+            <line x1="120" y1="25" x2="45" y2="100" stroke="#e11d48" stroke-width="2.5" />
+            <polygon points="43,90 40,105 53,100" fill="#e11d48" />
+            <!-- Sağ Aşağı Kol -->
+            <line x1="120" y1="25" x2="195" y2="100" stroke="#334155" stroke-width="2.5" />
+            <polygon points="187,100 200,105 197,90" fill="#334155" />
+            <!-- Açı Yayı (Aşağı doğru) -->
+            <path d="M 90 55 A 40 40 0 0 0 150 55" fill="none" stroke="#e11d48" stroke-width="1.8" />
+            <text x="120" y="65" font-family="monospace" font-size="9" font-weight="bold" fill="#e11d48" text-anchor="middle">?</text>
+          </svg>
+        </div>
+        <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #1e293b;">
+          Ölçülen Değer: <span style="display: inline-block; min-width: 45px; border-bottom: 1.5px solid #e11d48; color: #be123c; font-weight: 900;">( 120° )</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- İSTASYON C: TAHMİN ET ➔ ÖLÇ ➔ KARŞILAŞTIR TABLOSU -->
+  <div style="border: 2px solid #059669; border-radius: 12px; padding: 10px; background: #ffffff; margin-bottom: 12px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #d1fae5; padding-bottom: 4px; margin-bottom: 8px;">
+      <span style="font-weight: 900; color: #047857; font-size: 12px;">
+        📊 İSTASYON C: "TAHMİN ET ➔ ÖLÇ ➔ KARŞILAŞTIR" TABLOSU
+      </span>
+      <span style="font-size: 9.5px; font-weight: bold; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 4px; border: 1px solid #a7f3d0;">
+        30 Puan
+      </span>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: center;">
+      <thead>
+        <tr style="background: #f0fdf4; color: #065f46; border-bottom: 2px solid #a7f3d0;">
+          <th style="padding: 6px 8px; text-align: left; width: 30%;">Gerçek Yaşam Şekli</th>
+          <th style="padding: 6px 8px; width: 30%;">1. Göz Kararı Tahminim<br/><span style="font-weight: normal; font-size: 8.5px;">(Dar/Geniş/Kaç Derece?)</span></th>
+          <th style="padding: 6px 8px; width: 22%;">2. İletki ile Gerçek Ölçüm</th>
+          <th style="padding: 6px 8px; width: 18%;">3. Fark<br/><span style="font-weight: normal; font-size: 8.5px;">(Hata Payı)</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Satır 1: Açık Makas -->
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 8px; text-align: left; font-weight: 700; color: #1e293b;">
+            ✂️ <strong>Açık Makas Açısı</strong><br/>
+            <span style="font-size: 8.5px; color: #64748b;">(Kesici ağız açıklığı)</span>
+          </td>
+          <td style="padding: 8px; color: #047857; font-weight: 700;">
+            [ Dar Açı ~ ..........° ]
+          </td>
+          <td style="padding: 8px; font-weight: 900; color: #0f766e; background: #f8fafc;">
+            35°
+          </td>
+          <td style="padding: 8px; font-weight: 900; color: #64748b;">
+            | ... - 35 | = ...°
+          </td>
+        </tr>
+
+        <!-- Satır 2: Saat 15:00 -->
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 8px; text-align: left; font-weight: 700; color: #1e293b;">
+            🕒 <strong>Saat 15:00 Açısı</strong><br/>
+            <span style="font-size: 8.5px; color: #64748b;">(Akrep ile Yelkovan)</span>
+          </td>
+          <td style="padding: 8px; color: #047857; font-weight: 700;">
+            [ Dik Açı ~ ..........° ]
+          </td>
+          <td style="padding: 8px; font-weight: 900; color: #0f766e; background: #f8fafc;">
+            90°
+          </td>
+          <td style="padding: 8px; font-weight: 900; color: #64748b;">
+            | ... - 90 | = ...°
+          </td>
+        </tr>
+
+        <!-- Satır 3: Çatı Eğimi -->
+        <tr>
+          <td style="padding: 8px; text-align: left; font-weight: 700; color: #1e293b;">
+            🏠 <strong>Çatı Eğimi Açısı</strong><br/>
+            <span style="font-size: 8.5px; color: #64748b;">(Ev çatı makası açısı)</span>
+          </td>
+          <td style="padding: 8px; color: #047857; font-weight: 700;">
+            [ Geniş Açı ~ ..........° ]
+          </td>
+          <td style="padding: 8px; font-weight: 900; color: #0f766e; background: #f8fafc;">
+            120°
+          </td>
+          <td style="padding: 8px; font-weight: 900; color: #64748b;">
+            | ... - 120 | = ...°
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Alt Bilgi / Değerlendirme & Puanlama -->
+  <div style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 10px; color: #475569; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Değerlendirme:</strong> İstasyon A (35P) + İstasyon B (35P) + İstasyon C (30P) = Toplam 100 Puan. (SDB1.2 / SB1.1 Maarif Geometri Atölyesi)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 

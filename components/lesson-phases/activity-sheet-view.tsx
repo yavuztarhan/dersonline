@@ -89,11 +89,20 @@ export function ActivitySheetView({
     (outcomeCode === 'MAT.5.3.2' ||
       fileRecord?.id?.includes('5-3-2') ||
       fileRecord?.title?.includes('Çıkarım'));
+  const isMeasuringStationsActivity =
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isDeductionDetective &&
+    (selectedSheetId.includes('stations') ||
+      fileRecord?.id?.includes('stations') ||
+      fileRecord?.title?.includes('Açı Ölçüm İstasyonları'));
   const isProtractorAnatomyActivity =
     !isRailwayActivity &&
     !isBridgeActivity &&
     !isSteppingWorkshop &&
     !isDeductionDetective &&
+    !isMeasuringStationsActivity &&
     (selectedSheetId.includes('anatomy') ||
       fileRecord?.id?.includes('anatomy') ||
       fileRecord?.title?.includes('İletkinin Anatomisi') ||
@@ -120,6 +129,122 @@ export function ActivitySheetView({
   const [rayStep, setRayStep] = useState<number>(0); // 0 = initial, 1 = A, 2 = B, 3 = C (complete)
   const [angleStep, setAngleStep] = useState<number>(0); // 0 = initial, 1 = arc & P1, P2
   const [steppingCompleted, setSteppingCompleted] = useState<{ ray?: boolean; angle?: boolean }>({});
+
+  // Interactive state for MAT.5.3.3 Aşamalı Açı Ölçüm İstasyonları
+  const [stationAInputs, setStationAInputs] = useState<{ a1: string; a2: string; a3: string }>({
+    a1: '',
+    a2: '',
+    a3: ''
+  });
+  const [stationASubmitted, setStationASubmitted] = useState<{ a1?: boolean; a2?: boolean; a3?: boolean }>({});
+  const [stationACorrect, setStationACorrect] = useState<{ a1?: boolean; a2?: boolean; a3?: boolean }>({});
+  const [showProtractorA, setShowProtractorA] = useState<{ a1?: boolean; a2?: boolean; a3?: boolean }>({
+    a1: true,
+    a2: true,
+    a3: true
+  });
+
+  const [stationBInputs, setStationBInputs] = useState<{ a4: string; a5: string }>({
+    a4: '',
+    a5: ''
+  });
+  const [stationBSubmitted, setStationBSubmitted] = useState<{ a4?: boolean; a5?: boolean }>({});
+  const [stationBCorrect, setStationBCorrect] = useState<{ a4?: boolean; a5?: boolean }>({});
+  const [protractorRotations, setProtractorRotations] = useState<{ a4: number; a5: number }>({
+    a4: 0,
+    a5: 0
+  });
+  const [showProtractorB, setShowProtractorB] = useState<{ a4?: boolean; a5?: boolean }>({
+    a4: true,
+    a5: true
+  });
+
+  const [estimateTable, setEstimateTable] = useState<{
+    scissors: { type: string; est: string; measured: boolean };
+    clock: { type: string; est: string; measured: boolean };
+    roof: { type: string; est: string; measured: boolean };
+  }>({
+    scissors: { type: '', est: '', measured: false },
+    clock: { type: '', est: '', measured: false },
+    roof: { type: '', est: '', measured: false }
+  });
+
+  const [stationsPointsAwarded, setStationsPointsAwarded] = useState<{
+    stationA?: boolean;
+    stationB?: boolean;
+    stationC?: boolean;
+  }>({});
+
+  const handleCheckStationA = (key: 'a1' | 'a2' | 'a3', expected: number) => {
+    playSound('select');
+    const val = parseInt(stationAInputs[key].trim(), 10);
+    const isCorrect = val === expected;
+    const nextSubmitted = { ...stationASubmitted, [key]: true };
+    const nextCorrect = { ...stationACorrect, [key]: isCorrect };
+    setStationASubmitted(nextSubmitted);
+    setStationACorrect(nextCorrect);
+
+    if (isCorrect) {
+      playSound('success');
+      const allCorrect =
+        (key === 'a1' ? true : nextCorrect.a1) &&
+        (key === 'a2' ? true : nextCorrect.a2) &&
+        (key === 'a3' ? true : nextCorrect.a3);
+      if (allCorrect && !stationsPointsAwarded.stationA) {
+        addPoints(35);
+        setStationsPointsAwarded((p) => ({ ...p, stationA: true }));
+        try {
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleCheckStationB = (key: 'a4' | 'a5', expected: number) => {
+    playSound('select');
+    const val = parseInt(stationBInputs[key].trim(), 10);
+    const isCorrect = val === expected;
+    const nextSubmitted = { ...stationBSubmitted, [key]: true };
+    const nextCorrect = { ...stationBCorrect, [key]: isCorrect };
+    setStationBSubmitted(nextSubmitted);
+    setStationBCorrect(nextCorrect);
+
+    if (isCorrect) {
+      playSound('success');
+      const allCorrect = (key === 'a4' ? true : nextCorrect.a4) && (key === 'a5' ? true : nextCorrect.a5);
+      if (allCorrect && !stationsPointsAwarded.stationB) {
+        addPoints(35);
+        setStationsPointsAwarded((p) => ({ ...p, stationB: true }));
+        try {
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleMeasureStationC = (key: 'scissors' | 'clock' | 'roof') => {
+    playSound('select');
+    setEstimateTable((prev) => {
+      const next = {
+        ...prev,
+        [key]: { ...prev[key], measured: true }
+      };
+      if (next.scissors.measured && next.clock.measured && next.roof.measured && !stationsPointsAwarded.stationC) {
+        playSound('success');
+        addPoints(30);
+        setStationsPointsAwarded((p) => ({ ...p, stationC: true }));
+        unlockBadge('maarif-genius');
+        try {
+          confetti({ particleCount: 100, spread: 90, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+      return next;
+    });
+  };
 
   // Interactive state for MAT.5.3.3 İletkinin Anatomisi
   const [placedAnatomyLabels, setPlacedAnatomyLabels] = useState<Record<string, boolean>>({});
@@ -335,11 +460,25 @@ export function ActivitySheetView({
               const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
               const isDetective =
                 (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway;
+              const isStations =
+                sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm');
               const isAnatomy =
-                sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi') || sheet.outcomeCode === 'MAT.5.3.3';
+                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
-              const icon = isRailway ? '🚆' : isBridge ? '🏛️' : isStepping ? '⭕' : isDetective ? '🔍' : isAnatomy ? '📐' : '📏';
+              const icon = isRailway
+                ? '🚆'
+                : isBridge
+                ? '🏛️'
+                : isStepping
+                ? '⭕'
+                : isDetective
+                ? '🔍'
+                : isStations
+                ? '🧭'
+                : isAnatomy
+                ? '📐'
+                : '📏';
               const title = isRailway
                 ? 'Tren Rayı Mühendisliği'
                 : isBridge
@@ -348,6 +487,8 @@ export function ActivitySheetView({
                 ? 'Pergel ile Adımlama'
                 : isDetective
                 ? 'Çıkarım Dedektifi'
+                : isStations
+                ? 'Açı Ölçüm İstasyonları'
                 : isAnatomy
                 ? 'İletkinin Anatomisi'
                 : 'Aşamalı İnşa İstasyonları';
@@ -360,6 +501,8 @@ export function ActivitySheetView({
                 ? 'Atölye 2'
                 : isDetective
                 ? 'Etkinlik 1'
+                : isStations
+                ? 'Uygulama 2'
                 : isAnatomy
                 ? 'Aracı Tanıma'
                 : `Etkinlik ${index + 1}`;
@@ -372,6 +515,8 @@ export function ActivitySheetView({
                 ? 'Eşit Parçalar Kesme'
                 : isDetective
                 ? '3 Deney Kutusu'
+                : isStations
+                ? '6 Ölçüm Kutusu & Radar'
                 : isAnatomy
                 ? 'Çift Ölçek Tuzağı'
                 : '4 Mini İstasyon';
@@ -394,6 +539,8 @@ export function ActivitySheetView({
                         ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
                         : isDetective
                         ? 'bg-sky-600 text-white border-sky-500 shadow-md scale-[1.01]'
+                        : isStations
+                        ? 'bg-blue-600 text-white border-blue-500 shadow-md scale-[1.01]'
                         : isAnatomy
                         ? 'bg-teal-600 text-white border-teal-500 shadow-md scale-[1.01]'
                         : 'bg-emerald-600 text-white border-emerald-500 shadow-md scale-[1.01]'
@@ -447,6 +594,8 @@ export function ActivitySheetView({
             ? 'bg-gradient-to-br from-purple-950 via-purple-900 to-slate-950'
             : isDeductionDetective
             ? 'bg-gradient-to-br from-sky-950 via-sky-900 to-slate-950'
+            : isMeasuringStationsActivity
+            ? 'bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-950'
             : isProtractorAnatomyActivity
             ? 'bg-gradient-to-br from-teal-950 via-emerald-950 to-slate-950'
             : 'bg-gradient-to-br from-teal-900 via-teal-800 to-slate-900'
@@ -463,6 +612,8 @@ export function ActivitySheetView({
               ? 'bg-purple-500/15'
               : isDeductionDetective
               ? 'bg-sky-500/15'
+              : isMeasuringStationsActivity
+              ? 'bg-blue-500/20'
               : isProtractorAnatomyActivity
               ? 'bg-teal-500/20'
               : 'bg-teal-500/10'
@@ -478,6 +629,8 @@ export function ActivitySheetView({
               ? 'bg-indigo-500/20'
               : isDeductionDetective
               ? 'bg-indigo-500/15'
+              : isMeasuringStationsActivity
+              ? 'bg-indigo-500/20'
               : isProtractorAnatomyActivity
               ? 'bg-emerald-500/15'
               : 'bg-indigo-500/10'
@@ -497,6 +650,8 @@ export function ActivitySheetView({
                   ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
                   : isDeductionDetective
                   ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
+                  : isMeasuringStationsActivity
+                  ? 'bg-blue-400/20 border-blue-300/30 text-blue-200'
                   : isProtractorAnatomyActivity
                   ? 'bg-teal-400/20 border-teal-300/30 text-teal-200'
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
@@ -522,6 +677,11 @@ export function ActivitySheetView({
                   <Search className="w-3.5 h-3.5 text-sky-300" />
                   <span>Gözlem & Mantıksal Çıkarım (SDB3.3 / E3.7)</span>
                 </>
+              ) : isMeasuringStationsActivity ? (
+                <>
+                  <Compass className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Uygulama & Ölçme Becerisi (SDB1.2 / SB1.1)</span>
+                </>
               ) : isProtractorAnatomyActivity ? (
                 <>
                   <Compass className="w-3.5 h-3.5 text-teal-300" />
@@ -544,6 +704,8 @@ export function ActivitySheetView({
                 ? 'Atölye: "PERGEL İLE ADIMLAMA" (Eşit Parçalar Kesme)'
                 : isDeductionDetective
                 ? 'Etkinlik: "ÇIKARIM DEDEKTİFİ" (Gözlem ve Temel Kurallar)'
+                : isMeasuringStationsActivity
+                ? 'Etkinlik: "AŞAMALI AÇI ÖLÇÜM İSTASYONLARI" (Uygulama - MAT.5.3.3)'
                 : isProtractorAnatomyActivity
                 ? 'Etkinlik: "İLETKİNİN ANATOMİSİ" (Aracı Tanıma & Çift Ölçek Tuzağı)'
                 : 'Etkinlik 1: Aşamalı İnşa İstasyonları'}
@@ -574,6 +736,12 @@ export function ActivitySheetView({
                   🕵️‍♂️ <strong>Dedektif Görevi:</strong> Verilen 3 geometrik durumu incele, cetvel, pergel ve gönye ile deneylerini gerçekleştir ve temel aksiyom çıkarımlarını tamamla!
                 </p>
               </div>
+            ) : isMeasuringStationsActivity ? (
+              <div className="p-3 bg-blue-950/60 border border-blue-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-blue-100 font-medium leading-relaxed">
+                  🧭 <strong>İstasyon Görevi:</strong> Farklı yönlere bakan 6 açıyı iletki ile ölç, dönen radarları kol hizasına göre ayarla ve tahminlerini gerçek ölçümlerle karşılaştır!
+                </p>
+              </div>
             ) : isProtractorAnatomyActivity ? (
               <div className="p-3 bg-teal-950/60 border border-teal-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-teal-100 font-medium leading-relaxed">
@@ -596,6 +764,8 @@ export function ActivitySheetView({
                   ? 'text-purple-200/70'
                   : isDeductionDetective
                   ? 'text-sky-200/70'
+                  : isMeasuringStationsActivity
+                  ? 'text-blue-200/70'
                   : isProtractorAnatomyActivity
                   ? 'text-teal-200/70'
                   : 'text-teal-200/70'
@@ -611,9 +781,11 @@ export function ActivitySheetView({
                   : isSteppingWorkshop
                   ? '2 Ana Görev (100 Puan)'
                   : isDeductionDetective
-                  ? '3 Deney Kutusu (100 Puan)'
+                  ? '3 Mini Deney (100 Puan)'
+                  : isMeasuringStationsActivity
+                  ? '3 İstasyon & 6 Açı (100 Puan)'
                   : isProtractorAnatomyActivity
-                  ? '4 Parça + Çift Ölçek Testi (100 Puan)'
+                  ? '4 Parça & Çift Ölçek (100 Puan)'
                   : '4 İstasyon (100 Puan)'}
               </span>
               <span>•</span>
@@ -2208,6 +2380,898 @@ export function ActivitySheetView({
           </div>
 
         </div>
+      ) : isMeasuringStationsActivity ? (
+        /* ========================================================================= */
+        /* ETKİNLİK: "AŞAMALI AÇI ÖLÇÜM İSTASYONLARI" (UYGULAMA - MAT.5.3.3)         */
+        /* ========================================================================= */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          
+          {/* İSTASYON A: STANDART YATAY AÇILAR (Tabanı Düz Durumlar) */}
+          <div className="bg-white rounded-3xl p-6 border-2 border-sky-500/30 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-sky-100">
+              <div className="flex items-center gap-2 text-sky-900 font-black text-sm sm:text-base">
+                <div className="w-8 h-8 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center font-bold text-sm">
+                  📍
+                </div>
+                <span>İSTASYON A: STANDART YATAY AÇILAR (Tabanı Düz Durumlar)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-black bg-sky-50 text-sky-800 border border-sky-200">
+                  {Object.values(stationACorrect).filter(Boolean).length} / 3 Tamamlandı (35 Puan)
+                </span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600">
+              Aşağıdaki 3 standart açının köşe ve kollarını incele. Sanal iletkiyi açarak açının kollarını hizala ve ölçtüğün dereceyi kutucuğa yaz.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              {/* AÇI 1: 45° DAR AÇI */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-xs text-sky-900">AÇI 1: Dar Açı</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSound('click');
+                        setShowProtractorA((p) => ({ ...p, a1: !p.a1 }));
+                      }}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition-all cursor-pointer ${
+                        showProtractorA.a1
+                          ? 'bg-sky-600 text-white border-sky-500 shadow-xs'
+                          : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-100'
+                      }`}
+                    >
+                      {showProtractorA.a1 ? 'İletkiyi Gizle' : 'İletkiyi Göster'}
+                    </button>
+                  </div>
+
+                  <div className="h-36 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 240 140" className="w-full h-full select-none">
+                      {/* Vertex O1 */}
+                      <circle cx="40" cy="110" r="4" fill="#38bdf8" />
+                      <text x="25" y="115" fill="#bae6fd" fontSize="9" fontWeight="bold">O₁</text>
+                      
+                      {/* Taban Kolu (Sağa) */}
+                      <line x1="40" y1="110" x2="200" y2="110" stroke="#f8fafc" strokeWidth="2.5" />
+                      <polygon points="195,106 205,110 195,114" fill="#f8fafc" />
+                      
+                      {/* 45° Kolu */}
+                      <line x1="40" y1="110" x2="135" y2="15" stroke="#38bdf8" strokeWidth="2.5" />
+                      <polygon points="128,15 139,12 136,23" fill="#38bdf8" />
+
+                      {/* Açı Yayı */}
+                      <path d="M 85 110 A 45 45 0 0 0 72 78" fill="none" stroke="#38bdf8" strokeWidth="2" strokeDasharray="3 2" />
+                      <text x="85" y="95" fill="#38bdf8" fontSize="10" fontWeight="900">?</text>
+
+                      {/* Sanal İletki Şeffaf Katmanı */}
+                      {showProtractorA.a1 && (
+                        <g opacity="0.85">
+                          <path d="M -30 110 A 70 70 0 0 1 110 110 Z" fill="#0284c7" fillOpacity="0.25" stroke="#0ea5e9" strokeWidth="1.5" />
+                          <circle cx="40" cy="110" r="2.5" fill="#ef4444" />
+                          {/* 0° tick */}
+                          <line x1="110" y1="110" x2="102" y2="110" stroke="#f8fafc" strokeWidth="1.5" />
+                          <text x="100" y="106" fill="#f8fafc" fontSize="7" fontWeight="bold" textAnchor="end">0°</text>
+                          {/* 45° tick */}
+                          <line x1="89.5" y1="60.5" x2="84" y2="66" stroke="#fbbf24" strokeWidth="2" />
+                          <text x="96" y="58" fill="#fbbf24" fontSize="8.5" fontWeight="900">45°</text>
+                          {/* 90° tick */}
+                          <line x1="40" y1="40" x2="40" y2="48" stroke="#f8fafc" strokeWidth="1.5" strokeDasharray="2 2" />
+                          <text x="40" y="36" fill="#f8fafc" fontSize="7" fontWeight="bold" textAnchor="middle">90°</text>
+                          {/* 135° tick */}
+                          <line x1="-9.5" y1="60.5" x2="-4" y2="66" stroke="#f8fafc" strokeWidth="1" />
+                          <text x="-8" y="58" fill="#94a3b8" fontSize="7">135°</text>
+                        </g>
+                      )}
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="number"
+                        placeholder="Derece (örn: 45)"
+                        value={stationAInputs.a1}
+                        onChange={(e) => setStationAInputs((p) => ({ ...p, a1: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                      <span className="absolute right-3 top-2 font-mono text-xs font-bold text-slate-400">°</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckStationA('a1', 45)}
+                      className="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+                    >
+                      Kontrol Et
+                    </button>
+                  </div>
+
+                  {stationASubmitted.a1 && (
+                    <div
+                      className={`p-2 rounded-xl text-[11px] font-semibold leading-snug animate-in fade-in ${
+                        stationACorrect.a1
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {stationACorrect.a1
+                        ? '✓ DOĞRU! 45° dar açıdır. İç ölçekten 0°den 45°ye kadar olan açıklık okundu.'
+                        : '✗ DİKKAT! Açı 90°den dar bir dar açıdır. İletkinin 0° hizasından başlayarak 45°yi okumalısın.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* AÇI 2: 90° DİK AÇI */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-xs text-teal-900">AÇI 2: Dik Açı</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSound('click');
+                        setShowProtractorA((p) => ({ ...p, a2: !p.a2 }));
+                      }}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition-all cursor-pointer ${
+                        showProtractorA.a2
+                          ? 'bg-teal-600 text-white border-teal-500 shadow-xs'
+                          : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-100'
+                      }`}
+                    >
+                      {showProtractorA.a2 ? 'İletkiyi Gizle' : 'İletkiyi Göster'}
+                    </button>
+                  </div>
+
+                  <div className="h-36 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 240 140" className="w-full h-full select-none">
+                      {/* Vertex O2 */}
+                      <circle cx="50" cy="110" r="4" fill="#14b8a6" />
+                      <text x="35" y="115" fill="#99f6e4" fontSize="9" fontWeight="bold">O₂</text>
+                      
+                      {/* Taban Kolu */}
+                      <line x1="50" y1="110" x2="200" y2="110" stroke="#f8fafc" strokeWidth="2.5" />
+                      <polygon points="195,106 205,110 195,114" fill="#f8fafc" />
+                      
+                      {/* 90° Dikey Kol */}
+                      <line x1="50" y1="110" x2="50" y2="20" stroke="#14b8a6" strokeWidth="2.5" />
+                      <polygon points="46,25 50,15 54,25" fill="#14b8a6" />
+
+                      {/* Diklik Sembolü Kutusu (⊾) */}
+                      <rect x="50" y="92" width="18" height="18" fill="#14b8a6" fillOpacity="0.2" stroke="#14b8a6" strokeWidth="1.8" />
+                      <circle cx="59" cy="101" r="2.5" fill="#14b8a6" />
+
+                      {/* Sanal İletki Şeffaf Katmanı */}
+                      {showProtractorA.a2 && (
+                        <g opacity="0.85">
+                          <path d="M -20 110 A 70 70 0 0 1 120 110 Z" fill="#0d9488" fillOpacity="0.25" stroke="#14b8a6" strokeWidth="1.5" />
+                          <circle cx="50" cy="110" r="2.5" fill="#ef4444" />
+                          {/* 0° tick */}
+                          <line x1="120" y1="110" x2="112" y2="110" stroke="#f8fafc" strokeWidth="1.5" />
+                          <text x="110" y="106" fill="#f8fafc" fontSize="7" fontWeight="bold" textAnchor="end">0°</text>
+                          {/* 90° tick */}
+                          <line x1="50" y1="40" x2="50" y2="48" stroke="#fbbf24" strokeWidth="2.5" />
+                          <text x="50" y="35" fill="#fbbf24" fontSize="9" fontWeight="900" textAnchor="middle">90° (DİK)</text>
+                        </g>
+                      )}
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="number"
+                        placeholder="Derece (örn: 90)"
+                        value={stationAInputs.a2}
+                        onChange={(e) => setStationAInputs((p) => ({ ...p, a2: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      />
+                      <span className="absolute right-3 top-2 font-mono text-xs font-bold text-slate-400">°</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckStationA('a2', 90)}
+                      className="px-3 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+                    >
+                      Kontrol Et
+                    </button>
+                  </div>
+
+                  {stationASubmitted.a2 && (
+                    <div
+                      className={`p-2 rounded-xl text-[11px] font-semibold leading-snug animate-in fade-in ${
+                        stationACorrect.a2
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {stationACorrect.a2
+                        ? '✓ KUSURSUZ! 90° tam dik açıdır. İletkinin tam tepe dikme hizasında okunur.'
+                        : '✗ DİKKAT! Dik açının ölçüsü tam 90° olmalıdır.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* AÇI 3: 135° GENİŞ AÇI */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-xs text-amber-900">AÇI 3: Geniş Açı</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSound('click');
+                        setShowProtractorA((p) => ({ ...p, a3: !p.a3 }));
+                      }}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition-all cursor-pointer ${
+                        showProtractorA.a3
+                          ? 'bg-amber-600 text-white border-amber-500 shadow-xs'
+                          : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-100'
+                      }`}
+                    >
+                      {showProtractorA.a3 ? 'İletkiyi Gizle' : 'İletkiyi Göster'}
+                    </button>
+                  </div>
+
+                  <div className="h-36 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 240 140" className="w-full h-full select-none">
+                      {/* Vertex O3 */}
+                      <circle cx="160" cy="110" r="4" fill="#f59e0b" />
+                      <text x="175" y="115" fill="#fde68a" fontSize="9" fontWeight="bold">O₃</text>
+                      
+                      {/* Taban Kolu (Sağa) */}
+                      <line x1="160" y1="110" x2="225" y2="110" stroke="#f8fafc" strokeWidth="2.5" />
+                      <polygon points="220,106 230,110 220,114" fill="#f8fafc" />
+                      
+                      {/* 135° Kolu (Sola Yukarı) */}
+                      <line x1="160" y1="110" x2="65" y2="15" stroke="#f59e0b" strokeWidth="2.5" />
+                      <polygon points="62,23 60,10 72,14" fill="#f59e0b" />
+
+                      {/* Açı Yayı */}
+                      <path d="M 205 110 A 45 45 0 0 0 128 78" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="3 2" />
+                      <text x="160" y="80" fill="#f59e0b" fontSize="10" fontWeight="900">?</text>
+
+                      {/* Sanal İletki Şeffaf Katmanı */}
+                      {showProtractorA.a3 && (
+                        <g opacity="0.85">
+                          <path d="M 90 110 A 70 70 0 0 1 230 110 Z" fill="#d97706" fillOpacity="0.25" stroke="#f59e0b" strokeWidth="1.5" />
+                          <circle cx="160" cy="110" r="2.5" fill="#ef4444" />
+                          {/* 0° tick */}
+                          <line x1="230" y1="110" x2="222" y2="110" stroke="#f8fafc" strokeWidth="1.5" />
+                          <text x="220" y="106" fill="#f8fafc" fontSize="7" fontWeight="bold" textAnchor="end">0°</text>
+                          {/* 90° tick */}
+                          <line x1="160" y1="40" x2="160" y2="48" stroke="#f8fafc" strokeWidth="1.5" strokeDasharray="2 2" />
+                          <text x="160" y="36" fill="#f8fafc" fontSize="7" fontWeight="bold" textAnchor="middle">90°</text>
+                          {/* 135° tick */}
+                          <line x1="110.5" y1="60.5" x2="116" y2="66" stroke="#fbbf24" strokeWidth="2" />
+                          <text x="100" y="58" fill="#fbbf24" fontSize="8.5" fontWeight="900">135°</text>
+                        </g>
+                      )}
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="number"
+                        placeholder="Derece (örn: 135)"
+                        value={stationAInputs.a3}
+                        onChange={(e) => setStationAInputs((p) => ({ ...p, a3: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                      <span className="absolute right-3 top-2 font-mono text-xs font-bold text-slate-400">°</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckStationA('a3', 135)}
+                      className="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+                    >
+                      Kontrol Et
+                    </button>
+                  </div>
+
+                  {stationASubmitted.a3 && (
+                    <div
+                      className={`p-2 rounded-xl text-[11px] font-semibold leading-snug animate-in fade-in ${
+                        stationACorrect.a3
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {stationACorrect.a3
+                        ? '✓ TEBRİKLER! 135° geniş açıdır. 45° tuzağına düşmeyip doğru iç ölçeği okudun!'
+                        : '✗ DİKKAT! Açı 90°den bariz biçimde geniştir. 45° dar açıdır, doğru değer 135° olmalıdır.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* 2. İSTASYON B: DÖNEN RADARLAR (Eğik ve Baş Aşağı Açılar) */}
+          <div className="bg-white rounded-3xl p-6 border-2 border-purple-500/30 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-purple-100">
+              <div className="flex items-center gap-2 text-purple-900 font-black text-sm sm:text-base">
+                <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-bold text-sm">
+                  🔄
+                </div>
+                <span>İSTASYON B: DÖNEN RADARLAR (Eğik ve Baş Aşağı Açılar)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-50 text-purple-800 border border-purple-200">
+                  {Object.values(stationBCorrect).filter(Boolean).length} / 2 Tamamlandı (35 Puan)
+                </span>
+              </div>
+            </div>
+
+            {/* Kritik Yönerge Kutusu */}
+            <div className="p-3.5 bg-purple-50 border-2 border-purple-200 rounded-2xl flex items-center gap-3">
+              <span className="text-2xl">🧭</span>
+              <div>
+                <div className="text-xs font-black text-purple-900 uppercase">
+                  RADAR YÖNERGESİ:
+                </div>
+                <p className="text-xs text-purple-800 font-medium">
+                  &ldquo;Açıların tabanı yatay değil! İletkini veya kâğıdını çevirerek iletkinin taban çizgisini açının koluna tam hizala.&rdquo;
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              {/* AÇI 4: SAĞA EĞİK 60° */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-xs text-purple-900">AÇI 4: Sağa Eğik Radar (60°)</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('click');
+                          setProtractorRotations((p) => ({ ...p, a4: p.a4 === 30 ? 0 : 30 }));
+                        }}
+                        className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300 hover:bg-purple-200 transition-all cursor-pointer"
+                      >
+                        {protractorRotations.a4 === 30 ? '0° Sıfırla' : 'Kol 1\'e Hizala (30° Döndür)'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="h-44 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 240 150" className="w-full h-full select-none">
+                      {/* Vertex O4 */}
+                      <circle cx="60" cy="115" r="4" fill="#a855f7" />
+                      <text x="45" y="125" fill="#e9d5ff" fontSize="9" fontWeight="bold">O₄</text>
+                      
+                      {/* Kol 1 (30° eğimle sağa yukarı: dx=140*cos(30)=121, dy=-140*sin(30)=-70 -> (181, 45)) */}
+                      <line x1="60" y1="115" x2="195" y2="37" stroke="#f8fafc" strokeWidth="2.5" />
+                      <polygon points="188,35 198,35 194,45" fill="#f8fafc" />
+                      <text x="200" y="50" fill="#94a3b8" fontSize="8" fontWeight="bold">Kol 1 (30°)</text>
+
+                      {/* Kol 2 (90° dikey yukarı -> (60, 20)) */}
+                      <line x1="60" y1="115" x2="60" y2="20" stroke="#c084fc" strokeWidth="2.5" />
+                      <polygon points="56,25 60,15 64,25" fill="#c084fc" />
+                      <text x="68" y="25" fill="#c084fc" fontSize="8" fontWeight="bold">Kol 2 (90°)</text>
+
+                      {/* Açı Yayı (30° to 90° -> 60° açıklık) */}
+                      <path d="M 103 90 A 50 50 0 0 0 60 65" fill="none" stroke="#c084fc" strokeWidth="2" strokeDasharray="3 2" />
+                      <text x="85" y="75" fill="#c084fc" fontSize="10" fontWeight="900">?</text>
+
+                      {/* Dönen İletki Katmanı (Merkez 60, 115) */}
+                      {showProtractorB.a4 && (
+                        <g transform={`rotate(${-protractorRotations.a4}, 60, 115)`} opacity="0.85" className="transition-transform duration-500 ease-out">
+                          <path d="M -10 115 A 70 70 0 0 1 130 115 Z" fill="#7c3aed" fillOpacity="0.25" stroke="#a855f7" strokeWidth="1.5" />
+                          <circle cx="60" cy="115" r="2.5" fill="#ef4444" />
+                          {/* Taban Çizgisi */}
+                          <line x1="-10" y1="115" x2="130" y2="115" stroke="#fbbf24" strokeWidth="1.5" />
+                          {/* 0° tick */}
+                          <text x="125" y="111" fill="#fbbf24" fontSize="7" fontWeight="bold" textAnchor="end">0°</text>
+                          {/* 60° tick */}
+                          <line x1="95" y1="54.4" x2="90" y2="63" stroke="#38bdf8" strokeWidth="2" />
+                          <text x="100" y="52" fill="#38bdf8" fontSize="8.5" fontWeight="900">60°</text>
+                          {/* 90° tick */}
+                          <line x1="60" y1="45" x2="60" y2="53" stroke="#f8fafc" strokeWidth="1.5" strokeDasharray="2 2" />
+                          <text x="60" y="41" fill="#f8fafc" fontSize="7" fontWeight="bold" textAnchor="middle">90°</text>
+                        </g>
+                      )}
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="number"
+                        placeholder="Derece (örn: 60)"
+                        value={stationBInputs.a4}
+                        onChange={(e) => setStationBInputs((p) => ({ ...p, a4: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                      <span className="absolute right-3 top-2 font-mono text-xs font-bold text-slate-400">°</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckStationB('a4', 60)}
+                      className="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+                    >
+                      Kontrol Et
+                    </button>
+                  </div>
+
+                  {stationBSubmitted.a4 && (
+                    <div
+                      className={`p-2 rounded-xl text-[11px] font-semibold leading-snug animate-in fade-in ${
+                        stationBCorrect.a4
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {stationBCorrect.a4
+                        ? '✓ BRAVO! İletkiyi 30° döndürüp tabanını Kol 1 ile hizaladın ve Kol 2\'nin 60° olduğunu tam olarak ölçtün!'
+                        : '✗ DİKKAT! "Kol 1\'e Hizala" butonuna basarak iletkiyi döndür. Taban Kol 1\'deyken Kol 2 kaç dereceyi gösteriyor?'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* AÇI 5: BAŞ AŞAĞI 120° */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-xs text-rose-900">AÇI 5: Baş Aşağı Radar (120°)</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('click');
+                          setProtractorRotations((p) => ({ ...p, a5: p.a5 === 180 ? 0 : 180 }));
+                        }}
+                        className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200 transition-all cursor-pointer"
+                      >
+                        {protractorRotations.a5 === 180 ? '0° Sıfırla' : 'Tabana Hizala (180° Ters Çevir)'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="h-44 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 240 150" className="w-full h-full select-none">
+                      {/* Vertex O5 */}
+                      <circle cx="120" cy="30" r="4" fill="#f43f5e" />
+                      <text x="120" y="20" fill="#fecdd3" fontSize="9" fontWeight="bold" textAnchor="middle">O₅ (Tepe)</text>
+                      
+                      {/* Sol Aşağı Kol (120° açılma -> (40, 110)) */}
+                      <line x1="120" y1="30" x2="40" y2="110" stroke="#f43f5e" strokeWidth="2.5" />
+                      <polygon points="38,98 35,114 49,108" fill="#f43f5e" />
+                      <text x="30" y="125" fill="#f43f5e" fontSize="8" fontWeight="bold">Kol A</text>
+
+                      {/* Sağ Aşağı Kol -> (200, 110) */}
+                      <line x1="120" y1="30" x2="200" y2="110" stroke="#f8fafc" strokeWidth="2.5" />
+                      <polygon points="191,108 205,114 202,98" fill="#f8fafc" />
+                      <text x="205" y="125" fill="#94a3b8" fontSize="8" fontWeight="bold">Kol B</text>
+
+                      {/* Açı Yayı (Aşağı doğru) */}
+                      <path d="M 85 65 A 50 50 0 0 0 155 65" fill="none" stroke="#f43f5e" strokeWidth="2" strokeDasharray="3 2" />
+                      <text x="120" y="75" fill="#f43f5e" fontSize="10" fontWeight="900" textAnchor="middle">?</text>
+
+                      {/* Dönen / Ters İletki Katmanı (Merkez 120, 30) */}
+                      {showProtractorB.a5 && (
+                        <g transform={`rotate(${protractorRotations.a5}, 120, 30)`} opacity="0.85" className="transition-transform duration-500 ease-out">
+                          <path d="M 50 30 A 70 70 0 0 1 190 30 Z" fill="#e11d48" fillOpacity="0.25" stroke="#f43f5e" strokeWidth="1.5" />
+                          <circle cx="120" cy="30" r="2.5" fill="#fbbf24" />
+                          {/* Taban Çizgisi */}
+                          <line x1="50" y1="30" x2="190" y2="30" stroke="#fbbf24" strokeWidth="1.5" />
+                          {/* 0° tick */}
+                          <text x="185" y="26" fill="#fbbf24" fontSize="7" fontWeight="bold" textAnchor="end">0°</text>
+                          {/* 120° tick */}
+                          <line x1="85" y1="-30.6" x2="90" y2="-22" stroke="#38bdf8" strokeWidth="2" />
+                          <text x="75" y="-32" fill="#38bdf8" fontSize="8.5" fontWeight="900">120°</text>
+                        </g>
+                      )}
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="number"
+                        placeholder="Derece (örn: 120)"
+                        value={stationBInputs.a5}
+                        onChange={(e) => setStationBInputs((p) => ({ ...p, a5: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                      />
+                      <span className="absolute right-3 top-2 font-mono text-xs font-bold text-slate-400">°</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckStationB('a5', 120)}
+                      className="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+                    >
+                      Kontrol Et
+                    </button>
+                  </div>
+
+                  {stationBSubmitted.a5 && (
+                    <div
+                      className={`p-2 rounded-xl text-[11px] font-semibold leading-snug animate-in fade-in ${
+                        stationBCorrect.a5
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {stationBCorrect.a5
+                        ? '✓ MÜKEMMEL! İletkiyi ters çevirerek açının kollarını tam kavradın ve 120° geniş açıyı doğru okudun!'
+                        : '✗ DİKKAT! "180° Ters Çevir" butonuna basarak iletkinin açılış yönünü kollarla eşle ve 120° değerini doğrula.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* 3. İSTASYON C: TAHMİN ET ➔ ÖLÇ ➔ KARŞILAŞTIR TABLOSU */}
+          <div className="bg-white rounded-3xl p-6 border-2 border-emerald-500/30 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-emerald-100">
+              <div className="flex items-center gap-2 text-emerald-900 font-black text-sm sm:text-base">
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                  📊
+                </div>
+                <span>İSTASYON C: "TAHMİN ET ➔ ÖLÇ ➔ KARŞILAŞTIR" TABLOSU</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  {[estimateTable.scissors.measured, estimateTable.clock.measured, estimateTable.roof.measured].filter(Boolean).length} / 3 Tamamlandı (30 Puan)
+                </span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600">
+              Aşağıdaki gerçek yaşam nesnelerinin açı türünü ve tahmini dereceni yaz. Ardından <strong>"İletkiyle Ölç"</strong> butonuna basarak gerçek açı ile karşılaştır ve hata payını incele!
+            </p>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-emerald-50/80 text-emerald-950 border-b-2 border-emerald-200">
+                    <th className="p-3 font-black w-1/4">Gerçek Yaşam Şekli</th>
+                    <th className="p-3 font-black w-1/3">1. Göz Kararı Tahminim (Tür & Derece)</th>
+                    <th className="p-3 font-black w-1/5 text-center">2. İletki ile Gerçek Ölçüm</th>
+                    <th className="p-3 font-black w-1/5 text-center">3. Fark (Hata Payı)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  
+                  {/* Satır 1: Açık Makas (35°) */}
+                  <tr className="hover:bg-slate-50 transition-colors">
+                    <td className="p-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-12 h-12 rounded-xl bg-slate-900 p-1 flex items-center justify-center shrink-0">
+                          <svg viewBox="0 0 60 60" className="w-full h-full">
+                            {/* Makas Kolları (35° açıklık) */}
+                            <circle cx="20" cy="30" r="3" fill="#38bdf8" />
+                            <line x1="20" y1="30" x2="52" y2="18" stroke="#f8fafc" strokeWidth="2.5" strokeLinecap="round" />
+                            <line x1="20" y1="30" x2="52" y2="40" stroke="#f8fafc" strokeWidth="2.5" strokeLinecap="round" />
+                            <path d="M 38 23 A 20 20 0 0 1 38 36" fill="none" stroke="#38bdf8" strokeWidth="1.5" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-black text-slate-800 text-xs">✂️ Açık Makas Açısı</div>
+                          <div className="text-[10px] text-slate-400">Kesici ağız açıklığı</div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="p-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={estimateTable.scissors.type}
+                          onChange={(e) =>
+                            setEstimateTable((p) => ({
+                              ...p,
+                              scissors: { ...p.scissors, type: e.target.value }
+                            }))
+                          }
+                          className="px-2 py-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="">Tür Seç...</option>
+                          <option value="dar">Dar Açı (&lt;90°)</option>
+                          <option value="dik">Dik Açı (90°)</option>
+                          <option value="genis">Geniş Açı (&gt;90°)</option>
+                        </select>
+                        <div className="relative w-24">
+                          <input
+                            type="number"
+                            placeholder="Tahmin"
+                            value={estimateTable.scissors.est}
+                            onChange={(e) =>
+                              setEstimateTable((p) => ({
+                                ...p,
+                                scissors: { ...p.scissors, est: e.target.value }
+                              }))
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg border border-slate-300 text-xs font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          />
+                          <span className="absolute right-2 top-1.5 font-mono text-slate-400 font-bold">°</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="p-3 text-center">
+                      {estimateTable.scissors.measured ? (
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-100 text-emerald-900 font-mono font-black text-sm border border-emerald-300 animate-in zoom-in-95">
+                          <span>35°</span>
+                          <span className="text-[9px] font-sans font-bold">(Dar)</span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleMeasureStationC('scissors')}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                        >
+                          İletkiyle Ölç
+                        </button>
+                      )}
+                    </td>
+
+                    <td className="p-3 text-center font-mono">
+                      {estimateTable.scissors.measured ? (
+                        (() => {
+                          const est = parseInt(estimateTable.scissors.est, 10);
+                          if (isNaN(est)) {
+                            return <span className="text-slate-400 text-[11px]">- (Tahmin girilmedi)</span>;
+                          }
+                          const diff = Math.abs(est - 35);
+                          return (
+                            <div className="space-y-0.5">
+                              <span className={`font-black text-xs ${diff === 0 ? 'text-emerald-700' : diff <= 5 ? 'text-teal-700' : 'text-amber-700'}`}>
+                                |{est}° - 35°| = {diff}°
+                              </span>
+                              <div>
+                                <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase ${diff === 0 ? 'bg-emerald-100 text-emerald-800' : diff <= 5 ? 'bg-teal-100 text-teal-800' : 'bg-amber-100 text-amber-800'}`}>
+                                  {diff === 0 ? '🎯 Tam İsabet' : diff <= 5 ? '🌟 Harika' : '👍 Başarılı'}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-slate-400 text-xs">-</span>
+                      )}
+                    </td>
+                  </tr>
+
+                  {/* Satır 2: Saat 15:00 (90°) */}
+                  <tr className="hover:bg-slate-50 transition-colors">
+                    <td className="p-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-12 h-12 rounded-xl bg-slate-900 p-1 flex items-center justify-center shrink-0">
+                          <svg viewBox="0 0 60 60" className="w-full h-full">
+                            {/* Saat Kadranı & Akrep-Yelkovan (90°) */}
+                            <circle cx="30" cy="30" r="22" fill="none" stroke="#f8fafc" strokeWidth="2" />
+                            <circle cx="30" cy="30" r="2.5" fill="#f59e0b" />
+                            <line x1="30" y1="30" x2="30" y2="14" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" />
+                            <line x1="30" y1="30" x2="44" y2="30" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" />
+                            <rect x="30" y="24" width="6" height="6" fill="none" stroke="#f59e0b" strokeWidth="1" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-black text-slate-800 text-xs">🕒 Saat 15:00 Açısı</div>
+                          <div className="text-[10px] text-slate-400">Akrep ile Yelkovan Arası</div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="p-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={estimateTable.clock.type}
+                          onChange={(e) =>
+                            setEstimateTable((p) => ({
+                              ...p,
+                              clock: { ...p.clock, type: e.target.value }
+                            }))
+                          }
+                          className="px-2 py-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="">Tür Seç...</option>
+                          <option value="dar">Dar Açı (&lt;90°)</option>
+                          <option value="dik">Dik Açı (90°)</option>
+                          <option value="genis">Geniş Açı (&gt;90°)</option>
+                        </select>
+                        <div className="relative w-24">
+                          <input
+                            type="number"
+                            placeholder="Tahmin"
+                            value={estimateTable.clock.est}
+                            onChange={(e) =>
+                              setEstimateTable((p) => ({
+                                ...p,
+                                clock: { ...p.clock, est: e.target.value }
+                              }))
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg border border-slate-300 text-xs font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          />
+                          <span className="absolute right-2 top-1.5 font-mono text-slate-400 font-bold">°</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="p-3 text-center">
+                      {estimateTable.clock.measured ? (
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-100 text-emerald-900 font-mono font-black text-sm border border-emerald-300 animate-in zoom-in-95">
+                          <span>90°</span>
+                          <span className="text-[9px] font-sans font-bold">(Dik)</span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleMeasureStationC('clock')}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                        >
+                          İletkiyle Ölç
+                        </button>
+                      )}
+                    </td>
+
+                    <td className="p-3 text-center font-mono">
+                      {estimateTable.clock.measured ? (
+                        (() => {
+                          const est = parseInt(estimateTable.clock.est, 10);
+                          if (isNaN(est)) {
+                            return <span className="text-slate-400 text-[11px]">- (Tahmin girilmedi)</span>;
+                          }
+                          const diff = Math.abs(est - 90);
+                          return (
+                            <div className="space-y-0.5">
+                              <span className={`font-black text-xs ${diff === 0 ? 'text-emerald-700' : diff <= 5 ? 'text-teal-700' : 'text-amber-700'}`}>
+                                |{est}° - 90°| = {diff}°
+                              </span>
+                              <div>
+                                <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase ${diff === 0 ? 'bg-emerald-100 text-emerald-800' : diff <= 5 ? 'bg-teal-100 text-teal-800' : 'bg-amber-100 text-amber-800'}`}>
+                                  {diff === 0 ? '🎯 Tam İsabet' : diff <= 5 ? '🌟 Harika' : '👍 Başarılı'}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-slate-400 text-xs">-</span>
+                      )}
+                    </td>
+                  </tr>
+
+                  {/* Satır 3: Çatı Eğimi (120°) */}
+                  <tr className="hover:bg-slate-50 transition-colors">
+                    <td className="p-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-12 h-12 rounded-xl bg-slate-900 p-1 flex items-center justify-center shrink-0">
+                          <svg viewBox="0 0 60 60" className="w-full h-full">
+                            {/* Çatı Makası (120° tepe açısı) */}
+                            <polygon points="30,16 8,44 52,44" fill="#334155" opacity="0.4" />
+                            <line x1="30" y1="16" x2="8" y2="44" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" />
+                            <line x1="30" y1="16" x2="52" y2="44" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" />
+                            <line x1="8" y1="44" x2="52" y2="44" stroke="#94a3b8" strokeWidth="1.5" />
+                            <path d="M 22 26 A 14 14 0 0 0 38 26" fill="none" stroke="#fbbf24" strokeWidth="1.5" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-black text-slate-800 text-xs">🏠 Çatı Eğimi Açısı</div>
+                          <div className="text-[10px] text-slate-400">Ev çatı makası tepe açısı</div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="p-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={estimateTable.roof.type}
+                          onChange={(e) =>
+                            setEstimateTable((p) => ({
+                              ...p,
+                              roof: { ...p.roof, type: e.target.value }
+                            }))
+                          }
+                          className="px-2 py-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="">Tür Seç...</option>
+                          <option value="dar">Dar Açı (&lt;90°)</option>
+                          <option value="dik">Dik Açı (90°)</option>
+                          <option value="genis">Geniş Açı (&gt;90°)</option>
+                        </select>
+                        <div className="relative w-24">
+                          <input
+                            type="number"
+                            placeholder="Tahmin"
+                            value={estimateTable.roof.est}
+                            onChange={(e) =>
+                              setEstimateTable((p) => ({
+                                ...p,
+                                roof: { ...p.roof, est: e.target.value }
+                              }))
+                            }
+                            className="w-full px-2 py-1.5 rounded-lg border border-slate-300 text-xs font-mono font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          />
+                          <span className="absolute right-2 top-1.5 font-mono text-slate-400 font-bold">°</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="p-3 text-center">
+                      {estimateTable.roof.measured ? (
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-100 text-emerald-900 font-mono font-black text-sm border border-emerald-300 animate-in zoom-in-95">
+                          <span>120°</span>
+                          <span className="text-[9px] font-sans font-bold">(Geniş)</span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleMeasureStationC('roof')}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                        >
+                          İletkiyle Ölç
+                        </button>
+                      )}
+                    </td>
+
+                    <td className="p-3 text-center font-mono">
+                      {estimateTable.roof.measured ? (
+                        (() => {
+                          const est = parseInt(estimateTable.roof.est, 10);
+                          if (isNaN(est)) {
+                            return <span className="text-slate-400 text-[11px]">- (Tahmin girilmedi)</span>;
+                          }
+                          const diff = Math.abs(est - 120);
+                          return (
+                            <div className="space-y-0.5">
+                              <span className={`font-black text-xs ${diff === 0 ? 'text-emerald-700' : diff <= 5 ? 'text-teal-700' : 'text-amber-700'}`}>
+                                |{est}° - 120°| = {diff}°
+                              </span>
+                              <div>
+                                <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase ${diff === 0 ? 'bg-emerald-100 text-emerald-800' : diff <= 5 ? 'bg-teal-100 text-teal-800' : 'bg-amber-100 text-amber-800'}`}>
+                                  {diff === 0 ? '🎯 Tam İsabet' : diff <= 5 ? '🌟 Harika' : '👍 Başarılı'}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-slate-400 text-xs">-</span>
+                      )}
+                    </td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* 4. Alt Bilgi & Toplam Puan */}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+            <span className="flex items-center gap-1.5 font-semibold">
+              <Award className="w-4 h-4 text-amber-500" />
+              <span>
+                <strong>Değerlendirme:</strong> İstasyon A (35P) + İstasyon B (35P) + İstasyon C (30P) = Toplam 100 Puan
+              </span>
+            </span>
+            <span className="font-mono font-bold text-slate-400">www.maarifakademi.com.tr</span>
+          </div>
+
+        </div>
       ) : isProtractorAnatomyActivity ? (
         /* ========================================================================= */
         /* ETKİNLİK: "İLETKİNİN ANATOMİSİ" (ARACI TANIMA & ÇİFT ÖLÇEK TUZAĞI)        */
@@ -3082,7 +4146,9 @@ export function ActivitySheetView({
             <span>Sıradaki Aşama: Öz Değerlendirme Rubriği</span>
           </div>
           <p className="text-xs text-slate-500">
-            {isProtractorAnatomyActivity
+            {isMeasuringStationsActivity
+              ? 'Aşamalı Açı Ölçüm İstasyonları adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı ölçüm ve tahmin becerilerinizi değerlendiriniz.'
+              : isProtractorAnatomyActivity
               ? 'İletkinin Anatomisi ve Çift Ölçek Tuzağı adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi ölçüm becerilerinizi değerlendiriniz.'
               : isRailwayActivity
               ? 'Tren Rayı Mühendisliği adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi çizimlerinizi değerlendiriniz.'
