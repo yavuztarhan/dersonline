@@ -299,15 +299,16 @@ export function WhiteboardViewerModal({
 
       </div>
 
-      {/* 2. MAIN WHITEBOARD CANVAS / PAGE CONTAINER */}
-      <div className="flex-1 w-full max-w-6xl overflow-auto my-3 flex items-center justify-center p-2 rounded-2xl sm:rounded-3xl bg-slate-900/40 border border-slate-800">
+      {/* 2. MAIN WHITEBOARD CANVAS / PAGE CONTAINER (Scrollable from top to bottom) */}
+      <div className="flex-1 w-full max-w-6xl overflow-y-auto overflow-x-auto my-2 p-2 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900/60 border border-slate-800 flex flex-col items-center justify-start scroll-smooth">
         <div
           style={{
             transform: `scale(${zoomLevel})`,
-            transformOrigin: 'center center',
-            transition: 'transform 0.15s ease-out'
+            transformOrigin: 'top center',
+            transition: 'transform 0.15s ease-out',
+            marginBottom: zoomLevel > 1 ? `${(zoomLevel - 1) * 1123}px` : '0px'
           }}
-          className="relative w-full max-w-[960px] min-h-[560px] sm:min-h-[640px] rounded-2xl shadow-2xl overflow-hidden border-2 border-slate-300 flex flex-col justify-between"
+          className="relative w-full max-w-[794px] min-h-[1123px] bg-white rounded-2xl shadow-2xl border-2 border-slate-300 flex flex-col justify-between shrink-0 select-text overflow-hidden"
         >
           {/* Dynamic Whiteboard Background */}
           <div
@@ -316,33 +317,52 @@ export function WhiteboardViewerModal({
           />
 
           {/* Whiteboard Header Stamp in View Mode */}
-          <div className="relative z-10 p-4 sm:p-5 border-b border-slate-200/60 bg-white/70 backdrop-blur-xs flex items-center justify-between text-xs text-slate-600">
-            <div className="flex items-center gap-2">
-              <span className="font-black text-teal-900 text-sm">{file.title}</span>
-              <span className="text-slate-400">•</span>
-              <span className="font-bold text-slate-600">{file.classSection} Şubesi</span>
+          <div className="relative z-10 px-6 py-3.5 border-b border-slate-200/80 bg-white/80 backdrop-blur-xs flex items-center justify-between text-xs text-slate-600 shrink-0">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-192.png"
+                alt="Logo"
+                className="w-6 h-6 rounded-md object-cover border border-amber-500/30 shrink-0"
+              />
+              <div className="truncate">
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-teal-900 text-sm truncate">{file.title}</span>
+                  <span className="text-slate-400">•</span>
+                  <span className="font-bold text-slate-600 shrink-0">{file.classSection} Şubesi</span>
+                </div>
+                <div className="text-[10px] text-teal-800 font-extrabold uppercase tracking-wide truncate">
+                  MEB • TÜRKİYE YÜZYILI MAARİF MODELİ • {file.outcomeCode}
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2 font-medium text-slate-500 text-[11px]">
-              <span>Öğretmen: <strong>{file.authorName}</strong></span>
-              <span>•</span>
-              <span>Sayfa {safePageIndex + 1} / {totalPages}</span>
+
+            <div className="text-right flex flex-col items-end justify-center shrink-0 pl-2">
+              <div className="text-[10px] text-slate-600 font-bold">
+                Öğretmen: <strong>{file.authorName}</strong>
+              </div>
+              <div className="text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
+                <span>Sayfa {safePageIndex + 1} / {totalPages}</span>
+                <span>•</span>
+                <span>{new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
+              </div>
             </div>
           </div>
 
-          {/* Page Body Content */}
-          <div className="relative z-10 flex-1 p-6 sm:p-8 space-y-6">
+          {/* Page Body Content (Expands smoothly for very long pages) */}
+          <div className="relative z-10 flex-1 p-6 sm:p-10 min-h-[960px] text-slate-900 font-normal leading-relaxed">
             
-            {/* HTML Text Content if present */}
+            {/* HTML Text Content */}
             {currentPage.textContent ? (
               <div
-                className="prose prose-slate max-w-none text-slate-900 font-medium text-sm leading-relaxed [&_h1]:text-2xl [&_h1]:font-black [&_h2]:text-xl [&_h2]:font-extrabold [&_h3]:text-lg [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_blockquote]:border-l-4 [&_blockquote]:border-teal-500 [&_blockquote]:pl-3 [&_code]:bg-slate-150 [&_code]:p-1 [&_code]:rounded"
+                className="prose prose-slate max-w-none text-slate-900 font-medium text-sm sm:text-base leading-relaxed break-words [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-teal-950 [&_h2]:text-xl [&_h2]:font-extrabold [&_h2]:text-teal-900 [&_h3]:text-lg [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_blockquote]:border-l-4 [&_blockquote]:border-teal-500 [&_blockquote]:pl-3 [&_blockquote]:italic [&_table]:w-full [&_table]:border-collapse [&_table]:my-3 [&_td]:border [&_td]:border-slate-300 [&_td]:p-2 [&_th]:border [&_th]:border-slate-300 [&_th]:bg-slate-100 [&_th]:p-2 [&_code]:bg-slate-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-teal-800"
                 dangerouslySetInnerHTML={{ __html: currentPage.textContent }}
               />
             ) : null}
 
-            {/* Render Shapes if any */}
+            {/* Absolute Overlay Shapes (Rendered at exact x, y coordinates) */}
             {Array.isArray(currentPage.shapes) && currentPage.shapes.length > 0 && (
-              <div className="relative w-full min-h-[220px] my-4 pointer-events-none">
+              <div className="absolute inset-0 pointer-events-none z-15 overflow-hidden">
                 {currentPage.shapes.map((shape) => (
                   <div
                     key={shape.id}
@@ -360,44 +380,55 @@ export function WhiteboardViewerModal({
               </div>
             )}
 
-            {/* Render Canvas Drawing DataUrl if present */}
-            {currentPage.drawingDataUrl && (
-              <div className="relative w-full my-4 pointer-events-none">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={currentPage.drawingDataUrl}
-                  alt="Tahta El Çizimleri"
-                  className="w-full h-auto object-contain rounded-xl"
-                />
-              </div>
-            )}
-
-            {/* Render Images if any */}
+            {/* Absolute Overlay Images */}
             {Array.isArray(currentPage.images) && currentPage.images.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
+              <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
                 {currentPage.images.map((img) => (
-                  <div key={img.id} className="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white p-2">
+                  <div
+                    key={img.id}
+                    style={{
+                      position: 'absolute',
+                      left: `${img.x ?? 40}px`,
+                      top: `${img.y ?? 40}px`,
+                      width: `${img.width ?? 280}px`,
+                      height: `${img.height ?? 200}px`,
+                      transform: img.rotation ? `rotate(${img.rotation}deg)` : undefined
+                    }}
+                    className="rounded-xl overflow-hidden shadow-sm"
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={img.url}
                       alt="Ders Görseli"
-                      className="w-full h-auto max-h-[300px] object-contain rounded-lg"
+                      className="w-full h-full object-contain rounded-lg"
                     />
                   </div>
                 ))}
               </div>
             )}
 
+            {/* Absolute Drawing Canvas Overlay */}
+            {currentPage.drawingDataUrl && (
+              <div className="absolute inset-0 pointer-events-none z-20">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={currentPage.drawingDataUrl}
+                  alt="Tahta El Çizimleri"
+                  className="w-full h-full object-cover pointer-events-none"
+                />
+              </div>
+            )}
+
           </div>
 
           {/* Whiteboard Footer Watermark */}
-          <div className="relative z-10 p-3 sm:px-6 border-t border-slate-200/60 bg-white/75 backdrop-blur-xs flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
-            <div className="flex items-center gap-1.5 font-semibold text-slate-600">
+          <div className="relative z-10 px-6 py-3 border-t border-slate-200/80 bg-white/80 backdrop-blur-xs flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 font-semibold text-slate-600 truncate">
               <span>🏛️ {file.school || currentUser?.school || 'Millî Eğitim Bakanlığı'}</span>
               <span>•</span>
-              <span className="text-teal-800 font-bold">{file.outcomeTitle}</span>
+              <span className="text-teal-800 font-bold truncate">{file.outcomeTitle}</span>
             </div>
-            <div className="font-mono font-bold text-teal-900/80">
+            <div className="font-mono font-bold text-teal-900/90 shrink-0">
               www.maarifakademi.com.tr
             </div>
           </div>
@@ -408,7 +439,7 @@ export function WhiteboardViewerModal({
       {/* 3. BOTTOM HELPER STRIP */}
       <div className="w-full max-w-6xl bg-slate-900/90 text-white rounded-2xl p-2.5 px-5 flex items-center justify-between text-xs text-slate-400 shrink-0 border border-slate-800">
         <div className="flex items-center gap-2">
-          <span>💡 İpucu: Klavye yön tuşlarıyla (← / →) sayfalar arasında geçiş yapabilir, <strong>ESC</strong> ile kapatabilirsiniz.</span>
+          <span>💡 İpucu: Klavye yön tuşlarıyla (← / →) sayfalar arasında geçiş yapabilir, <strong>ESC</strong> veya <strong>KAPAT</strong> ile kapatabilirsiniz.</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -418,9 +449,9 @@ export function WhiteboardViewerModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold cursor-pointer transition-colors"
+            className="px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black cursor-pointer transition-all shadow-sm"
           >
-            Kapat
+            KAPAT
           </button>
         </div>
       </div>

@@ -73,6 +73,7 @@ export interface ClassroomFileRecord {
   pages: WhiteboardPageData[];
   thumbnailUrl?: string;
   createdAt: string;
+  updatedAt?: string;
   fileSizeKb?: number;
   tags: string[];
 }
@@ -188,6 +189,31 @@ export function saveClassroomFile(
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   }
   return newRecord;
+}
+
+export function updateClassroomFile(
+  fileId: string,
+  updates: Partial<Omit<ClassroomFileRecord, 'id' | 'createdAt'>>
+): ClassroomFileRecord | null {
+  const current = getStoredClassroomFiles();
+  const index = current.findIndex((f) => f.id === fileId);
+  if (index === -1) return null;
+
+  const existing = current[index];
+  const updatedRecord: ClassroomFileRecord = {
+    ...existing,
+    ...updates,
+    pageCount: updates.pages ? updates.pages.length : (updates.pageCount ?? existing.pageCount),
+    updatedAt: new Date().toISOString()
+  };
+
+  const updatedList = [...current];
+  updatedList[index] = updatedRecord;
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
+  }
+  return updatedRecord;
 }
 
 export function deleteClassroomFile(fileId: string): void {
@@ -485,9 +511,10 @@ export async function exportClassroomFileToPdf(
         ${page.textContent || ''}
       </div>
 
-      <div style="border-top: 1px solid #cbd5e1; padding-top: 10px; margin-top: 20px; display: flex; justify-content: space-between; font-size: 9.5px; color: #64748b;">
+      <div style="border-top: 1px solid #cbd5e1; padding-top: 10px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; color: #64748b;">
         <span>Hazırlayan: <strong>${file.authorName}</strong></span>
         <span>Tarih: ${new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
+        <span style="font-weight: 800; color: #0f766e; font-family: monospace;">www.maarifakademi.com.tr</span>
       </div>
     `;
 

@@ -10,6 +10,7 @@ import {
   WhiteboardShapeItem,
   GeometricShapeType,
   saveClassroomFile,
+  updateClassroomFile,
   renderShapeSvgString
 } from '@/lib/class-files-store';
 import { WebImageSearchModal } from '@/components/whiteboard/web-image-search-modal';
@@ -448,6 +449,7 @@ export function WhiteboardModal({
   const [activeMode, setActiveMode] = useState<'pen' | 'text'>('pen');
   const [selectedClass, setSelectedClass] = useState<string>(defaultClass);
   const [documentTitle, setDocumentTitle] = useState<string>(`${defaultClass} ${outcomeCode} Ders Notları`);
+  const [loadedFileId, setLoadedFileId] = useState<string | null>(initialFile?.id || null);
 
   // Load initial file if provided
   useEffect(() => {
@@ -457,7 +459,10 @@ export function WhiteboardModal({
       }
       if (initialFile.title) setDocumentTitle(initialFile.title);
       if (initialFile.classSection) setSelectedClass(initialFile.classSection);
+      setLoadedFileId(initialFile.id);
       setActivePageIndex(0);
+    } else if (isOpen && !initialFile) {
+      setLoadedFileId(null);
     }
   }, [isOpen, initialFile]);
 
@@ -483,6 +488,7 @@ export function WhiteboardModal({
   const [isSaving, setIsSaving] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [saveSuccessToast, setSaveSuccessToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string>('');
 
   // File Input Ref for Local Upload
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1003,8 +1009,12 @@ export function WhiteboardModal({
     );
   };
 
-  // --- SAVE TO CLASSROOM FILES ---
-  const handleSaveToClassroomFiles = async () => {
+  // --- UPDATE EXISTING CLASSROOM FILE (Overwrites existing file & title) ---
+  const handleUpdateExistingFile = async () => {
+    if (!loadedFileId) {
+      handleSaveAsNewFile();
+      return;
+    }
     try {
       setIsSaving(true);
       playSound('select');
@@ -1013,7 +1023,40 @@ export function WhiteboardModal({
       const teacherName = currentUser?.name || 'Ahmet Yılmaz';
       const teacherSchool = (currentUser as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
 
-      saveClassroomFile({
+      updateClassroomFile(loadedFileId, {
+        title: documentTitle || `${selectedClass} ${outcomeCode} Ders Notları`,
+        classSection: selectedClass,
+        outcomeCode,
+        outcomeTitle,
+        authorName: teacherName,
+        school: teacherSchool,
+        pages,
+        tags: [outcomeCode, `${selectedClass} Şubesi`, 'Ders Notu', 'Beyaz Tahta']
+      });
+
+      playSound('success');
+      setToastMessage(`"${documentTitle}" ders notu ve değişiklikler başarıyla güncellendi!`);
+      setSaveSuccessToast(true);
+      setTimeout(() => setSaveSuccessToast(false), 3500);
+    } catch (err) {
+      console.error('Dosya güncelleme hatası:', err);
+      alert('Ders notu güncellenirken bir hata oluştu.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // --- SAVE AS NEW CLASSROOM FILE ---
+  const handleSaveAsNewFile = async () => {
+    try {
+      setIsSaving(true);
+      playSound('select');
+      saveCurrentCanvasData();
+
+      const teacherName = currentUser?.name || 'Ahmet Yılmaz';
+      const teacherSchool = (currentUser as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
+
+      const newRecord = saveClassroomFile({
         title: documentTitle || `${selectedClass} ${outcomeCode} Ders Notları`,
         classSection: selectedClass,
         outcomeCode,
@@ -1026,7 +1069,9 @@ export function WhiteboardModal({
         tags: [outcomeCode, `${selectedClass} Şubesi`, 'Ders Notu', 'Beyaz Tahta']
       });
 
+      setLoadedFileId(newRecord.id);
       playSound('success');
+      setToastMessage(`"${newRecord.title}" yeni ders notu olarak sınıf arşivine eklendi!`);
       setSaveSuccessToast(true);
       setTimeout(() => setSaveSuccessToast(false), 3500);
     } catch (err) {
@@ -1132,13 +1177,21 @@ export function WhiteboardModal({
               📐
             </div>
             <div>
-              <input
-                type="text"
-                value={documentTitle}
-                onChange={(e) => setDocumentTitle(e.target.value)}
-                className="bg-transparent text-xs sm:text-sm font-black text-white hover:bg-slate-800/60 focus:bg-slate-800 px-2 py-0.5 rounded-lg outline-none border border-transparent focus:border-teal-400 max-w-[260px] sm:max-w-md"
-                title="Belge Başlığı (Düzenlemek için tıklayın)"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={documentTitle}
+                  onChange={(e) => setDocumentTitle(e.target.value)}
+                  className="bg-transparent text-xs sm:text-sm font-black text-white hover:bg-slate-800/60 focus:bg-slate-800 px-2 py-0.5 rounded-lg outline-none border border-transparent focus:border-teal-400 max-w-[240px] sm:max-w-md"
+                  title="Belge Başlığı (Değiştirmek için tıklayın)"
+                />
+                {loadedFileId && (
+                  <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-[9px]">
+                    <span>✏️</span>
+                    <span>Mevcut Not</span>
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-2 text-[10px] text-teal-300 font-mono px-2">
                 <span>{outcomeCode}</span>
                 <span>•</span>
@@ -1233,16 +1286,45 @@ export function WhiteboardModal({
               <span className="hidden sm:inline">Sınıf Arşivi</span>
             </button>
 
-            <button
-              type="button"
-              onClick={handleSaveToClassroomFiles}
-              disabled={isSaving}
-              className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-              title="Bu ders notunu sınıfa kaydet ve öğrencilerle paylaş"
-            >
-              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              <span>Sınıfa Kaydet</span>
-            </button>
+            {loadedFileId ? (
+              <>
+                {/* 1. Update Existing File */}
+                <button
+                  type="button"
+                  onClick={handleUpdateExistingFile}
+                  disabled={isSaving}
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title="Yapılan tüm değişiklikleri ve yeni başlığı mevcut ders notunun üzerine kaydet"
+                >
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  <span>Kaydet</span>
+                </button>
+
+                {/* 2. Save As New File */}
+                <button
+                  type="button"
+                  onClick={handleSaveAsNewFile}
+                  disabled={isSaving}
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/40 font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title="Bu ders notunu yeni ve ayrı bir ders notu olarak arşive kaydet"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Farklı Kaydet</span>
+                </button>
+              </>
+            ) : (
+              /* Brand New File: Save to Classroom */
+              <button
+                type="button"
+                onClick={handleSaveAsNewFile}
+                disabled={isSaving}
+                className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                title="Bu ders notunu sınıfa kaydet ve öğrencilerle paylaş"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                <span>Sınıfa Kaydet</span>
+              </button>
+            )}
 
             <button
               type="button"
@@ -1735,7 +1817,7 @@ export function WhiteboardModal({
       {saveSuccessToast && (
         <div className="fixed top-24 right-8 z-[100] bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 font-bold text-xs animate-in slide-in-from-top-4">
           <Check className="w-4 h-4 text-emerald-200" />
-          <span>Ders notu başarıyla &quot;{selectedClass}&quot; sınıf arşivine kaydedildi!</span>
+          <span>{toastMessage || `Ders notu başarıyla "${selectedClass}" sınıf arşivine kaydedildi!`}</span>
         </div>
       )}
 
@@ -2273,10 +2355,14 @@ export function WhiteboardModal({
         outcomeCode={outcomeCode}
         classSection={selectedClass}
         onLoadFileToWhiteboard={(file) => {
-          setPages(file.pages);
-          setDocumentTitle(file.title);
-          setSelectedClass(file.classSection);
+          if (Array.isArray(file.pages) && file.pages.length > 0) {
+            setPages(file.pages);
+          }
+          if (file.title) setDocumentTitle(file.title);
+          if (file.classSection) setSelectedClass(file.classSection);
+          setLoadedFileId(file.id);
           setActivePageIndex(0);
+          playSound('select');
         }}
       />
 
