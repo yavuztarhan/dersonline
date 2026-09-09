@@ -92,7 +92,12 @@ const FILL_COLORS = [
   { id: '#ffffff', label: 'Beyaz Dolgu' }
 ];
 
-const MATH_SYMBOLS = ['°', '∠', '∡', '∥', '⊥', '△', '≅', '≠', '≤', '≥', 'π', '√', '≈', 'α', 'β', 'θ', 'λ', 'Δ'];
+const MATH_SYMBOLS = [
+  '°', '∠', '∡', '∥', '⊥', '△', '≅', '≠',
+  '≤', '≥', 'π', '√', '≈', 'α', 'β', 'θ',
+  'λ', 'Δ', '±', '÷', '×', '∞', '∑', '∫',
+  '‰', '∈', '∉', '⊂', '⊆', '∪', '∩', '∅'
+];
 
 // 12 Geometrik Şekil Tanımları
 const GEOMETRIC_SHAPES_DATA: {
@@ -252,6 +257,82 @@ const GEOMETRIC_SHAPES_DATA: {
   }
 ];
 
+interface WhiteboardTextEditorProps {
+  pageId: string;
+  initialContent: string;
+  activeMode: string;
+  fontFamily: string;
+  fontSize: string;
+  textColor: string;
+  onSelectionChange: () => void;
+  onContentChange: (html: string) => void;
+  setEditorRef: (el: HTMLDivElement | null) => void;
+}
+
+const WhiteboardTextEditor = React.forwardRef<HTMLDivElement, WhiteboardTextEditorProps>(
+  (
+    {
+      pageId,
+      initialContent,
+      activeMode,
+      fontFamily,
+      fontSize,
+      textColor,
+      onSelectionChange,
+      onContentChange,
+      setEditorRef
+    },
+    ref
+  ) => {
+    const innerRef = useRef<HTMLDivElement | null>(null);
+
+    // Initial content synchronization when mounted or page changes
+    useEffect(() => {
+      if (innerRef.current) {
+        if (document.activeElement !== innerRef.current) {
+          if (innerRef.current.innerHTML !== (initialContent || '')) {
+            innerRef.current.innerHTML = initialContent || '';
+          }
+        }
+      }
+    }, [pageId, initialContent]);
+
+    return (
+      <div
+        ref={(el) => {
+          innerRef.current = el;
+          if (typeof ref === 'function') ref(el);
+          else if (ref) ref.current = el;
+          setEditorRef(el);
+        }}
+        contentEditable
+        suppressContentEditableWarning
+        onMouseUp={onSelectionChange}
+        onKeyUp={onSelectionChange}
+        onFocus={onSelectionChange}
+        onInput={(e) => {
+          onSelectionChange();
+          onContentChange(e.currentTarget.innerHTML);
+        }}
+        onBlur={(e) => {
+          onSelectionChange();
+          onContentChange(e.currentTarget.innerHTML);
+        }}
+        className="p-6 sm:p-8 outline-none min-h-[900px] text-slate-900 relative z-0"
+        style={{
+          fontFamily: fontFamily,
+          fontSize: fontSize,
+          color: textColor,
+          lineHeight: '1.6',
+          cursor: activeMode === 'text' ? 'text' : 'default',
+          pointerEvents: activeMode === 'text' ? 'auto' : 'none'
+        }}
+      />
+    );
+  }
+);
+WhiteboardTextEditor.displayName = 'WhiteboardTextEditor';
+
 export function WhiteboardModal({
   isOpen,
   onClose,
@@ -297,6 +378,7 @@ export function WhiteboardModal({
   // Selected Object (Image or Geometric Shape)
   const [selectedObjectId, setSelectedObjectId] = useState<{ type: 'image' | 'shape'; id: string } | null>(null);
   const [shapesDropdownOpen, setShapesDropdownOpen] = useState(false);
+  const [symbolsDropdownOpen, setSymbolsDropdownOpen] = useState(false);
 
   // Modals & UI States
   const [webImageModalOpen, setWebImageModalOpen] = useState(false);
@@ -429,6 +511,10 @@ export function WhiteboardModal({
         const ctx = canvas.getContext('2d');
         if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
+      const editorEl = textEditorRefs.current[`page-${activePageIndex}`];
+      if (editorEl) {
+        editorEl.innerHTML = '';
+      }
       const updated = pages.map((p, i) =>
         i === activePageIndex
           ? { ...p, drawingDataUrl: undefined, textContent: '', images: [], shapes: [] }
@@ -448,11 +534,24 @@ export function WhiteboardModal({
   // --- DRAWING CANVAS HANDLERS ---
   const saveCurrentCanvasData = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const dataUrl = canvas.toDataURL('image/png');
-    setPages((prev) =>
-      prev.map((p, i) => (i === activePageIndex ? { ...p, drawingDataUrl: dataUrl } : p))
-    );
+    const editorEl = textEditorRefs.current[`page-${activePageIndex}`];
+    const html = editorEl ? editorEl.innerHTML : undefined;
+    if (canvas) {
+      const dataUrl = canvas.toDataURL('image/png');
+      setPages((prev) =>
+        prev.map((p, i) =>
+          i === activePageIndex
+            ? { ...p, drawingDataUrl: dataUrl, ...(html !== undefined ? { textContent: html } : {}) }
+            : p
+        )
+      );
+    } else if (html !== undefined) {
+      setPages((prev) =>
+        prev.map((p, i) =>
+          i === activePageIndex ? { ...p, textContent: html } : p
+        )
+      );
+    }
   };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
@@ -528,8 +627,9 @@ export function WhiteboardModal({
     document.execCommand(command, false, value);
     playSound('click');
     if (editorEl) {
+      const currentHtml = editorEl.innerHTML;
       setPages((prev) =>
-        prev.map((p, i) => (i === activePageIndex ? { ...p, textContent: editorEl.innerHTML } : p))
+        prev.map((p, i) => (i === activePageIndex ? { ...p, textContent: currentHtml } : p))
       );
     }
   };
@@ -541,8 +641,9 @@ export function WhiteboardModal({
     if (editorEl) {
       editorEl.focus();
       document.execCommand('fontName', false, font);
+      const currentHtml = editorEl.innerHTML;
       setPages((prev) =>
-        prev.map((p, i) => (i === activePageIndex ? { ...p, textContent: editorEl.innerHTML } : p))
+        prev.map((p, i) => (i === activePageIndex ? { ...p, textContent: currentHtml } : p))
       );
     }
   };
@@ -554,13 +655,14 @@ export function WhiteboardModal({
     if (editorEl) {
       editorEl.focus();
       document.execCommand('fontSize', false, cmdVal);
+      const currentHtml = editorEl.innerHTML;
       setPages((prev) =>
-        prev.map((p, i) => (i === activePageIndex ? { ...p, textContent: editorEl.innerHTML } : p))
+        prev.map((p, i) => (i === activePageIndex ? { ...p, textContent: currentHtml } : p))
       );
     }
   };
 
-  // Math Symbol Insertion Right At Cursor & Cursor Advanced
+  // Math Symbol Insertion Right At Cursor & Cursor Advances Reliably
   const insertMathSymbol = (sym: string) => {
     playSound('click');
     setActiveMode('text');
@@ -571,46 +673,62 @@ export function WhiteboardModal({
     editorEl.focus();
 
     const sel = window.getSelection();
-    let currentRange = savedRangeRef.current;
-
-    if (currentRange && editorEl.contains(currentRange.commonAncestorContainer)) {
-      try {
-        sel?.removeAllRanges();
-        sel?.addRange(currentRange);
-      } catch (e) {}
-    }
+    let hasValidRange = false;
 
     if (sel && sel.rangeCount > 0) {
+      const activeRange = sel.getRangeAt(0);
+      if (editorEl.contains(activeRange.commonAncestorContainer)) {
+        hasValidRange = true;
+      }
+    }
+
+    if (!hasValidRange && savedRangeRef.current && editorEl.contains(savedRangeRef.current.commonAncestorContainer)) {
+      try {
+        sel?.removeAllRanges();
+        sel?.addRange(savedRangeRef.current);
+        hasValidRange = true;
+      } catch (e) {
+        hasValidRange = false;
+      }
+    }
+
+    if (!hasValidRange) {
+      const endRange = document.createRange();
+      endRange.selectNodeContents(editorEl);
+      endRange.collapse(false);
+      sel?.removeAllRanges();
+      sel?.addRange(endRange);
+      savedRangeRef.current = endRange.cloneRange();
+    }
+
+    let inserted = false;
+    try {
+      inserted = document.execCommand('insertText', false, sym);
+    } catch (e) {
+      inserted = false;
+    }
+
+    if (!inserted && sel && sel.rangeCount > 0) {
       const range = sel.getRangeAt(0);
       range.deleteContents();
       const textNode = document.createTextNode(sym);
       range.insertNode(textNode);
 
-      // Create new range right after the inserted textNode
-      const newRange = document.createRange();
-      newRange.setStartAfter(textNode);
-      newRange.setEndAfter(textNode);
-      newRange.collapse(true);
+      const afterRange = document.createRange();
+      afterRange.setStartAfter(textNode);
+      afterRange.setEndAfter(textNode);
+      afterRange.collapse(true);
 
       sel.removeAllRanges();
-      sel.addRange(newRange);
-      savedRangeRef.current = newRange.cloneRange();
-    } else {
-      const textNode = document.createTextNode(sym);
-      editorEl.appendChild(textNode);
-
-      const newRange = document.createRange();
-      newRange.setStartAfter(textNode);
-      newRange.setEndAfter(textNode);
-      newRange.collapse(true);
-
-      sel?.removeAllRanges();
-      sel?.addRange(newRange);
-      savedRangeRef.current = newRange.cloneRange();
+      sel.addRange(afterRange);
+      savedRangeRef.current = afterRange.cloneRange();
+    } else if (sel && sel.rangeCount > 0) {
+      savedRangeRef.current = sel.getRangeAt(0).cloneRange();
     }
 
+    const currentHtml = editorEl.innerHTML;
     setPages((prev) =>
-      prev.map((p, i) => (i === activePageIndex ? { ...p, textContent: editorEl.innerHTML } : p))
+      prev.map((p, i) => (i === activePageIndex ? { ...p, textContent: currentHtml } : p))
     );
   };
 
@@ -1128,32 +1246,36 @@ export function WhiteboardModal({
               <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700">
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('bold')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 font-bold"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 font-bold cursor-pointer"
                   title="Kalın (Ctrl+B)"
                 >
                   <Bold className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('italic')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 italic"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 italic cursor-pointer"
                   title="İtalik (Ctrl+I)"
                 >
                   <Italic className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('underline')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 underline"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 underline cursor-pointer"
                   title="Altı Çizili (Ctrl+U)"
                 >
                   <Underline className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('strikeThrough')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
                   title="Üstü Çizili"
                 >
                   <Strikethrough className="w-3.5 h-3.5" />
@@ -1164,32 +1286,36 @@ export function WhiteboardModal({
               <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700">
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('justifyLeft')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
                   title="Sola Hizala"
                 >
                   <AlignLeft className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('justifyCenter')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
                   title="Ortala"
                 >
                   <AlignCenter className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('justifyRight')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
                   title="Sağa Hizala"
                 >
                   <AlignRight className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('justifyFull')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
                   title="İki Yana Yasla"
                 >
                   <AlignJustify className="w-3.5 h-3.5" />
@@ -1200,16 +1326,18 @@ export function WhiteboardModal({
               <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700">
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('insertUnorderedList')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
                   title="Madde İşaretli Liste"
                 >
                   <List className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => applyTextCommand('insertOrderedList')}
-                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300"
+                  className="p-1.5 rounded hover:bg-slate-700 text-slate-300 cursor-pointer"
                   title="Numaralı Liste"
                 >
                   <ListOrdered className="w-3.5 h-3.5" />
@@ -1222,11 +1350,12 @@ export function WhiteboardModal({
                   <button
                     key={tc}
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
                       setTextColor(tc);
                       applyTextCommand('foreColor', tc);
                     }}
-                    className="w-4 h-4 rounded-full border border-white/20"
+                    className="w-4 h-4 rounded-full border border-white/20 cursor-pointer hover:scale-110 transition-transform"
                     style={{ backgroundColor: tc }}
                   />
                 ))}
@@ -1302,8 +1431,8 @@ export function WhiteboardModal({
               )}
             </div>
 
-            {/* Math Symbols Quick Chips */}
-            <div className="hidden xl:flex items-center gap-1 bg-slate-800 px-2 py-1 rounded-xl border border-slate-700">
+            {/* Math Symbols Quick Chips & All Symbols Popover */}
+            <div className="flex items-center gap-1 bg-slate-800 px-2 py-1 rounded-xl border border-slate-700 relative">
               <span className="text-[10px] text-teal-300 font-bold mr-1">Sembol:</span>
               {MATH_SYMBOLS.slice(0, 8).map((sym) => (
                 <button
@@ -1311,12 +1440,71 @@ export function WhiteboardModal({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => insertMathSymbol(sym)}
-                  className="w-5 h-5 rounded bg-slate-700 hover:bg-slate-600 text-[11px] font-bold text-white flex items-center justify-center font-mono cursor-pointer"
+                  className="w-5 h-5 rounded bg-slate-700 hover:bg-slate-600 text-[11px] font-bold text-white flex items-center justify-center font-mono cursor-pointer transition-transform hover:scale-110"
                   title={`İmlecin Olduğu Yere Ekle: ${sym}`}
                 >
                   {sym}
                 </button>
               ))}
+
+              {/* All Symbols Popover Button */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    setSymbolsDropdownOpen(!symbolsDropdownOpen);
+                    playSound('click');
+                  }}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-all flex items-center gap-0.5 ${
+                    symbolsDropdownOpen
+                      ? 'bg-teal-500 text-slate-950 font-black'
+                      : 'bg-slate-700 hover:bg-slate-600 text-teal-300'
+                  }`}
+                  title="Tüm Matematik Sembolleri"
+                >
+                  <span>Tümü</span>
+                  <ChevronDown className="w-2.5 h-2.5" />
+                </button>
+
+                {symbolsDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-[110]"
+                      onClick={() => setSymbolsDropdownOpen(false)}
+                    />
+                    <div className="absolute top-full right-0 mt-2 z-[120] w-64 bg-slate-900 border-2 border-teal-400/80 rounded-2xl p-3 shadow-2xl animate-in zoom-in-95 space-y-2">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[11px] font-black text-teal-300">
+                        <span>Matematik Sembolleri</span>
+                        <button
+                          type="button"
+                          onClick={() => setSymbolsDropdownOpen(false)}
+                          className="text-slate-400 hover:text-white"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-6 gap-1.5 max-h-56 overflow-y-auto pr-1">
+                        {MATH_SYMBOLS.map((sym) => (
+                          <button
+                            key={sym}
+                            type="button"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => {
+                              insertMathSymbol(sym);
+                            }}
+                            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-teal-500/20 hover:border-teal-400 border border-slate-700 text-sm font-bold text-white flex items-center justify-center font-mono cursor-pointer transition-all hover:scale-110"
+                            title={`Ekle: ${sym}`}
+                          >
+                            {sym}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Local Image Upload Trigger */}
@@ -1484,32 +1672,23 @@ export function WhiteboardModal({
                   </div>
                 )}
 
-                {/* ContentEditable Rich Text Area */}
-                <div
-                  ref={(el) => {
-                    textEditorRefs.current[`page-${pIdx}`] = el;
-                  }}
-                  contentEditable
-                  suppressContentEditableWarning
-                  onMouseUp={saveCurrentSelection}
-                  onKeyUp={saveCurrentSelection}
-                  onFocus={saveCurrentSelection}
-                  onBlur={(e) => {
-                    saveCurrentSelection();
-                    const html = e.currentTarget.innerHTML;
+                {/* ContentEditable Rich Text Area via WhiteboardTextEditor */}
+                <WhiteboardTextEditor
+                  key={page.id}
+                  pageId={page.id}
+                  initialContent={page.textContent || ''}
+                  activeMode={activeMode}
+                  fontFamily={fontFamily}
+                  fontSize={fontSize}
+                  textColor={textColor}
+                  onSelectionChange={saveCurrentSelection}
+                  onContentChange={(html) => {
                     setPages((prev) =>
                       prev.map((p, i) => (i === pIdx ? { ...p, textContent: html } : p))
                     );
                   }}
-                  dangerouslySetInnerHTML={{ __html: page.textContent || '' }}
-                  className="p-6 sm:p-8 outline-none min-h-[900px] text-slate-900 relative z-0"
-                  style={{
-                    fontFamily: fontFamily,
-                    fontSize: fontSize,
-                    color: textColor,
-                    lineHeight: '1.6',
-                    cursor: activeMode === 'text' ? 'text' : 'default',
-                    pointerEvents: activeMode === 'text' ? 'auto' : 'none'
+                  setEditorRef={(el) => {
+                    textEditorRefs.current[`page-${pIdx}`] = el;
                   }}
                 />
 
