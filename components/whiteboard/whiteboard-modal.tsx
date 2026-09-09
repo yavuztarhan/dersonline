@@ -1692,7 +1692,10 @@ export function WhiteboardModal({
       {/* 2. MAIN SCROLLABLE WORKSPACE WITH MULTI-PAGE A4 SHEETS */}
       <div
         onClick={(e) => {
-          if (e.target === e.currentTarget) setSelectedObjectId(null);
+          const target = e.target as HTMLElement;
+          if (!target.closest('.group\\/obj') && !target.closest('.z-50')) {
+            setSelectedObjectId(null);
+          }
         }}
         className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-950/90 flex flex-col items-center gap-8"
       >
@@ -1742,8 +1745,12 @@ export function WhiteboardModal({
                 ref={(el) => {
                   pageContainerRefs.current[`page-${pIdx}`] = el;
                 }}
-                onClick={() => {
+                onClick={(e) => {
                   setActivePageIndex(pIdx);
+                  const target = e.target as HTMLElement;
+                  if (!target.closest('.group\\/obj') && !target.closest('.z-50')) {
+                    setSelectedObjectId(null);
+                  }
                 }}
                 className={`relative w-[794px] min-h-[1123px] rounded-2xl shadow-2xl overflow-hidden transition-all ${
                   isCurrentActive ? 'ring-4 ring-teal-500/80' : 'ring-1 ring-slate-700'
@@ -2248,29 +2255,24 @@ function AngleArmControlHandle({ shape, onAngleChange }: AngleArmControlHandlePr
   const armTipX = vX + armLen * Math.cos(rad);
   const armTipY = vY - armLen * Math.sin(rad);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const startArmDrag = (clientX: number, clientY: number, targetEl: HTMLElement) => {
     setIsDragging(true);
-
-    const target = e.currentTarget as HTMLElement;
-    const parent = target.closest('.group\\/obj') as HTMLElement;
+    const parent = targetEl.closest('.group\\/obj') as HTMLElement;
     if (!parent) return;
 
     const parentRect = parent.getBoundingClientRect();
     const vertexClientX = parentRect.left + vX;
     const vertexClientY = parentRect.top + vY;
 
-    const handleMouseMove = (moveEvt: MouseEvent) => {
-      moveEvt.preventDefault();
-      const deltaX = moveEvt.clientX - vertexClientX;
-      const deltaY = vertexClientY - moveEvt.clientY;
+    const calculateAngle = (curX: number, curY: number, shift: boolean) => {
+      const deltaX = curX - vertexClientX;
+      const deltaY = vertexClientY - curY; // Inverted Y for Cartesian angle
 
       let calculatedDeg = Math.round(Math.atan2(deltaY, deltaX) * (180 / Math.PI));
       if (calculatedDeg < 0) {
         calculatedDeg += 360;
       }
-      if (moveEvt.shiftKey) {
+      if (shift) {
         calculatedDeg = Math.round(calculatedDeg / 15) * 15;
       }
       const bounded = Math.max(5, Math.min(355, calculatedDeg));
@@ -2278,19 +2280,51 @@ function AngleArmControlHandle({ shape, onAngleChange }: AngleArmControlHandlePr
       onAngleChange(bounded);
     };
 
-    const handleMouseUp = () => {
+    const handleMouseMove = (moveEvt: MouseEvent) => {
+      moveEvt.preventDefault();
+      calculateAngle(moveEvt.clientX, moveEvt.clientY, moveEvt.shiftKey);
+    };
+
+    const handleTouchMove = (touchEvt: TouchEvent) => {
+      if (touchEvt.touches.length > 0) {
+        touchEvt.preventDefault();
+        calculateAngle(touchEvt.touches[0].clientX, touchEvt.touches[0].clientY, false);
+      }
+    };
+
+    const handleEnd = () => {
       setIsDragging(false);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
+      window.removeEventListener('touchcancel', handleEnd);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    window.addEventListener('touchcancel', handleEnd);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    startArmDrag(e.clientX, e.clientY, e.currentTarget as HTMLElement);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    if (e.touches.length > 0) {
+      startArmDrag(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget as HTMLElement);
+    }
   };
 
   return (
     <div
       onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
       style={{
         position: 'absolute',
         left: `${armTipX}px`,
@@ -2299,19 +2333,19 @@ function AngleArmControlHandle({ shape, onAngleChange }: AngleArmControlHandlePr
         zIndex: 40,
         cursor: 'grab'
       }}
-      className="group/arm flex items-center justify-center"
-      title="Açı Kolunu Tut ve Çevir (Kolları Aç / Kapat • Shift ile 15° adım)"
+      className="group/arm flex items-center justify-center touch-none select-none"
+      title="Açı Kolunu Tut ve Çevir (Kolları Aç / Kapat)"
     >
       <div
-        className={`w-6 h-6 rounded-full bg-amber-400 border-2 border-slate-900 shadow-xl flex items-center justify-center transition-all ${
-          isDragging ? 'scale-125 ring-4 ring-amber-400/50 bg-amber-300' : 'hover:scale-125'
+        className={`w-7 h-7 rounded-full bg-amber-400 border-2 border-slate-950 shadow-2xl flex items-center justify-center transition-all ${
+          isDragging ? 'scale-125 ring-4 ring-amber-400/50 bg-amber-300' : 'hover:scale-125 active:scale-125'
         }`}
       >
-        <span className="text-[10px] select-none pointer-events-none font-bold">📐</span>
+        <span className="text-xs select-none pointer-events-none font-bold">📐</span>
       </div>
 
       {isDragging && (
-        <div className="absolute -top-7 px-2 py-0.5 bg-slate-900 text-amber-300 text-[11px] font-black rounded-md shadow-xl border border-amber-400 whitespace-nowrap pointer-events-none">
+        <div className="absolute -top-8 px-2 py-0.5 bg-slate-900 text-amber-300 text-[11px] font-black rounded-md shadow-2xl border border-amber-400 whitespace-nowrap pointer-events-none">
           {Math.round(currentDeg)}°
         </div>
       )}
@@ -2320,7 +2354,7 @@ function AngleArmControlHandle({ shape, onAngleChange }: AngleArmControlHandlePr
 }
 
 // ---------------------------------------------------------------------------
-// 8-HANDLE TRANSFORMABLE OBJECT WRAPPER (Word "Kare" Serbest Ölçeklendirme, Döndürme & Kilit)
+// 8-HANDLE TRANSFORMABLE OBJECT WRAPPER (Word "Kare" Serbest Ölçeklendirme, Döndürme & Çift Tık Düzenleme)
 // ---------------------------------------------------------------------------
 interface TransformableObjectProps {
   x: number;
@@ -2361,12 +2395,18 @@ function TransformableObjectWrapper({
   const [liveRotation, setLiveRotation] = useState<number | null>(null);
   const startPos = useRef({ clientX: 0, clientY: 0, x, y, width, height, rotation });
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastTouchTime = useRef<number>(0);
 
-  // Drag start from body
-  const handleMouseDownBody = (e: React.MouseEvent) => {
+  // Double click handler to select / unlock for editing
+  const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onSelect();
-    if (isLocked) return;
+  };
+
+  // Drag start from body (only when isSelected)
+  const handleMouseDownBody = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isSelected || isLocked) return;
 
     isDragging.current = true;
     startPos.current = {
@@ -2400,56 +2440,25 @@ function TransformableObjectWrapper({
     window.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Rotation handle drag
-  const handleMouseDownRotate = (e: React.MouseEvent) => {
+  // Touch start from body (handles double-tap to select and drag when selected)
+  const handleTouchStartBody = (e: React.TouchEvent) => {
     e.stopPropagation();
-    e.preventDefault();
-    if (isLocked) return;
+    const now = Date.now();
+    if (now - lastTouchTime.current < 350) {
+      // Double tap detected
+      onSelect();
+      lastTouchTime.current = 0;
+      return;
+    }
+    lastTouchTime.current = now;
 
-    isRotating.current = true;
-    const containerEl = containerRef.current;
-    if (!containerEl) return;
-    const rect = containerEl.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+    if (!isSelected || isLocked || e.touches.length === 0) return;
 
-    const handleMouseMove = (moveEvt: MouseEvent) => {
-      if (!isRotating.current) return;
-      moveEvt.preventDefault();
-      const deltaX = moveEvt.clientX - centerX;
-      const deltaY = moveEvt.clientY - centerY;
-
-      let deg = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 90;
-      deg = ((deg % 360) + 360) % 360;
-
-      if (moveEvt.shiftKey) {
-        deg = Math.round(deg / 15) * 15;
-      }
-      const finalDeg = Math.round(deg) % 360;
-      setLiveRotation(finalDeg);
-      onChangeTransform({ rotation: finalDeg });
-    };
-
-    const handleMouseUp = () => {
-      isRotating.current = false;
-      setLiveRotation(null);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // Resize start from any of the 8 handles
-  const handleMouseDownResize = (e: React.MouseEvent, handle: HandleDirection) => {
-    e.stopPropagation();
-    if (isLocked) return;
-
-    resizeHandle.current = handle;
+    isDragging.current = true;
+    const touch = e.touches[0];
     startPos.current = {
-      clientX: e.clientX,
-      clientY: e.clientY,
+      clientX: touch.clientX,
+      clientY: touch.clientY,
       x,
       y,
       width,
@@ -2457,10 +2466,114 @@ function TransformableObjectWrapper({
       rotation
     };
 
+    const handleTouchMove = (moveEvt: TouchEvent) => {
+      if (!isDragging.current || isLocked || moveEvt.touches.length === 0) return;
+      moveEvt.preventDefault();
+      const curTouch = moveEvt.touches[0];
+      const deltaX = curTouch.clientX - startPos.current.clientX;
+      const deltaY = curTouch.clientY - startPos.current.clientY;
+
+      onChangeTransform({
+        x: Math.max(0, Math.min(794 - width, startPos.current.x + deltaX)),
+        y: Math.max(0, Math.min(1123 - height, startPos.current.y + deltaY))
+      });
+    };
+
+    const handleTouchEnd = () => {
+      isDragging.current = false;
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchEnd);
+    };
+
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('touchcancel', handleTouchEnd);
+  };
+
+  // Continuous Free Rotation Handle Drag (Mouse & Touch)
+  const startRotateDrag = (clientX: number, clientY: number) => {
+    if (isLocked) return;
+    isRotating.current = true;
+    const containerEl = containerRef.current;
+    if (!containerEl) return;
+    const rect = containerEl.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const processAngle = (curX: number, curY: number) => {
+      const deltaX = curX - centerX;
+      const deltaY = curY - centerY;
+
+      // Free continuous angle from 0 to 360 degrees
+      let deg = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 90;
+      deg = ((deg % 360) + 360) % 360;
+
+      const finalDeg = Math.round(deg) % 360;
+      setLiveRotation(finalDeg);
+      onChangeTransform({ rotation: finalDeg });
+    };
+
     const handleMouseMove = (moveEvt: MouseEvent) => {
+      if (!isRotating.current) return;
+      moveEvt.preventDefault();
+      processAngle(moveEvt.clientX, moveEvt.clientY);
+    };
+
+    const handleTouchMove = (touchEvt: TouchEvent) => {
+      if (!isRotating.current || touchEvt.touches.length === 0) return;
+      touchEvt.preventDefault();
+      processAngle(touchEvt.touches[0].clientX, touchEvt.touches[0].clientY);
+    };
+
+    const handleEnd = () => {
+      isRotating.current = false;
+      setLiveRotation(null);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
+      window.removeEventListener('touchcancel', handleEnd);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    window.addEventListener('touchcancel', handleEnd);
+  };
+
+  const handleMouseDownRotate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    startRotateDrag(e.clientX, e.clientY);
+  };
+
+  const handleTouchStartRotate = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    if (e.touches.length > 0) {
+      startRotateDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  };
+
+  // Resize start from any of the 8 handles (Mouse & Touch)
+  const startResizeDrag = (clientX: number, clientY: number, handle: HandleDirection) => {
+    if (isLocked) return;
+    resizeHandle.current = handle;
+    startPos.current = {
+      clientX,
+      clientY,
+      x,
+      y,
+      width,
+      height,
+      rotation
+    };
+
+    const processResize = (curX: number, curY: number) => {
       if (!resizeHandle.current || isLocked) return;
-      const deltaX = moveEvt.clientX - startPos.current.clientX;
-      const deltaY = moveEvt.clientY - startPos.current.clientY;
+      const deltaX = curX - startPos.current.clientX;
+      const deltaY = curY - startPos.current.clientY;
       const dir = resizeHandle.current;
 
       let newX = startPos.current.x;
@@ -2468,9 +2581,8 @@ function TransformableObjectWrapper({
       let newW = startPos.current.width;
       let newH = startPos.current.height;
 
-      const MIN_SIZE = 30;
+      const MIN_SIZE = 25;
 
-      // Handle calculations
       if (dir.includes('e')) {
         newW = Math.max(MIN_SIZE, startPos.current.width + deltaX);
       }
@@ -2495,14 +2607,44 @@ function TransformableObjectWrapper({
       onChangeTransform({ x: newX, y: newY, width: newW, height: newH });
     };
 
-    const handleMouseUp = () => {
+    const handleMouseMove = (moveEvt: MouseEvent) => {
+      processResize(moveEvt.clientX, moveEvt.clientY);
+    };
+
+    const handleTouchMove = (touchEvt: TouchEvent) => {
+      if (touchEvt.touches.length > 0) {
+        touchEvt.preventDefault();
+        processResize(touchEvt.touches[0].clientX, touchEvt.touches[0].clientY);
+      }
+    };
+
+    const handleEnd = () => {
       resizeHandle.current = null;
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
+      window.removeEventListener('touchcancel', handleEnd);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    window.addEventListener('touchcancel', handleEnd);
+  };
+
+  const handleMouseDownResize = (e: React.MouseEvent, handle: HandleDirection) => {
+    e.stopPropagation();
+    e.preventDefault();
+    startResizeDrag(e.clientX, e.clientY, handle);
+  };
+
+  const handleTouchStartResize = (e: React.TouchEvent, handle: HandleDirection) => {
+    e.stopPropagation();
+    if (e.touches.length > 0) {
+      startResizeDrag(e.touches[0].clientX, e.touches[0].clientY, handle);
+    }
   };
 
   const currentRotation = liveRotation !== null ? liveRotation : (rotation || 0);
@@ -2510,13 +2652,13 @@ function TransformableObjectWrapper({
   return (
     <div
       ref={containerRef}
+      onDoubleClick={handleDoubleClick}
       onMouseDown={handleMouseDownBody}
+      onTouchStart={handleTouchStartBody}
       className={`absolute z-20 group/obj transition-shadow ${
         isSelected
-          ? isLocked
-            ? 'ring-2 ring-amber-400 ring-offset-2'
-            : 'ring-2 ring-teal-500 ring-offset-2'
-          : 'hover:ring-1 hover:ring-teal-400/60'
+          ? 'ring-2 ring-teal-500 ring-offset-2'
+          : 'ring-0'
       }`}
       style={{
         top: `${y}px`,
@@ -2525,94 +2667,96 @@ function TransformableObjectWrapper({
         height: `${height}px`,
         transform: currentRotation ? `rotate(${currentRotation}deg)` : undefined,
         transformOrigin: 'center center',
-        cursor: isLocked ? 'default' : isSelected ? 'move' : 'pointer'
+        cursor: isSelected ? (isLocked ? 'default' : 'move') : 'default'
       }}
     >
       {children}
 
-      {/* Lock Badge indicator if locked */}
-      {isLocked && (
-        <div className="absolute top-1 right-1 w-5 h-5 bg-amber-500 text-slate-950 rounded-full flex items-center justify-center text-[10px] shadow-md z-30 font-bold">
-          🔒
-        </div>
-      )}
-
-      {/* ROTATION HANDLE (Top stem + rotate circle) */}
+      {/* ROTATION HANDLE (Çember şeklindeki ok tutamacı - Continuous Free Angle) */}
       {isSelected && !isLocked && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex flex-col items-center z-40 pointer-events-auto">
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex flex-col items-center z-40 pointer-events-auto touch-none select-none">
           <div
             onMouseDown={handleMouseDownRotate}
-            className="w-5 h-5 rounded-full bg-teal-500 text-slate-950 border-2 border-white shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
-            title="Döndür (Shift ile 15° adım)"
+            onTouchStart={handleTouchStartRotate}
+            className="w-7 h-7 rounded-full bg-slate-900 text-teal-300 border-2 border-teal-400 shadow-2xl flex items-center justify-center cursor-grab active:cursor-grabbing hover:scale-125 active:scale-125 transition-transform"
+            title="Döndür (Serbest Açılı Döndürme)"
           >
-            <RotateCw className="w-2.5 h-2.5 stroke-[2.5]" />
+            <RotateCw className="w-3.5 h-3.5 stroke-[2.5]" />
           </div>
-          <div className="w-0.5 h-3 bg-teal-500/80" />
+          <div className="w-0.5 h-3 bg-teal-400/80" />
 
           {liveRotation !== null && (
-            <div className="absolute -top-7 px-1.5 py-0.5 bg-slate-900 text-teal-300 text-[10px] font-black rounded shadow-lg border border-teal-400 whitespace-nowrap pointer-events-none">
+            <div className="absolute -top-7 px-2 py-0.5 bg-slate-900 text-teal-300 text-[10px] font-black rounded-md shadow-2xl border border-teal-400 whitespace-nowrap pointer-events-none">
               {liveRotation}°
             </div>
           )}
         </div>
       )}
 
-      {/* 8 RESIZE HANDLES (Corners + Midpoints) - Only active when NOT locked */}
+      {/* 8 RESIZE HANDLES (Corners + Midpoints) - Only active when Selected & NOT locked */}
       {isSelected && !isLocked && (
         <>
           {/* Top-Left (NW) */}
           <div
             onMouseDown={(e) => handleMouseDownResize(e, 'nw')}
-            className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-nwse-resize z-30 hover:scale-125 transition-transform"
+            onTouchStart={(e) => handleTouchStartResize(e, 'nw')}
+            className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-nwse-resize z-30 hover:scale-125 transition-transform touch-none"
             title="Köşeden Ölçekle"
           />
 
           {/* Top-Middle (N) */}
           <div
             onMouseDown={(e) => handleMouseDownResize(e, 'n')}
-            className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-ns-resize z-30 hover:scale-125 transition-transform"
+            onTouchStart={(e) => handleTouchStartResize(e, 'n')}
+            className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-ns-resize z-30 hover:scale-125 transition-transform touch-none"
             title="Dikey Boyutlandır"
           />
 
           {/* Top-Right (NE) */}
           <div
             onMouseDown={(e) => handleMouseDownResize(e, 'ne')}
-            className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-nesw-resize z-30 hover:scale-125 transition-transform"
+            onTouchStart={(e) => handleTouchStartResize(e, 'ne')}
+            className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-nesw-resize z-30 hover:scale-125 transition-transform touch-none"
             title="Köşeden Ölçekle"
           />
 
           {/* Middle-Right (E) */}
           <div
             onMouseDown={(e) => handleMouseDownResize(e, 'e')}
-            className="absolute top-1/2 -translate-y-1/2 -right-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-ew-resize z-30 hover:scale-125 transition-transform"
+            onTouchStart={(e) => handleTouchStartResize(e, 'e')}
+            className="absolute top-1/2 -translate-y-1/2 -right-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-ew-resize z-30 hover:scale-125 transition-transform touch-none"
             title="Yatay Boyutlandır"
           />
 
           {/* Bottom-Right (SE) */}
           <div
             onMouseDown={(e) => handleMouseDownResize(e, 'se')}
-            className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-nwse-resize z-30 hover:scale-125 transition-transform"
+            onTouchStart={(e) => handleTouchStartResize(e, 'se')}
+            className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-nwse-resize z-30 hover:scale-125 transition-transform touch-none"
             title="Köşeden Ölçekle"
           />
 
           {/* Bottom-Middle (S) */}
           <div
             onMouseDown={(e) => handleMouseDownResize(e, 's')}
-            className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-ns-resize z-30 hover:scale-125 transition-transform"
+            onTouchStart={(e) => handleTouchStartResize(e, 's')}
+            className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-ns-resize z-30 hover:scale-125 transition-transform touch-none"
             title="Dikey Boyutlandır"
           />
 
           {/* Bottom-Left (SW) */}
           <div
             onMouseDown={(e) => handleMouseDownResize(e, 'sw')}
-            className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-nesw-resize z-30 hover:scale-125 transition-transform"
+            onTouchStart={(e) => handleTouchStartResize(e, 'sw')}
+            className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-nesw-resize z-30 hover:scale-125 transition-transform touch-none"
             title="Köşeden Ölçekle"
           />
 
           {/* Middle-Left (W) */}
           <div
             onMouseDown={(e) => handleMouseDownResize(e, 'w')}
-            className="absolute top-1/2 -translate-y-1/2 -left-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-ew-resize z-30 hover:scale-125 transition-transform"
+            onTouchStart={(e) => handleTouchStartResize(e, 'w')}
+            className="absolute top-1/2 -translate-y-1/2 -left-1.5 w-3.5 h-3.5 bg-white border-2 border-teal-600 rounded-sm shadow-sm cursor-ew-resize z-30 hover:scale-125 transition-transform touch-none"
             title="Yatay Boyutlandır"
           />
         </>

@@ -224,7 +224,7 @@ export function renderShapeSvgString(shape: WhiteboardShapeItem): string {
 
     case 'line': {
       const midY = H / 2;
-      const arrSize = Math.max(8, sw * 2.8);
+      const arrSize = Math.max(9, sw * 2.8);
       const pad = arrSize + 4;
       const x1 = pad;
       const x2 = W - pad;
@@ -233,15 +233,11 @@ export function renderShapeSvgString(shape: WhiteboardShapeItem): string {
       const dotR = Math.max(3.5, sw * 1.2);
       const fontSize = Math.max(12, Math.min(18, H * 0.35));
       innerSvg = `
-        <defs>
-          <marker id="arrow-${shape.id}-start" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="${arrSize}" markerHeight="${arrSize}" orient="auto-start-reverse">
-            <path d="M 10 1 L 1 5 L 10 9 z" fill="${stroke}" />
-          </marker>
-          <marker id="arrow-${shape.id}-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="${arrSize}" markerHeight="${arrSize}" orient="auto">
-            <path d="M 0 1 L 9 5 L 0 9 z" fill="${stroke}" />
-          </marker>
-        </defs>
-        <line x1="${x1}" y1="${midY}" x2="${x2}" y2="${midY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} marker-start="url(#arrow-${shape.id}-start)" marker-end="url(#arrow-${shape.id}-end)" />
+        <line x1="${x1 + 2}" y1="${midY}" x2="${x2 - 2}" y2="${midY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} />
+        <!-- Left Arrow Pointing Strictly LEFT (<) -->
+        <polygon points="${x1},${midY} ${x1 + arrSize},${midY - arrSize * 0.55} ${x1 + arrSize * 0.65},${midY} ${x1 + arrSize},${midY + arrSize * 0.55}" fill="${stroke}" />
+        <!-- Right Arrow Pointing Strictly RIGHT (>) -->
+        <polygon points="${x2},${midY} ${x2 - arrSize},${midY - arrSize * 0.55} ${x2 - arrSize * 0.65},${midY} ${x2 - arrSize},${midY + arrSize * 0.55}" fill="${stroke}" />
         <circle cx="${ptA_X}" cy="${midY}" r="${dotR}" fill="${stroke}" />
         <text x="${ptA_X}" y="${midY - dotR - 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${stroke}">A</text>
         <circle cx="${ptB_X}" cy="${midY}" r="${dotR}" fill="${stroke}" />
@@ -269,19 +265,16 @@ export function renderShapeSvgString(shape: WhiteboardShapeItem): string {
 
     case 'ray': {
       const midY = H / 2;
-      const arrSize = Math.max(8, sw * 2.8);
+      const arrSize = Math.max(9, sw * 2.8);
       const dotR = Math.max(4.5, sw * 1.4);
       const x1 = dotR + 6;
-      const x2 = W - arrSize - 6;
+      const x2 = W - arrSize - 4;
       const ptB_X = x1 + (x2 - x1) * 0.65;
       const fontSize = Math.max(12, Math.min(18, H * 0.35));
       innerSvg = `
-        <defs>
-          <marker id="ray-arrow-${shape.id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="${arrSize}" markerHeight="${arrSize}" orient="auto">
-            <path d="M 0 1 L 9 5 L 0 9 z" fill="${stroke}" />
-          </marker>
-        </defs>
-        <line x1="${x1}" y1="${midY}" x2="${x2}" y2="${midY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} marker-end="url(#ray-arrow-${shape.id})" />
+        <line x1="${x1}" y1="${midY}" x2="${x2 - 2}" y2="${midY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} />
+        <!-- Right Arrow Pointing Strictly RIGHT (>) -->
+        <polygon points="${x2},${midY} ${x2 - arrSize},${midY - arrSize * 0.55} ${x2 - arrSize * 0.65},${midY} ${x2 - arrSize},${midY + arrSize * 0.55}" fill="${stroke}" />
         <circle cx="${x1}" cy="${midY}" r="${dotR}" fill="${stroke}" />
         <text x="${x1}" y="${midY - dotR - 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${stroke}">[A</text>
         <circle cx="${ptB_X}" cy="${midY}" r="${dotR * 0.85}" fill="${stroke}" />
@@ -334,15 +327,26 @@ export function renderShapeSvgString(shape: WhiteboardShapeItem): string {
         `;
       }
 
+      // Base arm arrow
+      const baseArrow = `<polygon points="${baseEndX},${baseEndY} ${baseEndX - arrSize},${baseEndY - arrSize * 0.55} ${baseEndX - arrSize * 0.65},${baseEndY} ${baseEndX - arrSize},${baseEndY + arrSize * 0.55}" fill="${stroke}" />`;
+
+      // Rotating arm arrow
+      const cosA = Math.cos(rad);
+      const sinA = -Math.sin(rad); // Screen coordinate direction (y is down)
+      const p1X = armEndX - arrSize * cosA - arrSize * 0.55 * sinA;
+      const p1Y = armEndY - arrSize * sinA + arrSize * 0.55 * cosA;
+      const p2X = armEndX - arrSize * 0.65 * cosA;
+      const p2Y = armEndY - arrSize * 0.65 * sinA;
+      const p3X = armEndX - arrSize * cosA + arrSize * 0.55 * sinA;
+      const p3Y = armEndY - arrSize * sinA - arrSize * 0.55 * cosA;
+      const rotArmArrow = `<polygon points="${armEndX},${armEndY} ${p1X},${p1Y} ${p2X},${p2Y} ${p3X},${p3Y}" fill="${stroke}" />`;
+
       innerSvg = `
-        <defs>
-          <marker id="angle-arr-${shape.id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="${arrSize}" markerHeight="${arrSize}" orient="auto">
-            <path d="M 0 1 L 9 5 L 0 9 z" fill="${stroke}" />
-          </marker>
-        </defs>
         ${arcElement}
-        <line x1="${vX}" y1="${vY}" x2="${baseEndX}" y2="${baseEndY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} marker-end="url(#angle-arr-${shape.id})" />
-        <line x1="${vX}" y1="${vY}" x2="${armEndX}" y2="${armEndY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} marker-end="url(#angle-arr-${shape.id})" />
+        <line x1="${vX}" y1="${vY}" x2="${baseEndX - 2}" y2="${baseEndY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} />
+        ${baseArrow}
+        <line x1="${vX}" y1="${vY}" x2="${armEndX - 2 * cosA}" y2="${armEndY - 2 * sinA}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} />
+        ${rotArmArrow}
         <circle cx="${vX}" cy="${vY}" r="${Math.max(4, sw * 1.2)}" fill="${stroke}" />
         <text x="${vX - 12}" y="${vY + 14}" font-family="system-ui, sans-serif" font-weight="800" font-size="13" fill="${stroke}">B</text>
         <circle cx="${vX + armLen * 0.7}" cy="${vY}" r="${Math.max(3, sw * 0.9)}" fill="${stroke}" />
