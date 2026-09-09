@@ -2210,7 +2210,7 @@ export function WhiteboardModal({
 
                 {/* Page Footer */}
                 <div className="absolute bottom-2 left-6 right-6 border-t border-slate-200/60 pt-1.5 flex items-center justify-between text-[9px] text-slate-400 pointer-events-none">
-                  <span>Maarif Dijital Defteri • dersonline.meb</span>
+                  <span>Maarif Dijital Defteri • www.maarifakademi.com.tr</span>
                   <span>Sayfa {page.pageNumber}</span>
                 </div>
 
