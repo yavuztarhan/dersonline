@@ -1,17 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ClassroomFileRecord, getActivitySheetForOutcome, getActivitySheetsForOutcome, exportClassroomFileToPdf } from '@/lib/class-files-store';
+import React, { useState, useEffect } from 'react';
+import {
+  ClassroomFileRecord,
+  getActivitySheetForOutcome,
+  getActivitySheetsForOutcome,
+  exportClassroomFileToPdf
+} from '@/lib/class-files-store';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
+import confetti from 'canvas-confetti';
 import {
   FileText,
   Eye,
   MonitorPlay,
   Download,
   CheckCircle2,
+  XCircle,
   Sparkles,
   Award,
   ChevronRight,
@@ -23,7 +30,12 @@ import {
   ArrowRight,
   Loader2,
   Landmark,
-  Hammer
+  Hammer,
+  Search,
+  Check,
+  HelpCircle,
+  Lightbulb,
+  BookOpen
 } from 'lucide-react';
 
 interface ActivitySheetViewProps {
@@ -38,13 +50,21 @@ export function ActivitySheetView({
   onGoToRubric
 }: ActivitySheetViewProps) {
   const { currentUser } = useAuth();
-  const { playSound } = useApp();
+  const { playSound, addPoints, unlockBadge } = useApp();
 
   // Retrieve all activity sheets for this outcome
   const availableSheets = getActivitySheetsForOutcome(outcomeCode);
   const [selectedSheetId, setSelectedSheetId] = useState<string>(
     availableSheets.length > 0 ? availableSheets[0].id : 'file-activity-mat-5-3-1'
   );
+
+  // Sync selectedSheetId when outcome changes
+  useEffect(() => {
+    const sheets = getActivitySheetsForOutcome(outcomeCode);
+    if (sheets.length > 0) {
+      setSelectedSheetId(sheets[0].id);
+    }
+  }, [outcomeCode]);
 
   const [viewerModalOpen, setViewerModalOpen] = useState(false);
   const [whiteboardModalOpen, setWhiteboardModalOpen] = useState(false);
@@ -53,6 +73,62 @@ export function ActivitySheetView({
   // Active activity sheet file record
   const fileRecord = getActivitySheetForOutcome(outcomeCode, selectedSheetId);
   const isBridgeActivity = fileRecord?.id?.includes('bridge') || fileRecord?.title?.includes('Köprü');
+  const isDeductionDetective =
+    outcomeCode === 'MAT.5.3.2' ||
+    fileRecord?.id?.includes('5-3-2') ||
+    fileRecord?.title?.includes('Çıkarım');
+
+  // Interactive deduction state for MAT.5.3.2
+  const [deductionAnswers, setDeductionAnswers] = useState({
+    exp1: '',
+    exp2: '',
+    exp3: ''
+  });
+  const [deductionStatus, setDeductionStatus] = useState<{
+    exp1?: boolean;
+    exp2?: boolean;
+    exp3?: boolean;
+  }>({});
+  const [revealedSolutions, setRevealedSolutions] = useState<{
+    exp1?: boolean;
+    exp2?: boolean;
+    exp3?: boolean;
+  }>({});
+
+  const handleCheckDeduction = (expKey: 'exp1' | 'exp2' | 'exp3') => {
+    const rawVal = deductionAnswers[expKey].trim().toLowerCase();
+    let isCorrect = false;
+
+    if (expKey === 'exp1') {
+      isCorrect = ['1', 'bir', 'tek bir', 'tek 1', 'yalnız 1', 'yalnız bir', 'sadece bir'].includes(rawVal);
+    } else if (expKey === 'exp2') {
+      isCorrect = ['eşit', 'aynı', 'eş', 'esit', 'ayni', 'eşittir', 'esittir'].includes(rawVal);
+    } else if (expKey === 'exp3') {
+      isCorrect = ['1', 'bir', 'tek bir', 'tek 1', 'yalnız 1', 'yalnız bir', 'sadece bir'].includes(rawVal);
+    }
+
+    const nextStatus = { ...deductionStatus, [expKey]: isCorrect };
+    setDeductionStatus(nextStatus);
+
+    if (isCorrect) {
+      playSound('success');
+      addPoints(33);
+
+      const allCorrect =
+        (expKey === 'exp1' ? true : nextStatus.exp1) &&
+        (expKey === 'exp2' ? true : nextStatus.exp2) &&
+        (expKey === 'exp3' ? true : nextStatus.exp3);
+
+      if (allCorrect) {
+        unlockBadge('maarif-genius');
+        try {
+          confetti({ particleCount: 75, spread: 80, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    } else {
+      playSound('click');
+    }
+  };
 
   const handleDownloadPDF = async () => {
     if (!fileRecord) return;
@@ -75,8 +151,9 @@ export function ActivitySheetView({
       {/* 0. Multi-Activity Tab Switcher (if multiple activities exist for outcome) */}
       {availableSheets.length > 1 && (
         <div className="flex items-center gap-2 p-1.5 bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-300 dark:border-slate-700 overflow-x-auto">
-          {availableSheets.map((sheet, index) => {
+          {availableSheets.map((sheet) => {
             const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
+            const isDetective = sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım');
             const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
             return (
               <button
@@ -90,15 +167,22 @@ export function ActivitySheetView({
                   isActive
                     ? isBridge
                       ? 'bg-amber-500 text-slate-950 shadow-md scale-102'
+                      : isDetective
+                      ? 'bg-sky-600 text-white shadow-md scale-102'
                       : 'bg-teal-600 text-white shadow-md scale-102'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-300/50 dark:hover:bg-slate-700/50'
                 }`}
               >
-                <span>{isBridge ? '🏛️' : '📐'}</span>
-                <span>{sheet.title.replace(' (MAT.5.3.1)', '')}</span>
+                <span>{isBridge ? '🏛️' : isDetective ? '🔍' : '📐'}</span>
+                <span>{sheet.title.replace(/ \(MAT\.5\.3\.[12]\)/, '')}</span>
                 {isBridge && (
                   <span className="px-1.5 py-0.5 rounded bg-amber-950/20 text-[9px] font-black uppercase">
                     Büyük Görev
+                  </span>
+                )}
+                {isDetective && (
+                  <span className="px-1.5 py-0.5 rounded bg-sky-950/20 text-[9px] font-black uppercase">
+                    Dedektif Deneyleri
                   </span>
                 )}
               </button>
@@ -112,18 +196,28 @@ export function ActivitySheetView({
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
           isBridgeActivity
             ? 'bg-gradient-to-br from-amber-950 via-amber-900 to-slate-950'
+            : isDeductionDetective
+            ? 'bg-gradient-to-br from-sky-950 via-sky-900 to-slate-950'
             : 'bg-gradient-to-br from-teal-900 via-teal-800 to-slate-900'
         }`}
       >
         {/* Background Decorative Patterns */}
         <div
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-            isBridgeActivity ? 'bg-amber-500/10' : 'bg-teal-500/10'
+            isBridgeActivity
+              ? 'bg-amber-500/10'
+              : isDeductionDetective
+              ? 'bg-sky-500/15'
+              : 'bg-teal-500/10'
           }`}
         />
         <div
           className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
-            isBridgeActivity ? 'bg-orange-500/10' : 'bg-indigo-500/10'
+            isBridgeActivity
+              ? 'bg-orange-500/10'
+              : isDeductionDetective
+              ? 'bg-indigo-500/15'
+              : 'bg-indigo-500/10'
           }`}
         />
 
@@ -134,6 +228,8 @@ export function ActivitySheetView({
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
                 isBridgeActivity
                   ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
+                  : isDeductionDetective
+                  ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
@@ -141,6 +237,11 @@ export function ActivitySheetView({
                 <>
                   <Landmark className="w-3.5 h-3.5 text-amber-300" />
                   <span>Büyük Görev • Mimari Restorasyon & Geometrik İnşa</span>
+                </>
+              ) : isDeductionDetective ? (
+                <>
+                  <Search className="w-3.5 h-3.5 text-sky-300" />
+                  <span>Gözlem & Mantıksal Çıkarım (SDB3.3 / E3.7)</span>
                 </>
               ) : (
                 <>
@@ -153,14 +254,22 @@ export function ActivitySheetView({
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
               {isBridgeActivity
                 ? 'Büyük Görev: Tarihi Köprü Restorasyonu'
+                : isDeductionDetective
+                ? 'Etkinlik: "ÇIKARIM DEDEKTİFİ" (Gözlem ve Temel Kurallar)'
                 : 'Etkinlik 1: Aşamalı İnşa İstasyonları'}
             </h2>
             
-            {/* Kurgu Paneli (Story Banner) */}
+            {/* Kurgu Paneli / Açıklama */}
             {isBridgeActivity ? (
               <div className="p-3 bg-amber-950/60 border border-amber-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-amber-100 font-medium italic leading-relaxed">
                   📜 <strong>Kurgu Paneli:</strong> &ldquo;Mimar Sinan'ın Kanuni Köprüsü'nün çizimi hasar gördü! Kemerleri ve ayakları aletlerinle tamamla.&rdquo;
+                </p>
+              </div>
+            ) : isDeductionDetective ? (
+              <div className="p-3 bg-sky-950/60 border border-sky-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-sky-100 font-medium leading-relaxed">
+                  🕵️‍♂️ <strong>Dedektif Görevi:</strong> Verilen 3 geometrik durumu incele, cetvel, pergel ve gönye ile deneylerini gerçekleştir ve temel aksiyom çıkarımlarını tamamla!
                 </p>
               </div>
             ) : (
@@ -171,14 +280,30 @@ export function ActivitySheetView({
 
             <div
               className={`flex items-center gap-3 pt-2 text-[11px] font-mono ${
-                isBridgeActivity ? 'text-amber-200/70' : 'text-teal-200/70'
+                isBridgeActivity
+                  ? 'text-amber-200/70'
+                  : isDeductionDetective
+                  ? 'text-sky-200/70'
+                  : 'text-teal-200/70'
               }`}
             >
               <span>{outcomeCode}</span>
               <span>•</span>
-              <span>{isBridgeActivity ? '4 Restorasyon Adımı (100 Puan)' : '4 İstasyon (100 Puan)'}</span>
+              <span>
+                {isBridgeActivity
+                  ? '4 Restorasyon Adımı (100 Puan)'
+                  : isDeductionDetective
+                  ? '3 Deney Kutusu (100 Puan)'
+                  : '4 İstasyon (100 Puan)'}
+              </span>
               <span>•</span>
-              <span>{isBridgeActivity ? 'Geniş Milimetrik Grid' : 'Sistem Beyaz Tahta Notu'}</span>
+              <span>
+                {isBridgeActivity
+                  ? 'Geniş Milimetrik Grid'
+                  : isDeductionDetective
+                  ? 'Aksiyom & Mantıksal Çıkarım'
+                  : 'Sistem Beyaz Tahta Notu'}
+              </span>
             </div>
           </div>
 
@@ -195,7 +320,15 @@ export function ActivitySheetView({
               className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs backdrop-blur-sm border border-white/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               title="Etkinlik kağıdını tam ekran salt okunur modda incele"
             >
-              <Eye className={`w-4 h-4 ${isBridgeActivity ? 'text-amber-300' : 'text-teal-300'}`} />
+              <Eye
+                className={`w-4 h-4 ${
+                  isBridgeActivity
+                    ? 'text-amber-300'
+                    : isDeductionDetective
+                    ? 'text-sky-300'
+                    : 'text-teal-300'
+                }`}
+              />
               <span>Görüntüle</span>
             </button>
 
@@ -209,6 +342,8 @@ export function ActivitySheetView({
               className={`px-4 py-2.5 rounded-xl font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${
                 isBridgeActivity
                   ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-500/20'
+                  : isDeductionDetective
+                  ? 'bg-sky-400 hover:bg-sky-300 text-slate-950 shadow-sky-500/20'
                   : 'bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-teal-500/20'
               }`}
               title="Bu etkinlik kağıdını Akıllı Tahtaya yükle ve üzerinde çizim yap"
@@ -227,7 +362,15 @@ export function ActivitySheetView({
             >
               {isDownloadingPdf ? (
                 <>
-                  <Loader2 className={`w-4 h-4 animate-spin ${isBridgeActivity ? 'text-amber-400' : 'text-teal-400'}`} />
+                  <Loader2
+                    className={`w-4 h-4 animate-spin ${
+                      isBridgeActivity
+                        ? 'text-amber-400'
+                        : isDeductionDetective
+                        ? 'text-sky-400'
+                        : 'text-teal-400'
+                    }`}
+                  />
                   <span>İndiriliyor...</span>
                 </>
               ) : (
@@ -244,8 +387,411 @@ export function ActivitySheetView({
 
       </div>
 
-      {/* 2. BODY CONTENT: EITHER BRIDGE RESTORATION (BÜYÜK GÖREV) OR 4-STATION GRID */}
-      {isBridgeActivity ? (
+      {/* 2. BODY CONTENT: EITHER ÇIKARIM DEDEKTİFİ (MAT.5.3.2) OR BRIDGE OR 4-STATIONS (MAT.5.3.1) */}
+      {isDeductionDetective ? (
+        /* ========================================================================= */
+        /* ETKİNLİK: "ÇIKARIM DEDEKTİFİ" (GÖZLEM VE TEMEL KURALLAR - MAT.5.3.2)       */
+        /* ========================================================================= */
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* 1. DENEY KUTUSU: İKİ NOKTA - BİR DOĞRU */}
+            <div className="bg-white rounded-3xl p-6 border-2 border-sky-500/30 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-sky-900 font-black text-sm">
+                    <div className="w-8 h-8 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center font-bold text-sm">
+                      📏
+                    </div>
+                    <span>DENEY 1: İKİ NOKTA - BİR DOĞRU</span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-800 font-bold text-[11px] border border-sky-200">
+                    Cetvel
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs text-slate-800 leading-relaxed">
+                  <strong>Soru &amp; Yönerge:</strong> Cetvelini bu iki noktaya koy. Bu noktalardan aynı anda geçen kaç farklı düz çizgi çizebilirsin? Dene ve sonucu yaz.
+                </div>
+
+                {/* SVG Çizim Alanı */}
+                <div className="border-2 border-dashed border-sky-300/80 rounded-2xl h-44 bg-slate-50/70 relative overflow-hidden flex items-center justify-center select-none">
+                  <svg viewBox="0 0 280 150" width="100%" height="100%" className="w-full h-full">
+                    <pattern id="grid_exp1" width="16" height="16" patternUnits="userSpaceOnUse">
+                      <circle cx="2" cy="2" r="1" fill="#cbd5e1" />
+                    </pattern>
+                    <rect width="280" height="150" fill="url(#grid_exp1)" />
+
+                    {/* Düz Doğru Çizgisi d */}
+                    <line x1="20" y1="75" x2="260" y2="75" stroke="#0284c7" strokeWidth="2.5" strokeDasharray="6 3" />
+                    
+                    {/* A Noktası */}
+                    <circle cx="70" cy="75" r="6" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
+                    <text x="70" y="56" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#0369a1" text-anchor="middle">
+                      A
+                    </text>
+
+                    {/* B Noktası */}
+                    <circle cx="210" cy="75" r="6" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
+                    <text x="210" y="56" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#0369a1" text-anchor="middle">
+                      B
+                    </text>
+
+                    {/* Çizgi Etiketi */}
+                    <text x="140" y="115" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#64748b" text-anchor="middle">
+                      (Cetvel ile A ve B'yi birleştir)
+                    </text>
+                    <text x="140" y="132" font-family="monospace" font-size="10" font-weight="bold" fill="#0284c7" text-anchor="middle">
+                      d doğrusu (Yalnız 1 Doğru)
+                    </text>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Çıkarım Cümlesi & İnteraktif Doldurma */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="p-3.5 bg-sky-50/80 border-2 border-sky-200 rounded-2xl space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10.5px] font-black text-sky-900 uppercase tracking-wide flex items-center gap-1.5">
+                      <Search className="w-3.5 h-3.5 text-sky-600" />
+                      <span>Dedektif Çıkarım Cümlesi:</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-sky-700 bg-white px-2 py-0.5 rounded-md border border-sky-200">
+                      33.3 Puan
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-800 font-semibold leading-relaxed">
+                    &ldquo;Düzlemde farklı iki noktadan yalnız{' '}
+                    <input
+                      type="text"
+                      placeholder="buraya yaz"
+                      value={deductionAnswers.exp1}
+                      onChange={(e) =>
+                        setDeductionAnswers((prev) => ({ ...prev, exp1: e.target.value }))
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleCheckDeduction('exp1');
+                      }}
+                      className={`w-28 px-2 py-1 text-center font-black text-xs rounded-lg border-2 outline-none transition-all ${
+                        deductionStatus.exp1 === true
+                          ? 'border-emerald-500 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-200'
+                          : deductionStatus.exp1 === false
+                          ? 'border-rose-400 bg-rose-50 text-rose-900'
+                          : 'border-sky-300 bg-white text-slate-900 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+                      }`}
+                    />{' '}
+                    doğru geçer.&rdquo;
+                  </p>
+
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleCheckDeduction('exp1')}
+                      className="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-[11px] transition-all flex items-center gap-1 cursor-pointer active:scale-95"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Kontrol Et</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRevealedSolutions((prev) => ({ ...prev, exp1: !prev.exp1 }))
+                      }
+                      className="text-[10.5px] font-bold text-sky-700 hover:text-sky-900 hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                      <span>{revealedSolutions.exp1 ? 'İpucunu Gizle' : 'Doğru Cevap'}</span>
+                    </button>
+                  </div>
+
+                  {deductionStatus.exp1 === true && (
+                    <div className="p-2 bg-emerald-100 border border-emerald-300 rounded-xl text-[11px] text-emerald-900 font-bold flex items-center gap-1.5 animate-in fade-in">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Harika Dedektif Çıkarımı! (+33.3 Puan)</span>
+                    </div>
+                  )}
+
+                  {revealedSolutions.exp1 && (
+                    <div className="p-2 bg-amber-50 border border-amber-200 rounded-xl text-[10.5px] text-amber-900 leading-tight animate-in fade-in">
+                      💡 <strong>Doğru Cevap:</strong> <code>"bir"</code> veya <code>"1"</code> (Aksiyom: İki noktadan tek bir doğru geçer).
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 2. DENEY KUTUSU: ÇEMBERİN YARIÇAP SIRRI */}
+            <div className="bg-white rounded-3xl p-6 border-2 border-purple-500/30 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-purple-900 font-black text-sm">
+                    <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-bold text-sm">
+                      ⭕
+                    </div>
+                    <span>DENEY 2: ÇEMBERİN YARIÇAP SIRRI</span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 font-bold text-[11px] border border-purple-200">
+                    Pergel
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs text-slate-800 leading-relaxed">
+                  <strong>Soru &amp; Yönerge:</strong> Merkezden çember yayına uzanan bu doğru parçalarının uzunluklarını karşılaştır.
+                </div>
+
+                {/* SVG Çizim Alanı */}
+                <div className="border-2 border-dashed border-purple-300/80 rounded-2xl h-44 bg-slate-50/70 relative overflow-hidden flex items-center justify-center select-none">
+                  <svg viewBox="0 0 280 150" width="100%" height="100%" className="w-full h-full">
+                    <pattern id="grid_exp2" width="16" height="16" patternUnits="userSpaceOnUse">
+                      <circle cx="2" cy="2" r="1" fill="#cbd5e1" />
+                    </pattern>
+                    <rect width="280" height="150" fill="url(#grid_exp2)" />
+
+                    {/* Çember M Merkezli */}
+                    <circle cx="140" cy="75" r="50" fill="none" stroke="#7c3aed" strokeWidth="2.5" />
+                    
+                    {/* Merkez M */}
+                    <circle cx="140" cy="75" r="5" fill="#6d28d9" stroke="#ffffff" strokeWidth="2" />
+                    <text x="130" y="70" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#5b21b6">
+                      M
+                    </text>
+
+                    {/* r1 to A (Right 0 deg) */}
+                    <line x1="140" y1="75" x2="190" y2="75" stroke="#8b5cf6" strokeWidth="2" />
+                    <circle cx="190" cy="75" r="3.5" fill="#6d28d9" />
+                    <text x="198" y="79" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#6d28d9">A</text>
+                    <text x="165" y="68" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed">r₁</text>
+
+                    {/* r2 to B (Top-Left 135 deg) */}
+                    <line x1="140" y1="75" x2="105" y2="40" stroke="#8b5cf6" strokeWidth="2" />
+                    <circle cx="105" cy="40" r="3.5" fill="#6d28d9" />
+                    <text x="94" y="35" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#6d28d9">B</text>
+                    <text x="115" y="52" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed">r₂</text>
+
+                    {/* r3 to C (Bottom-Left 225 deg) */}
+                    <line x1="140" y1="75" x2="105" y2="110" stroke="#8b5cf6" strokeWidth="2" />
+                    <circle cx="105" cy="110" r="3.5" fill="#6d28d9" />
+                    <text x="94" y="118" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#6d28d9">C</text>
+                    <text x="115" y="100" font-family="monospace" font-size="9" font-weight="bold" fill="#7c3aed">r₃</text>
+
+                    {/* Eşitlik Formülü */}
+                    <text x="215" y="132" font-family="monospace" font-size="9" font-weight="bold" fill="#6d28d9" text-anchor="middle">
+                      |MA| = |MB| = |MC| = r
+                    </text>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Çıkarım Cümlesi & İnteraktif Doldurma */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="p-3.5 bg-purple-50/80 border-2 border-purple-200 rounded-2xl space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10.5px] font-black text-purple-900 uppercase tracking-wide flex items-center gap-1.5">
+                      <Search className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Dedektif Çıkarım Cümlesi:</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-purple-700 bg-white px-2 py-0.5 rounded-md border border-purple-200">
+                      33.3 Puan
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-800 font-semibold leading-relaxed">
+                    &ldquo;Çemberin merkezinden üzerindeki tüm noktalara çizilen doğru parçaları{' '}
+                    <input
+                      type="text"
+                      placeholder="buraya yaz"
+                      value={deductionAnswers.exp2}
+                      onChange={(e) =>
+                        setDeductionAnswers((prev) => ({ ...prev, exp2: e.target.value }))
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleCheckDeduction('exp2');
+                      }}
+                      className={`w-28 px-2 py-1 text-center font-black text-xs rounded-lg border-2 outline-none transition-all ${
+                        deductionStatus.exp2 === true
+                          ? 'border-emerald-500 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-200'
+                          : deductionStatus.exp2 === false
+                          ? 'border-rose-400 bg-rose-50 text-rose-900'
+                          : 'border-purple-300 bg-white text-slate-900 focus:border-purple-500 focus:ring-2 focus:ring-purple-200'
+                      }`}
+                    />{' '}
+                    uzunluktadır.&rdquo;
+                  </p>
+
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleCheckDeduction('exp2')}
+                      className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-[11px] transition-all flex items-center gap-1 cursor-pointer active:scale-95"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Kontrol Et</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRevealedSolutions((prev) => ({ ...prev, exp2: !prev.exp2 }))
+                      }
+                      className="text-[10.5px] font-bold text-purple-700 hover:text-purple-900 hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                      <span>{revealedSolutions.exp2 ? 'İpucunu Gizle' : 'Doğru Cevap'}</span>
+                    </button>
+                  </div>
+
+                  {deductionStatus.exp2 === true && (
+                    <div className="p-2 bg-emerald-100 border border-emerald-300 rounded-xl text-[11px] text-emerald-900 font-bold flex items-center gap-1.5 animate-in fade-in">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Kusursuz Dedektif Çıkarımı! (+33.3 Puan)</span>
+                    </div>
+                  )}
+
+                  {revealedSolutions.exp2 && (
+                    <div className="p-2 bg-amber-50 border border-amber-200 rounded-xl text-[10.5px] text-amber-900 leading-tight animate-in fade-in">
+                      💡 <strong>Doğru Cevap:</strong> <code>"eşit"</code> veya <code>"aynı"</code> (Tüm yarıçaplar birbirine eşittir).
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 3. DENEY KUTUSU: TEK DİKME KURALI */}
+            <div className="bg-white rounded-3xl p-6 border-2 border-amber-500/30 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-amber-900 font-black text-sm">
+                    <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center font-bold text-sm">
+                      📐
+                    </div>
+                    <span>DENEY 3: TEK DİKME KURALI</span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 font-bold text-[11px] border border-amber-200">
+                    Gönye
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs text-slate-800 leading-relaxed">
+                  <strong>Soru &amp; Yönerge:</strong> P noktasından aşağıdaki doğruya gönyenle kaç tane 90° dikme indirebilirsin?
+                </div>
+
+                {/* SVG Çizim Alanı */}
+                <div className="border-2 border-dashed border-amber-300/80 rounded-2xl h-44 bg-slate-50/70 relative overflow-hidden flex items-center justify-center select-none">
+                  <svg viewBox="0 0 280 150" width="100%" height="100%" className="w-full h-full">
+                    <pattern id="grid_exp3" width="16" height="16" patternUnits="userSpaceOnUse">
+                      <circle cx="2" cy="2" r="1" fill="#cbd5e1" />
+                    </pattern>
+                    <rect width="280" height="150" fill="url(#grid_exp3)" />
+
+                    {/* Zemin Doğrusu d */}
+                    <line x1="20" y1="110" x2="260" y2="110" stroke="#334155" strokeWidth="2.5" />
+                    <text x="250" y="102" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#334155">
+                      d
+                    </text>
+
+                    {/* Dış Nokta P */}
+                    <circle cx="140" cy="30" r="6" fill="#ea580c" stroke="#ffffff" strokeWidth="2" />
+                    <text x="140" y="18" font-family="system-ui, sans-serif" font-size="12" font-weight="900" fill="#c2410c" text-anchor="middle">
+                      P (Dış Nokta)
+                    </text>
+
+                    {/* İndirilen Dikme [PH] */}
+                    <line x1="140" y1="30" x2="140" y2="110" stroke="#ea580c" strokeWidth="2.5" strokeDasharray="5 3" />
+                    <circle cx="140" cy="110" r="4" fill="#c2410c" />
+                    <text x="140" y="128" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#c2410c" text-anchor="middle">
+                      H
+                    </text>
+
+                    {/* 90° Diklik Sembolü */}
+                    <path d="M 140 96 L 154 96 L 154 110" fill="none" stroke="#ea580c" strokeWidth="2" />
+                    <circle cx="147" cy="103" r="1.8" fill="#ea580c" />
+
+                    <text x="205" y="65" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#ea580c">
+                      [PH] ⊥ d (90°)
+                    </text>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Çıkarım Cümlesi & İnteraktif Doldurma */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="p-3.5 bg-amber-50/80 border-2 border-amber-200 rounded-2xl space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10.5px] font-black text-amber-900 uppercase tracking-wide flex items-center gap-1.5">
+                      <Search className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Dedektif Çıkarım Cümlesi:</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-amber-700 bg-white px-2 py-0.5 rounded-md border border-amber-200">
+                      33.4 Puan
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-800 font-semibold leading-relaxed">
+                    &ldquo;Bir doğruya dışındaki bir noktadan yalnız{' '}
+                    <input
+                      type="text"
+                      placeholder="buraya yaz"
+                      value={deductionAnswers.exp3}
+                      onChange={(e) =>
+                        setDeductionAnswers((prev) => ({ ...prev, exp3: e.target.value }))
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleCheckDeduction('exp3');
+                      }}
+                      className={`w-28 px-2 py-1 text-center font-black text-xs rounded-lg border-2 outline-none transition-all ${
+                        deductionStatus.exp3 === true
+                          ? 'border-emerald-500 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-200'
+                          : deductionStatus.exp3 === false
+                          ? 'border-rose-400 bg-rose-50 text-rose-900'
+                          : 'border-amber-300 bg-white text-slate-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-200'
+                      }`}
+                    />{' '}
+                    dikme çizilebilir.&rdquo;
+                  </p>
+
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleCheckDeduction('exp3')}
+                      className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-[11px] transition-all flex items-center gap-1 cursor-pointer active:scale-95"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Kontrol Et</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRevealedSolutions((prev) => ({ ...prev, exp3: !prev.exp3 }))
+                      }
+                      className="text-[10.5px] font-bold text-amber-700 hover:text-amber-900 hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                      <span>{revealedSolutions.exp3 ? 'İpucunu Gizle' : 'Doğru Cevap'}</span>
+                    </button>
+                  </div>
+
+                  {deductionStatus.exp3 === true && (
+                    <div className="p-2 bg-emerald-100 border border-emerald-300 rounded-xl text-[11px] text-emerald-900 font-bold flex items-center gap-1.5 animate-in fade-in">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Mükemmel Dedektif Çıkarımı! (+33.4 Puan)</span>
+                    </div>
+                  )}
+
+                  {revealedSolutions.exp3 && (
+                    <div className="p-2 bg-amber-50 border border-amber-200 rounded-xl text-[10.5px] text-amber-900 leading-tight animate-in fade-in">
+                      💡 <strong>Doğru Cevap:</strong> <code>"bir"</code> veya <code>"1"</code> (Dış noktadan yalnız 1 dikme çizilebilir).
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      ) : isBridgeActivity ? (
         /* ========================================================================= */
         /* BÜYÜK GÖREV: TARİHİ KÖPRÜ RESTORASYONU VIEW                               */
         /* ========================================================================= */

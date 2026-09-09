@@ -506,6 +506,195 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-2',
+    title: 'Çıkarım Dedektifi: Gözlem ve Temel Kurallar (MAT.5.3.2)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.2',
+    outcomeTitle: 'Temel Geometrik Çizimlerin Özelliklerine Yönelik Çıkarımda Bulunabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-09T10:00:00Z',
+    fileSizeKb: 195,
+    tags: ['Etkinlik Kağıdı', 'Çıkarım Dedektifi', 'İki Nokta Tek Doğru', 'Çember Yarıçap Sırrı', 'Tek Dikme Kuralı', 'MAT.5.3.2', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #0284c7; padding-bottom: 8px; margin-bottom: 14px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 12px; border-radius: 12px; border: 1px solid #bae6fd;">
+    <div style="display: inline-block; background: #0284c7; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px;">
+      🔍 GÖZLEM &amp; MANTIKSAL ÇIKARIM (SDB3.3 / E3.7)
+    </div>
+    <h2 style="color: #0369a1; font-size: 17px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      ETKİNLİK: "ÇIKARIM DEDEKTİFİ" (GÖZLEM VE TEMEL KURALLAR) - MAT.5.3.2
+    </h2>
+    <p style="color: #334155; font-size: 11px; margin: 4px 0 0 0; font-weight: 600;">
+      Aşağıdaki 3 deney kutusundaki geometrik durumları inceleyerek çizimlerini yap ve dedektif çıkarım cümlelerindeki boşlukları doldur.
+    </p>
+  </div>
+
+  <!-- 3 Mini Deney Kutusu -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px;">
+    
+    <!-- DENEY 1: İKİ NOKTA - BİR DOĞRU -->
+    <div style="border: 2px solid #0284c7; border-radius: 12px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #e0f2fe; padding-bottom: 4px; margin-bottom: 6px;">
+          <span style="font-weight: 900; color: #0369a1; font-size: 11.5px;">📏 DENEY 1: İKİ NOKTA - BİR DOĞRU</span>
+          <span style="font-size: 9px; font-weight: bold; background: #f0f9ff; color: #0284c7; padding: 1px 5px; border-radius: 4px; border: 1px solid #bae6fd;">Cetvel</span>
+        </div>
+        <p style="font-size: 10.5px; color: #1e293b; line-height: 1.35; margin: 0 0 6px 0;">
+          <strong>Soru &amp; Yönerge:</strong> Cetvelini bu iki noktaya koy. Bu noktalardan aynı anda geçen kaç farklı düz çizgi çizebilirsin? Dene ve sonucu yaz.
+        </p>
+        
+        <!-- Çizim Alanı SVG -->
+        <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 140px; background: #f8fafc; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 240 140" width="100%" height="100%" style="display: block;">
+            <!-- Noktalar A ve B -->
+            <line x1="20" y1="70" x2="220" y2="70" stroke="#0284c7" stroke-width="2" stroke-dasharray="4 3" opacity="0.6" />
+            <circle cx="60" cy="70" r="5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+            <text x="60" y="55" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#0369a1" text-anchor="middle">A</text>
+            
+            <circle cx="180" cy="70" r="5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+            <text x="180" y="55" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#0369a1" text-anchor="middle">B</text>
+
+            <text x="120" y="105" font-family="system-ui, sans-serif" font-size="9.5" font-weight="700" fill="#64748b" text-anchor="middle">
+              (Cetvel ile A ve B'yi birleştir)
+            </text>
+            <text x="120" y="125" font-family="monospace" font-size="9" font-weight="bold" fill="#0284c7" text-anchor="middle">
+              d doğrusu
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Çıkarım Cümlesi -->
+      <div style="margin-top: 8px; padding: 6px 8px; background: #f0f9ff; border: 1.5px solid #0284c7; border-radius: 8px;">
+        <span style="font-size: 9px; font-weight: 900; color: #0369a1; text-transform: uppercase;">🕵️‍♂️ Çıkarım Cümlesi:</span>
+        <p style="font-size: 10px; color: #0f172a; margin: 3px 0 0 0; font-weight: 700; line-height: 1.35;">
+          &ldquo;Düzlemde farklı iki noktadan yalnız <span style="display: inline-block; min-width: 60px; border-bottom: 2px solid #0284c7; text-align: center; color: #0369a1; font-weight: 900;">(............)</span> doğru geçer.&rdquo;
+        </p>
+      </div>
+    </div>
+
+    <!-- DENEY 2: ÇEMBERİN YARIÇAP SIRRI -->
+    <div style="border: 2px solid #7c3aed; border-radius: 12px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 4px; margin-bottom: 6px;">
+          <span style="font-weight: 900; color: #6d28d9; font-size: 11.5px;">⭕ DENEY 2: ÇEMBERİN YARIÇAP SIRRI</span>
+          <span style="font-size: 9px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 1px 5px; border-radius: 4px; border: 1px solid #ddd6fe;">Pergel</span>
+        </div>
+        <p style="font-size: 10.5px; color: #1e293b; line-height: 1.35; margin: 0 0 6px 0;">
+          <strong>Soru &amp; Yönerge:</strong> Merkezden çember yayına uzanan bu doğru parçalarının uzunluklarını karşılaştır.
+        </p>
+
+        <!-- Çizim Alanı SVG -->
+        <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 140px; background: #f8fafc; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 240 140" width="100%" height="100%" style="display: block;">
+            <!-- Çember M merkezli -->
+            <circle cx="120" cy="70" r="48" fill="none" stroke="#7c3aed" stroke-width="2" />
+            <!-- Merkez M -->
+            <circle cx="120" cy="70" r="4" fill="#6d28d9" stroke="#ffffff" stroke-width="1.5" />
+            <text x="110" y="65" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#6d28d9">M</text>
+            
+            <!-- 3 Yarıçap -->
+            <!-- r1 to A -->
+            <line x1="120" y1="70" x2="168" y2="70" stroke="#8b5cf6" stroke-width="1.8" />
+            <circle cx="168" cy="70" r="3" fill="#6d28d9" />
+            <text x="175" y="73" font-family="system-ui, sans-serif" font-size="9" font-weight="900" fill="#6d28d9">A</text>
+            <text x="144" y="64" font-family="monospace" font-size="8" font-weight="bold" fill="#7c3aed">r₁</text>
+
+            <!-- r2 to B (top-left 135 deg) -->
+            <line x1="120" y1="70" x2="86" y2="36" stroke="#8b5cf6" stroke-width="1.8" />
+            <circle cx="86" cy="36" r="3" fill="#6d28d9" />
+            <text x="76" y="32" font-family="system-ui, sans-serif" font-size="9" font-weight="900" fill="#6d28d9">B</text>
+            <text x="96" y="48" font-family="monospace" font-size="8" font-weight="bold" fill="#7c3aed">r₂</text>
+
+            <!-- r3 to C (bottom-left 225 deg) -->
+            <line x1="120" y1="70" x2="86" y2="104" stroke="#8b5cf6" stroke-width="1.8" />
+            <circle cx="86" cy="104" r="3" fill="#6d28d9" />
+            <text x="76" y="112" font-family="system-ui, sans-serif" font-size="9" font-weight="900" fill="#6d28d9">C</text>
+            <text x="96" y="94" font-family="monospace" font-size="8" font-weight="bold" fill="#7c3aed">r₃</text>
+
+            <text x="185" y="125" font-family="monospace" font-size="8" font-weight="bold" fill="#6d28d9" text-anchor="middle">
+              |MA|=|MB|=|MC|
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Çıkarım Cümlesi -->
+      <div style="margin-top: 8px; padding: 6px 8px; background: #f5f3ff; border: 1.5px solid #7c3aed; border-radius: 8px;">
+        <span style="font-size: 9px; font-weight: 900; color: #6d28d9; text-transform: uppercase;">🕵️‍♂️ Çıkarım Cümlesi:</span>
+        <p style="font-size: 10px; color: #0f172a; margin: 3px 0 0 0; font-weight: 700; line-height: 1.35;">
+          &ldquo;Çemberin merkezinden üzerindeki tüm noktalara çizilen doğru parçaları <span style="display: inline-block; min-width: 70px; border-bottom: 2px solid #7c3aed; text-align: center; color: #6d28d9; font-weight: 900;">(...............)</span> uzunluktadır.&rdquo;
+        </p>
+      </div>
+    </div>
+
+    <!-- DENEY 3: TEK DİKME KURALI -->
+    <div style="border: 2px solid #ea580c; border-radius: 12px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ffedd5; padding-bottom: 4px; margin-bottom: 6px;">
+          <span style="font-weight: 900; color: #c2410c; font-size: 11.5px;">📐 DENEY 3: TEK DİKME KURALI</span>
+          <span style="font-size: 9px; font-weight: bold; background: #fff7ed; color: #ea580c; padding: 1px 5px; border-radius: 4px; border: 1px solid #fed7aa;">Gönye</span>
+        </div>
+        <p style="font-size: 10.5px; color: #1e293b; line-height: 1.35; margin: 0 0 6px 0;">
+          <strong>Soru &amp; Yönerge:</strong> P noktasından aşağıdaki doğruya gönyenle kaç tane 90° dikme indirebilirsin?
+        </p>
+
+        <!-- Çizim Alanı SVG -->
+        <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 140px; background: #f8fafc; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 240 140" width="100%" height="100%" style="display: block;">
+            <!-- Doğru d -->
+            <line x1="20" y1="105" x2="220" y2="105" stroke="#334155" stroke-width="2" />
+            <text x="215" y="98" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#334155">d</text>
+            
+            <!-- Dış Nokta P -->
+            <circle cx="120" cy="30" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5" />
+            <text x="120" y="20" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#c2410c" text-anchor="middle">P (Dış Nokta)</text>
+
+            <!-- Dikme [PH] -->
+            <line x1="120" y1="30" x2="120" y2="105" stroke="#ea580c" stroke-width="2" stroke-dasharray="4 3" />
+            <circle cx="120" cy="105" r="3.5" fill="#c2410c" />
+            <text x="120" y="122" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#c2410c" text-anchor="middle">H</text>
+
+            <!-- 90° Diklik Sembolü -->
+            <path d="M 120 93 L 132 93 L 132 105" fill="none" stroke="#ea580c" stroke-width="1.5" />
+            <circle cx="126" cy="99" r="1.5" fill="#ea580c" />
+
+            <text x="175" y="65" font-family="system-ui, sans-serif" font-size="9" font-weight="bold" fill="#ea580c">
+              [PH] ⊥ d (90°)
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Çıkarım Cümlesi -->
+      <div style="margin-top: 8px; padding: 6px 8px; background: #fff7ed; border: 1.5px solid #ea580c; border-radius: 8px;">
+        <span style="font-size: 9px; font-weight: 900; color: #c2410c; text-transform: uppercase;">🕵️‍♂️ Çıkarım Cümlesi:</span>
+        <p style="font-size: 10px; color: #0f172a; margin: 3px 0 0 0; font-weight: 700; line-height: 1.35;">
+          &ldquo;Bir doğruya dışındaki bir noktadan yalnız <span style="display: inline-block; min-width: 60px; border-bottom: 2px solid #ea580c; text-align: center; color: #c2410c; font-weight: 900;">(............)</span> dikme çizilebilir.&rdquo;
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Alt Bilgi / Değerlendirme & Puanlama -->
+  <div style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 10px; color: #475569; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Değerlendirme:</strong> Her çıkarım deneyi 33.3 puandır. Toplam: 100 Puan. (SDB3.3 / E3.7 Mantıksal Çıkarım)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
