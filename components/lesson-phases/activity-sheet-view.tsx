@@ -89,6 +89,15 @@ export function ActivitySheetView({
     (outcomeCode === 'MAT.5.3.2' ||
       fileRecord?.id?.includes('5-3-2') ||
       fileRecord?.title?.includes('Çıkarım'));
+  const isProtractorAnatomyActivity =
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isDeductionDetective &&
+    (selectedSheetId.includes('anatomy') ||
+      fileRecord?.id?.includes('anatomy') ||
+      fileRecord?.title?.includes('İletkinin Anatomisi') ||
+      outcomeCode === 'MAT.5.3.3');
 
   // Interactive deduction state for MAT.5.3.2 Çıkarım Dedektifi
   const [deductionAnswers, setDeductionAnswers] = useState({
@@ -111,6 +120,70 @@ export function ActivitySheetView({
   const [rayStep, setRayStep] = useState<number>(0); // 0 = initial, 1 = A, 2 = B, 3 = C (complete)
   const [angleStep, setAngleStep] = useState<number>(0); // 0 = initial, 1 = arc & P1, P2
   const [steppingCompleted, setSteppingCompleted] = useState<{ ray?: boolean; angle?: boolean }>({});
+
+  // Interactive state for MAT.5.3.3 İletkinin Anatomisi
+  const [placedAnatomyLabels, setPlacedAnatomyLabels] = useState<Record<string, boolean>>({});
+  const [selectedAnatomyLabelKey, setSelectedAnatomyLabelKey] = useState<string | null>(null);
+  const [anatomyQuizAnswers, setAnatomyQuizAnswers] = useState<Record<number, string>>({});
+  const [anatomyQuizSubmitted, setAnatomyQuizSubmitted] = useState<Record<number, boolean>>({});
+  const [anatomyQuizStatus, setAnatomyQuizStatus] = useState<Record<number, boolean>>({});
+  const [anatomyPointsAwarded, setAnatomyPointsAwarded] = useState<{ labels?: boolean; quiz?: boolean }>({});
+
+  const handleSelectAnatomyLabel = (key: string) => {
+    playSound('select');
+    setSelectedAnatomyLabelKey(selectedAnatomyLabelKey === key ? null : key);
+  };
+
+  const handlePlaceAnatomyLabel = (slotKey: string) => {
+    if (!selectedAnatomyLabelKey) {
+      playSound('click');
+      return;
+    }
+    if (selectedAnatomyLabelKey === slotKey) {
+      playSound('success');
+      const nextPlaced = { ...placedAnatomyLabels, [slotKey]: true };
+      setPlacedAnatomyLabels(nextPlaced);
+      setSelectedAnatomyLabelKey(null);
+
+      // Check if all 4 labels are placed
+      const count = Object.keys(nextPlaced).length;
+      if (count === 4 && !anatomyPointsAwarded.labels) {
+        addPoints(60);
+        setAnatomyPointsAwarded((p) => ({ ...p, labels: true }));
+        if (anatomyPointsAwarded.quiz) {
+          unlockBadge('maarif-genius');
+          try {
+            confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+          } catch (e) {}
+        }
+      }
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleAnswerAnatomyQuiz = (qIdx: number, choice: string, correctChoice: string) => {
+    playSound('select');
+    setAnatomyQuizAnswers((prev) => ({ ...prev, [qIdx]: choice }));
+    setAnatomyQuizSubmitted((prev) => ({ ...prev, [qIdx]: true }));
+    const isCorrect = choice === correctChoice;
+    setAnatomyQuizStatus((prev) => ({ ...prev, [qIdx]: isCorrect }));
+
+    if (isCorrect) {
+      playSound('success');
+      const nextStatus = { ...anatomyQuizStatus, [qIdx]: true };
+      if (nextStatus[0] && nextStatus[1] && nextStatus[2] && !anatomyPointsAwarded.quiz) {
+        addPoints(40);
+        setAnatomyPointsAwarded((p) => ({ ...p, quiz: true }));
+        unlockBadge('maarif-genius');
+        try {
+          confetti({ particleCount: 100, spread: 85, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    } else {
+      playSound('click');
+    }
+  };
 
   // Interactive railway state for MAT.5.3.2 Tren Rayı Mühendisliği
   const [railStep, setRailStep] = useState<number>(0); // 0: base d line, 1: points A,B,C, 2: 3 perpendiculars [AA', BB', CC'], 3: parallel line k & sleepers
@@ -262,9 +335,11 @@ export function ActivitySheetView({
               const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
               const isDetective =
                 (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway;
+              const isAnatomy =
+                sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi') || sheet.outcomeCode === 'MAT.5.3.3';
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
-              const icon = isRailway ? '🚆' : isBridge ? '🏛️' : isStepping ? '⭕' : isDetective ? '🔍' : '📐';
+              const icon = isRailway ? '🚆' : isBridge ? '🏛️' : isStepping ? '⭕' : isDetective ? '🔍' : isAnatomy ? '📐' : '📏';
               const title = isRailway
                 ? 'Tren Rayı Mühendisliği'
                 : isBridge
@@ -273,6 +348,8 @@ export function ActivitySheetView({
                 ? 'Pergel ile Adımlama'
                 : isDetective
                 ? 'Çıkarım Dedektifi'
+                : isAnatomy
+                ? 'İletkinin Anatomisi'
                 : 'Aşamalı İnşa İstasyonları';
 
               const badge = isRailway
@@ -283,6 +360,8 @@ export function ActivitySheetView({
                 ? 'Atölye 2'
                 : isDetective
                 ? 'Etkinlik 1'
+                : isAnatomy
+                ? 'Aracı Tanıma'
                 : `Etkinlik ${index + 1}`;
 
               const tag = isRailway
@@ -293,6 +372,8 @@ export function ActivitySheetView({
                 ? 'Eşit Parçalar Kesme'
                 : isDetective
                 ? '3 Deney Kutusu'
+                : isAnatomy
+                ? 'Çift Ölçek Tuzağı'
                 : '4 Mini İstasyon';
 
               return (
@@ -313,7 +394,9 @@ export function ActivitySheetView({
                         ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
                         : isDetective
                         ? 'bg-sky-600 text-white border-sky-500 shadow-md scale-[1.01]'
-                        : 'bg-teal-600 text-white border-teal-500 shadow-md scale-[1.01]'
+                        : isAnatomy
+                        ? 'bg-teal-600 text-white border-teal-500 shadow-md scale-[1.01]'
+                        : 'bg-emerald-600 text-white border-emerald-500 shadow-md scale-[1.01]'
                       : 'bg-white dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
                   }`}
                 >
@@ -364,6 +447,8 @@ export function ActivitySheetView({
             ? 'bg-gradient-to-br from-purple-950 via-purple-900 to-slate-950'
             : isDeductionDetective
             ? 'bg-gradient-to-br from-sky-950 via-sky-900 to-slate-950'
+            : isProtractorAnatomyActivity
+            ? 'bg-gradient-to-br from-teal-950 via-emerald-950 to-slate-950'
             : 'bg-gradient-to-br from-teal-900 via-teal-800 to-slate-900'
         }`}
       >
@@ -378,6 +463,8 @@ export function ActivitySheetView({
               ? 'bg-purple-500/15'
               : isDeductionDetective
               ? 'bg-sky-500/15'
+              : isProtractorAnatomyActivity
+              ? 'bg-teal-500/20'
               : 'bg-teal-500/10'
           }`}
         />
@@ -391,6 +478,8 @@ export function ActivitySheetView({
               ? 'bg-indigo-500/20'
               : isDeductionDetective
               ? 'bg-indigo-500/15'
+              : isProtractorAnatomyActivity
+              ? 'bg-emerald-500/15'
               : 'bg-indigo-500/10'
           }`}
         />
@@ -408,6 +497,8 @@ export function ActivitySheetView({
                   ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
                   : isDeductionDetective
                   ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
+                  : isProtractorAnatomyActivity
+                  ? 'bg-teal-400/20 border-teal-300/30 text-teal-200'
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
@@ -431,6 +522,11 @@ export function ActivitySheetView({
                   <Search className="w-3.5 h-3.5 text-sky-300" />
                   <span>Gözlem & Mantıksal Çıkarım (SDB3.3 / E3.7)</span>
                 </>
+              ) : isProtractorAnatomyActivity ? (
+                <>
+                  <Compass className="w-3.5 h-3.5 text-teal-300" />
+                  <span>Aracı Tanıma & Ölçme Becerisi (SDB1.2 / SB1.1)</span>
+                </>
               ) : (
                 <>
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -448,6 +544,8 @@ export function ActivitySheetView({
                 ? 'Atölye: "PERGEL İLE ADIMLAMA" (Eşit Parçalar Kesme)'
                 : isDeductionDetective
                 ? 'Etkinlik: "ÇIKARIM DEDEKTİFİ" (Gözlem ve Temel Kurallar)'
+                : isProtractorAnatomyActivity
+                ? 'Etkinlik: "İLETKİNİN ANATOMİSİ" (Aracı Tanıma & Çift Ölçek Tuzağı)'
                 : 'Etkinlik 1: Aşamalı İnşa İstasyonları'}
             </h2>
             
@@ -476,6 +574,12 @@ export function ActivitySheetView({
                   🕵️‍♂️ <strong>Dedektif Görevi:</strong> Verilen 3 geometrik durumu incele, cetvel, pergel ve gönye ile deneylerini gerçekleştir ve temel aksiyom çıkarımlarını tamamla!
                 </p>
               </div>
+            ) : isProtractorAnatomyActivity ? (
+              <div className="p-3 bg-teal-950/60 border border-teal-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-teal-100 font-medium leading-relaxed">
+                  📐 <strong>Etkinlik Görevi:</strong> Açıölçerin 4 kritik parçasını şema üzerinde etiketle ve çift ölçek tuzağına düşmeden açıları doğru oku!
+                </p>
+              </div>
             ) : (
               <p className="text-xs sm:text-sm text-teal-100/80 leading-relaxed">
                 Öğrencilerin cetvel, iletki, pergel ve gönye araçlarını kullanarak temel geometrik yapıları inşa etme ve çıkarım yapma becerilerini pekiştiren 4 mini istasyon çalışmasıdır.
@@ -492,6 +596,8 @@ export function ActivitySheetView({
                   ? 'text-purple-200/70'
                   : isDeductionDetective
                   ? 'text-sky-200/70'
+                  : isProtractorAnatomyActivity
+                  ? 'text-teal-200/70'
                   : 'text-teal-200/70'
               }`}
             >
@@ -506,6 +612,8 @@ export function ActivitySheetView({
                   ? '2 Ana Görev (100 Puan)'
                   : isDeductionDetective
                   ? '3 Deney Kutusu (100 Puan)'
+                  : isProtractorAnatomyActivity
+                  ? '4 Parça + Çift Ölçek Testi (100 Puan)'
                   : '4 İstasyon (100 Puan)'}
               </span>
               <span>•</span>
@@ -518,6 +626,8 @@ export function ActivitySheetView({
                   ? 'Pergel ile Mesafe Koruma'
                   : isDeductionDetective
                   ? 'Aksiyom & Mantıksal Çıkarım'
+                  : isProtractorAnatomyActivity
+                  ? '180° Standart Açıölçer'
                   : 'Sistem Beyaz Tahta Notu'}
               </span>
             </div>
@@ -2098,6 +2208,685 @@ export function ActivitySheetView({
           </div>
 
         </div>
+      ) : isProtractorAnatomyActivity ? (
+        /* ========================================================================= */
+        /* ETKİNLİK: "İLETKİNİN ANATOMİSİ" (ARACI TANIMA & ÇİFT ÖLÇEK TUZAĞI)        */
+        /* ========================================================================= */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          
+          {/* 1. 4 KRİTİK PARÇA BİLGİ & SEÇİLEBİLİR ETİKETLEME KARTLARI */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-teal-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Compass className="w-4 h-4 text-teal-600" />
+                <span>1. Aşama: 4 Kritik Parçayı Seç ve İletki Üzerine Yerleştir</span>
+              </span>
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                {Object.keys(placedAnatomyLabels).length} / 4 Parça Yerleşti
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                {
+                  key: 'origin',
+                  num: '1',
+                  title: 'Merkez Noktası (Orijin)',
+                  desc: 'Açının köşesinin tam oturması gereken yer.',
+                  role: 'Köşe Yuvası',
+                  color: 'red',
+                  themeBg: 'bg-red-50 hover:bg-red-100/80 border-red-300 text-red-950',
+                  activeRing: 'ring-2 ring-red-500 border-red-500 bg-red-100',
+                  badgeBg: 'bg-red-100 text-red-800 border-red-200'
+                },
+                {
+                  key: 'baseline',
+                  num: '2',
+                  title: 'Taban Çizgisi (0° Hattı)',
+                  desc: 'Açının bir koluyla çakışması gereken çizgi.',
+                  role: 'Kol Hizası',
+                  color: 'sky',
+                  themeBg: 'bg-sky-50 hover:bg-sky-100/80 border-sky-300 text-sky-950',
+                  activeRing: 'ring-2 ring-sky-500 border-sky-500 bg-sky-100',
+                  badgeBg: 'bg-sky-100 text-sky-800 border-sky-200'
+                },
+                {
+                  key: 'innerScale',
+                  num: '3',
+                  title: 'İç Ölçek (Saat Yönü)',
+                  desc: '0° → 180° sağdan sola ilerleyen dereceler.',
+                  role: 'İç Halka',
+                  color: 'amber',
+                  themeBg: 'bg-amber-50 hover:bg-amber-100/80 border-amber-300 text-amber-950',
+                  activeRing: 'ring-2 ring-amber-500 border-amber-500 bg-amber-100',
+                  badgeBg: 'bg-amber-100 text-amber-800 border-amber-200'
+                },
+                {
+                  key: 'outerScale',
+                  num: '4',
+                  title: 'Dış Ölçek (Ters Yön)',
+                  desc: '0° → 180° soldan sağa ilerleyen dereceler.',
+                  role: 'Dış Halka',
+                  color: 'emerald',
+                  themeBg: 'bg-emerald-50 hover:bg-emerald-100/80 border-emerald-300 text-emerald-950',
+                  activeRing: 'ring-2 ring-emerald-500 border-emerald-500 bg-emerald-100',
+                  badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                }
+              ].map((item) => {
+                const isPlaced = placedAnatomyLabels[item.key];
+                const isSelected = selectedAnatomyLabelKey === item.key;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => {
+                      if (!isPlaced) handleSelectAnatomyLabel(item.key);
+                    }}
+                    className={`p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+                      isPlaced
+                        ? 'bg-emerald-50/50 border-emerald-300 opacity-80 cursor-default'
+                        : isSelected
+                        ? item.activeRing + ' shadow-md scale-[1.02]'
+                        : item.themeBg + ' shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <div className="flex items-center gap-1.5 font-black text-xs">
+                        <span className="w-5 h-5 rounded-full bg-white shadow-xs border flex items-center justify-center text-[10px]">
+                          {item.num}
+                        </span>
+                        <span className="truncate">{item.title}</span>
+                      </div>
+                      {isPlaced ? (
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-600 text-white flex items-center gap-0.5">
+                          ✓ Yerleşti
+                        </span>
+                      ) : (
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${item.badgeBg}`}>
+                          {isSelected ? 'Seçildi • Hedefe Tıkla' : item.role}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] font-medium leading-tight opacity-90">
+                      {item.desc}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 2. GENİŞ İNTERAKTİF ÇİZİM ALANI (SVG 180° İLETKİ ANATOMİSİ) */}
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div className="space-y-0.5">
+                <h3 className="text-base font-black text-slate-800 flex items-center gap-2">
+                  <span>📐 Şematik İletki Çizim Alanı (180° Standart Açıölçer)</span>
+                  {Object.keys(placedAnatomyLabels).length === 4 && (
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs animate-bounce">
+                      ✓ 4 Parça Tamamlandı! (+60P)
+                    </span>
+                  )}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {selectedAnatomyLabelKey
+                    ? 'Yukarıdan seçtiğiniz etiketin iletki üzerindeki hedef noktasına tıklayınız.'
+                    : 'Yukarıdaki kartlardan birine tıklayıp ardından iletki üzerindeki ilgili hedef noktasına dokunun.'}
+                </p>
+              </div>
+
+              {Object.keys(placedAnatomyLabels).length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    playSound('click');
+                    setPlacedAnatomyLabels({});
+                    setSelectedAnatomyLabelKey(null);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition-all"
+                >
+                  Sıfırla
+                </button>
+              )}
+            </div>
+
+            {/* Interactive SVG Protractor Canvas */}
+            <div className="relative w-full h-[280px] sm:h-[320px] bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center p-2 select-none">
+              <svg viewBox="0 0 760 300" className="w-full h-full" style={{ display: 'block' }}>
+                <defs>
+                  <radialGradient id="protGlassInteractive" cx="50%" cy="100%" r="90%">
+                    <stop offset="0%" stopColor="#1e293b" stopOpacity="0.8" />
+                    <stop offset="70%" stopColor="#0f172a" stopOpacity="0.95" />
+                    <stop offset="100%" stopColor="#0284c7" stopOpacity="0.25" />
+                  </radialGradient>
+                  <pattern id="gridProt" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="0.8" fill="#334155" />
+                  </pattern>
+                </defs>
+
+                <rect width="760" height="300" fill="url(#gridProt)" />
+
+                {/* Protractor Body Semi-Circle (Center at 380, 240) */}
+                <path
+                  d="M 140 240 A 240 240 0 0 1 620 240 Z"
+                  fill="url(#protGlassInteractive)"
+                  stroke="#0ea5e9"
+                  strokeWidth="3"
+                />
+                <path
+                  d="M 260 240 A 120 120 0 0 1 500 240 Z"
+                  fill="#0f172a"
+                  stroke="#38bdf8"
+                  strokeWidth="1.5"
+                />
+
+                {/* Radial Degree Ticks & Numbers (0° to 180°) */}
+                {Array.from({ length: 19 }).map((_, i) => {
+                  const deg = i * 10;
+                  const rad = (deg * Math.PI) / 180;
+                  const cos = Math.cos(rad);
+                  const sin = Math.sin(rad);
+
+                  // Outer tick mark
+                  const x1 = 380 - 240 * cos;
+                  const y1 = 240 - 240 * sin;
+                  const x2 = 380 - (deg % 30 === 0 ? 220 : deg % 10 === 0 ? 226 : 232) * cos;
+                  const y2 = 240 - (deg % 30 === 0 ? 220 : deg % 10 === 0 ? 226 : 232) * sin;
+
+                  // Outer text (0 to 180 counter-clockwise)
+                  const txOuter = 380 - 208 * cos;
+                  const tyOuter = 240 - 208 * sin + 4;
+
+                  // Inner text (180 to 0 counter-clockwise / 0 to 180 clockwise)
+                  const txInner = 380 - 150 * cos;
+                  const tyInner = 240 - 150 * sin + 4;
+
+                  return (
+                    <g key={deg}>
+                      <line
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke={deg === 90 ? '#ef4444' : '#38bdf8'}
+                        strokeWidth={deg % 30 === 0 ? 2.5 : 1.2}
+                      />
+                      {deg % 30 === 0 && (
+                        <>
+                          <text
+                            x={txOuter}
+                            y={tyOuter}
+                            fill="#38bdf8"
+                            fontSize="10"
+                            fontWeight="900"
+                            fontFamily="monospace"
+                            textAnchor="middle"
+                          >
+                            {deg}°
+                          </text>
+                          <text
+                            x={txInner}
+                            y={tyInner}
+                            fill="#f59e0b"
+                            fontSize="10"
+                            fontWeight="900"
+                            fontFamily="monospace"
+                            textAnchor="middle"
+                          >
+                            {180 - deg}°
+                          </text>
+                        </>
+                      )}
+                    </g>
+                  );
+                })}
+
+                {/* Baseline (0° Line) */}
+                <line x1="140" y1="240" x2="620" y2="240" stroke="#f8fafc" strokeWidth="3" />
+
+                {/* 90° Perpendicular Center Guide */}
+                <line x1="380" y1="240" x2="380" y2="0" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
+                <text x="380" y="15" fill="#ef4444" fontSize="10" fontWeight="900" textAnchor="middle">
+                  90° DİK AÇI HATTI
+                </text>
+
+                {/* ========================================================= */}
+                {/* 4 INTERACTIVE TARGET SLOTS                                */}
+                {/* ========================================================= */}
+
+                {/* TARGET 1: MERKEZ NOKTASI (ORİJİN) */}
+                <g
+                  className="cursor-pointer transition-transform hover:scale-110"
+                  onClick={() => handlePlaceAnatomyLabel('origin')}
+                >
+                  <circle
+                    cx="380"
+                    cy="240"
+                    r={placedAnatomyLabels.origin ? 12 : selectedAnatomyLabelKey === 'origin' ? 14 : 9}
+                    fill={placedAnatomyLabels.origin ? '#10b981' : '#ef4444'}
+                    stroke="#ffffff"
+                    strokeWidth="2.5"
+                    className={selectedAnatomyLabelKey === 'origin' ? 'animate-pulse' : ''}
+                  />
+                  <line x1="380" y1="225" x2="380" y2="255" stroke="#ffffff" strokeWidth="1.5" />
+                  <line x1="365" y1="240" x2="395" y2="240" stroke="#ffffff" strokeWidth="1.5" />
+                  
+                  {/* Callout Box */}
+                  <line x1="380" y1="255" x2="380" y2="275" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
+                  <rect
+                    x="270"
+                    y="265"
+                    width="220"
+                    height="24"
+                    rx="6"
+                    fill={placedAnatomyLabels.origin ? '#065f46' : selectedAnatomyLabelKey === 'origin' ? '#7f1d1d' : '#1e293b'}
+                    stroke={placedAnatomyLabels.origin ? '#34d399' : '#ef4444'}
+                    strokeWidth={selectedAnatomyLabelKey === 'origin' ? 2 : 1.2}
+                  />
+                  <text x="380" y="281" fill="#ffffff" fontSize="10.5" fontWeight="900" textAnchor="middle">
+                    {placedAnatomyLabels.origin ? '✓ 1. MERKEZ NOKTASI (ORİJİN)' : '📍 1. Hedef: Merkez Noktası'}
+                  </text>
+                </g>
+
+                {/* TARGET 2: TABAN ÇİZGİSİ (0° HATTI) */}
+                <g
+                  className="cursor-pointer transition-transform hover:scale-105"
+                  onClick={() => handlePlaceAnatomyLabel('baseline')}
+                >
+                  <rect
+                    x="510"
+                    y="232"
+                    width="100"
+                    height="16"
+                    rx="4"
+                    fill={placedAnatomyLabels.baseline ? '#0284c7' : selectedAnatomyLabelKey === 'baseline' ? '#0369a1' : 'transparent'}
+                    stroke="#38bdf8"
+                    strokeWidth={selectedAnatomyLabelKey === 'baseline' ? 2.5 : 1.5}
+                    strokeDasharray={placedAnatomyLabels.baseline ? 'none' : '3 3'}
+                    className={selectedAnatomyLabelKey === 'baseline' ? 'animate-pulse' : ''}
+                  />
+                  {/* Callout Box */}
+                  <line x1="560" y1="248" x2="560" y2="275" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="2 2" />
+                  <rect
+                    x="500"
+                    y="265"
+                    width="200"
+                    height="24"
+                    rx="6"
+                    fill={placedAnatomyLabels.baseline ? '#0c4a6e' : selectedAnatomyLabelKey === 'baseline' ? '#075985' : '#1e293b'}
+                    stroke={placedAnatomyLabels.baseline ? '#38bdf8' : '#0284c7'}
+                    strokeWidth={selectedAnatomyLabelKey === 'baseline' ? 2 : 1.2}
+                  />
+                  <text x="600" y="281" fill="#ffffff" fontSize="10.5" fontWeight="900" textAnchor="middle">
+                    {placedAnatomyLabels.baseline ? '✓ 2. TABAN ÇİZGİSİ (0°)' : '📍 2. Hedef: Taban Çizgisi'}
+                  </text>
+                </g>
+
+                {/* TARGET 3: İÇ ÖLÇEK (SAAT YÖNÜ) */}
+                <g
+                  className="cursor-pointer transition-transform hover:scale-105"
+                  onClick={() => handlePlaceAnatomyLabel('innerScale')}
+                >
+                  <path
+                    d="M 500 230 A 150 150 0 0 0 390 90"
+                    fill="none"
+                    stroke={placedAnatomyLabels.innerScale ? '#f59e0b' : '#d97706'}
+                    strokeWidth={selectedAnatomyLabelKey === 'innerScale' ? 6 : 3.5}
+                    strokeDasharray={placedAnatomyLabels.innerScale ? 'none' : '4 3'}
+                    className={selectedAnatomyLabelKey === 'innerScale' ? 'animate-pulse' : ''}
+                  />
+                  {/* Callout Box */}
+                  <rect
+                    x="450"
+                    y="70"
+                    width="190"
+                    height="24"
+                    rx="6"
+                    fill={placedAnatomyLabels.innerScale ? '#78350f' : selectedAnatomyLabelKey === 'innerScale' ? '#b45309' : '#1e293b'}
+                    stroke={placedAnatomyLabels.innerScale ? '#fbbf24' : '#f59e0b'}
+                    strokeWidth={selectedAnatomyLabelKey === 'innerScale' ? 2 : 1.2}
+                  />
+                  <text x="545" y="86" fill="#ffffff" fontSize="10.5" fontWeight="900" textAnchor="middle">
+                    {placedAnatomyLabels.innerScale ? '✓ 3. İÇ ÖLÇEK (0°→180°)' : '📍 3. Hedef: İç Ölçek'}
+                  </text>
+                </g>
+
+                {/* TARGET 4: DIŞ ÖLÇEK (TERS YÖN) */}
+                <g
+                  className="cursor-pointer transition-transform hover:scale-105"
+                  onClick={() => handlePlaceAnatomyLabel('outerScale')}
+                >
+                  <path
+                    d="M 240 230 A 210 210 0 0 1 370 30"
+                    fill="none"
+                    stroke={placedAnatomyLabels.outerScale ? '#10b981' : '#059669'}
+                    strokeWidth={selectedAnatomyLabelKey === 'outerScale' ? 6 : 3.5}
+                    strokeDasharray={placedAnatomyLabels.outerScale ? 'none' : '4 3'}
+                    className={selectedAnatomyLabelKey === 'outerScale' ? 'animate-pulse' : ''}
+                  />
+                  {/* Callout Box */}
+                  <rect
+                    x="120"
+                    y="40"
+                    width="190"
+                    height="24"
+                    rx="6"
+                    fill={placedAnatomyLabels.outerScale ? '#064e3b' : selectedAnatomyLabelKey === 'outerScale' ? '#047857' : '#1e293b'}
+                    stroke={placedAnatomyLabels.outerScale ? '#34d399' : '#10b981'}
+                    strokeWidth={selectedAnatomyLabelKey === 'outerScale' ? 2 : 1.2}
+                  />
+                  <text x="215" y="56" fill="#ffffff" fontSize="10.5" fontWeight="900" textAnchor="middle">
+                    {placedAnatomyLabels.outerScale ? '✓ 4. DIŞ ÖLÇEK (0°→180°)' : '📍 4. Hedef: Dış Ölçek'}
+                  </text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          {/* 3. GÖZLEMCİNİN KRİTİK NOTU (ÇİFT ÖLÇEK TUZAĞI PANELİ) */}
+          <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border-2 border-amber-400/80 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-2xl font-black shrink-0 shadow-md shadow-amber-500/20">
+              🕵️‍♂️
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px] uppercase tracking-wider">
+                  Altın Kural
+                </span>
+                <h4 className="font-black text-amber-950 dark:text-amber-200 text-sm sm:text-base">
+                  Gözlemcinin Kritik Notu (Çift Ölçek Tuzağına Düşme!)
+                </h4>
+              </div>
+              <p className="text-xs sm:text-sm text-amber-900 dark:text-amber-300 leading-relaxed font-semibold">
+                &ldquo;Ölçtüğün açı dik açıdan (90°) dar mı, geniş mi? Gözünle önce açının türünü tahmin et! Açı dar ise 130° değil, 50° olan ölçeği okumalısın!&rdquo;
+              </p>
+            </div>
+          </div>
+
+          {/* 4. "ÇİFT ÖLÇEK TUZAĞI" İNTERAKTİF MİNİ TESTİ (3 DENEY KUTUSU) */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Lightbulb className="w-4 h-4 text-amber-600" />
+                <span>2. Aşama: Çift Ölçek Tuzağı Deneyleri (Doğru Dereceyi Seç)</span>
+              </span>
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200">
+                {Object.values(anatomyQuizStatus).filter(Boolean).length} / 3 Soru Doğrulandı
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              {/* DENEY 1: 50° DAR AÇI */}
+              <div className="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-sky-100 text-sky-800">
+                      1. Durum: Dar Açı Modeli
+                    </span>
+                    <span className="font-mono text-xs font-bold text-slate-400">#1</span>
+                  </div>
+
+                  {/* Mini Canvas SVG */}
+                  <div className="h-32 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 220 120" className="w-full h-full">
+                      {/* Protractor Ghost */}
+                      <path d="M 20 100 A 90 90 0 0 1 200 100 Z" fill="#0284c7" fillOpacity="0.15" stroke="#0ea5e9" strokeWidth="1.5" strokeDasharray="2 2" />
+                      {/* Vertex O */}
+                      <circle cx="110" cy="100" r="4" fill="#ef4444" />
+                      <text x="110" y="115" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">O</text>
+                      {/* Base Arm right */}
+                      <line x1="110" y1="100" x2="195" y2="100" stroke="#f8fafc" strokeWidth="3" />
+                      {/* Angle Arm at 50 deg (from right, 50 deg counter-clockwise) */}
+                      {(() => {
+                        const rad = (50 * Math.PI) / 180;
+                        const ax = 110 + 85 * Math.cos(rad);
+                        const ay = 100 - 85 * Math.sin(rad);
+                        return (
+                          <>
+                            <line x1="110" y1="100" x2={ax} y2={ay} stroke="#f59e0b" strokeWidth="3" />
+                            <path d={`M 135 100 A 25 25 0 0 0 ${110 + 25 * Math.cos(rad)} ${100 - 25 * Math.sin(rad)}`} fill="none" stroke="#f59e0b" strokeWidth="2" />
+                          </>
+                        );
+                      })()}
+                      {/* Scale labels on pointer */}
+                      <text x="160" y="30" fill="#f59e0b" fontSize="9" fontWeight="900">50° (İç)</text>
+                      <text x="160" y="42" fill="#94a3b8" fontSize="8" fontWeight="bold">130° (Dış)</text>
+                    </svg>
+                  </div>
+
+                  <p className="text-xs text-slate-700 font-medium">
+                    Kol 1 tabanda, Kol 2 hem <strong>50°</strong> hem <strong>130°</strong> hizasında. Açı 90°den <strong>dar</strong> olduğuna göre doğru okuma hangisidir?
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAnswerAnatomyQuiz(0, '50', '50')}
+                      className={`p-2.5 rounded-xl border text-xs font-black transition-all cursor-pointer ${
+                        anatomyQuizAnswers[0] === '50'
+                          ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm'
+                          : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+                      }`}
+                    >
+                      50° (İç Ölçek)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAnswerAnatomyQuiz(0, '130', '50')}
+                      className={`p-2.5 rounded-xl border text-xs font-black transition-all cursor-pointer ${
+                        anatomyQuizAnswers[0] === '130'
+                          ? 'bg-rose-600 text-white border-rose-500 shadow-sm'
+                          : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+                      }`}
+                    >
+                      130° (Dış Ölçek)
+                    </button>
+                  </div>
+
+                  {anatomyQuizSubmitted[0] && (
+                    <div
+                      className={`p-2 rounded-xl text-[11px] font-semibold leading-snug animate-in fade-in ${
+                        anatomyQuizStatus[0]
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {anatomyQuizStatus[0]
+                        ? '✓ DOĞRU! Açı 90°den dar (dar açı) olduğu için 130° tuzağına düşmeyip 50° seçilmelidir.'
+                        : '✗ DİKKAT! Açı 90°den dar görünüyor. 130° geniş açı değeridir, doğru cevap 50°dir.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* DENEY 2: 120° GENİŞ AÇI */}
+              <div className="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800">
+                      2. Durum: Geniş Açı Modeli
+                    </span>
+                    <span className="font-mono text-xs font-bold text-slate-400">#2</span>
+                  </div>
+
+                  {/* Mini Canvas SVG */}
+                  <div className="h-32 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 220 120" className="w-full h-full">
+                      {/* Protractor Ghost */}
+                      <path d="M 20 100 A 90 90 0 0 1 200 100 Z" fill="#0284c7" fillOpacity="0.15" stroke="#0ea5e9" strokeWidth="1.5" strokeDasharray="2 2" />
+                      {/* Vertex O */}
+                      <circle cx="110" cy="100" r="4" fill="#ef4444" />
+                      <text x="110" y="115" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">O</text>
+                      {/* Base Arm right */}
+                      <line x1="110" y1="100" x2="195" y2="100" stroke="#f8fafc" strokeWidth="3" />
+                      {/* Angle Arm at 120 deg (from right, 120 deg counter-clockwise) */}
+                      {(() => {
+                        const rad = (120 * Math.PI) / 180;
+                        const ax = 110 + 85 * Math.cos(rad);
+                        const ay = 100 - 85 * Math.sin(rad);
+                        return (
+                          <>
+                            <line x1="110" y1="100" x2={ax} y2={ay} stroke="#38bdf8" strokeWidth="3" />
+                            <path d={`M 135 100 A 25 25 0 0 0 ${110 + 25 * Math.cos(rad)} ${100 - 25 * Math.sin(rad)}`} fill="none" stroke="#38bdf8" strokeWidth="2" />
+                          </>
+                        );
+                      })()}
+                      {/* Scale labels on pointer */}
+                      <text x="60" y="25" fill="#38bdf8" fontSize="9" fontWeight="900">120° (İç)</text>
+                      <text x="60" y="37" fill="#94a3b8" fontSize="8" fontWeight="bold">60° (Dış)</text>
+                    </svg>
+                  </div>
+
+                  <p className="text-xs text-slate-700 font-medium">
+                    Kol 1 tabanda, Kol 2 hem <strong>120°</strong> hem <strong>60°</strong> hizasında. Açı 90°den <strong>geniş</strong> olduğuna göre doğru okuma hangisidir?
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAnswerAnatomyQuiz(1, '120', '120')}
+                      className={`p-2.5 rounded-xl border text-xs font-black transition-all cursor-pointer ${
+                        anatomyQuizAnswers[1] === '120'
+                          ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm'
+                          : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+                      }`}
+                    >
+                      120° (İç Ölçek)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAnswerAnatomyQuiz(1, '60', '120')}
+                      className={`p-2.5 rounded-xl border text-xs font-black transition-all cursor-pointer ${
+                        anatomyQuizAnswers[1] === '60'
+                          ? 'bg-rose-600 text-white border-rose-500 shadow-sm'
+                          : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+                      }`}
+                    >
+                      60° (Dış Ölçek)
+                    </button>
+                  </div>
+
+                  {anatomyQuizSubmitted[1] && (
+                    <div
+                      className={`p-2 rounded-xl text-[11px] font-semibold leading-snug animate-in fade-in ${
+                        anatomyQuizStatus[1]
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {anatomyQuizStatus[1]
+                        ? '✓ KUSURSUZ! Açı 90°den geniş (geniş açı) olduğu için 60° tuzağına düşmeyip 120° seçildi.'
+                        : '✗ DİKKAT! Açı 90°den bariz biçimde geniştir. 60° dar açı değeridir, doğru cevap 120°dir.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* DENEY 3: 35° DAR AÇI (SOLA AÇILAN TABAN) */}
+              <div className="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-800">
+                      3. Durum: Sola Bakan Kol
+                    </span>
+                    <span className="font-mono text-xs font-bold text-slate-400">#3</span>
+                  </div>
+
+                  {/* Mini Canvas SVG */}
+                  <div className="h-32 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <svg viewBox="0 0 220 120" className="w-full h-full">
+                      {/* Protractor Ghost */}
+                      <path d="M 20 100 A 90 90 0 0 1 200 100 Z" fill="#0284c7" fillOpacity="0.15" stroke="#0ea5e9" strokeWidth="1.5" strokeDasharray="2 2" />
+                      {/* Vertex O */}
+                      <circle cx="110" cy="100" r="4" fill="#ef4444" />
+                      <text x="110" y="115" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">O</text>
+                      {/* Base Arm Left */}
+                      <line x1="110" y1="100" x2="25" y2="100" stroke="#f8fafc" strokeWidth="3" />
+                      {/* Angle Arm at 35 deg (from left, 35 deg clockwise) */}
+                      {(() => {
+                        const rad = (35 * Math.PI) / 180;
+                        const ax = 110 - 85 * Math.cos(rad);
+                        const ay = 100 - 85 * Math.sin(rad);
+                        return (
+                          <>
+                            <line x1="110" y1="100" x2={ax} y2={ay} stroke="#a855f7" strokeWidth="3" />
+                            <path d={`M 85 100 A 25 25 0 0 1 ${110 - 25 * Math.cos(rad)} ${100 - 25 * Math.sin(rad)}`} fill="none" stroke="#a855f7" strokeWidth="2" />
+                          </>
+                        );
+                      })()}
+                      {/* Scale labels on pointer */}
+                      <text x="55" y="45" fill="#a855f7" fontSize="9" fontWeight="900">35° (Dış)</text>
+                      <text x="55" y="57" fill="#94a3b8" fontSize="8" fontWeight="bold">145° (İç)</text>
+                    </svg>
+                  </div>
+
+                  <p className="text-xs text-slate-700 font-medium">
+                    Açının taban kolu <strong>sol taraftaki 0°ye</strong> dayanıyor. Açı dar olduğuna göre hangi değer okunmalıdır?
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAnswerAnatomyQuiz(2, '35', '35')}
+                      className={`p-2.5 rounded-xl border text-xs font-black transition-all cursor-pointer ${
+                        anatomyQuizAnswers[2] === '35'
+                          ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm'
+                          : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+                      }`}
+                    >
+                      35° (Dış Ölçek)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAnswerAnatomyQuiz(2, '145', '35')}
+                      className={`p-2.5 rounded-xl border text-xs font-black transition-all cursor-pointer ${
+                        anatomyQuizAnswers[2] === '145'
+                          ? 'bg-rose-600 text-white border-rose-500 shadow-sm'
+                          : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+                      }`}
+                    >
+                      145° (İç Ölçek)
+                    </button>
+                  </div>
+
+                  {anatomyQuizSubmitted[2] && (
+                    <div
+                      className={`p-2 rounded-xl text-[11px] font-semibold leading-snug animate-in fade-in ${
+                        anatomyQuizStatus[2]
+                          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-900 border border-rose-200'
+                      }`}
+                    >
+                      {anatomyQuizStatus[2]
+                        ? '✓ TEBRİKLER! Sol taraftan başlandığı için dış ölçekteki 0°den 35°ye kadar olan açıklık okunmalıdır.'
+                        : '✗ DİKKAT! Sol koldan başladığımızda dış ölçekteki 0°den saymaya başlarız. Doğru cevap 35°dir.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* 5. Alt Bilgi & Puanlama */}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+            <span className="flex items-center gap-1.5 font-semibold">
+              <Award className="w-4 h-4 text-amber-500" />
+              <span>
+                <strong>Değerlendirme:</strong> 4 Kritik Parça Etiketleme (60 Puan) + Çift Ölçek Tuzağı Deneyleri (40 Puan) = Toplam 100 Puan
+              </span>
+            </span>
+            <span className="font-mono font-bold text-slate-400">www.maarifakademi.com.tr</span>
+          </div>
+
+        </div>
       ) : (
         /* ========================================================================= */
         /* ETKİNLİK 1: AŞAMALI İNŞA İSTASYONLARI (4 Mini Çizim Alanı)                */
@@ -2293,9 +3082,13 @@ export function ActivitySheetView({
             <span>Sıradaki Aşama: Öz Değerlendirme Rubriği</span>
           </div>
           <p className="text-xs text-slate-500">
-            {isBridgeActivity
+            {isProtractorAnatomyActivity
+              ? 'İletkinin Anatomisi ve Çift Ölçek Tuzağı adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi ölçüm becerilerinizi değerlendiriniz.'
+              : isRailwayActivity
+              ? 'Tren Rayı Mühendisliği adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi çizimlerinizi değerlendiriniz.'
+              : isBridgeActivity
               ? 'Tarihi Köprü Restorasyonu adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi çizimlerinizi değerlendiriniz.'
-              : 'Etkinlik kağıdındaki 4 inşa istasyonunu tamamladıktan sonra bir sonraki adıma geçerek kendi çizimlerinizi değerlendiriniz.'}
+              : 'Etkinlik kağıdındaki inşa adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi çizimlerinizi değerlendiriniz.'}
           </p>
         </div>
 

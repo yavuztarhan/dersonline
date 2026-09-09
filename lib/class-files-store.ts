@@ -970,6 +970,209 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-3-anatomy',
+    title: 'Etkinlik: İletkinin Anatomisi (Aracı Tanıma & Çift Ölçek Tuzağı - MAT.5.3.3)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.3',
+    outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-09T12:00:00Z',
+    fileSizeKb: 240,
+    tags: ['Etkinlik Kağıdı', 'İletkinin Anatomisi', 'Açıölçer', 'Çift Ölçek Tuzağı', 'Merkez Noktası', 'Taban Çizgisi', 'İç Ölçek', 'Dış Ölçek', 'MAT.5.3.3', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); padding: 12px; border-radius: 12px; border: 1px solid #99f6e4;">
+    <div style="display: inline-block; background: #0d9488; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px;">
+      📐 ARACI TANIMA &amp; ÖLÇME BECERİSİ (SDB1.2 / SB1.1)
+    </div>
+    <h2 style="color: #115e59; font-size: 17px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      ETKİNLİK: "İLETKİNİN ANATOMİSİ" (ARACI TANIMA &amp; ÇİFT ÖLÇEK TUZAĞI)
+    </h2>
+    <p style="color: #334155; font-size: 11px; margin: 4px 0 0 0; font-weight: 600;">
+      Açıölçerin 4 kritik parçasını şema üzerinde etiketle ve çift ölçek tuzağına düşmeden açıları doğru oku!
+    </p>
+  </div>
+
+  <!-- Şematik İletki Görseli (180° SVG Protractor) -->
+  <div style="border: 2px solid #cbd5e1; border-radius: 12px; background: #ffffff; padding: 10px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <span style="font-size: 11px; font-weight: 900; color: #0f766e; text-transform: uppercase;">
+        📐 ŞEMATİK İLETKİ ŞEMASI (180° STANDART AÇIÖLÇER)
+      </span>
+      <span style="font-size: 9.5px; font-weight: bold; background: #ccfbf1; color: #0f766e; padding: 2px 6px; border-radius: 4px;">
+        4 Kritik Parçayı Tanı
+      </span>
+    </div>
+
+    <!-- SVG Protractor Schematic -->
+    <div style="width: 100%; height: 210px; background: #f8fafc; border-radius: 8px; border: 1px dashed #94a3b8; overflow: hidden; position: relative;">
+      <svg viewBox="0 0 720 210" width="100%" height="100%" style="display: block;">
+        <defs>
+          <radialGradient id="protGlass" cx="50%" cy="100%" r="90%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+            <stop offset="70%" stop-color="#ccfbf1" stop-opacity="0.6" />
+            <stop offset="100%" stop-color="#99f6e4" stop-opacity="0.8" />
+          </radialGradient>
+        </defs>
+
+        <!-- Protractor Body Semi-Circle -->
+        <path d="M 120 180 A 240 240 0 0 1 600 180 Z" fill="url(#protGlass)" stroke="#0d9488" stroke-width="3" />
+        <path d="M 230 180 A 130 130 0 0 1 490 180 Z" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
+
+        <!-- Degree Tick Marks & Labels -->
+        <!-- Center at (360, 180) -->
+        <!-- Radius Outer = 240, Radius Inner = 175 -->
+        ${(() => {
+          let ticks = '';
+          for (let deg = 0; deg <= 180; deg += 10) {
+            const rad = (deg * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            // Outer tick
+            const x1 = 360 - 240 * cos;
+            const y1 = 180 - 240 * sin;
+            const x2 = 360 - 222 * cos;
+            const y2 = 180 - 222 * sin;
+            ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#0f766e" stroke-width="${deg % 30 === 0 ? '2' : '1'}" />`;
+
+            // Outer scale text (0 to 180 counter-clockwise, from right to left)
+            if (deg % 30 === 0) {
+              const tx = 360 - 208 * cos;
+              const ty = 180 - 208 * sin + 3;
+              ticks += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="system-ui" font-size="9" font-weight="900" fill="#0369a1" text-anchor="middle">${deg}°</text>`;
+            }
+
+            // Inner scale text (180 to 0 counter-clockwise / 0 to 180 clockwise)
+            if (deg % 30 === 0) {
+              const tx2 = 360 - 155 * cos;
+              const ty2 = 180 - 155 * sin + 3;
+              ticks += `<text x="${tx2.toFixed(1)}" y="${ty2.toFixed(1)}" font-family="system-ui" font-size="9" font-weight="900" fill="#b45309" text-anchor="middle">${180 - deg}°</text>`;
+            }
+          }
+          return ticks;
+        })()}
+
+        <!-- Baseline (0° Line) -->
+        <line x1="120" y1="180" x2="600" y2="180" stroke="#0f172a" stroke-width="2.5" />
+
+        <!-- Center Crosshair (Origin) -->
+        <circle cx="360" cy="180" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" />
+        <line x1="360" y1="170" x2="360" y2="185" stroke="#ef4444" stroke-width="2" />
+        <line x1="345" y1="180" x2="375" y2="180" stroke="#ef4444" stroke-width="2" />
+
+        <!-- Callout 1: Merkez Noktası (Orijin) -->
+        <line x1="360" y1="180" x2="360" y2="198" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2 2" />
+        <circle cx="360" cy="198" r="3" fill="#ef4444" />
+        <rect x="270" y="190" width="180" height="18" rx="4" fill="#fef2f2" stroke="#ef4444" stroke-width="1" />
+        <text x="360" y="202" font-family="system-ui" font-size="8.5" font-weight="900" fill="#991b1b" text-anchor="middle">
+          [ 1. MERKEZ NOKTASI (ORİJİN) ]
+        </text>
+
+        <!-- Callout 2: Taban Çizgisi (0° Hattı) -->
+        <line x1="530" y1="180" x2="530" y2="198" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2 2" />
+        <circle cx="530" cy="198" r="3" fill="#0284c7" />
+        <rect x="470" y="190" width="170" height="18" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1" />
+        <text x="555" y="202" font-family="system-ui" font-size="8.5" font-weight="900" fill="#0369a1" text-anchor="middle">
+          [ 2. TABAN ÇİZGİSİ (0° HATTI) ]
+        </text>
+
+        <!-- Callout 3: Dış Ölçek (0° -> 180° Soldan Sağa) -->
+        <path d="M 230 45 Q 260 20 300 20" fill="none" stroke="#0284c7" stroke-width="1.5" marker-end="url(#arrowBlue)" />
+        <rect x="150" y="8" width="145" height="22" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1" />
+        <text x="222" y="22" font-family="system-ui" font-size="8.5" font-weight="900" fill="#0369a1" text-anchor="middle">
+          [ 4. DIŞ ÖLÇEK (0° → 180°) ]
+        </text>
+
+        <!-- Callout 4: İç Ölçek (0° -> 180° Sağdan Sola) -->
+        <path d="M 480 60 Q 450 45 420 50" fill="none" stroke="#d97706" stroke-width="1.5" />
+        <rect x="425" y="40" width="145" height="22" rx="4" fill="#fffbeb" stroke="#d97706" stroke-width="1" />
+        <text x="497" y="54" font-family="system-ui" font-size="8.5" font-weight="900" fill="#92400e" text-anchor="middle">
+          [ 3. İÇ ÖLÇEK (0° → 180°) ]
+        </text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 4 Kritik Parça Açıklama & Etiketleme Kutuları -->
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px;">
+    
+    <!-- 1. Merkez Noktası -->
+    <div style="border: 1.5px solid #fca5a5; border-radius: 10px; padding: 8px 10px; background: #fff5f5; border-left: 4px solid #ef4444;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+        <span style="font-size: 11px; font-weight: 900; color: #991b1b;">1. MERKEZ NOKTASI (ORİJİN)</span>
+        <span style="font-size: 8.5px; font-weight: bold; background: #fee2e2; color: #991b1b; padding: 1px 5px; border-radius: 4px;">Köşe Yuvası</span>
+      </div>
+      <p style="font-size: 10.5px; color: #7f1d1d; margin: 0; line-height: 1.35; font-weight: 600;">
+        Açının köşe noktasının tam oturması gereken yerdir. Bu nokta kayarsa açı ölçümü tamamen yanlış çıkar.
+      </p>
+    </div>
+
+    <!-- 2. Taban Çizgisi -->
+    <div style="border: 1.5px solid #bae6fd; border-radius: 10px; padding: 8px 10px; background: #f0f9ff; border-left: 4px solid #0284c7;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+        <span style="font-size: 11px; font-weight: 900; color: #0369a1;">2. TABAN ÇİZGİSİ (0° HATTI)</span>
+        <span style="font-size: 8.5px; font-weight: bold; background: #e0f2fe; color: #0369a1; padding: 1px 5px; border-radius: 4px;">Kol Hizası</span>
+      </div>
+      <p style="font-size: 10.5px; color: #0c4a6e; margin: 0; line-height: 1.35; font-weight: 600;">
+        Açının taban koluyla tam çakışması gereken düz çizgidir. Ölçüme her zaman bu çizgideki 0°den başlanır.
+      </p>
+    </div>
+
+    <!-- 3. İç Ölçek -->
+    <div style="border: 1.5px solid #fde68a; border-radius: 10px; padding: 8px 10px; background: #fffbeb; border-left: 4px solid #f59e0b;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+        <span style="font-size: 11px; font-weight: 900; color: #92400e;">3. İÇ ÖLÇEK (SAĞDAN SOLA)</span>
+        <span style="font-size: 8.5px; font-weight: bold; background: #fef3c7; color: #92400e; padding: 1px 5px; border-radius: 4px;">Saat Yönü</span>
+      </div>
+      <p style="font-size: 10.5px; color: #78350f; margin: 0; line-height: 1.35; font-weight: 600;">
+        Açının kolu sağ taraftaki 0°ye denk geliyorsa, saat yönünde (0° → 180°) ilerleyen iç dereceler okunur.
+      </p>
+    </div>
+
+    <!-- 4. Dış Ölçek -->
+    <div style="border: 1.5px solid #a7f3d0; border-radius: 10px; padding: 8px 10px; background: #f0fdf4; border-left: 4px solid #10b981;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+        <span style="font-size: 11px; font-weight: 900; color: #065f46;">4. DIŞ ÖLÇEK (SOLDAN SAĞA)</span>
+        <span style="font-size: 8.5px; font-weight: bold; background: #d1fae5; color: #065f46; padding: 1px 5px; border-radius: 4px;">Ters Yön</span>
+      </div>
+      <p style="font-size: 10.5px; color: #064e3b; margin: 0; line-height: 1.35; font-weight: 600;">
+        Açının kolu sol taraftaki 0°ye denk geliyorsa, saat yönünün tersinde (0° → 180°) ilerleyen dış dereceler okunur.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- GÖZLEMCİNİN KRİTİK NOTU (Çift Ölçek Tuzağı Kutusu) -->
+  <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 2px solid #f59e0b; border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 4px rgba(245,158,11,0.1);">
+    <span style="font-size: 26px;">🕵️‍♂️</span>
+    <div>
+      <div style="font-size: 11.5px; font-weight: 900; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">
+        💡 GÖZLEMCİNİN KRİTİK NOTU (ÇİFT ÖLÇEK TUZAĞINA DÜŞME!):
+      </div>
+      <p style="font-size: 11px; color: #78350f; margin: 2px 0 0 0; font-weight: 700; line-height: 1.4;">
+        "Ölçtüğün açı dik açıdan (90°) dar mı, geniş mi? Gözünle önce açının türünü tahmin et! Açı dar ise 130° değil, 50° olan ölçeği okumalısın!"
+      </p>
+    </div>
+  </div>
+
+  <!-- Alt Bilgi / Değerlendirme & Puanlama -->
+  <div style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 10px; color: #475569; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Değerlendirme:</strong> 4 Kritik Parça Etiketleme (60P) + Çift Ölçek Tuzağı Kontrolü (40P) = Toplam 100 Puan. (SDB1.2 / SB1.1 İletki Anatomisi)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
