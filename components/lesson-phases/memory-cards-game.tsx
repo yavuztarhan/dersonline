@@ -428,23 +428,8 @@ function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTi
   const code = outcomeCode || '';
   const title = (outcomeTitle || '').toLowerCase();
 
-  if (id === 'MAT.5.3.2' || code.includes('5.3.2') || title.includes('inşa') || title.includes('çıkarım')) {
-    return {
-      code: 'MAT.5.3.2',
-      title: 'Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye',
-      pairs: MAT_5_3_2_PAIRS
-    };
-  }
-
-  if (id === 'MAT.5.3.3' || code.includes('5.3.3') || title.includes('iletki') || (title.includes('açı') && !title.includes('doğru'))) {
-    return {
-      code: 'MAT.5.3.3',
-      title: 'Açı Ölçme ve İletki (Açıölçer) Kullanımı',
-      pairs: MAT_5_3_3_PAIRS
-    };
-  }
-
-  if (id === 'MAT.5.3.4' || code.includes('5.3.4') || title.includes('ters') || title.includes('tümler') || title.includes('bütünler')) {
+  // 1. Direct ID / Code Check (Exact topic matching)
+  if (id === 'MAT.5.3.4' || code.includes('5.3.4')) {
     return {
       code: 'MAT.5.3.4',
       title: 'Doğruların Durumları ve Açı Çıkarımları',
@@ -452,7 +437,23 @@ function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTi
     };
   }
 
-  if (id === 'MAT.5.1.1' || code.includes('5.1.1') || title.includes('doğal sayı') || title.includes('basamak')) {
+  if (id === 'MAT.5.3.3' || code.includes('5.3.3')) {
+    return {
+      code: 'MAT.5.3.3',
+      title: 'Açı Ölçme ve İletki (Açıölçer) Kullanımı',
+      pairs: MAT_5_3_3_PAIRS
+    };
+  }
+
+  if (id === 'MAT.5.3.2' || code.includes('5.3.2')) {
+    return {
+      code: 'MAT.5.3.2',
+      title: 'Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye',
+      pairs: MAT_5_3_2_PAIRS
+    };
+  }
+
+  if (id === 'MAT.5.1.1' || code.includes('5.1.1')) {
     return {
       code: 'MAT.5.1.1',
       title: 'Doğal Sayılar ve Basamak Değeri',
@@ -460,6 +461,58 @@ function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTi
     };
   }
 
+  if (id === 'MAT.5.3.1' || code.includes('5.3.1')) {
+    return {
+      code: 'MAT.5.3.1',
+      title: 'Temel Geometrik Kavramlar ve Çizimler',
+      pairs: MAT_5_3_1_PAIRS
+    };
+  }
+
+  // 2. Keyword fallback for 4. Hafta (MAT.5.3.4 - Kesişen Doğrular, Ters Açılar, Komşu, Tümler, Bütünler)
+  if (
+    title.includes('ters') ||
+    title.includes('tümler') ||
+    title.includes('bütünler') ||
+    title.includes('komşu') ||
+    title.includes('kesen') ||
+    (title.includes('durumuna') && title.includes('açı'))
+  ) {
+    return {
+      code: 'MAT.5.3.4',
+      title: 'Doğruların Durumları ve Açı Çıkarımları',
+      pairs: MAT_5_3_4_PAIRS
+    };
+  }
+
+  // 3. Keyword fallback for 3. Hafta (MAT.5.3.3 - İletki, Açı Çeşitleri)
+  if (title.includes('iletki') || title.includes('açıölçer') || (title.includes('açı') && !title.includes('doğru'))) {
+    return {
+      code: 'MAT.5.3.3',
+      title: 'Açı Ölçme ve İletki (Açıölçer) Kullanımı',
+      pairs: MAT_5_3_3_PAIRS
+    };
+  }
+
+  // 4. Keyword fallback for 2. Hafta (MAT.5.3.2 - İnşa, Cetvel, Pergel, Gönye)
+  if (title.includes('pergel') || title.includes('gönye') || title.includes('inşa') || title.includes('ray')) {
+    return {
+      code: 'MAT.5.3.2',
+      title: 'Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye',
+      pairs: MAT_5_3_2_PAIRS
+    };
+  }
+
+  // 5. Keyword fallback for 1. Hafta (MAT.5.1.1 - Doğal Sayılar)
+  if (title.includes('doğal sayı') || title.includes('basamak') || title.includes('bölük')) {
+    return {
+      code: 'MAT.5.1.1',
+      title: 'Doğal Sayılar ve Basamak Değeri',
+      pairs: MAT_5_1_1_PAIRS
+    };
+  }
+
+  // 6. Default Fallback to MAT.5.3.1
   return {
     code: 'MAT.5.3.1',
     title: 'Temel Geometrik Kavramlar ve Çizimler',

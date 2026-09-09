@@ -167,13 +167,15 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
       (data.title?.toLowerCase().includes('açı') && !data.title?.toLowerCase().includes('doğru')));
 
   const isConstructionTopic =
-    selectedOutcome?.id === 'MAT.5.3.2' ||
-    data.title?.toLowerCase().includes('inşa') ||
-    data.title?.toLowerCase().includes('çıkarım') ||
-    data.title?.toLowerCase().includes('cetvel') ||
-    data.title?.toLowerCase().includes('gönye') ||
-    data.title?.toLowerCase().includes('pergel') ||
-    data.title?.toLowerCase().includes('ray');
+    !isLinesAnglesTopic &&
+    !isAngleTopic &&
+    (selectedOutcome?.id === 'MAT.5.3.2' ||
+      selectedOutcome?.code?.includes('5.3.2') ||
+      data.title?.toLowerCase().includes('inşa') ||
+      data.title?.toLowerCase().includes('cetvel') ||
+      data.title?.toLowerCase().includes('gönye') ||
+      data.title?.toLowerCase().includes('pergel') ||
+      data.title?.toLowerCase().includes('ray'));
 
   const baseGamesList: Array<{
     id: PuzzleGameId;
