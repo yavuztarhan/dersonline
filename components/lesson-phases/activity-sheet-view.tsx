@@ -35,7 +35,8 @@ import {
   Check,
   HelpCircle,
   Lightbulb,
-  BookOpen
+  BookOpen,
+  RotateCcw
 } from 'lucide-react';
 
 interface ActivitySheetViewProps {
@@ -89,11 +90,21 @@ export function ActivitySheetView({
     (outcomeCode === 'MAT.5.3.2' ||
       fileRecord?.id?.includes('5-3-2') ||
       fileRecord?.title?.includes('Çıkarım'));
+  const isErrorDetectiveActivity =
+    !isRailwayActivity &&
+    !isBridgeActivity &&
+    !isSteppingWorkshop &&
+    !isDeductionDetective &&
+    (selectedSheetId.includes('error-detective') ||
+      selectedSheetId.includes('hata-dedektifi') ||
+      fileRecord?.id?.includes('error-detective') ||
+      fileRecord?.title?.includes('Hata Dedektifi'));
   const isAngleConstructionActivity =
     !isRailwayActivity &&
     !isBridgeActivity &&
     !isSteppingWorkshop &&
     !isDeductionDetective &&
+    !isErrorDetectiveActivity &&
     (selectedSheetId.includes('angle-construction') ||
       selectedSheetId.includes('rotani-kendin-ciz') ||
       fileRecord?.id?.includes('angle-construction') ||
@@ -103,6 +114,7 @@ export function ActivitySheetView({
     !isBridgeActivity &&
     !isSteppingWorkshop &&
     !isDeductionDetective &&
+    !isErrorDetectiveActivity &&
     !isAngleConstructionActivity &&
     (selectedSheetId.includes('stations') ||
       fileRecord?.id?.includes('stations') ||
@@ -112,12 +124,28 @@ export function ActivitySheetView({
     !isBridgeActivity &&
     !isSteppingWorkshop &&
     !isDeductionDetective &&
+    !isErrorDetectiveActivity &&
     !isMeasuringStationsActivity &&
     !isAngleConstructionActivity &&
     (selectedSheetId.includes('anatomy') ||
       fileRecord?.id?.includes('anatomy') ||
       fileRecord?.title?.includes('İletkinin Anatomisi') ||
       outcomeCode === 'MAT.5.3.3');
+
+  // Interactive state for MAT.5.3.3 "HATA DEDEKTİFİ" VE ÖZ DEĞERLENDİRME
+  const [detectiveError1Answer, setDetectiveError1Answer] = useState<string>('');
+  const [detectiveError2Answer, setDetectiveError2Answer] = useState<string>('');
+  const [detectiveNotes, setDetectiveNotes] = useState<string>('');
+  const [detectiveCheckSubmitted, setDetectiveCheckSubmitted] = useState<boolean>(false);
+  const [detectiveHighlight, setDetectiveHighlight] = useState<'all' | 'center' | 'scale'>('all');
+  const [selfRatings, setSelfRatings] = useState<{ [key: number]: number }>({
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0
+  });
+  const [selfReflectionRule, setSelfReflectionRule] = useState<string>('');
+  const [detectiveScoreAwarded, setDetectiveScoreAwarded] = useState<boolean>(false);
 
   // Interactive state for MAT.5.3.3 Rotanı Kendin Çiz (İletki ile Açı İnşası)
   const [task1Angle, setTask1Angle] = useState<number>(0);
@@ -525,14 +553,16 @@ export function ActivitySheetView({
               const isRailway = sheet.id.includes('railway') || sheet.title.includes('Tren Rayı');
               const isBridge = sheet.id.includes('bridge') || sheet.title.includes('Köprü');
               const isStepping = sheet.id.includes('stepping') || sheet.title.includes('Adımlama');
+              const isErrorDetective =
+                sheet.id.includes('error-detective') || sheet.id.includes('hata-dedektifi') || sheet.title.includes('Hata Dedektifi');
               const isDetective =
-                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway;
+                (sheet.id.includes('5-3-2') || sheet.title.includes('Çıkarım')) && !isStepping && !isRailway && !isErrorDetective;
               const isConstruction =
-                sheet.id.includes('angle-construction') || sheet.id.includes('rotani-kendin-ciz') || sheet.title.includes('Rotanı Kendin Çiz');
+                (sheet.id.includes('angle-construction') || sheet.id.includes('rotani-kendin-ciz') || sheet.title.includes('Rotanı Kendin Çiz')) && !isErrorDetective;
               const isStations =
-                (sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm')) && !isConstruction;
+                (sheet.id.includes('stations') || sheet.title.includes('İstasyon') || sheet.title.includes('Açı Ölçüm')) && !isConstruction && !isErrorDetective;
               const isAnatomy =
-                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction;
+                (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction && !isErrorDetective;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
               const icon = isRailway
@@ -541,6 +571,8 @@ export function ActivitySheetView({
                 ? '🏛️'
                 : isStepping
                 ? '⭕'
+                : isErrorDetective
+                ? '🕵️‍♂️'
                 : isDetective
                 ? '🔍'
                 : isConstruction
@@ -556,6 +588,8 @@ export function ActivitySheetView({
                 ? 'Tarihi Köprü Restorasyonu'
                 : isStepping
                 ? 'Pergel ile Adımlama'
+                : isErrorDetective
+                ? 'Hata Dedektifi & Öz Değerlendirme'
                 : isDetective
                 ? 'Çıkarım Dedektifi'
                 : isConstruction
@@ -572,6 +606,8 @@ export function ActivitySheetView({
                 ? 'Büyük Görev'
                 : isStepping
                 ? 'Atölye 2'
+                : isErrorDetective
+                ? 'Dedektiflik'
                 : isDetective
                 ? 'Etkinlik 1'
                 : isConstruction
@@ -588,6 +624,8 @@ export function ActivitySheetView({
                 ? '4 Restorasyon Adımı'
                 : isStepping
                 ? 'Eşit Parçalar Kesme'
+                : isErrorDetective
+                ? '2 Büyük Hata & Rubrik'
                 : isDetective
                 ? '3 Deney Kutusu'
                 : isConstruction
@@ -614,6 +652,8 @@ export function ActivitySheetView({
                         ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md scale-[1.01]'
                         : isStepping
                         ? 'bg-purple-600 text-white border-purple-500 shadow-md scale-[1.01]'
+                        : isErrorDetective
+                        ? 'bg-rose-600 text-white border-rose-500 shadow-md scale-[1.01]'
                         : isDetective
                         ? 'bg-sky-600 text-white border-sky-500 shadow-md scale-[1.01]'
                         : isConstruction
@@ -671,6 +711,8 @@ export function ActivitySheetView({
             ? 'bg-gradient-to-br from-amber-950 via-amber-900 to-slate-950'
             : isSteppingWorkshop
             ? 'bg-gradient-to-br from-purple-950 via-purple-900 to-slate-950'
+            : isErrorDetectiveActivity
+            ? 'bg-gradient-to-br from-rose-950 via-red-950 to-slate-950'
             : isDeductionDetective
             ? 'bg-gradient-to-br from-sky-950 via-sky-900 to-slate-950'
             : isAngleConstructionActivity
@@ -691,6 +733,8 @@ export function ActivitySheetView({
               ? 'bg-amber-500/10'
               : isSteppingWorkshop
               ? 'bg-purple-500/15'
+              : isErrorDetectiveActivity
+              ? 'bg-rose-500/20'
               : isDeductionDetective
               ? 'bg-sky-500/15'
               : isAngleConstructionActivity
@@ -710,6 +754,8 @@ export function ActivitySheetView({
               ? 'bg-orange-500/10'
               : isSteppingWorkshop
               ? 'bg-indigo-500/20'
+              : isErrorDetectiveActivity
+              ? 'bg-red-500/20'
               : isDeductionDetective
               ? 'bg-indigo-500/15'
               : isAngleConstructionActivity
@@ -733,6 +779,8 @@ export function ActivitySheetView({
                   ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
                   : isSteppingWorkshop
                   ? 'bg-purple-400/20 border-purple-300/30 text-purple-200'
+                  : isErrorDetectiveActivity
+                  ? 'bg-rose-400/20 border-rose-300/30 text-rose-200'
                   : isDeductionDetective
                   ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
                   : isAngleConstructionActivity
@@ -758,6 +806,11 @@ export function ActivitySheetView({
                 <>
                   <CircleDot className="w-3.5 h-3.5 text-purple-300" />
                   <span>Pergel İnşası & Eşit Mesafe Aktarımı (SDB1.2 / OB2)</span>
+                </>
+              ) : isErrorDetectiveActivity ? (
+                <>
+                  <Search className="w-3.5 h-3.5 text-rose-300" />
+                  <span>Eleştirel Düşünme & Hata Analizi (SDB1.2 / SB1.1)</span>
                 </>
               ) : isDeductionDetective ? (
                 <>
@@ -794,6 +847,8 @@ export function ActivitySheetView({
                 ? 'Büyük Görev: Tarihi Köprü Restorasyonu'
                 : isSteppingWorkshop
                 ? 'Atölye: "PERGEL İLE ADIMLAMA" (Eşit Parçalar Kesme)'
+                : isErrorDetectiveActivity
+                ? 'Etkinlik: "HATA DEDEKTİFİ" VE ÖZ DEĞERLENDİRME'
                 : isDeductionDetective
                 ? 'Etkinlik: "ÇIKARIM DEDEKTİFİ" (Gözlem ve Temel Kurallar)'
                 : isAngleConstructionActivity
@@ -822,6 +877,12 @@ export function ActivitySheetView({
               <div className="p-3 bg-purple-950/60 border border-purple-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-purple-100 font-medium leading-relaxed">
                   ⭕ <strong>Atölye Görevi:</strong> Ölçülü cetvel (santimetre) kullanmadan, sadece pergel açıklığı ile mesafeyi sabit tutarak ışın ve açı kollarından eşit uzunlukta parçalar inşa et!
+                </p>
+              </div>
+            ) : isErrorDetectiveActivity ? (
+              <div className="p-3 bg-rose-950/60 border border-rose-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-rose-100 font-medium leading-relaxed">
+                  🕵️‍♂️ <strong>Dedektiflik Görevi:</strong> Yanlış ölçüm yapan öğrencinin çizimini incele, 2 büyük ölçüm hatasını (merkez kayması ve ters ölçek tuzağı) tespit et ve öz değerlendirme kontrolünü tamamla!
                 </p>
               </div>
             ) : isDeductionDetective ? (
@@ -862,6 +923,8 @@ export function ActivitySheetView({
                   ? 'text-amber-200/70'
                   : isSteppingWorkshop
                   ? 'text-purple-200/70'
+                  : isErrorDetectiveActivity
+                  ? 'text-rose-200/70'
                   : isDeductionDetective
                   ? 'text-sky-200/70'
                   : isAngleConstructionActivity
@@ -882,6 +945,8 @@ export function ActivitySheetView({
                   ? '4 Restorasyon Adımı (100 Puan)'
                   : isSteppingWorkshop
                   ? '2 Ana Görev (100 Puan)'
+                  : isErrorDetectiveActivity
+                  ? 'Dedektiflik & Öz Değerlendirme (100 Puan)'
                   : isDeductionDetective
                   ? '3 Mini Deney (100 Puan)'
                   : isAngleConstructionActivity
@@ -900,6 +965,8 @@ export function ActivitySheetView({
                   ? 'Geniş Milimetrik Grid'
                   : isSteppingWorkshop
                   ? 'Pergel ile Mesafe Koruma'
+                  : isErrorDetectiveActivity
+                  ? '2 Büyük Hata & Rubrik Kontrolü'
                   : isDeductionDetective
                   ? 'Aksiyom & Mantıksal Çıkarım'
                   : isProtractorAnatomyActivity
@@ -2481,6 +2548,485 @@ export function ActivitySheetView({
                 </g>
               </svg>
             </div>
+          </div>
+
+        </div>
+      ) : isErrorDetectiveActivity ? (
+        /* ========================================================================= */
+        /* ETKİNLİK: "HATA DEDEKTİFİ" VE ÖZ DEĞERLENDİRME (MAT.5.3.3)                 */
+        /* ========================================================================= */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          
+          {/* Üst Bilgilendirme ve Büyüteç Kontrolleri */}
+          <div className="bg-gradient-to-r from-rose-500/15 via-red-500/10 to-amber-500/10 border-2 border-rose-500/30 rounded-3xl p-5 shadow-sm space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 text-rose-950 dark:text-rose-200 font-black text-sm sm:text-base">
+                <span className="text-xl">🕵️‍♂️</span>
+                <span>DEDEKTİFLİK MASASI: "ÖLÇÜM HATASINI ÇÖZ"</span>
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 mr-1">Büyüteç Odağı:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playSound('click');
+                    setDetectiveHighlight('all');
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                    detectiveHighlight === 'all'
+                      ? 'bg-rose-600 text-white border-rose-500 shadow-sm'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  🔍 Tüm Çizim
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playSound('click');
+                    setDetectiveHighlight('center');
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                    detectiveHighlight === 'center'
+                      ? 'bg-red-600 text-white border-red-500 shadow-sm'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  📍 1. Hata: Merkez Kayması
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playSound('click');
+                    setDetectiveHighlight('scale');
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                    detectiveHighlight === 'scale'
+                      ? 'bg-amber-600 text-white border-amber-500 shadow-sm'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  🎯 2. Hata: Çift Ölçek Tuzağı
+                </button>
+              </div>
+            </div>
+
+            <p className="text-xs text-rose-900/90 dark:text-rose-200/90 leading-relaxed font-medium">
+              Aşağıdaki görselde bir öğrenci açıölçer (iletki) kullanarak çizilmiş dar açıyı ölçmeye çalışmıştır. Ancak <strong>2 kritik hata</strong> yapmış ve açının ölçüsünü yanlış bulmuştur. Görseli büyüteçle incele, hataları teşhis et ve öz değerlendirmeni yap!
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* SOL KOLON: İNTERAKTİF DEDEKTİF SVG ALANI (lg:col-span-6) */}
+            <div className="lg:col-span-6 bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-6 border-2 border-rose-500/30 shadow-sm space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-rose-100 dark:border-rose-900/50">
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 font-bold flex items-center justify-center text-xs">
+                      🔍
+                    </span>
+                    <span className="font-black text-sm text-rose-950 dark:text-rose-100">
+                      Şüpheli Ölçüm Kanıtı
+                    </span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-black bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
+                    Öğrenci Sonucu: 140° ❌
+                  </span>
+                </div>
+
+                {/* Konuşma Balonu */}
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-2xl p-3 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+                  <span className="text-xl shrink-0">🧑‍🎓</span>
+                  <div>
+                    <strong className="block font-bold">Öğrencinin Açıklaması:</strong>
+                    <em>&ldquo;İletkiyi kâğıdın üzerine koydum, ibre 140 çizgisini gösteriyordu. Demek ki bu açı 140°!&rdquo;</em>
+                  </div>
+                </div>
+
+                {/* Hatalı Ölçüm İnteraktif SVG */}
+                <div className="h-72 bg-slate-900 rounded-2xl p-2 border border-slate-800 relative overflow-hidden flex items-center justify-center select-none shadow-inner">
+                  <svg viewBox="0 0 460 260" className="w-full h-full">
+                    <defs>
+                      <pattern id="det_grid" width="16" height="16" patternUnits="userSpaceOnUse">
+                        <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#334155" strokeWidth="0.6" opacity="0.4" />
+                      </pattern>
+                      <radialGradient id="detProtGlass" cx="50%" cy="100%" r="90%">
+                        <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.25" />
+                        <stop offset="80%" stopColor="#0284c7" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#0369a1" stopOpacity="0.6" />
+                      </radialGradient>
+                    </defs>
+                    <rect width="460" height="260" fill="url(#det_grid)" />
+
+                    {/* 40°'lik Gerçek Dar Açı (Tepe Noktası O=(110, 215)) */}
+                    {/* Taban Kolu OA */}
+                    <line x1="110" y1="215" x2="410" y2="215" stroke="#f8fafc" strokeWidth="3.5" />
+                    <polygon points="405,210 417,215 405,220" fill="#f8fafc" />
+                    <circle cx="360" cy="215" r="4.5" fill="#f8fafc" />
+                    <text x="360" y="235" fontFamily="system-ui" fontSize="12" fontWeight="800" fill="#94a3b8" textAnchor="middle">A</text>
+
+                    {/* 40° Eğik Kol OB (Tepe (110, 215), len=270 -> dx=207, dy=-173.5 -> (317, 41.5)) */}
+                    <line x1="110" y1="215" x2="317" y2="41.5" stroke="#f8fafc" strokeWidth="3.5" />
+                    <polygon points="310,38 322,37 319,50" fill="#f8fafc" />
+                    <circle cx="265" cy="85" r="4.5" fill="#f8fafc" />
+                    <text x="280" y="82" fontFamily="system-ui" fontSize="12" fontWeight="800" fill="#94a3b8">B</text>
+
+                    {/* Gerçek Açı Yayı (40°) */}
+                    <path d="M 170 215 A 60 60 0 0 0 156 176" fill="none" stroke="#22c55e" strokeWidth="3" />
+                    <text x="180" y="195" fontFamily="system-ui" fontSize="12" fontWeight="900" fill="#4ade80">40° (Gerçek)</text>
+
+                    {/* Gerçek Tepe Noktası [O */}
+                    <circle cx="110" cy="215" r="6.5" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
+                    <text x="90" y="220" textAnchor="end" fontFamily="system-ui" fontSize="14" fontWeight="900" fill="#38bdf8">[O</text>
+                    <text x="110" y="248" textAnchor="middle" fontFamily="system-ui" fontSize="10" fontWeight="800" fill="#38bdf8">
+                      (Açının Gerçek Köşesi)
+                    </text>
+
+                    {/* HATALI İLETKİ ŞEMASI: Merkez (110, 165) -> 50px (1 cm) YUKARIDA! */}
+                    <g transform="translate(0, 0)" opacity="0.92">
+                      {/* İletki Yarım Daire Gövdesi */}
+                      <path d="M 20 165 A 110 110 0 0 1 240 165 Z" fill="url(#detProtGlass)" stroke="#38bdf8" strokeWidth="2" />
+                      <line x1="20" y1="165" x2="240" y2="165" stroke="#38bdf8" strokeWidth="1.8" />
+
+                      {/* İletkinin Hatalı Orijin Merkezi (110, 165) */}
+                      <circle cx="110" cy="165" r="5" fill="#ef4444" stroke="#ffffff" strokeWidth="1.5" />
+                      <circle cx="110" cy="165" r="10" fill="none" stroke="#ef4444" strokeWidth="2" strokeDasharray="3 2" className="animate-pulse" />
+                      <text x="50" y="158" textAnchor="end" fontFamily="system-ui" fontSize="11" fontWeight="900" fill="#f87171">
+                        İletki Merkezi ❌
+                      </text>
+
+                      {/* İletki Derece Yayları ve Rakamları */}
+                      <path d="M 40 165 A 90 90 0 0 1 220 165" fill="none" stroke="#7dd3fc" strokeWidth="1" strokeDasharray="2 2" />
+                      <text x="225" y="161" fontFamily="system-ui" fontSize="9" fontWeight="bold" fill="#bae6fd">0° / 180°</text>
+                      <text x="110" y="70" fontFamily="system-ui" fontSize="10" fontWeight="bold" fill="#bae6fd" textAnchor="middle">90°</text>
+                      <text x="35" y="161" fontFamily="system-ui" fontSize="9" fontWeight="bold" fill="#bae6fd">180° / 0°</text>
+
+                      {/* Yanlış Okunan 140° Noktası (cos 140 = -0.766, sin 140 = 0.643 -> (110 - 84, 165 - 71) = (26, 94)) */}
+                      <circle cx="50" cy="98" r="13" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4 2" className="animate-pulse" />
+                      <text x="48" y="78" fontFamily="system-ui" fontSize="11" fontWeight="900" fill="#fbbf24" textAnchor="middle">
+                        140° (Yanlış Ölçek! ❌)
+                      </text>
+                    </g>
+
+                    {/* VURGU KATMANI 1: MERKEZ KAYMASI */}
+                    {(detectiveHighlight === 'all' || detectiveHighlight === 'center') && (
+                      <g className="animate-in fade-in duration-200">
+                        <line x1="110" y1="172" x2="110" y2="207" stroke="#ef4444" strokeWidth="2.5" strokeDasharray="4 2" />
+                        <polygon points="106,204 110,212 114,204" fill="#ef4444" />
+                        <rect x="122" y="180" width="125" height="24" rx="6" fill="#450a0a" stroke="#ef4444" strokeWidth="1.2" />
+                        <text x="128" y="196" fontFamily="system-ui" fontSize="10.5" fontWeight="900" fill="#fca5a5">
+                          ⚠️ 1 cm Yukarıda!
+                        </text>
+                      </g>
+                    )}
+
+                    {/* VURGU KATMANI 2: ÇİFT ÖLÇEK TUZAĞI */}
+                    {(detectiveHighlight === 'all' || detectiveHighlight === 'scale') && (
+                      <g className="animate-in fade-in duration-200">
+                        <rect x="290" y="115" width="160" height="72" rx="10" fill="#451a03" stroke="#f59e0b" strokeWidth="1.5" />
+                        <text x="300" y="133" fontFamily="system-ui" fontSize="10.5" fontWeight="900" fill="#fcd34d">
+                          ⚠️ ÇİFT ÖLÇEK TUZAĞI:
+                        </text>
+                        <text x="300" y="150" fontFamily="system-ui" fontSize="9.5" fontWeight="700" fill="#fef3c7">
+                          Açı dar açı (&lt;90°) iken
+                        </text>
+                        <text x="300" y="165" fontFamily="system-ui" fontSize="9.5" fontWeight="700" fill="#fef3c7">
+                          dış ölçekteki geniş değer
+                        </text>
+                        <text x="300" y="180" fontFamily="system-ui" fontSize="10" fontWeight="900" fill="#f87171">
+                          (140°) okunmuştur!
+                        </text>
+                      </g>
+                    )}
+                  </svg>
+                </div>
+              </div>
+
+              {/* Alt İpucu Kutusu */}
+              <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
+                💡 <em><strong>Dedektif İpucu:</strong> İletkinin merkez deliği açının tepe noktasına tam oturmalı ve açı dar açıysa $90^\circ$'den küçük ölçek ($40^\circ$) okunmalıdır.</em>
+              </div>
+            </div>
+
+            {/* SAĞ KOLON: DEDEKTİF TEŞHİS FORMU & ÖZ DEĞERLENDİRME (lg:col-span-6) */}
+            <div className="lg:col-span-6 space-y-5">
+              
+              {/* GÖREV 1: 2 BÜYÜK HATAYI TESPİT ET */}
+              <div className="bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-6 border-2 border-rose-500/30 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-rose-100 dark:border-rose-900/50">
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 font-bold flex items-center justify-center text-xs">
+                      1
+                    </span>
+                    <span className="font-black text-sm text-rose-950 dark:text-rose-100">
+                      GÖREV 1: 2 Büyük Hatayı Teşhis Et
+                    </span>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-xs font-black ${
+                      detectiveCheckSubmitted && detectiveError1Answer === 'center' && detectiveError2Answer === 'scale'
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-rose-50 text-rose-800 border border-rose-200'
+                    }`}
+                  >
+                    {detectiveCheckSubmitted && detectiveError1Answer === 'center' && detectiveError2Answer === 'scale'
+                      ? '✅ 50 Puan'
+                      : '50 Puan'}
+                  </span>
+                </div>
+
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  ❓ <strong>Soru:</strong> Bu çizimdeki <strong>2 büyük hatayı</strong> tespit et ve doğrusunu seç:
+                </p>
+
+                {/* HATA 1 TEŞHİSİ */}
+                <div className="space-y-2 p-3.5 bg-rose-50/70 dark:bg-rose-950/20 rounded-2xl border border-rose-200 dark:border-rose-800/50">
+                  <span className="text-xs font-black text-rose-900 dark:text-rose-300 flex items-center gap-1.5">
+                    <span>🚩</span> <span>HATA 1 (Merkez Noktası Hizalama Hatası):</span>
+                  </span>
+                  
+                  <div className="space-y-1.5">
+                    {[
+                      {
+                        id: 'center',
+                        text: 'İletkinin merkezi açının tepe noktasına (O) oturtulmamış, 1 cm yukarıda bırakılmıştır. (Doğrusu: Merkez tam köşeyle çakışmalıdır)',
+                        correct: true
+                      },
+                      {
+                        id: 'arms',
+                        text: 'Açının kolları cetvel kullanılmadan kısa çizilmiştir.',
+                        correct: false
+                      },
+                      {
+                        id: 'rotate',
+                        text: 'İletki 180 derece ters çevrilip tersten tutulmuştur.',
+                        correct: false
+                      }
+                    ].map((opt) => (
+                      <label
+                        key={opt.id}
+                        className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
+                          detectiveError1Answer === opt.id
+                            ? 'bg-rose-600 text-white border-rose-600 font-bold shadow-xs'
+                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-rose-50/50'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="error1"
+                          checked={detectiveError1Answer === opt.id}
+                          onChange={() => {
+                            playSound('click');
+                            setDetectiveError1Answer(opt.id);
+                          }}
+                          className="mt-0.5 shrink-0"
+                        />
+                        <span>{opt.text}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* HATA 2 TEŞHİSİ */}
+                <div className="space-y-2 p-3.5 bg-amber-50/70 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-800/50">
+                  <span className="text-xs font-black text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                    <span>🚩</span> <span>HATA 2 (Ölçek Okuma & Çift Ölçek Tuzağı):</span>
+                  </span>
+                  
+                  <div className="space-y-1.5">
+                    {[
+                      {
+                        id: 'scale',
+                        text: 'Açı dar açı (40°) iken dış/yanlış ölçekten 140° (geniş açı) okunmuştur. (Doğrusu: Doğru ölçekten 40° okunmalıdır)',
+                        correct: true
+                      },
+                      {
+                        id: 'straight',
+                        text: 'Açı geniş açı olduğu halde dik açı (90°) olarak adlandırılmıştır.',
+                        correct: false
+                      },
+                      {
+                        id: 'baseline',
+                        text: 'Taban çizgisi 0° yerine tam 90° çizgisine hizalanmıştır.',
+                        correct: false
+                      }
+                    ].map((opt) => (
+                      <label
+                        key={opt.id}
+                        className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
+                          detectiveError2Answer === opt.id
+                            ? 'bg-amber-600 text-white border-amber-600 font-bold shadow-xs'
+                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-amber-50/50'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="error2"
+                          checked={detectiveError2Answer === opt.id}
+                          onChange={() => {
+                            playSound('click');
+                            setDetectiveError2Answer(opt.id);
+                          }}
+                          className="mt-0.5 shrink-0"
+                        />
+                        <span>{opt.text}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Öğrencinin Kendi Cümleleriyle Dedektif Raporu (Opsiyonel Yazma Alanı) */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    ✍️ Kendi Cümlelerinle Dedektif Notun:
+                  </label>
+                  <textarea
+                    value={detectiveNotes}
+                    onChange={(e) => setDetectiveNotes(e.target.value)}
+                    placeholder="Örn: İletkinin deliği O noktasına oturmalıydı ve dar açı olduğu için 140 değil 40 derece seçilmeliydi..."
+                    className="w-full text-xs p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 min-h-[55px]"
+                  />
+                </div>
+
+                {/* Onay Butonu */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDetectiveCheckSubmitted(true);
+                    if (detectiveError1Answer === 'center' && detectiveError2Answer === 'scale') {
+                      playSound('success');
+                      if (!detectiveScoreAwarded) {
+                        addPoints(50);
+                        setDetectiveScoreAwarded(true);
+                        unlockBadge('hata-dedektifi');
+                      }
+                    } else {
+                      playSound('bell');
+                    }
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-black text-xs transition-all shadow-md active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Dedektiflik Teşhisini Onayla (+50 Puan)</span>
+                </button>
+
+                {detectiveCheckSubmitted && (
+                  <div
+                    className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in ${
+                      detectiveError1Answer === 'center' && detectiveError2Answer === 'scale'
+                        ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                        : 'bg-rose-100 text-rose-900 border border-rose-300'
+                    }`}
+                  >
+                    {detectiveError1Answer === 'center' && detectiveError2Answer === 'scale' ? (
+                      <>
+                        <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Tebrikler Dedektif! 2 kritik hatayı da eksiksiz tespit ettin (+50 Puan).</span>
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw className="w-4 h-4 text-rose-600 shrink-0" />
+                        <span>Bazı teşhisler hatalı görünüyor. Lütfen yukarıdaki büyüteç ipuçlarını tekrar incele!</span>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* GÖREV 2: ÖZ DEĞERLENDİRME TABLOSU (KENDİNİ DEĞERLENDİR) */}
+              <div className="bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-6 border-2 border-teal-500/30 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-teal-100 dark:border-teal-900/50">
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 font-bold flex items-center justify-center text-xs">
+                      2
+                    </span>
+                    <span className="font-black text-sm text-teal-950 dark:text-teal-100">
+                      GÖREV 2: Kendini Değerlendir (Öz Değerlendirme)
+                    </span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-black bg-teal-50 text-teal-800 border border-teal-200">
+                    50 Puan
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  Açı ölçme ve çizme sürecindeki kendi becerilerini dürüstçe değerlendir:
+                </p>
+
+                {/* 4 Kriter Matrisi */}
+                <div className="space-y-2.5">
+                  {[
+                    { id: 1, text: '1. İletkinin merkez noktasını açının köşesine tam oturturum.' },
+                    { id: 2, text: '2. Taban çizgisini (0° hattını) açının bir koluyla tam çakıştırırım.' },
+                    { id: 3, text: '3. Açının dar/geniş durumuna göre doğru ölçeği (iç/dış) seçip okurum.' },
+                    { id: 4, text: '4. İletki ile verilen derecede açıyı sıfırdan hatasız inşa edebilirim.' }
+                  ].map((crit) => (
+                    <div
+                      key={crit.id}
+                      className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                    >
+                      <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                        {crit.text}
+                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {[
+                          { val: 1, label: 'Geliştirilmeli', stars: '⭐' },
+                          { val: 2, label: 'Başarılı', stars: '⭐⭐' },
+                          { val: 3, label: 'Mükemmel', stars: '⭐⭐⭐' }
+                        ].map((lvl) => (
+                          <button
+                            key={lvl.val}
+                            type="button"
+                            onClick={() => {
+                              playSound('click');
+                              setSelfRatings((prev) => ({ ...prev, [crit.id]: lvl.val }));
+                            }}
+                            className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold border transition-all cursor-pointer ${
+                              selfRatings[crit.id] === lvl.val
+                                ? 'bg-teal-600 text-white border-teal-500 shadow-xs scale-105'
+                                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                            }`}
+                          >
+                            <span>{lvl.stars}</span>
+                            <span className="hidden sm:inline ml-1">{lvl.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Öz Çıkarım Cümlesi */}
+                <div className="space-y-1.5 pt-1">
+                  <label className="text-xs font-bold text-teal-900 dark:text-teal-300">
+                    ✍️ Öz Çıkarımım (Açı ölçerken en çok dikkat edeceğim kural):
+                  </label>
+                  <input
+                    type="text"
+                    value={selfReflectionRule}
+                    onChange={(e) => setSelfReflectionRule(e.target.value)}
+                    placeholder="Örn: Merkezin tam köşede olduğundan ve 90 dereceden küçükse dar ölçekten okuduğumdan emin olacağım..."
+                    className="w-full text-xs p-2.5 rounded-xl border border-teal-300 dark:border-teal-700 bg-teal-50/50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+
+                {/* Öz Değerlendirme Tamamlama */}
+                {Object.values(selfRatings).every((v) => v > 0) && (
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs text-emerald-900 dark:text-emerald-200 font-bold flex items-center justify-between animate-in fade-in">
+                    <span className="flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-emerald-600" />
+                      <span>Öz Değerlendirme Tamamlandı! (+50 Puan)</span>
+                    </span>
+                    <span className="bg-emerald-600 text-white px-2.5 py-0.5 rounded-full text-[10px]">
+                      50 / 50 Puan
+                    </span>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
           </div>
 
         </div>
@@ -4786,7 +5332,11 @@ export function ActivitySheetView({
             <span>Sıradaki Aşama: Öz Değerlendirme Rubriği</span>
           </div>
           <p className="text-xs text-slate-500">
-            {isMeasuringStationsActivity
+            {isErrorDetectiveActivity
+              ? 'Hata Dedektifi ve Öz Değerlendirme adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı ölçüm ve analiz becerilerinizi değerlendiriniz.'
+              : isAngleConstructionActivity
+              ? 'Rotanı Kendin Çiz açı inşası adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı çizim becerilerinizi değerlendiriniz.'
+              : isMeasuringStationsActivity
               ? 'Aşamalı Açı Ölçüm İstasyonları adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi açı ölçüm ve tahmin becerilerinizi değerlendiriniz.'
               : isProtractorAnatomyActivity
               ? 'İletkinin Anatomisi ve Çift Ölçek Tuzağı adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi ölçüm becerilerinizi değerlendiriniz.'

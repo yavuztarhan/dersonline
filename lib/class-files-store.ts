@@ -1639,6 +1639,211 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-5-3-3-error-detective',
+    title: 'Etkinlik: "Hata Dedektifi" ve Öz Değerlendirme (MAT.5.3.3)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.5.3.3',
+    outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+    authorName: 'Millî Eğitim Bakanlığı',
+    authorRole: 'teacher',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    pageCount: 1,
+    createdAt: '2026-09-09T18:00:00Z',
+    fileSizeKb: 260,
+    tags: ['Etkinlik Kağıdı', 'Hata Dedektifi', 'Öz Değerlendirme', 'İletki', 'Ölçme Hataları', 'Çift Ölçek Tuzağı', 'MAT.5.3.3', 'Değerlendirme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #0f172a;">
+  <!-- Başlık Banner -->
+  <div style="text-align: center; border-bottom: 2px solid #ef4444; padding-bottom: 8px; margin-bottom: 10px; background: linear-gradient(135deg, #fef2f2, #fee2e2); padding: 10px; border-radius: 12px; border: 1px solid #fca5a5;">
+    <div style="display: inline-block; background: #dc2626; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      🕵️‍♂️ ELEŞTİREL DÜŞÜNME &amp; HATA ANALİZİ (SDB1.2 / SB1.1)
+    </div>
+    <h2 style="color: #991b1b; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+      ETKİNLİK: "HATA DEDEKTİFİ" VE ÖZ DEĞERLENDİRME
+    </h2>
+    <p style="color: #475569; font-size: 11px; margin: 3px 0 0 0; font-weight: 600;">
+      Hatalı ölçüm görselini incele, 2 büyük ölçüm hatasını tespit et, doğrusunu yaz ve öz değerlendirme kontrolünü tamamla!
+    </p>
+  </div>
+
+  <!-- BÖLÜM 1: DEDEKTİFLİK GÖREVİ (HATALI ÇİZİMİ BUL) -->
+  <div style="border: 2px solid #ef4444; border-radius: 12px; padding: 12px; background: #ffffff; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #fee2e2; padding-bottom: 6px; margin-bottom: 8px;">
+      <span style="font-weight: 900; color: #b91c1c; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+        🔍 DEDEKTİFLİK GÖREVİ (HATALI ÇİZİMİ BUL)
+      </span>
+      <span style="font-size: 9.5px; font-weight: bold; background: #fef2f2; color: #dc2626; padding: 2px 6px; border-radius: 4px; border: 1px solid #fecaca;">
+        50 Puan
+      </span>
+    </div>
+
+    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; font-size: 10.5px; color: #92400e; font-weight: 600;">
+      🗣️ <strong>Öğrenci Açıklaması:</strong> <em>"İletkiyi kâğıda koydum ve açının kolunun 140'ı gösterdiğini görünce açının ölçüsüne 140° yazdım."</em>
+    </div>
+
+    <!-- Hatalı Ölçüm SVG Görseli -->
+    <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 210px; background: #f8fafc; position: relative; overflow: hidden; margin-bottom: 10px;">
+      <svg viewBox="0 0 520 210" width="100%" height="100%" style="display: block;">
+        <defs>
+          <pattern id="mm_grid_detective" width="16" height="16" patternUnits="userSpaceOnUse">
+            <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e2e8f0" stroke-width="0.8" />
+          </pattern>
+        </defs>
+        <rect width="520" height="210" fill="url(#mm_grid_detective)" />
+
+        <!-- 40°'lik Gerçek Dar Açı (Tepe Noktası O=(130, 180)) -->
+        <!-- Taban Kolu OA -->
+        <line x1="130" y1="180" x2="440" y2="180" stroke="#0f172a" stroke-width="3" />
+        <polygon points="435,176 445,180 435,184" fill="#0f172a" />
+        <circle cx="380" cy="180" r="3.5" fill="#0f172a" />
+        <text x="380" y="196" font-family="system-ui" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="middle">A</text>
+
+        <!-- 40° Eğik Kol OB (cos 40 = 0.766, sin 40 = 0.643, len=260 -> dx=199, dy=-167 -> (329, 13)) -->
+        <line x1="130" y1="180" x2="330" y2="13" stroke="#0f172a" stroke-width="3" />
+        <polygon points="323,12 334,10 332,22" fill="#0f172a" />
+        <circle cx="280" cy="54" r="3.5" fill="#0f172a" />
+        <text x="294" y="52" font-family="system-ui" font-size="11" font-weight="bold" fill="#0f172a">B</text>
+
+        <!-- Tepe Noktası O (130, 180) -->
+        <circle cx="130" cy="180" r="5" fill="#0284c7" />
+        <text x="110" y="185" text-anchor="end" font-family="system-ui" font-size="12" font-weight="900" fill="#0369a1">[O</text>
+        <text x="130" y="200" font-family="system-ui" font-size="9.5" font-weight="800" fill="#0284c7" text-anchor="middle">(Açının Gerçek Köşesi)</text>
+
+        <!-- HATALI YERLEŞTİRİLMİŞ İLETKİ (Merkez (130, 140) -> 40px YUKARI KAYIK!) -->
+        <g opacity="0.88">
+          <!-- İletki Gövdesi -->
+          <path d="M 30 140 A 100 100 0 0 1 230 140 Z" fill="#ecfeff" stroke="#0891b2" stroke-width="1.8" stroke-dasharray="none" />
+          <line x1="30" y1="140" x2="230" y2="140" stroke="#0891b2" stroke-width="1.5" />
+          
+          <!-- Hatalı Merkez Noktası (130, 140) -->
+          <circle cx="130" cy="140" r="4.5" fill="#dc2626" />
+          <circle cx="130" cy="140" r="9" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3 2" />
+          <text x="75" y="134" font-family="system-ui" font-size="9.5" font-weight="900" fill="#dc2626" text-anchor="end">İletki Merkezi ❌</text>
+
+          <!-- İletki Ölçek Dereceleri (Örnek Yay & Rakamlar) -->
+          <path d="M 50 140 A 80 80 0 0 1 210 140" fill="none" stroke="#0891b2" stroke-width="0.8" />
+          <text x="215" y="136" font-family="system-ui" font-size="7.5" font-weight="bold" fill="#0891b2">0°/180°</text>
+          <text x="130" y="55" font-family="system-ui" font-size="8" font-weight="bold" fill="#0891b2" text-anchor="middle">90°</text>
+          <text x="45" y="136" font-family="system-ui" font-size="7.5" font-weight="bold" fill="#0891b2">180°/0°</text>
+
+          <!-- 140° Hatalı Okuma Noktası (cos 140 = -0.766, sin 140 = 0.643 -> (130-76.6, 140-64.3) = (53.4, 75.7)) -->
+          <circle cx="69" cy="76" r="11" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="3 2" />
+          <text x="69" y="60" font-family="system-ui" font-size="9" font-weight="900" fill="#dc2626" text-anchor="middle">140° (Okunan Yanlış Değer ❌)</text>
+        </g>
+
+        <!-- HATA 1 OKU: Merkez Kayması -->
+        <line x1="130" y1="145" x2="130" y2="173" stroke="#dc2626" stroke-width="2" stroke-dasharray="3 2" />
+        <polygon points="127,170 130,178 133,170" fill="#dc2626" />
+        <text x="142" y="162" font-family="system-ui" font-size="9" font-weight="900" fill="#dc2626">1 cm Yukarıda! ⚠️</text>
+
+        <!-- HATA 2 BİLGİ KUTUSU (Sağ Üst) -->
+        <rect x="345" y="25" width="165" height="65" rx="8" fill="#fef2f2" stroke="#f87171" stroke-width="1.2" />
+        <text x="355" y="42" font-family="system-ui" font-size="9" font-weight="900" fill="#991b1b">⚠️ ÇİFT ÖLÇEK TUZAĞI:</text>
+        <text x="355" y="57" font-family="system-ui" font-size="8.5" font-weight="600" fill="#7f1d1d">Açı 90°'den dar (40°)</text>
+        <text x="355" y="70" font-family="system-ui" font-size="8.5" font-weight="600" fill="#7f1d1d">olmasına rağmen geniş ölçek</text>
+        <text x="355" y="83" font-family="system-ui" font-size="8.5" font-weight="800" fill="#dc2626">(140°) okunmuştur!</text>
+      </svg>
+    </div>
+
+    <!-- Soru & Tespit Yazma Alanları -->
+    <p style="font-size: 11px; color: #0f172a; font-weight: 800; margin: 0 0 6px 0;">
+      ❓ <strong>Soru:</strong> Bu çizimdeki <strong>2 büyük hatayı</strong> tespit et ve doğrusunu yaz.
+    </p>
+
+    <div style="space-y: 6px; font-size: 11px;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-bottom: 6px;">
+        <span style="font-weight: 900; color: #dc2626;">🚩 HATA 1 (Merkez Hizalama Hatası):</span>
+        <div style="border-bottom: 1.5px dotted #94a3b8; height: 22px; margin-top: 2px;"></div>
+        <div style="font-size: 9.5px; color: #64748b; margin-top: 3px;">
+          <em>İpucu / Doğrusu: İletkinin merkez noktası açının köşe noktasına tam oturtulmalıdır (yukarıda bırakılmamalıdır).</em>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px;">
+        <span style="font-weight: 900; color: #dc2626;">🚩 HATA 2 (Ölçek Okuma / Çift Ölçek Tuzağı Hatası):</span>
+        <div style="border-bottom: 1.5px dotted #94a3b8; height: 22px; margin-top: 2px;"></div>
+        <div style="font-size: 9.5px; color: #64748b; margin-top: 3px;">
+          <em>İpucu / Doğrusu: Açı dar açı (90°'den küçük) olduğu için dış/yanlış ölçekten 140° değil, doğru ölçekten 40° okunmalıdır.</em>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BÖLÜM 2: ÖZ DEĞERLENDİRME TABLOSU (KENDİNİ DEĞERLENDİR) -->
+  <div style="border: 2px solid #0d9488; border-radius: 12px; padding: 12px; background: #ffffff; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ccfbf1; padding-bottom: 6px; margin-bottom: 8px;">
+      <span style="font-weight: 900; color: #0f766e; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+        ✅ KENDİNİ DEĞERLENDİR (ÖZ DEĞERLENDİRME ÖLÇEĞİ)
+      </span>
+      <span style="font-size: 9.5px; font-weight: bold; background: #f0fdfa; color: #0d9488; padding: 2px 6px; border-radius: 4px; border: 1px solid #99f6e4;">
+        50 Puan
+      </span>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; text-align: left;">
+      <thead>
+        <tr style="background: #f0fdfa; color: #115e59; font-weight: 900; border-bottom: 1.5px solid #99f6e4;">
+          <th style="padding: 6px 8px; border: 1px solid #ccfbf1;">Ölçme &amp; Çizim Becerisi Kriteri</th>
+          <th style="padding: 6px 4px; border: 1px solid #ccfbf1; text-align: center; width: 85px;">Geliştirilmeli (1)</th>
+          <th style="padding: 6px 4px; border: 1px solid #ccfbf1; text-align: center; width: 75px;">Başarılı (2)</th>
+          <th style="padding: 6px 4px; border: 1px solid #ccfbf1; text-align: center; width: 75px;">Mükemmel (3)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b;">
+            1. İletkinin merkez noktasını açının köşesine tam oturturum.
+          </td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+        </tr>
+        <tr style="background: #f8fafc;">
+          <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b;">
+            2. Taban çizgisini (0° hattını) açının bir koluyla tam çakıştırırım.
+          </td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b;">
+            3. Açının dar/geniş durumuna göre doğru ölçeği (iç/dış) seçip okurum.
+          </td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+        </tr>
+        <tr style="background: #f8fafc;">
+          <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b;">
+            4. İletki ile verilen derecede açıyı sıfırdan hatasız inşa edebilirim.
+          </td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+          <td style="padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">[ &nbsp; ]</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 8px; font-size: 10px; color: #0f766e; font-weight: 600;">
+      ✍️ <strong>Öz Çıkarımım:</strong> Açı ölçerken en çok dikkat edeceğim kural: .....................................................................................
+    </div>
+  </div>
+
+  <!-- Alt Bilgi / Puanlama -->
+  <div style="padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; font-size: 10px; color: #166534; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Dedektiflik Görevi (50P) + Öz Değerlendirme (50P) = 100 Puan. (SDB1.2 / SB1.1 Maarif Modeli)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 
