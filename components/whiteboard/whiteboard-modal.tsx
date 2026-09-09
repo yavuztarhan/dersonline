@@ -50,7 +50,11 @@ import {
   Maximize2,
   Move,
   Lock,
-  Unlock
+  Unlock,
+  RotateCw,
+  RotateCcw,
+  Compass,
+  CircleDot
 } from 'lucide-react';
 
 interface WhiteboardModalProps {
@@ -99,7 +103,7 @@ const MATH_SYMBOLS = [
   '‰', '∈', '∉', '⊂', '⊆', '∪', '∩', '∅'
 ];
 
-// 12 Geometrik Şekil Tanımları
+// 17 Geometrik Şekil ve Temel Kavram Tanımları
 const GEOMETRIC_SHAPES_DATA: {
   type: GeometricShapeType;
   label: string;
@@ -108,18 +112,80 @@ const GEOMETRIC_SHAPES_DATA: {
   defaultH: number;
   previewSvg: React.ReactNode;
 }[] = [
+  // 1. Temel Geometrik Kavramlar
   {
-    type: 'square',
-    label: 'Kare',
-    category: 'Dörtgenler',
-    defaultW: 160,
-    defaultH: 160,
+    type: 'point',
+    label: 'Nokta (• A)',
+    category: 'Temel Kavramlar',
+    defaultW: 70,
+    defaultH: 70,
     previewSvg: (
-      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="5" fill="currentColor" />
+        <text x="17" y="10" fontSize="9" fontWeight="900" fill="currentColor">A</text>
       </svg>
     )
   },
+  {
+    type: 'line',
+    label: 'Doğru (↔ AB)',
+    category: 'Temel Kavramlar',
+    defaultW: 240,
+    defaultH: 60,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <polyline points="6 9 3 12 6 15" />
+        <polyline points="18 9 21 12 18 15" />
+        <circle cx="8" cy="12" r="1.5" fill="currentColor" />
+        <circle cx="16" cy="12" r="1.5" fill="currentColor" />
+      </svg>
+    )
+  },
+  {
+    type: 'segment',
+    label: 'Doğru Parçası [AB]',
+    category: 'Temel Kavramlar',
+    defaultW: 220,
+    defaultH: 60,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <circle cx="4" cy="12" r="2.5" fill="currentColor" />
+        <circle cx="20" cy="12" r="2.5" fill="currentColor" />
+      </svg>
+    )
+  },
+  {
+    type: 'ray',
+    label: 'Işın [AB →',
+    category: 'Temel Kavramlar',
+    defaultW: 220,
+    defaultH: 60,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="4" y1="12" x2="21" y2="12" />
+        <circle cx="4" cy="12" r="2.5" fill="currentColor" />
+        <polyline points="18 9 21 12 18 15" />
+      </svg>
+    )
+  },
+  {
+    type: 'angle',
+    label: 'Açı (Ayarlanabilir Kol)',
+    category: 'Temel Kavramlar',
+    defaultW: 200,
+    defaultH: 200,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="4" y1="20" x2="20" y2="20" />
+        <line x1="4" y1="20" x2="16" y2="6" />
+        <path d="M 10 20 A 6 6 0 0 0 8 15" stroke="currentColor" fill="none" />
+        <circle cx="4" cy="20" r="2" fill="currentColor" />
+      </svg>
+    )
+  },
+  // 2. Üçgenler
   {
     type: 'triangle',
     label: 'Genel Üçgen',
@@ -159,63 +225,16 @@ const GEOMETRIC_SHAPES_DATA: {
       </svg>
     )
   },
+  // 3. Dörtgenler
   {
-    type: 'circle',
-    label: 'Çember (Boş)',
-    category: 'Dairesel',
+    type: 'square',
+    label: 'Kare',
+    category: 'Dörtgenler',
     defaultW: 160,
     defaultH: 160,
     previewSvg: (
       <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="9" />
-      </svg>
-    )
-  },
-  {
-    type: 'disc',
-    label: 'Daire (Dolu)',
-    category: 'Dairesel',
-    defaultW: 160,
-    defaultH: 160,
-    previewSvg: (
-      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
-        <circle cx="12" cy="12" r="9" />
-      </svg>
-    )
-  },
-  {
-    type: 'ellipse',
-    label: 'Elips',
-    category: 'Dairesel',
-    defaultW: 200,
-    defaultH: 130,
-    previewSvg: (
-      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <ellipse cx="12" cy="12" rx="10" ry="6" />
-      </svg>
-    )
-  },
-  {
-    type: 'pentagon',
-    label: 'Düzgün Beşgen',
-    category: 'Çokgenler',
-    defaultW: 170,
-    defaultH: 170,
-    previewSvg: (
-      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <polygon points="12 2 22 9 18 21 6 21 2 9" />
-      </svg>
-    )
-  },
-  {
-    type: 'hexagon',
-    label: 'Düzgün Altıgen',
-    category: 'Çokgenler',
-    defaultW: 180,
-    defaultH: 160,
-    previewSvg: (
-      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <polygon points="12 2 21 7 21 17 12 22 3 17 3 7" />
+        <rect x="3" y="3" width="18" height="18" rx="2" />
       </svg>
     )
   },
@@ -252,6 +271,68 @@ const GEOMETRIC_SHAPES_DATA: {
     previewSvg: (
       <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <polygon points="12 2 22 12 12 22 2 12" />
+      </svg>
+    )
+  },
+  // 4. Çokgenler
+  {
+    type: 'pentagon',
+    label: 'Düzgün Beşgen',
+    category: 'Çokgenler',
+    defaultW: 170,
+    defaultH: 170,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="12 2 22 9 18 21 6 21 2 9" />
+      </svg>
+    )
+  },
+  {
+    type: 'hexagon',
+    label: 'Düzgün Altıgen',
+    category: 'Çokgenler',
+    defaultW: 180,
+    defaultH: 160,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polygon points="12 2 21 7 21 17 12 22 3 17 3 7" />
+      </svg>
+    )
+  },
+  // 5. Dairesel
+  {
+    type: 'circle',
+    label: 'Çember (Boş)',
+    category: 'Dairesel',
+    defaultW: 160,
+    defaultH: 160,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="9" />
+      </svg>
+    )
+  },
+  {
+    type: 'disc',
+    label: 'Daire (Dolu)',
+    category: 'Dairesel',
+    defaultW: 160,
+    defaultH: 160,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
+        <circle cx="12" cy="12" r="9" />
+      </svg>
+    )
+  },
+  {
+    type: 'ellipse',
+    label: 'Elips',
+    category: 'Dairesel',
+    defaultW: 200,
+    defaultH: 130,
+    previewSvg: (
+      <svg className="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <ellipse cx="12" cy="12" rx="10" ry="6" />
       </svg>
     )
   }
@@ -813,16 +894,19 @@ export function WhiteboardModal({
     const newShape: WhiteboardShapeItem = {
       id: `shape-${Date.now()}`,
       type: shapeData.type,
-      x: 80,
-      y: 140,
+      x: 100,
+      y: 160,
       width: shapeData.defaultW,
       height: shapeData.defaultH,
+      rotation: 0,
       strokeColor: penColor === '#ffffff' ? '#0f172a' : penColor,
       strokeWidth: penWidth > 1 ? penWidth : 3,
       fillColor: shapeData.type === 'disc' ? '#14b8a625' : 'transparent',
       isDashed: false,
       label: shapeData.label,
-      isLocked: false
+      isLocked: false,
+      angleDegrees: shapeData.type === 'angle' ? 60 : undefined,
+      pointName: shapeData.type === 'point' ? 'A' : undefined
     };
 
     setPages((prev) =>
@@ -1386,45 +1470,63 @@ export function WhiteboardModal({
                 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
               </button>
 
-              {/* 12 Shapes Grid Popover (Fixed Overlay over canvas) */}
+              {/* 17 Shapes Categorized Grid Popover (Fixed Overlay over canvas) */}
               {shapesDropdownOpen && (
                 <>
                   <div
                     className="fixed inset-0 z-[110]"
                     onClick={() => setShapesDropdownOpen(false)}
                   />
-                  <div className="absolute top-full right-0 sm:left-0 mt-2 z-[120] w-72 sm:w-80 bg-slate-900 border-2 border-teal-400/80 rounded-2xl p-3 shadow-2xl animate-in zoom-in-95 space-y-2">
-                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[11px] font-black text-teal-300">
-                      <span>Geometrik Şekil Seç & Ekle</span>
+                  <div className="absolute top-full right-0 sm:left-0 mt-2 z-[120] w-80 sm:w-96 bg-slate-900 border-2 border-teal-400/80 rounded-2xl p-3.5 shadow-2xl animate-in zoom-in-95 space-y-3">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-xs font-black text-teal-300">
+                      <span className="flex items-center gap-1.5">
+                        <Shapes className="w-4 h-4 text-teal-400" />
+                        <span>Geometrik Şekiller & Temel Kavramlar</span>
+                      </span>
                       <button
                         type="button"
                         onClick={() => setShapesDropdownOpen(false)}
-                        className="text-slate-400 hover:text-white"
+                        className="text-slate-400 hover:text-white p-1"
                       >
                         ✕
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-72 overflow-y-auto pr-1">
-                      {GEOMETRIC_SHAPES_DATA.map((shapeItem) => (
-                        <button
-                          key={shapeItem.type}
-                          type="button"
-                          onClick={() => handleInsertShape(shapeItem)}
-                          className="p-2 rounded-xl bg-slate-800/90 hover:bg-teal-500/20 hover:border-teal-400 border border-slate-700/80 flex flex-col items-center justify-center gap-1 text-center transition-all group cursor-pointer"
-                        >
-                          <div className="p-1.5 rounded-lg bg-slate-900/80 group-hover:scale-110 transition-transform">
-                            {shapeItem.previewSvg}
+                    <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+                      {['Temel Kavramlar', 'Üçgenler', 'Dörtgenler', 'Çokgenler', 'Dairesel'].map((cat) => {
+                        const items = GEOMETRIC_SHAPES_DATA.filter((s) => s.category === cat);
+                        if (!items.length) return null;
+
+                        return (
+                          <div key={cat} className="space-y-1.5">
+                            <div className="text-[10px] font-black uppercase text-amber-300/90 tracking-wider flex items-center gap-1">
+                              <span>•</span>
+                              <span>{cat}</span>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                              {items.map((shapeItem) => (
+                                <button
+                                  key={shapeItem.type}
+                                  type="button"
+                                  onClick={() => handleInsertShape(shapeItem)}
+                                  className="p-2 rounded-xl bg-slate-800/90 hover:bg-teal-500/20 hover:border-teal-400 border border-slate-700/80 flex flex-col items-center justify-center gap-1 text-center transition-all group cursor-pointer"
+                                >
+                                  <div className="p-1 rounded-lg bg-slate-900/80 group-hover:scale-110 transition-transform">
+                                    {shapeItem.previewSvg}
+                                  </div>
+                                  <span className="text-[10px] font-bold text-slate-200 group-hover:text-teal-300 leading-tight">
+                                    {shapeItem.label}
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
                           </div>
-                          <span className="text-[10px] font-bold text-slate-200 group-hover:text-teal-300 leading-tight">
-                            {shapeItem.label}
-                          </span>
-                        </button>
-                      ))}
+                        );
+                      })}
                     </div>
 
-                    <div className="text-[9.5px] text-slate-400 pt-1 border-t border-slate-800 text-center">
-                      💡 Şekli ekledikten sonra köşelerinden tutup büyütebilir ve kilitleyebilirsiniz.
+                    <div className="text-[9.5px] text-slate-400 pt-1.5 border-t border-slate-800 text-center">
+                      💡 Şekilleri köşelerinden büyütüp küçültebilir, tepe tutamacından 🔄 döndürebilir ve kilitleyebilirsiniz.
                     </div>
                   </div>
                 </>
@@ -1700,7 +1802,7 @@ export function WhiteboardModal({
                   }}
                 />
 
-                {/* 12 GEOMETRIC SHAPES WITH 8-HANDLE SCALING & LOCK FEATURE */}
+                {/* 17 GEOMETRIC SHAPES WITH 8-HANDLE SCALING, ROTATION, ANGLE ARMS & LOCK FEATURE */}
                 {page.shapes &&
                   page.shapes.map((shape) => {
                     const isSelected =
@@ -1713,6 +1815,7 @@ export function WhiteboardModal({
                         y={shape.y}
                         width={shape.width}
                         height={shape.height}
+                        rotation={shape.rotation || 0}
                         isSelected={isSelected}
                         isLocked={shape.isLocked}
                         onSelect={() => {
@@ -1727,6 +1830,16 @@ export function WhiteboardModal({
                           className="w-full h-full relative"
                           dangerouslySetInnerHTML={{ __html: renderShapeSvgString(shape) }}
                         />
+
+                        {/* Interactive Arm Handle for Angle Shape */}
+                        {shape.type === 'angle' && isSelected && !shape.isLocked && (
+                          <AngleArmControlHandle
+                            shape={shape}
+                            onAngleChange={(deg) => {
+                              updateShapeTransform(shape.id, { angleDegrees: deg });
+                            }}
+                          />
+                        )}
 
                         {/* Floating Shape Customizer Toolbar when Selected */}
                         {isSelected && (
@@ -1755,6 +1868,98 @@ export function WhiteboardModal({
 
                             {!shape.isLocked && (
                               <>
+                                {/* Quick Rotation Buttons */}
+                                <div className="flex items-center gap-1 border-l border-slate-700 pl-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const nextRot = ((shape.rotation || 0) + 90) % 360;
+                                      updateShapeTransform(shape.id, { rotation: nextRot });
+                                    }}
+                                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 text-[10px] font-bold flex items-center gap-1"
+                                    title="90° Sağa Döndür"
+                                  >
+                                    <RotateCw className="w-3 h-3" />
+                                    <span>90°</span>
+                                  </button>
+                                  {shape.rotation ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => updateShapeTransform(shape.id, { rotation: 0 })}
+                                      className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]"
+                                      title="Döndürmeyi Sıfırla (0°)"
+                                    >
+                                      0°
+                                    </button>
+                                  ) : null}
+                                </div>
+
+                                {/* Special Angle Controls if shape is 'angle' */}
+                                {shape.type === 'angle' && (
+                                  <div className="flex items-center gap-1 border-l border-slate-700 pl-2">
+                                    <span className="font-mono text-amber-300 font-black text-[10px] bg-slate-800 px-1.5 py-0.5 rounded border border-amber-500/40">
+                                      ∠ {Math.round(shape.angleDegrees ?? 60)}°
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const cur = shape.angleDegrees ?? 60;
+                                        const next = Math.max(5, cur - 5);
+                                        updateShapeTransform(shape.id, { angleDegrees: next });
+                                      }}
+                                      className="px-1 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold"
+                                      title="Açıyı 5° Azalt"
+                                    >
+                                      -5°
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const cur = shape.angleDegrees ?? 60;
+                                        const next = Math.min(355, cur + 5);
+                                        updateShapeTransform(shape.id, { angleDegrees: next });
+                                      }}
+                                      className="px-1 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold"
+                                      title="Açıyı 5° Artır"
+                                    >
+                                      +5°
+                                    </button>
+                                    <select
+                                      value={shape.angleDegrees ?? 60}
+                                      onChange={(e) => updateShapeTransform(shape.id, { angleDegrees: Number(e.target.value) })}
+                                      className="px-1 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-amber-300 outline-none"
+                                      title="Örnek Açı Seç"
+                                    >
+                                      {[30, 45, 60, 90, 120, 135, 150, 180, 270].map((deg) => (
+                                        <option key={deg} value={deg}>
+                                          {deg}°
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                )}
+
+                                {/* Special Point Label if shape is 'point' */}
+                                {shape.type === 'point' && (
+                                  <div className="flex items-center gap-1 border-l border-slate-700 pl-2">
+                                    <span className="text-[10px] text-slate-400">Nokta:</span>
+                                    {['A', 'B', 'C', 'P', 'O', 'M'].map((pt) => (
+                                      <button
+                                        key={pt}
+                                        type="button"
+                                        onClick={() => updateShapeTransform(shape.id, { pointName: pt, label: `Nokta (${pt})` })}
+                                        className={`w-4 h-4 rounded text-[9px] font-bold ${
+                                          (shape.pointName || 'A') === pt
+                                            ? 'bg-teal-500 text-slate-950 font-black'
+                                            : 'bg-slate-800 text-slate-300 hover:text-white'
+                                        }`}
+                                      >
+                                        {pt}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+
                                 {/* Border Color */}
                                 <div className="flex items-center gap-1 border-l border-slate-700 pl-2">
                                   {['#0f172a', '#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'].map((c) => (
@@ -1771,19 +1976,21 @@ export function WhiteboardModal({
                                   ))}
                                 </div>
 
-                                {/* Fill Color Picker */}
-                                <select
-                                  value={shape.fillColor}
-                                  onChange={(e) => updateShapeTransform(shape.id, { fillColor: e.target.value })}
-                                  className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-teal-300 outline-none"
-                                  title="Dolgu Rengi"
-                                >
-                                  {FILL_COLORS.map((fc) => (
-                                    <option key={fc.id} value={fc.id}>
-                                      {fc.label}
-                                    </option>
-                                  ))}
-                                </select>
+                                {/* Fill Color Picker (only for 2D closed shapes) */}
+                                {!['point', 'line', 'segment', 'ray', 'angle'].includes(shape.type) && (
+                                  <select
+                                    value={shape.fillColor}
+                                    onChange={(e) => updateShapeTransform(shape.id, { fillColor: e.target.value })}
+                                    className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-teal-300 outline-none"
+                                    title="Dolgu Rengi"
+                                  >
+                                    {FILL_COLORS.map((fc) => (
+                                      <option key={fc.id} value={fc.id}>
+                                        {fc.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
 
                                 {/* Thickness */}
                                 <button
@@ -1798,17 +2005,19 @@ export function WhiteboardModal({
                                   {shape.strokeWidth}px
                                 </button>
 
-                                {/* Dashed toggle */}
-                                <button
-                                  type="button"
-                                  onClick={() => updateShapeTransform(shape.id, { isDashed: !shape.isDashed })}
-                                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                    shape.isDashed ? 'bg-teal-500 text-slate-950' : 'bg-slate-800 text-slate-300'
-                                  }`}
-                                  title="Kesikli Çizgi"
-                                >
-                                  - - -
-                                </button>
+                                {/* Dashed toggle (only for lines / shapes) */}
+                                {shape.type !== 'point' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => updateShapeTransform(shape.id, { isDashed: !shape.isDashed })}
+                                    className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                      shape.isDashed ? 'bg-teal-500 text-slate-950' : 'bg-slate-800 text-slate-300'
+                                    }`}
+                                    title="Kesikli Çizgi"
+                                  >
+                                    - - -
+                                  </button>
+                                )}
 
                                 {/* Duplicate */}
                                 <button
@@ -1837,7 +2046,7 @@ export function WhiteboardModal({
                     );
                   })}
 
-                {/* EMBEDDED IMAGES WITH 8-HANDLE SCALING & LOCK FEATURE */}
+                {/* EMBEDDED IMAGES WITH 8-HANDLE SCALING, ROTATION & LOCK FEATURE */}
                 {page.images &&
                   page.images.map((img) => {
                     const isSelected =
@@ -1850,6 +2059,7 @@ export function WhiteboardModal({
                         y={img.y}
                         width={img.width}
                         height={img.height}
+                        rotation={img.rotation || 0}
                         isSelected={isSelected}
                         isLocked={img.isLocked}
                         onSelect={() => {
@@ -1893,14 +2103,40 @@ export function WhiteboardModal({
                             </button>
 
                             {!img.isLocked && (
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteImage(img.id)}
-                                className="p-1 rounded bg-rose-900/80 hover:bg-rose-700 text-rose-200"
-                                title="Resmi Sil"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
+                              <>
+                                {/* Quick Rotation Buttons */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const nextRot = ((img.rotation || 0) + 90) % 360;
+                                    updateImageTransform(img.id, { rotation: nextRot });
+                                  }}
+                                  className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 text-[10px] font-bold flex items-center gap-1"
+                                  title="90° Sağa Döndür"
+                                >
+                                  <RotateCw className="w-3 h-3" />
+                                  <span>90°</span>
+                                </button>
+                                {img.rotation ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => updateImageTransform(img.id, { rotation: 0 })}
+                                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]"
+                                    title="Döndürmeyi Sıfırla (0°)"
+                                  >
+                                    0°
+                                  </button>
+                                ) : null}
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteImage(img.id)}
+                                  className="p-1 rounded bg-rose-900/80 hover:bg-rose-700 text-rose-200"
+                                  title="Resmi Sil"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </>
                             )}
                           </div>
                         )}
@@ -1987,17 +2223,121 @@ export function WhiteboardModal({
 }
 
 // ---------------------------------------------------------------------------
-// 8-HANDLE TRANSFORMABLE OBJECT WRAPPER (Word "Kare" Serbest Ölçeklendirme & Kilit)
+// DYNAMIC ANGLE ARM CONTROL HANDLE (Açı Kollarını Açma / Kapatma Tutamacı)
+// ---------------------------------------------------------------------------
+interface AngleArmControlHandleProps {
+  shape: WhiteboardShapeItem;
+  onAngleChange: (deg: number) => void;
+}
+
+function AngleArmControlHandle({ shape, onAngleChange }: AngleArmControlHandleProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [currentDeg, setCurrentDeg] = useState<number>(shape.angleDegrees ?? 60);
+
+  useEffect(() => {
+    setCurrentDeg(shape.angleDegrees ?? 60);
+  }, [shape.angleDegrees]);
+
+  const deg = currentDeg;
+  const rad = (deg * Math.PI) / 180;
+  const sw = shape.strokeWidth || 3;
+  const vX = Math.max(25, sw * 2 + 15);
+  const vY = shape.height - Math.max(25, sw * 2 + 15);
+  const armLen = Math.min(shape.width - vX - 25, vY - 25);
+
+  const armTipX = vX + armLen * Math.cos(rad);
+  const armTipY = vY - armLen * Math.sin(rad);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsDragging(true);
+
+    const target = e.currentTarget as HTMLElement;
+    const parent = target.closest('.group\\/obj') as HTMLElement;
+    if (!parent) return;
+
+    const parentRect = parent.getBoundingClientRect();
+    const vertexClientX = parentRect.left + vX;
+    const vertexClientY = parentRect.top + vY;
+
+    const handleMouseMove = (moveEvt: MouseEvent) => {
+      moveEvt.preventDefault();
+      const deltaX = moveEvt.clientX - vertexClientX;
+      const deltaY = vertexClientY - moveEvt.clientY;
+
+      let calculatedDeg = Math.round(Math.atan2(deltaY, deltaX) * (180 / Math.PI));
+      if (calculatedDeg < 0) {
+        calculatedDeg += 360;
+      }
+      if (moveEvt.shiftKey) {
+        calculatedDeg = Math.round(calculatedDeg / 15) * 15;
+      }
+      const bounded = Math.max(5, Math.min(355, calculatedDeg));
+      setCurrentDeg(bounded);
+      onAngleChange(bounded);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  return (
+    <div
+      onMouseDown={handleMouseDown}
+      style={{
+        position: 'absolute',
+        left: `${armTipX}px`,
+        top: `${armTipY}px`,
+        transform: 'translate(-50%, -50%)',
+        zIndex: 40,
+        cursor: 'grab'
+      }}
+      className="group/arm flex items-center justify-center"
+      title="Açı Kolunu Tut ve Çevir (Kolları Aç / Kapat • Shift ile 15° adım)"
+    >
+      <div
+        className={`w-6 h-6 rounded-full bg-amber-400 border-2 border-slate-900 shadow-xl flex items-center justify-center transition-all ${
+          isDragging ? 'scale-125 ring-4 ring-amber-400/50 bg-amber-300' : 'hover:scale-125'
+        }`}
+      >
+        <span className="text-[10px] select-none pointer-events-none font-bold">📐</span>
+      </div>
+
+      {isDragging && (
+        <div className="absolute -top-7 px-2 py-0.5 bg-slate-900 text-amber-300 text-[11px] font-black rounded-md shadow-xl border border-amber-400 whitespace-nowrap pointer-events-none">
+          {Math.round(currentDeg)}°
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 8-HANDLE TRANSFORMABLE OBJECT WRAPPER (Word "Kare" Serbest Ölçeklendirme, Döndürme & Kilit)
 // ---------------------------------------------------------------------------
 interface TransformableObjectProps {
   x: number;
   y: number;
   width: number;
   height: number;
+  rotation?: number;
   isSelected: boolean;
   isLocked?: boolean;
   onSelect: () => void;
-  onChangeTransform: (updates: { x?: number; y?: number; width?: number; height?: number }) => void;
+  onChangeTransform: (updates: {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    rotation?: number;
+  }) => void;
   children: React.ReactNode;
 }
 
@@ -2008,6 +2348,7 @@ function TransformableObjectWrapper({
   y,
   width,
   height,
+  rotation = 0,
   isSelected,
   isLocked = false,
   onSelect,
@@ -2016,7 +2357,10 @@ function TransformableObjectWrapper({
 }: TransformableObjectProps) {
   const isDragging = useRef(false);
   const resizeHandle = useRef<HandleDirection | null>(null);
-  const startPos = useRef({ clientX: 0, clientY: 0, x, y, width, height });
+  const isRotating = useRef(false);
+  const [liveRotation, setLiveRotation] = useState<number | null>(null);
+  const startPos = useRef({ clientX: 0, clientY: 0, x, y, width, height, rotation });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Drag start from body
   const handleMouseDownBody = (e: React.MouseEvent) => {
@@ -2031,7 +2375,8 @@ function TransformableObjectWrapper({
       x,
       y,
       width,
-      height
+      height,
+      rotation
     };
 
     const handleMouseMove = (moveEvt: MouseEvent) => {
@@ -2055,6 +2400,47 @@ function TransformableObjectWrapper({
     window.addEventListener('mouseup', handleMouseUp);
   };
 
+  // Rotation handle drag
+  const handleMouseDownRotate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isLocked) return;
+
+    isRotating.current = true;
+    const containerEl = containerRef.current;
+    if (!containerEl) return;
+    const rect = containerEl.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const handleMouseMove = (moveEvt: MouseEvent) => {
+      if (!isRotating.current) return;
+      moveEvt.preventDefault();
+      const deltaX = moveEvt.clientX - centerX;
+      const deltaY = moveEvt.clientY - centerY;
+
+      let deg = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 90;
+      deg = ((deg % 360) + 360) % 360;
+
+      if (moveEvt.shiftKey) {
+        deg = Math.round(deg / 15) * 15;
+      }
+      const finalDeg = Math.round(deg) % 360;
+      setLiveRotation(finalDeg);
+      onChangeTransform({ rotation: finalDeg });
+    };
+
+    const handleMouseUp = () => {
+      isRotating.current = false;
+      setLiveRotation(null);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
   // Resize start from any of the 8 handles
   const handleMouseDownResize = (e: React.MouseEvent, handle: HandleDirection) => {
     e.stopPropagation();
@@ -2067,7 +2453,8 @@ function TransformableObjectWrapper({
       x,
       y,
       width,
-      height
+      height,
+      rotation
     };
 
     const handleMouseMove = (moveEvt: MouseEvent) => {
@@ -2118,8 +2505,11 @@ function TransformableObjectWrapper({
     window.addEventListener('mouseup', handleMouseUp);
   };
 
+  const currentRotation = liveRotation !== null ? liveRotation : (rotation || 0);
+
   return (
     <div
+      ref={containerRef}
       onMouseDown={handleMouseDownBody}
       className={`absolute z-20 group/obj transition-shadow ${
         isSelected
@@ -2133,6 +2523,8 @@ function TransformableObjectWrapper({
         left: `${x}px`,
         width: `${width}px`,
         height: `${height}px`,
+        transform: currentRotation ? `rotate(${currentRotation}deg)` : undefined,
+        transformOrigin: 'center center',
         cursor: isLocked ? 'default' : isSelected ? 'move' : 'pointer'
       }}
     >
@@ -2142,6 +2534,26 @@ function TransformableObjectWrapper({
       {isLocked && (
         <div className="absolute top-1 right-1 w-5 h-5 bg-amber-500 text-slate-950 rounded-full flex items-center justify-center text-[10px] shadow-md z-30 font-bold">
           🔒
+        </div>
+      )}
+
+      {/* ROTATION HANDLE (Top stem + rotate circle) */}
+      {isSelected && !isLocked && (
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex flex-col items-center z-40 pointer-events-auto">
+          <div
+            onMouseDown={handleMouseDownRotate}
+            className="w-5 h-5 rounded-full bg-teal-500 text-slate-950 border-2 border-white shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
+            title="Döndür (Shift ile 15° adım)"
+          >
+            <RotateCw className="w-2.5 h-2.5 stroke-[2.5]" />
+          </div>
+          <div className="w-0.5 h-3 bg-teal-500/80" />
+
+          {liveRotation !== null && (
+            <div className="absolute -top-7 px-1.5 py-0.5 bg-slate-900 text-teal-300 text-[10px] font-black rounded shadow-lg border border-teal-400 whitespace-nowrap pointer-events-none">
+              {liveRotation}°
+            </div>
+          )}
         </div>
       )}
 

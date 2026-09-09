@@ -1,6 +1,11 @@
 'use client';
 
 export type GeometricShapeType =
+  | 'point' // Nokta
+  | 'line' // Doğru
+  | 'segment' // Doğru Parçası
+  | 'ray' // Işın
+  | 'angle' // Açı (Ayarlanabilir kollar)
   | 'square' // Kare
   | 'triangle' // Genel Üçgen
   | 'right_triangle' // Dik Üçgen
@@ -21,12 +26,17 @@ export interface WhiteboardShapeItem {
   y: number;
   width: number;
   height: number;
+  rotation?: number; // 0 - 360 in degrees
   strokeColor: string;
   strokeWidth: number;
   fillColor: string;
   isDashed?: boolean;
   label?: string;
   isLocked?: boolean;
+  // Angle specific properties:
+  angleDegrees?: number; // e.g. 60° (5° to 355°)
+  armLength?: number;
+  pointName?: string;
 }
 
 export interface WhiteboardImageItem {
@@ -200,6 +210,149 @@ export function renderShapeSvgString(shape: WhiteboardShapeItem): string {
   let innerSvg = '';
 
   switch (type) {
+    case 'point': {
+      const r = Math.max(5, Math.min(W, H) * 0.18);
+      const ptName = shape.pointName || shape.label || 'A';
+      const fontSize = Math.max(14, Math.min(W, H) * 0.35);
+      innerSvg = `
+        <circle cx="${W / 2}" cy="${H / 2}" r="${r}" fill="${stroke}" />
+        <circle cx="${W / 2}" cy="${H / 2}" r="${r + 4}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1, sw * 0.6)}" opacity="0.3" />
+        <text x="${W / 2 + r + 6}" y="${H / 2 - r / 2 + 2}" font-family="system-ui, sans-serif" font-weight="900" font-size="${fontSize}" fill="${stroke}">${ptName}</text>
+      `;
+      break;
+    }
+
+    case 'line': {
+      const midY = H / 2;
+      const arrSize = Math.max(8, sw * 2.8);
+      const pad = arrSize + 4;
+      const x1 = pad;
+      const x2 = W - pad;
+      const ptA_X = x1 + (x2 - x1) * 0.28;
+      const ptB_X = x1 + (x2 - x1) * 0.72;
+      const dotR = Math.max(3.5, sw * 1.2);
+      const fontSize = Math.max(12, Math.min(18, H * 0.35));
+      innerSvg = `
+        <defs>
+          <marker id="arrow-${shape.id}-start" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="${arrSize}" markerHeight="${arrSize}" orient="auto-start-reverse">
+            <path d="M 10 1 L 1 5 L 10 9 z" fill="${stroke}" />
+          </marker>
+          <marker id="arrow-${shape.id}-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="${arrSize}" markerHeight="${arrSize}" orient="auto">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="${stroke}" />
+          </marker>
+        </defs>
+        <line x1="${x1}" y1="${midY}" x2="${x2}" y2="${midY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} marker-start="url(#arrow-${shape.id}-start)" marker-end="url(#arrow-${shape.id}-end)" />
+        <circle cx="${ptA_X}" cy="${midY}" r="${dotR}" fill="${stroke}" />
+        <text x="${ptA_X}" y="${midY - dotR - 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${stroke}">A</text>
+        <circle cx="${ptB_X}" cy="${midY}" r="${dotR}" fill="${stroke}" />
+        <text x="${ptB_X}" y="${midY - dotR - 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${stroke}">B</text>
+        <text x="${x2 + 4}" y="${midY + fontSize * 0.4}" font-family="system-ui, sans-serif" font-weight="900" font-style="italic" font-size="${fontSize * 1.1}" fill="${stroke}">d</text>
+      `;
+      break;
+    }
+
+    case 'segment': {
+      const midY = H / 2;
+      const dotR = Math.max(4.5, sw * 1.4);
+      const x1 = dotR + 6;
+      const x2 = W - dotR - 6;
+      const fontSize = Math.max(12, Math.min(18, H * 0.35));
+      innerSvg = `
+        <line x1="${x1}" y1="${midY}" x2="${x2}" y2="${midY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} />
+        <circle cx="${x1}" cy="${midY}" r="${dotR}" fill="${stroke}" />
+        <text x="${x1}" y="${midY - dotR - 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${stroke}">[A</text>
+        <circle cx="${x2}" cy="${midY}" r="${dotR}" fill="${stroke}" />
+        <text x="${x2}" y="${midY - dotR - 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${stroke}">B]</text>
+      `;
+      break;
+    }
+
+    case 'ray': {
+      const midY = H / 2;
+      const arrSize = Math.max(8, sw * 2.8);
+      const dotR = Math.max(4.5, sw * 1.4);
+      const x1 = dotR + 6;
+      const x2 = W - arrSize - 6;
+      const ptB_X = x1 + (x2 - x1) * 0.65;
+      const fontSize = Math.max(12, Math.min(18, H * 0.35));
+      innerSvg = `
+        <defs>
+          <marker id="ray-arrow-${shape.id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="${arrSize}" markerHeight="${arrSize}" orient="auto">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="${stroke}" />
+          </marker>
+        </defs>
+        <line x1="${x1}" y1="${midY}" x2="${x2}" y2="${midY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} marker-end="url(#ray-arrow-${shape.id})" />
+        <circle cx="${x1}" cy="${midY}" r="${dotR}" fill="${stroke}" />
+        <text x="${x1}" y="${midY - dotR - 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${stroke}">[A</text>
+        <circle cx="${ptB_X}" cy="${midY}" r="${dotR * 0.85}" fill="${stroke}" />
+        <text x="${ptB_X}" y="${midY - dotR - 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${stroke}">B</text>
+      `;
+      break;
+    }
+
+    case 'angle': {
+      const deg = shape.angleDegrees !== undefined ? shape.angleDegrees : 60;
+      const rad = (deg * Math.PI) / 180;
+      const vX = Math.max(25, sw * 2 + 15);
+      const vY = H - Math.max(25, sw * 2 + 15);
+      const armLen = Math.min(W - vX - 25, vY - 25);
+      const arrSize = Math.max(7, sw * 2.4);
+
+      const baseEndX = vX + armLen;
+      const baseEndY = vY;
+
+      const armEndX = vX + armLen * Math.cos(rad);
+      const armEndY = vY - armLen * Math.sin(rad);
+
+      const arcR = Math.min(45, Math.max(25, armLen * 0.35));
+      const arcStartX = vX + arcR;
+      const arcStartY = vY;
+      const arcEndX = vX + arcR * Math.cos(rad);
+      const arcEndY = vY - arcR * Math.sin(rad);
+
+      const largeArc = deg > 180 ? 1 : 0;
+      const midRad = rad / 2;
+      const textR = arcR + 18;
+      const textX = vX + textR * Math.cos(midRad);
+      const textY = vY - textR * Math.sin(midRad);
+
+      const isRightAngle = Math.abs(deg - 90) < 0.5;
+
+      let arcElement = '';
+      if (isRightAngle) {
+        const sq = Math.min(20, arcR * 0.65);
+        arcElement = `
+          <path d="M ${vX + sq} ${vY} L ${vX + sq} ${vY - sq} L ${vX} ${vY - sq}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1.5, sw * 0.8)}" />
+          <circle cx="${vX + sq / 2}" cy="${vY - sq / 2}" r="${Math.max(1.5, sw * 0.5)}" fill="${stroke}" />
+          <text x="${vX + sq + 14}" y="${vY - sq - 4}" font-family="system-ui, sans-serif" font-weight="900" font-size="13" fill="${stroke}">90°</text>
+        `;
+      } else {
+        arcElement = `
+          <path d="M ${vX} ${vY} L ${arcStartX} ${arcStartY} A ${arcR} ${arcR} 0 ${largeArc} 0 ${arcEndX} ${arcEndY} Z" fill="${fill === 'transparent' ? '#14b8a625' : fill}" opacity="0.85" />
+          <path d="M ${arcStartX} ${arcStartY} A ${arcR} ${arcR} 0 ${largeArc} 0 ${arcEndX} ${arcEndY}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1.5, sw * 0.8)}" />
+          <text x="${textX}" y="${textY + 4}" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="900" font-size="13" fill="${stroke}">${Math.round(deg)}°</text>
+        `;
+      }
+
+      innerSvg = `
+        <defs>
+          <marker id="angle-arr-${shape.id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="${arrSize}" markerHeight="${arrSize}" orient="auto">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="${stroke}" />
+          </marker>
+        </defs>
+        ${arcElement}
+        <line x1="${vX}" y1="${vY}" x2="${baseEndX}" y2="${baseEndY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} marker-end="url(#angle-arr-${shape.id})" />
+        <line x1="${vX}" y1="${vY}" x2="${armEndX}" y2="${armEndY}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} marker-end="url(#angle-arr-${shape.id})" />
+        <circle cx="${vX}" cy="${vY}" r="${Math.max(4, sw * 1.2)}" fill="${stroke}" />
+        <text x="${vX - 12}" y="${vY + 14}" font-family="system-ui, sans-serif" font-weight="800" font-size="13" fill="${stroke}">B</text>
+        <circle cx="${vX + armLen * 0.7}" cy="${vY}" r="${Math.max(3, sw * 0.9)}" fill="${stroke}" />
+        <text x="${vX + armLen * 0.7}" y="${vY + 16}" font-family="system-ui, sans-serif" font-weight="800" font-size="12" fill="${stroke}">C</text>
+        <circle cx="${vX + armLen * 0.7 * Math.cos(rad)}" cy="${vY - armLen * 0.7 * Math.sin(rad)}" r="${Math.max(3, sw * 0.9)}" fill="${stroke}" />
+        <text x="${vX + armLen * 0.7 * Math.cos(rad) - 12}" y="${vY - armLen * 0.7 * Math.sin(rad) - 6}" font-family="system-ui, sans-serif" font-weight="800" font-size="12" fill="${stroke}">A</text>
+      `;
+      break;
+    }
+
     case 'square':
       innerSvg = `<rect x="${sw / 2}" y="${sw / 2}" width="${Math.max(1, W - sw)}" height="${Math.max(1, H - sw)}" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" ${dashAttr} />`;
       break;
