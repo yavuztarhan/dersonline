@@ -14,6 +14,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
+import { MascotCharacter } from '@/components/mascot';
+import { MASCOT_CONFIG } from '@/lib/mascot-config';
 import {
   GraduationCap,
   Sparkles,
@@ -81,13 +83,13 @@ export function StudentDashboard() {
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-300">
       
       {/* Student Gamified Hero Banner */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl border border-blue-800/40 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="flex items-start sm:items-center gap-4">
+      <div className="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl border border-blue-800/40 shadow-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+        <div className="flex items-start sm:items-center gap-4 flex-1">
           <UserAvatar
             avatar={student?.avatar}
             name={student?.name}
             size="xl"
-            className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-blue-400 bg-blue-500/20 text-blue-200 shadow-inner"
+            className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-blue-400 bg-blue-500/20 text-blue-200 shadow-inner shrink-0"
           />
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
@@ -106,17 +108,44 @@ export function StudentDashboard() {
           </div>
         </div>
 
-        {/* XP / Point Pill */}
-        <div className="p-4 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm flex items-center gap-3 shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-lg">
-            ⚡
-          </div>
-          <div>
-            <div className="text-xs font-bold text-amber-300">Toplam Puanın:</div>
-            <div className="text-xl sm:text-2xl font-black text-white">
-              +{studentPoints || 450} XP
+        {/* Right Section: Grand Selim Mascot + XP Pill */}
+        <div className="flex items-center gap-4 w-full lg:w-auto justify-between lg:justify-end flex-wrap sm:flex-nowrap">
+          
+          {/* Selim Greeting Companion Card */}
+          <div className="flex items-center gap-3.5 bg-white/10 border border-white/20 backdrop-blur-md p-3.5 rounded-2xl shadow-md hover:bg-white/15 transition-all">
+            <div className="relative shrink-0 flex items-center justify-center">
+              <MascotCharacter
+                pose="pointing"
+                size="lg"
+                showBadge
+                badgeText="Selim"
+              />
+            </div>
+            <div className="max-w-[200px] space-y-0.5">
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] uppercase font-black text-amber-300 tracking-wider">
+                  Öğrenme Yoldaşı
+                </span>
+              </div>
+              <div className="text-xs text-slate-100 font-semibold leading-tight">
+                "Matematik yolculuğunda harika ilerliyorsun! Bugün hangi sırrı çözeceğiz?"
+              </div>
             </div>
           </div>
+
+          {/* XP / Point Pill */}
+          <div className="p-4 rounded-2xl bg-amber-400/20 border border-amber-400/40 backdrop-blur-sm flex items-center gap-3 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-lg shadow-sm">
+              ⚡
+            </div>
+            <div>
+              <div className="text-xs font-bold text-amber-300">Toplam Puanın:</div>
+              <div className="text-xl sm:text-2xl font-black text-white">
+                +{studentPoints || 450} XP
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 

@@ -18,6 +18,8 @@ import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentOutcomeDetailModal } from '@/components/gamification/student-outcome-detail-modal';
+import { MascotCharacter } from '@/components/mascot';
+import { MASCOT_CONFIG } from '@/lib/mascot-config';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -177,13 +179,13 @@ export function TeacherDashboard() {
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
       
       {/* Teacher Profile Banner */}
-      <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white p-6 sm:p-8 rounded-3xl border border-teal-800/40 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="flex items-start sm:items-center gap-4">
+      <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white p-6 sm:p-8 rounded-3xl border border-teal-800/40 shadow-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+        <div className="flex items-start sm:items-center gap-4 flex-1">
           <UserAvatar
             avatar={teacher?.avatar}
             name={teacher?.name}
             size="xl"
-            className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-teal-400 bg-teal-500/20 text-teal-200 shadow-inner"
+            className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-teal-400 bg-teal-500/20 text-teal-200 shadow-inner shrink-0"
           />
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
@@ -218,22 +220,48 @@ export function TeacherDashboard() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <Link
-            href="/profile"
-            className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5"
-            title="Kişisel Bilgileri ve Okulu Düzenle"
-          >
-            <span>⚙️ Profilimi Düzenle</span>
-          </Link>
+        {/* Mascot Companion & Action Buttons */}
+        <div className="flex items-center gap-4 shrink-0 w-full lg:w-auto justify-between lg:justify-end flex-wrap sm:flex-nowrap">
+          
+          {/* Selim Teacher Companion */}
+          <div className="flex items-center gap-3.5 bg-white/10 border border-white/20 backdrop-blur-md p-3.5 rounded-2xl shadow-md hover:bg-white/15 transition-all">
+            <div className="relative shrink-0 flex items-center justify-center">
+              <MascotCharacter
+                pose="measuring"
+                size="lg"
+                showBadge
+                badgeText="Selim"
+              />
+            </div>
+            <div className="max-w-[190px] space-y-0.5">
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] uppercase font-black text-amber-300 tracking-wider">
+                  Öğrenme Yoldaşı
+                </span>
+              </div>
+              <div className="text-xs text-slate-100 font-semibold leading-tight">
+                "Öğretmenim, sınıfın rubrik ve öğrenme günlüğü verileri hazır!"
+              </div>
+            </div>
+          </div>
 
-          <Link
-            href="/lesson/MAT.5.3.1"
-            className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center gap-2 active:scale-95 shrink-0"
-          >
-            <MonitorPlay className="w-4 h-4" />
-            <span>Akıllı Tahtada Dersi Başlat</span>
-          </Link>
+          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+            <Link
+              href="/profile"
+              className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5"
+              title="Kişisel Bilgileri ve Okulu Düzenle"
+            >
+              <span>⚙️ Profilimi Düzenle</span>
+            </Link>
+
+            <Link
+              href="/lesson/MAT.5.3.1"
+              className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center gap-2 active:scale-95 shrink-0"
+            >
+              <MonitorPlay className="w-4 h-4" />
+              <span>Akıllı Tahtada Dersi Başlat</span>
+            </Link>
+          </div>
         </div>
       </div>
 

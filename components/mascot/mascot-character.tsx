@@ -6,7 +6,7 @@ import { MASCOT_CONFIG, MascotPose, isMascotEnabled } from "@/lib/mascot-config"
 
 export interface MascotCharacterProps {
   pose?: MascotPose;
-  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
   bubble?: string | React.ReactNode;
   bubblePosition?: "top" | "bottom" | "left" | "right";
   animate?: boolean;
@@ -17,12 +17,13 @@ export interface MascotCharacterProps {
 }
 
 const SIZE_MAP = {
-  xs: { width: 32, height: 32, container: 'w-8 h-8' },
-  sm: { width: 48, height: 48, container: 'w-12 h-12' },
-  md: { width: 64, height: 64, container: 'w-16 h-16' },
-  lg: { width: 96, height: 96, container: 'w-24 h-24' },
-  xl: { width: 128, height: 128, container: 'w-32 h-32' },
-  '2xl': { width: 180, height: 180, container: 'w-44 h-44' },
+  xs: { width: 36, height: 36, container: 'w-9 h-9' },
+  sm: { width: 56, height: 56, container: 'w-14 h-14' },
+  md: { width: 80, height: 80, container: 'w-20 h-20' },
+  lg: { width: 120, height: 120, container: 'w-28 h-28 sm:w-32 sm:h-32' },
+  xl: { width: 160, height: 160, container: 'w-36 h-36 sm:w-44 sm:h-44' },
+  '2xl': { width: 220, height: 220, container: 'w-48 h-48 sm:w-56 sm:h-56' },
+  '3xl': { width: 300, height: 300, container: 'w-64 h-64 sm:w-72 sm:h-72' },
 };
 
 export function MascotCharacter({

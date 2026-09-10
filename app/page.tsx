@@ -91,12 +91,14 @@ export default function HomePage() {
       )}
 
       {/* Unified Professional Hero Welcome Card */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-10 text-white shadow-xl border border-slate-800">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl border border-slate-800">
         <div className="absolute -right-10 -top-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute right-1/3 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-3xl">
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+          
+          {/* Left Column: Greeting, Role Tags & Actions */}
+          <div className="space-y-4 max-w-2xl flex-1 w-full">
             
             {/* Model Tag */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-black uppercase tracking-wider">
@@ -109,7 +111,7 @@ export default function HomePage() {
               Hoş geldiniz, <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-300 to-teal-200">{currentUser.name}</span>
             </h1>
 
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl">
               {isTeacher && teacherUser?.school
                 ? `📍 ${teacherUser.city || 'İl'} • ${teacherUser.school} (${teacherUser.branch || 'Matematik'})`
                 : currentUser.role === 'student'
@@ -117,7 +119,7 @@ export default function HomePage() {
                 : 'Sistem Yöneticisi • Maarif Akademi Yönetim Portalı'}
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-2.5 text-xs text-slate-300 font-medium">
+            <div className="pt-1 flex flex-wrap items-center gap-2.5 text-xs text-slate-300 font-medium">
               <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/80">
                 <Tv className="w-3.5 h-3.5 text-teal-400" />
                 <span>Akıllı Tahta & 4 Fazlı Ders Odası</span>
@@ -127,31 +129,12 @@ export default function HomePage() {
                 <span>SDB Becerileri & Süreç Odaklı Rubrik</span>
               </div>
             </div>
-          </div>
 
-          {/* Primary Action Buttons & Mascot Companion */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 self-stretch sm:self-auto justify-end">
-            
-            {/* Selim Greeting Avatar */}
-            <div className="hidden md:flex items-center gap-3 bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 shadow-inner">
-              <MascotCharacter
-                pose="proud"
-                size="sm"
-                showBadge
-                badgeText="Selim"
-              />
-              <div className="text-left max-w-[170px]">
-                <div className="text-[10px] uppercase font-black text-amber-300">Öğrenme Yoldaşı</div>
-                <div className="text-[11px] text-slate-100 font-semibold leading-tight line-clamp-2">
-                  "{MASCOT_CONFIG.quotes.heroWelcome}"
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Action Buttons */}
+            <div className="pt-2 flex items-center gap-3 flex-wrap sm:flex-nowrap">
               <Link
                 href={dashboardHref}
-                className="flex-1 sm:flex-initial px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                className="flex-1 sm:flex-initial px-6 py-3.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
               >
                 <LayoutDashboard className="w-4 h-4" />
                 <span>{dashboardLabel}</span>
@@ -160,15 +143,45 @@ export default function HomePage() {
 
               <Link
                 href="/profile"
-                className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-5 py-3.5 rounded-2xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 hover:text-white font-bold text-xs sm:text-sm border border-slate-700 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 title="Profilimi Düzenle"
               >
-                <User className="w-4 h-4 text-teal-300" />
-                <span className="hidden sm:inline">Profilim</span>
+                <User className="w-4 h-4 text-teal-400" />
+                <span>Profilim</span>
               </Link>
             </div>
-
           </div>
+
+          {/* Right Column: Grand & Lively Selim Mascot Section */}
+          <div className="flex items-center gap-4 sm:gap-5 bg-gradient-to-br from-white/10 to-teal-900/40 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-white/20 shadow-2xl shrink-0 max-w-md w-full lg:w-auto relative group">
+            <div className="relative shrink-0 flex items-center justify-center">
+              <div className="absolute inset-0 bg-teal-400/20 rounded-full blur-xl group-hover:bg-teal-400/30 transition-all" />
+              <MascotCharacter
+                pose={currentUser.role === 'student' ? 'pointing' : currentUser.role === 'teacher' ? 'proud' : 'success'}
+                size="xl"
+                showBadge
+                badgeText="Selim"
+              />
+            </div>
+            <div className="space-y-1.5 flex-1 min-w-[190px]">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 shadow-sm">
+                  Öğrenme Yoldaşı
+                </span>
+              </div>
+              <div className="text-xs sm:text-sm text-slate-100 font-semibold leading-relaxed">
+                {currentUser.role === 'student'
+                  ? `"${MASCOT_CONFIG.quotes.heroWelcome}"`
+                  : currentUser.role === 'teacher'
+                  ? `"${MASCOT_CONFIG.quotes.teacherHelp}"`
+                  : `"Sistem yöneticisi hoş geldiniz! Tüm okul ve müfredat verileri hazır."`}
+              </div>
+              <div className="text-[11px] text-teal-300 font-bold flex items-center gap-1">
+                <span>✨ Anadolu'nun Matematik Dahisi</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
