@@ -149,6 +149,131 @@ async function main() {
   }
   console.log('✅ Rozetler oluşturuldu.');
 
+  // 6. Öz Değerlendirme Rubrik Formları (SelfAssessmentSubmission)
+  const sampleSubmissions = [
+    {
+      id: 'sub-seed-01',
+      studentName: 'Ahmet Yılmaz',
+      studentNumber: '101',
+      gradeLevel: 5,
+      classSection: '5-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.5.3.3',
+      outcomeCode: 'MAT.5.3.3',
+      outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+      ratings: { c1: 4, c2: 4, c3: 4, c4: 4, c5: 4 },
+      totalScore: 20,
+      maxScore: 20,
+      percentage: 100,
+      performanceLevel: 'Mükemmel',
+      studentNote: 'İletkiyi 360 derece döndürerek eğik duran açıları tam sıfırlayıp ölçmeyi çok iyi kavradım.',
+      teacherFeedback: 'Harika bir performans Ahmet! Radar simülasyonundaki hassas açı ölçümlerin mükemmeldi.',
+    },
+    {
+      id: 'sub-seed-02',
+      studentName: 'Zeynep Kaya',
+      studentNumber: '204',
+      gradeLevel: 6,
+      classSection: '6-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.6.1.3',
+      outcomeCode: 'MAT.6.1.3',
+      outcomeTitle: 'Asal Sayılar ve Asal Çarpanlara Ayırma',
+      ratings: { c1: 4, c2: 4, c3: 3, c4: 4, c5: 4 },
+      totalScore: 19,
+      maxScore: 20,
+      percentage: 95,
+      performanceLevel: 'Mükemmel',
+      studentNote: 'Eratosthenes kalburunda 2,3,5 ve 7 katlarını eleyerek asalların kalmasını çok sevdim.',
+      teacherFeedback: 'Çok başarılı Zeynep, asal çarpan ağacındaki adımların çok düzenliydi.',
+    },
+    {
+      id: 'sub-seed-03',
+      studentName: 'Beren Kurt',
+      studentNumber: '102',
+      gradeLevel: 5,
+      classSection: '5-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.5.3.1',
+      outcomeCode: 'MAT.5.3.1',
+      outcomeTitle: 'Doğru, Doğru Parçası ve Işın ile İlgili Temel Geometrik Çizimler',
+      ratings: { c1: 3, c2: 4, c3: 4, c4: 3, c5: 3 },
+      totalScore: 17,
+      maxScore: 20,
+      percentage: 85,
+      performanceLevel: 'Mükemmel',
+      studentNote: 'Doğru parçasının iki ucu sınırlı olduğu için uzunluğu ölçülebiliyor.',
+      teacherFeedback: 'Kavramsal açıklamaların çok net Beren!',
+    }
+  ];
+
+  for (const s of sampleSubmissions) {
+    await prisma.selfAssessmentSubmission.upsert({
+      where: { id: s.id },
+      update: s,
+      create: s,
+    });
+  }
+  console.log('✅ Öz Değerlendirme Formları oluşturuldu.');
+
+  // 7. Öğrenme Günlükleri (LearningJournal)
+  const sampleJournals = [
+    {
+      id: 'jrn-seed-01',
+      studentName: 'Zeynep Kaya',
+      studentNumber: '204',
+      gradeLevel: 6,
+      classSection: '6-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.6.1.3',
+      outcomeCode: 'MAT.6.1.3',
+      outcomeTitle: 'Asal Sayılar ve Asal Çarpanlara Ayırma',
+      prompt: 'Bugün asal sayılar ve çarpan ağacı hakkında öğrendiğim en şaşırtıcı özellik şuydu:',
+      studentReflection: 'Eratosthenes kalburunda sadece 2, 3, 5 ve 7 nin katlarını elediğimizde 1-100 arasındaki tüm 25 asal sayının kendiliğinden parladığını gördüm.',
+      teacherFeedback: 'Harika bir matematiksel farkındalık Zeynep!',
+      teacherLiked: true,
+    },
+    {
+      id: 'jrn-seed-02',
+      studentName: 'Ahmet Demir',
+      studentNumber: '215',
+      gradeLevel: 6,
+      classSection: '6-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.6.1.4',
+      outcomeCode: 'MAT.6.1.4',
+      outcomeTitle: 'İki Doğal Sayının Ortak Bölenleri ve Ortak Katları',
+      prompt: 'Ortak bölen ve ortak kat kavramlarını günlük hayatta nerelerde kullanabileceğimizi fark ettiniz mi?',
+      studentReflection: 'Eşit paketleme problemlerinde EBOB, ortak nöbet ve sefer sürelerinde EKOK kullanıldığını keşfettim.',
+      teacherFeedback: 'Günlük hayat modellemen harika Ahmet!',
+      teacherLiked: true,
+    },
+    {
+      id: 'jrn-seed-03',
+      studentName: 'Beren Kurt',
+      studentNumber: '101',
+      gradeLevel: 5,
+      classSection: '5-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.5.3.3',
+      outcomeCode: 'MAT.5.3.3',
+      outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+      prompt: 'Bugün açılar ve iletki kullanımı ile ilgili keşfettiğim en önemli kural:',
+      studentReflection: 'Açının kollarının uzunluğu ne olursa olsun açının derecesi değişmez çünkü açı iki ışın arasındaki açıklıktır.',
+      teacherFeedback: 'Kavram yanılgısını mükemmel aşmışsın Beren!',
+      teacherLiked: true,
+    }
+  ];
+
+  for (const j of sampleJournals) {
+    await prisma.learningJournal.upsert({
+      where: { id: j.id },
+      update: j,
+      create: j,
+    });
+  }
+  console.log('✅ Öğrenme Günlükleri oluşturuldu.');
+
   console.log('✨ Tohumlama (Seed) işlemi başarıyla tamamlandı!');
 }
 

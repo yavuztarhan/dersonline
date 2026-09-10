@@ -215,8 +215,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
     if (isAngleTopic) {
       loadPresetAngle(60);
-    } else if (!isExperimentBench) {
-      loadDefaultGeometricPresets();
     }
   }, [isAngleTopic, isExperimentBench, data.title]);
 
