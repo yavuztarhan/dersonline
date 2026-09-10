@@ -273,16 +273,11 @@ export function StudentOutcomeDetailModal({
             <button
               type="button"
               onClick={() => handleOpenGameHistory()}
-              className="p-3.5 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/90 border-2 border-emerald-200/80 hover:border-emerald-400 flex flex-col justify-between text-left transition-all shadow-xs hover:shadow-md active:scale-[0.99] group cursor-pointer"
+              className="p-3.5 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/90 border border-emerald-200/80 hover:border-emerald-400 flex flex-col justify-between text-left transition-all shadow-xs hover:shadow-md active:scale-[0.99] group cursor-pointer"
               title="Öğrencinin tüm oyun ve etkinlik geçmişini detaylı incelemek için tıklayın"
             >
               <div className="flex items-center justify-between text-xs text-emerald-900 font-bold mb-1 w-full">
-                <span className="flex items-center gap-1.5">
-                  <span>Oyun Başarı Ort.</span>
-                  <span className="text-[10px] text-emerald-700 bg-emerald-200/60 group-hover:bg-emerald-600 group-hover:text-white px-1.5 py-0.5 rounded transition-colors font-black">
-                    Geçmiş ➔
-                  </span>
-                </span>
+                <span>Oyun Başarı Ort.</span>
                 <Gamepad2 className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
               </div>
               <div className="flex items-baseline gap-1.5">
@@ -290,9 +285,6 @@ export function StudentOutcomeDetailModal({
                   %{safeProfile.overallSuccessRate || 0}
                 </span>
                 <span className="text-[11px] text-emerald-800 font-semibold">Doğruluk</span>
-                <span className="text-[10px] text-emerald-600 font-bold ml-auto opacity-80 group-hover:opacity-100">
-                  {safeProfile.allActivities?.length || 0} Oyun
-                </span>
               </div>
               <div className="w-full bg-emerald-200 h-1.5 rounded-full mt-2 overflow-hidden">
                 <div
@@ -492,19 +484,14 @@ export function StudentOutcomeDetailModal({
                           <span>Oyun & Etkinlik Başarısı</span>
                         </div>
                         {item.hasActivityData && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[11px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                              +{item.activityXp} XP
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleOpenGameHistory(item.outcomeCode)}
-                              className="text-[10px] font-black text-emerald-700 hover:text-emerald-950 bg-emerald-100 hover:bg-emerald-200 px-2 py-0.5 rounded transition-colors cursor-pointer"
-                              title="Bu kazanıma ait oyun geçmişini incele"
-                            >
-                              Geçmiş ➔
-                            </button>
-                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenGameHistory(item.outcomeCode)}
+                            className="text-[11px] font-black text-emerald-800 hover:text-emerald-950 bg-emerald-100 hover:bg-emerald-200 px-2 py-0.5 rounded transition-colors cursor-pointer"
+                            title="Bu kazanıma ait oyun geçmişini incele"
+                          >
+                            +{item.activityXp} XP
+                          </button>
                         )}
                       </div>
 
