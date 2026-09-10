@@ -8,6 +8,8 @@ import { useApp } from '@/lib/store';
 import { useAuth } from '@/lib/auth-store';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { MessageInboxModal } from '@/components/messages/message-inbox-modal';
+import { getUnreadMessageCount } from '@/lib/message-store';
 import {
   Volume2,
   VolumeX,
@@ -19,7 +21,8 @@ import {
   ChevronRight,
   Sparkles,
   LayoutDashboard,
-  Gamepad2
+  Gamepad2,
+  Mail
 } from 'lucide-react';
 
 export function Navbar() {
@@ -35,6 +38,9 @@ export function Navbar() {
   const { currentUser, logout } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalDefaultTab, setAuthModalDefaultTab] = useState<'login' | 'register'>('login');
+  const [messageModalOpen, setMessageModalOpen] = useState(false);
+
+  const unreadMessageCount = currentUser ? getUnreadMessageCount(currentUser.id) : 0;
 
   const pathname = usePathname();
   const router = useRouter();
@@ -218,6 +224,23 @@ export function Navbar() {
                   </button>
                 </div>
 
+                {/* Messages Button with Unread Badge */}
+                <button
+                  onClick={() => {
+                    playSound('click');
+                    setMessageModalOpen(true);
+                  }}
+                  className="relative p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 transition-all cursor-pointer"
+                  title="Mesaj Merkezi & Gelen Kutusu"
+                >
+                  <Mail className="w-4 h-4 text-slate-600" />
+                  {unreadMessageCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.2 bg-rose-500 text-white rounded-full font-black text-[9px] shadow-sm animate-pulse">
+                      {unreadMessageCount}
+                    </span>
+                  )}
+                </button>
+
                 {/* Logout Button */}
                 <button
                   onClick={() => {
@@ -286,6 +309,12 @@ export function Navbar() {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         defaultTab={authModalDefaultTab}
+      />
+
+      {/* Hierarchical Message Inbox Modal */}
+      <MessageInboxModal
+        isOpen={messageModalOpen}
+        onClose={() => setMessageModalOpen(false)}
       />
     </>
   );

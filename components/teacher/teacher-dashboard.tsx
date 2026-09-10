@@ -8,6 +8,7 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { getOutcomeById } from '@/lib/curriculum-data';
 import { LessonPlanModal } from '@/components/lesson-plan-modal';
 import { TeacherRubricAnalytics } from '@/components/teacher/teacher-rubric-analytics';
+import { TeacherGroupsPanel } from '@/components/teacher/teacher-groups-panel';
 import {
   ClassroomFileRecord,
   getStoredClassroomFiles,
@@ -56,7 +57,7 @@ export function TeacherDashboard() {
   const { currentUser, students, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher, awardPointsToStudent } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
   const [activePlanOutcome, setActivePlanOutcome] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'leaderboard' | 'plans' | 'files'>('analytics');
+  const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'groups' | 'leaderboard' | 'plans' | 'files'>('analytics');
   const [selectedStudentForDetail, setSelectedStudentForDetail] = useState<any | null>(null);
 
   // Classroom Files State
@@ -288,8 +289,8 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* Executive Module Switcher (5 Primary Sections) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
+      {/* Executive Module Switcher (6 Primary Sections) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
         {/* 1. Öz Değerlendirme Rubrik Raporları */}
         <button
           type="button"
@@ -363,6 +364,44 @@ export function TeacherDashboard() {
           </div>
           {activeSection === 'students' && (
             <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-indigo-600 rounded-full" />
+          )}
+        </button>
+
+        {/* 3. Öğrenci Grupları & Ortak Görevler */}
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
+            setActiveSection('groups');
+          }}
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
+            activeSection === 'groups'
+              ? 'bg-white shadow-md border-teal-600 ring-2 ring-teal-600/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeSection === 'groups' ? 'bg-teal-600 text-white shadow-sm' : 'bg-teal-50 text-teal-700'
+              }`}
+            >
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black border border-teal-200">
+              Takımlar
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'groups' ? 'text-teal-950' : 'text-slate-800'}`}>
+              Gruplar & Ödevler
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Takım Çalışması
+            </div>
+          </div>
+          {activeSection === 'groups' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-teal-600 rounded-full" />
           )}
         </button>
 
@@ -486,6 +525,17 @@ export function TeacherDashboard() {
       {activeSection === 'leaderboard' && (
         <div className="space-y-6 animate-in fade-in duration-300">
           <ClassLeaderboard initialClassSection={selectedClass} showTeacherControls={true} />
+        </div>
+      )}
+
+      {/* SECTION: GROUPS & COLLABORATIVE TASKS */}
+      {activeSection === 'groups' && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <TeacherGroupsPanel
+            selectedClass={selectedClass}
+            onSelectClass={(cls) => setSelectedClass(cls)}
+            availableClasses={teacherClasses}
+          />
         </div>
       )}
 

@@ -13,6 +13,7 @@ import {
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
+import { StudentGroupsCard } from '@/components/student/student-groups-card';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG } from '@/lib/mascot-config';
@@ -318,6 +319,9 @@ export function StudentDashboard() {
         </div>
 
       </div>
+
+      {/* Öğrenci Çalışma Grubu & Grup Görevleri */}
+      <StudentGroupsCard />
 
       {/* Sınıf XP Liderlik Panosu & Sıralama */}
       <ClassLeaderboard initialClassSection={studentClass} />
