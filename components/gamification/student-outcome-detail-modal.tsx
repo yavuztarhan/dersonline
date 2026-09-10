@@ -8,7 +8,6 @@ import {
   getStudentPerformanceProfile
 } from '@/lib/student-performance-store';
 import { downloadStudentDevelopmentReportPDF } from '@/lib/pdf-report-generator';
-import { StudentGameHistoryModal } from '@/components/gamification/student-game-history-modal';
 import { useAuth } from '@/lib/auth-store';
 import {
   X,
@@ -39,7 +38,13 @@ import {
   Loader2,
   BookOpen,
   MessageSquare,
-  Heart
+  Heart,
+  Target,
+  Compass,
+  Search,
+  ChevronDown,
+  RotateCcw,
+  Star
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -62,15 +67,11 @@ export function StudentOutcomeDetailModal({
 }: StudentOutcomeDetailModalProps) {
   const { currentUser } = useAuth();
   const [filterMode, setFilterMode] = useState<'all' | 'completed' | 'missing'>('all');
+  const [drilldownView, setDrilldownView] = useState<'outcomes' | 'games' | 'rubrics'>('outcomes');
+  const [gameOutcomeFilter, setGameOutcomeFilter] = useState<string>('all');
+  const [gameSearchQuery, setGameSearchQuery] = useState<string>('');
   const [profile, setProfile] = useState<StudentPerformanceProfile | null>(null);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
-  const [isGameHistoryModalOpen, setIsGameHistoryModalOpen] = useState(false);
-  const [gameHistoryOutcomeFilter, setGameHistoryOutcomeFilter] = useState<string | null>(null);
-
-  const handleOpenGameHistory = (outcomeCode?: string) => {
-    setGameHistoryOutcomeFilter(outcomeCode || null);
-    setIsGameHistoryModalOpen(true);
-  };
 
   // Load and calculate profile defensively
   useEffect(() => {
@@ -107,13 +108,13 @@ export function StudentOutcomeDetailModal({
   // Handle ESC key to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen && !isGameHistoryModalOpen) {
+      if (e.key === 'Escape' && isOpen) {
         onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, isGameHistoryModalOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen || !student) return null;
 
@@ -137,6 +138,7 @@ export function StudentOutcomeDetailModal({
   };
 
   const outcomesList = Array.isArray(safeProfile.outcomes) ? safeProfile.outcomes : [];
+  const allActivitiesList = Array.isArray(safeProfile.allActivities) ? safeProfile.allActivities : [];
 
   const filteredOutcomes = outcomesList.filter((item) => {
     if (filterMode === 'completed') {
@@ -147,6 +149,61 @@ export function StudentOutcomeDetailModal({
     }
     return true;
   });
+
+  // Filtered Activities for Games Drilldown
+  const filteredActivities = allActivitiesList.filter((act) => {
+    const matchesOutcome = gameOutcomeFilter === 'all' || act.outcomeCode === gameOutcomeFilter;
+    const matchesSearch =
+      !gameSearchQuery ||
+      act.gameTitle.toLowerCase().includes(gameSearchQuery.toLowerCase()) ||
+      act.outcomeCode.toLowerCase().includes(gameSearchQuery.toLowerCase()) ||
+      (act.outcomeTitle && act.outcomeTitle.toLowerCase().includes(gameSearchQuery.toLowerCase()));
+    return matchesOutcome && matchesSearch;
+  });
+
+  // Submitted rubrics for Rubrics Drilldown
+  const rubricSubmissionsList = outcomesList.filter(
+    (item) => item.hasRubricData && item.rubricSubmission
+  );
+
+  const getGameIcon = (gameType: string) => {
+    switch (gameType) {
+      case 'angle-radar':
+        return <Target className="w-5 h-5 text-teal-600" />;
+      case 'construction-bench':
+        return <Compass className="w-5 h-5 text-indigo-600" />;
+      case 'junction-architect':
+        return <Layers className="w-5 h-5 text-purple-600" />;
+      case 'memory-cards':
+        return <Sparkles className="w-5 h-5 text-amber-600" />;
+      default:
+        return <Gamepad2 className="w-5 h-5 text-emerald-600" />;
+    }
+  };
+
+  const getScoreBadgeColor = (percentage: number) => {
+    if (percentage >= 90) return 'bg-emerald-100 text-emerald-900 border-emerald-300';
+    if (percentage >= 75) return 'bg-teal-100 text-teal-900 border-teal-300';
+    if (percentage >= 50) return 'bg-amber-100 text-amber-900 border-amber-300';
+    return 'bg-rose-100 text-rose-900 border-rose-300';
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString('tr-TR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dateStr;
+    }
+  };
 
   // Level & Title helper
   const getRankBadge = (points: number) => {
@@ -265,20 +322,26 @@ export function StudentOutcomeDetailModal({
           </div>
         </div>
 
-        {/* 2. EXECUTIVE METRICS BAR */}
+        {/* 2. EXECUTIVE METRICS BAR (CLICKABLE ACCORDION CONTROLLERS) */}
         <div className="bg-white p-4 sm:p-6 border-b border-slate-200 shadow-xs">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             
-            {/* Metric 1: Kazanım Başarı Oranı (Oyunlar) - Clickable for detailed history */}
+            {/* Metric 1: Kazanım Başarı Oranı (Oyunlar) -> Expands Game History inline */}
             <button
               type="button"
-              onClick={() => handleOpenGameHistory()}
-              className="p-3.5 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/90 border border-emerald-200/80 hover:border-emerald-400 flex flex-col justify-between text-left transition-all shadow-xs hover:shadow-md active:scale-[0.99] group cursor-pointer"
-              title="Öğrencinin tüm oyun ve etkinlik geçmişini detaylı incelemek için tıklayın"
+              onClick={() => {
+                setDrilldownView((prev) => (prev === 'games' ? 'outcomes' : 'games'));
+              }}
+              className={`p-3.5 rounded-2xl border flex flex-col justify-between text-left transition-all cursor-pointer ${
+                drilldownView === 'games'
+                  ? 'bg-emerald-100/90 border-emerald-400 ring-2 ring-emerald-500 shadow-md'
+                  : 'bg-emerald-50/70 hover:bg-emerald-100/70 border-emerald-200/80 shadow-xs'
+              }`}
+              title="Öğrencinin oyun ve etkinlik geçmişini aşağıda görüntülemek için tıklayın"
             >
               <div className="flex items-center justify-between text-xs text-emerald-900 font-bold mb-1 w-full">
                 <span>Oyun Başarı Ort.</span>
-                <Gamepad2 className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+                <Gamepad2 className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-black text-emerald-700">
@@ -294,9 +357,20 @@ export function StudentOutcomeDetailModal({
               </div>
             </button>
 
-            {/* Metric 2: Öz Değerlendirme Rubrik Ortalaması */}
-            <div className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-200/80 flex flex-col justify-between">
-              <div className="flex items-center justify-between text-xs text-indigo-900 font-bold mb-1">
+            {/* Metric 2: Öz Değerlendirme Rubrik Ortalaması -> Expands Rubric Details inline */}
+            <button
+              type="button"
+              onClick={() => {
+                setDrilldownView((prev) => (prev === 'rubrics' ? 'outcomes' : 'rubrics'));
+              }}
+              className={`p-3.5 rounded-2xl border flex flex-col justify-between text-left transition-all cursor-pointer ${
+                drilldownView === 'rubrics'
+                  ? 'bg-indigo-100/90 border-indigo-400 ring-2 ring-indigo-500 shadow-md'
+                  : 'bg-indigo-50/70 hover:bg-indigo-100/70 border-indigo-200/80 shadow-xs'
+              }`}
+              title="Öğrencinin rubrik öz değerlendirme detaylarını aşağıda görüntülemek için tıklayın"
+            >
+              <div className="flex items-center justify-between text-xs text-indigo-900 font-bold mb-1 w-full">
                 <span>Rubrik Ortalaması</span>
                 <ClipboardCheck className="w-4 h-4 text-indigo-600" />
               </div>
@@ -312,10 +386,18 @@ export function StudentOutcomeDetailModal({
                   style={{ width: `${Math.min(100, safeProfile.overallRubricRate || 0)}%` }}
                 />
               </div>
-            </div>
+            </button>
 
             {/* Metric 3: Kazanım İlerleme Durumu */}
-            <div className="p-3.5 rounded-2xl bg-teal-50/70 border border-teal-200/80 flex flex-col justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                setDrilldownView('outcomes');
+                setFilterMode('completed');
+              }}
+              className="p-3.5 rounded-2xl bg-teal-50/70 hover:bg-teal-100/70 border border-teal-200/80 flex flex-col justify-between text-left transition-all shadow-xs cursor-pointer"
+              title="Tamamlanan kazanımları listelemek için tıklayın"
+            >
               <div className="flex items-center justify-between text-xs text-teal-900 font-bold mb-1">
                 <span>Tamamlanan Kazanım</span>
                 <BookmarkCheck className="w-4 h-4 text-teal-600" />
@@ -334,10 +416,18 @@ export function StudentOutcomeDetailModal({
                   }}
                 />
               </div>
-            </div>
+            </button>
 
             {/* Metric 4: Algı & Başarı Uyum Puanı */}
-            <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex flex-col justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                setDrilldownView('outcomes');
+                setFilterMode('all');
+              }}
+              className="p-3.5 rounded-2xl bg-amber-50/70 hover:bg-amber-100/70 border border-amber-200/80 flex flex-col justify-between text-left transition-all shadow-xs cursor-pointer"
+              title="Tüm kazanım uyum analizini görmek için tıklayın"
+            >
               <div className="flex items-center justify-between text-xs text-amber-900 font-bold mb-1">
                 <span>Öz Farkındalık</span>
                 <Sparkles className="w-4 h-4 text-amber-600" />
@@ -353,337 +443,602 @@ export function StudentOutcomeDetailModal({
               <div className="text-[10px] text-amber-900/80 font-bold truncate mt-2">
                 Oyun vs. Rubrik Uyumu
               </div>
-            </div>
+            </button>
 
           </div>
         </div>
 
-        {/* 3. FILTER TABS & SUB-HEADER */}
-        <div className="p-4 sm:px-6 bg-slate-100/80 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <h3 className="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
-              <span>Kazanım Bazlı Başarı & Rubrik Kıyaslaması</span>
-              <span className="px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 text-xs font-bold">
-                {filteredOutcomes.length} Kazanım
-              </span>
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Her bir kazanımda öğrencinin oyun/test performansı ile kendi doldurduğu rubrik puanının karşılaştırması.
-            </p>
-          </div>
+        {/* 3. INLINE VIEW 1: GAMES & ATELIER DRILLDOWN */}
+        {drilldownView === 'games' && (
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 animate-in fade-in duration-200">
+            <div className="bg-emerald-50/90 rounded-2xl border border-emerald-200 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-emerald-950 flex items-center gap-2">
+                  <Gamepad2 className="w-5 h-5 text-emerald-600" />
+                  <span>Oyun & Atölye Etkinlik Geçmişi</span>
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-200 text-emerald-900 text-xs font-bold">
+                    {filteredActivities.length} Kayıt
+                  </span>
+                </h3>
+                <p className="text-xs text-emerald-800 mt-0.5">
+                  Öğrencinin atölye oyunlarında ve interaktif simülasyonlarda tamamladığı tüm aktiviteler.
+                </p>
+              </div>
 
-          <div className="flex items-center bg-white p-1 rounded-xl border border-slate-200 shadow-xs self-stretch sm:self-auto text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => setFilterMode('all')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                filterMode === 'all'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Tümü ({outcomesList.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterMode('completed')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                filterMode === 'completed'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Tamamlananlar
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterMode('missing')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                filterMode === 'missing'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Eksik Olanlar
-            </button>
-          </div>
-        </div>
-
-        {/* 4. OUTCOMES LIST (SCROLLABLE) */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-          {filteredOutcomes.length === 0 ? (
-            <div className="p-8 text-center bg-white rounded-3xl border border-dashed border-slate-300 space-y-2">
-              <FileQuestion className="w-8 h-8 text-slate-400 mx-auto" />
-              <div className="text-sm font-black text-slate-800">Seçilen filtrede kazanım bulunamadı</div>
-              <div className="text-xs text-slate-500">Tüm kazanımları görüntülemek için yukarıdan &apos;Tümü&apos; seçeneğine tıklayınız.</div>
-            </div>
-          ) : (
-            filteredOutcomes.map((item) => {
-              return (
-                <div
-                  key={item.outcomeCode}
-                  className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 space-y-4 hover:border-slate-300 transition-all"
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <select
+                  value={gameOutcomeFilter}
+                  onChange={(e) => setGameOutcomeFilter(e.target.value)}
+                  aria-label="Kazanım Filtresi"
+                  className="px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                 >
-                  {/* Outcome Title & Badges */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2.5 py-0.5 rounded-lg bg-teal-100 text-teal-900 font-black text-xs font-mono border border-teal-200">
-                          {item.outcomeCode}
-                        </span>
-                        <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
-                          {item.category}
-                        </span>
+                  <option value="all">Tüm Kazanımlar</option>
+                  {outcomesList.map((o) => (
+                    <option key={o.outcomeCode} value={o.outcomeCode}>
+                      {o.outcomeCode}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="button"
+                  onClick={() => setDrilldownView('outcomes')}
+                  className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shrink-0 cursor-pointer"
+                >
+                  ✕ Kapat
+                </button>
+              </div>
+            </div>
+
+            {/* List of Game Activity Attempts */}
+            {filteredActivities.length === 0 ? (
+              <div className="p-8 text-center bg-white rounded-3xl border border-dashed border-slate-300 space-y-2">
+                <Gamepad2 className="w-8 h-8 text-slate-300 mx-auto" />
+                <div className="text-sm font-black text-slate-800">Kayıtlı Oyun veya Etkinlik Bulunamadı</div>
+                <div className="text-xs text-slate-500">Bu öğrenci henüz seçilen kritere uygun bir oyun kaydı oluşturmamıştır.</div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredActivities.map((act) => (
+                  <div
+                    key={act.id}
+                    className="bg-white rounded-2xl border border-slate-200/90 hover:border-emerald-300 p-4 shadow-xs transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                  >
+                    <div className="flex items-start gap-3.5 flex-1">
+                      <div className="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                        {getGameIcon(act.gameType)}
                       </div>
-                      <h4 className="text-sm sm:text-base font-black text-slate-900">
-                        {item.outcomeTitle}
-                      </h4>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-black text-slate-900">{act.gameTitle}</span>
+                          <span className="px-2 py-0.5 rounded-md bg-teal-50 border border-teal-200 text-teal-900 font-mono text-[10px] font-black">
+                            {act.outcomeCode}
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 leading-snug line-clamp-1">{act.outcomeTitle}</div>
+                        <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{formatDate(act.completedAt)}</span>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Overall Outcome Status Badge */}
-                    <div className="self-start sm:self-auto shrink-0">
-                      {item.comparisonStatus === 'both_present' && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-black">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>Etkinlik + Rubrik Tamam</span>
-                        </span>
-                      )}
-                      {item.comparisonStatus === 'only_activity' && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-900 text-xs font-black">
-                          <Gamepad2 className="w-3.5 h-3.5 text-indigo-600" />
-                          <span>Sadece Oyun Tamamlandı</span>
-                        </span>
-                      )}
-                      {item.comparisonStatus === 'only_rubric' && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 border border-purple-200 text-purple-900 text-xs font-black">
-                          <ClipboardCheck className="w-3.5 h-3.5 text-purple-600" />
-                          <span>Sadece Rubrik Kaydı Var</span>
-                        </span>
-                      )}
-                      {item.comparisonStatus === 'no_data' && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-black">
-                          <MinusCircle className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Henüz Kayıt Yok</span>
-                        </span>
-                      )}
+                    <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+                      <div className="text-right">
+                        <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border font-black text-xs ${getScoreBadgeColor(act.percentage)}`}>
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>%{act.percentage} Doğruluk</span>
+                        </div>
+                        <div className="text-[11px] text-amber-600 font-bold mt-0.5">
+                          +{act.xpEarned} XP Kazanıldı
+                        </div>
+                      </div>
+
+                      <Link
+                        href={`/lesson/${act.outcomeCode}`}
+                        className="p-2.5 rounded-xl bg-slate-100 hover:bg-teal-500 hover:text-white text-slate-700 transition-all shadow-xs cursor-pointer"
+                        title="Bu Kazanımın Dersi & Oyun Odasına Git"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
                     </div>
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-                  {/* 2-COLUMN COMPARISON BENCH */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
-                    {/* Column 1: Oyun / Etkinlik / Test Başarısı */}
-                    <div className={`p-4 rounded-2xl border transition-all ${
-                      item.hasActivityData
-                        ? 'bg-emerald-50/40 border-emerald-200'
-                        : 'bg-slate-50/80 border-dashed border-slate-300 text-slate-400'
-                    }`}>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-1.5 text-xs font-black text-slate-800">
-                          <Gamepad2 className={`w-4 h-4 ${item.hasActivityData ? 'text-emerald-600' : 'text-slate-400'}`} />
-                          <span>Oyun & Etkinlik Başarısı</span>
-                        </div>
-                        {item.hasActivityData && (
-                          <button
-                            type="button"
-                            onClick={() => handleOpenGameHistory(item.outcomeCode)}
-                            className="text-[11px] font-black text-emerald-800 hover:text-emerald-950 bg-emerald-100 hover:bg-emerald-200 px-2 py-0.5 rounded transition-colors cursor-pointer"
-                            title="Bu kazanıma ait oyun geçmişini incele"
-                          >
-                            +{item.activityXp} XP
-                          </button>
-                        )}
-                      </div>
+        {/* 3. INLINE VIEW 2: RUBRICS DRILLDOWN */}
+        {drilldownView === 'rubrics' && (
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 animate-in fade-in duration-200">
+            <div className="bg-indigo-50/90 rounded-2xl border border-indigo-200 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-indigo-950 flex items-center gap-2">
+                  <ClipboardCheck className="w-5 h-5 text-indigo-600" />
+                  <span>Öz Değerlendirme (Rubrik) Değerlendirme Detayları</span>
+                  <span className="px-2 py-0.5 rounded-md bg-indigo-200 text-indigo-900 text-xs font-bold">
+                    {rubricSubmissionsList.length} Değerlendirme
+                  </span>
+                </h3>
+                <p className="text-xs text-indigo-800 mt-0.5">
+                  Öğrencinin Türkiye Yüzyılı Maarif Modeli süreç odaklı rubrik kriterlerinde kendini değerlendirdiği puanlar ve yansıtma notları.
+                </p>
+              </div>
 
-                      {item.hasActivityData && item.activitySuccessRate !== null ? (
-                        <div className="space-y-2">
-                          <div className="flex items-baseline justify-between">
-                            <span className="text-2xl font-black text-emerald-700">
-                              %{item.activitySuccessRate}
+              <button
+                type="button"
+                onClick={() => setDrilldownView('outcomes')}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shrink-0 cursor-pointer"
+              >
+                ✕ Kapat
+              </button>
+            </div>
+
+            {/* List of Rubric Submissions */}
+            {rubricSubmissionsList.length === 0 ? (
+              <div className="p-8 text-center bg-white rounded-3xl border border-dashed border-slate-300 space-y-2">
+                <ClipboardCheck className="w-8 h-8 text-slate-300 mx-auto" />
+                <div className="text-sm font-black text-slate-800">Doldurulmuş Rubrik Bulunmuyor</div>
+                <div className="text-xs text-slate-500">Öğrenci bu ders kazanımları için henüz bir öz değerlendirme rubriği kaydetmemiştir.</div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {rubricSubmissionsList.map((item) => {
+                  const sub = item.rubricSubmission;
+                  if (!sub) return null;
+                  const ratings = sub.ratings || {};
+
+                  return (
+                    <div
+                      key={item.outcomeCode}
+                      className="bg-white rounded-3xl border border-slate-200 p-5 space-y-4 shadow-sm"
+                    >
+                      {/* Rubric Card Header */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2.5 py-0.5 rounded-lg bg-indigo-100 text-indigo-900 font-mono font-black text-xs">
+                              {item.outcomeCode}
                             </span>
-                            <span className="text-xs text-slate-600 font-bold">
-                              {item.activitiesCount} Tamamlanan Etkinlik
+                            <span className="text-xs text-slate-500 font-bold bg-slate-100 px-2 py-0.5 rounded">
+                              {item.category}
                             </span>
                           </div>
-
-                          <div className="w-full bg-emerald-200 h-2 rounded-full overflow-hidden">
-                            <div
-                              className="bg-emerald-600 h-full rounded-full transition-all"
-                              style={{ width: `${item.activitySuccessRate}%` }}
-                            />
-                          </div>
-
-                          {/* Completed games chips */}
-                          {item.completedGames.length > 0 && (
-                            <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                              {item.completedGames.map((game, gIdx) => (
-                                <button
-                                  key={gIdx}
-                                  type="button"
-                                  onClick={() => handleOpenGameHistory(item.outcomeCode)}
-                                  className="px-2 py-0.5 rounded-md bg-white hover:bg-emerald-100 border border-emerald-200 text-emerald-900 text-[10px] font-bold shadow-xs flex items-center gap-1 transition-colors cursor-pointer"
-                                  title="Bu oyunu geçmişte filtrele"
-                                >
-                                  <span>🎮</span>
-                                  <span>{game}</span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
+                          <h4 className="text-sm sm:text-base font-black text-slate-900">
+                            {item.outcomeTitle}
+                          </h4>
                         </div>
-                      ) : (
-                        /* Missing Game Activity Guard */
-                        <div className="py-4 flex flex-col items-center justify-center text-center space-y-1">
-                          <HelpCircle className="w-6 h-6 text-slate-300" />
-                          <div className="text-xs font-black text-slate-600">Oyun / Test Kaydı Bulunmuyor</div>
-                          <div className="text-[11px] text-slate-400 max-w-xs">
-                            Öğrenci bu kazanımdaki hafıza kartı, bulmaca veya testleri henüz sisteme kaydetmemiştir.
-                          </div>
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Column 2: Öz Değerlendirme Rubrik Sonucu */}
-                    <div className={`p-4 rounded-2xl border transition-all ${
-                      item.hasRubricData
-                        ? 'bg-indigo-50/40 border-indigo-200'
-                        : 'bg-slate-50/80 border-dashed border-slate-300 text-slate-400'
-                    }`}>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-1.5 text-xs font-black text-slate-800">
-                          <ClipboardCheck className={`w-4 h-4 ${item.hasRubricData ? 'text-indigo-600' : 'text-slate-400'}`} />
-                          <span>Öz Değerlendirme Rubriği</span>
-                        </div>
-                        {item.hasRubricData && item.rubricLevel && (
-                          <span className={`text-[10px] font-black px-2 py-0.5 rounded border ${
-                            item.rubricLevel === 'Mükemmel'
+                        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                          <span className={`text-xs font-black px-2.5 py-1 rounded-full border ${
+                            sub.performanceLevel === 'Mükemmel'
                               ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                              : item.rubricLevel === 'Başarılı'
+                              : sub.performanceLevel === 'Başarılı'
                               ? 'bg-teal-100 text-teal-800 border-teal-200'
-                              : item.rubricLevel === 'Orta'
+                              : sub.performanceLevel === 'Orta'
                               ? 'bg-amber-100 text-amber-800 border-amber-200'
                               : 'bg-rose-100 text-rose-800 border-rose-200'
                           }`}>
-                            {item.rubricLevel}
+                            ⭐ {sub.performanceLevel || 'Mükemmel'}
                           </span>
-                        )}
+                          <span className="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-900 font-black text-xs">
+                            {sub.totalScore || 0} / {sub.maxScore || 20} Puan (%{sub.percentage || 0})
+                          </span>
+                        </div>
                       </div>
 
-                      {item.hasRubricData && item.rubricScore !== null ? (
-                        <div className="space-y-2">
-                          <div className="flex items-baseline justify-between">
-                            <span className="text-2xl font-black text-indigo-700">
-                              %{item.rubricScore}
+                      {/* 4 MEB Criteria Breakdown */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center text-xs font-black">
+                              📐
+                            </div>
+                            <div className="text-xs font-bold text-slate-800">1. Temel Tanım ve Kavramlar</div>
+                          </div>
+                          <span className="font-black text-xs text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                            {ratings.c1 || 4} / 4 Puan
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-800 flex items-center justify-center text-xs font-black">
+                              🧭
+                            </div>
+                            <div className="text-xs font-bold text-slate-800">2. Çizim & Araç Becerisi</div>
+                          </div>
+                          <span className="font-black text-xs text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                            {ratings.c2 || 4} / 4 Puan
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center text-xs font-black">
+                              🧩
+                            </div>
+                            <div className="text-xs font-bold text-slate-800">3. Problem Çözme & Muhakeme</div>
+                          </div>
+                          <span className="font-black text-xs text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                            {ratings.c3 || 4} / 4 Puan
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-black">
+                              ⚡
+                            </div>
+                            <div className="text-xs font-bold text-slate-800">4. Süreç Disiplini & Katılım</div>
+                          </div>
+                          <span className="font-black text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                            {ratings.c4 || 4} / 4 Puan
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Student Self Note & Feedback */}
+                      {sub.studentNote && (
+                        <div className="p-3 rounded-2xl bg-indigo-50/50 border border-indigo-100 text-xs text-slate-800 space-y-1">
+                          <div className="text-[10px] font-bold text-indigo-800 uppercase tracking-wider">
+                            Öğrencinin Öz Yansıtma Notu:
+                          </div>
+                          <p className="italic leading-relaxed">&ldquo;{sub.studentNote}&rdquo;</p>
+                        </div>
+                      )}
+
+                      {sub.teacherFeedback && (
+                        <div className="p-3 rounded-2xl bg-teal-50/50 border border-teal-200 text-xs text-teal-950 space-y-1">
+                          <div className="text-[10px] font-bold text-teal-800 uppercase tracking-wider flex items-center gap-1">
+                            <MessageSquare className="w-3 h-3 text-teal-600" />
+                            <span>Öğretmen Değerlendirme Dönütü:</span>
+                          </div>
+                          <p className="italic leading-relaxed">&ldquo;{sub.teacherFeedback}&rdquo;</p>
+                        </div>
+                      )}
+
+                      <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5 pt-1">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Form Teslim Tarihi: {formatDate(sub.submittedAt)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 3. INLINE VIEW 3: STANDARD OUTCOMES LIST */}
+        {drilldownView === 'outcomes' && (
+          <>
+            <div className="p-4 sm:px-6 bg-slate-100/80 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                  <span>Kazanım Bazlı Başarı & Rubrik Kıyaslaması</span>
+                  <span className="px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 text-xs font-bold">
+                    {filteredOutcomes.length} Kazanım
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Her bir kazanımda öğrencinin oyun/test performansı ile kendi doldurduğu rubrik puanının karşılaştırması.
+                </p>
+              </div>
+
+              <div className="flex items-center bg-white p-1 rounded-xl border border-slate-200 shadow-xs self-stretch sm:self-auto text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => setFilterMode('all')}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    filterMode === 'all'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Tümü ({outcomesList.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterMode('completed')}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    filterMode === 'completed'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Tamamlananlar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterMode('missing')}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    filterMode === 'missing'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Eksik Olanlar
+                </button>
+              </div>
+            </div>
+
+            {/* Outcomes List */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+              {filteredOutcomes.length === 0 ? (
+                <div className="p-8 text-center bg-white rounded-3xl border border-dashed border-slate-300 space-y-2">
+                  <FileQuestion className="w-8 h-8 text-slate-400 mx-auto" />
+                  <div className="text-sm font-black text-slate-800">Seçilen filtrede kazanım bulunamadı</div>
+                  <div className="text-xs text-slate-500">Tüm kazanımları görüntülemek için yukarıdan &apos;Tümü&apos; seçeneğine tıklayınız.</div>
+                </div>
+              ) : (
+                filteredOutcomes.map((item) => {
+                  return (
+                    <div
+                      key={item.outcomeCode}
+                      className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 space-y-4 hover:border-slate-300 transition-all"
+                    >
+                      {/* Outcome Title & Badges */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2.5 py-0.5 rounded-lg bg-teal-100 text-teal-900 font-black text-xs font-mono border border-teal-200">
+                              {item.outcomeCode}
                             </span>
-                            <span className="text-xs text-slate-600 font-bold">
-                              {item.rubricSubmission?.totalScore || 0} / {item.rubricSubmission?.maxScore || 20} Puan
+                            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                              {item.category}
                             </span>
                           </div>
+                          <h4 className="text-sm sm:text-base font-black text-slate-900">
+                            {item.outcomeTitle}
+                          </h4>
+                        </div>
 
-                          <div className="w-full bg-indigo-200 h-2 rounded-full overflow-hidden">
-                            <div
-                              className="bg-indigo-600 h-full rounded-full transition-all"
-                              style={{ width: `${item.rubricScore}%` }}
-                            />
+                        {/* Overall Outcome Status Badge */}
+                        <div className="self-start sm:self-auto shrink-0">
+                          {item.comparisonStatus === 'both_present' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-black">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Etkinlik + Rubrik Tamam</span>
+                            </span>
+                          )}
+                          {item.comparisonStatus === 'only_activity' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-900 text-xs font-black">
+                              <Gamepad2 className="w-3.5 h-3.5 text-indigo-600" />
+                              <span>Sadece Oyun Tamamlandı</span>
+                            </span>
+                          )}
+                          {item.comparisonStatus === 'only_rubric' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 border border-purple-200 text-purple-900 text-xs font-black">
+                              <ClipboardCheck className="w-3.5 h-3.5 text-purple-600" />
+                              <span>Sadece Rubrik Kaydı Var</span>
+                            </span>
+                          )}
+                          {item.comparisonStatus === 'no_data' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-black">
+                              <MinusCircle className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Henüz Kayıt Yok</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 2-COLUMN COMPARISON BENCH */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        {/* Column 1: Oyun / Etkinlik / Test Başarısı */}
+                        <div className={`p-4 rounded-2xl border transition-all ${
+                          item.hasActivityData
+                            ? 'bg-emerald-50/40 border-emerald-200'
+                            : 'bg-slate-50/80 border-dashed border-slate-300 text-slate-400'
+                        }`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-800">
+                              <Gamepad2 className={`w-4 h-4 ${item.hasActivityData ? 'text-emerald-600' : 'text-slate-400'}`} />
+                              <span>Oyun & Etkinlik Başarısı</span>
+                            </div>
+                            {item.hasActivityData && (
+                              <span className="text-[11px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                                +{item.activityXp} XP
+                              </span>
+                            )}
                           </div>
 
-                          {/* Student Self Note if present */}
-                          {item.rubricSubmission?.studentNote && (
-                            <div className="p-2 rounded-xl bg-white border border-indigo-100 text-[11px] text-slate-700 italic">
-                              &ldquo;{item.rubricSubmission.studentNote}&rdquo;
+                          {item.hasActivityData && item.activitySuccessRate !== null ? (
+                            <div className="space-y-2">
+                              <div className="flex items-baseline justify-between">
+                                <span className="text-2xl font-black text-emerald-700">
+                                  %{item.activitySuccessRate}
+                                </span>
+                                <span className="text-xs text-slate-600 font-bold">
+                                  {item.activitiesCount} Tamamlanan Etkinlik
+                                </span>
+                              </div>
+
+                              <div className="w-full bg-emerald-200 h-2 rounded-full overflow-hidden">
+                                <div
+                                  className="bg-emerald-600 h-full rounded-full transition-all"
+                                  style={{ width: `${item.activitySuccessRate}%` }}
+                                />
+                              </div>
+
+                              {/* Completed games chips */}
+                              {item.completedGames.length > 0 && (
+                                <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                                  {item.completedGames.map((game, gIdx) => (
+                                    <button
+                                      key={gIdx}
+                                      type="button"
+                                      onClick={() => {
+                                        setGameOutcomeFilter(item.outcomeCode);
+                                        setDrilldownView('games');
+                                      }}
+                                      className="px-2 py-0.5 rounded-md bg-white hover:bg-emerald-100 border border-emerald-200 text-emerald-900 text-[10px] font-bold shadow-xs flex items-center gap-1 transition-colors cursor-pointer"
+                                      title="Bu oyunu geçmişte filtrele"
+                                    >
+                                      <span>🎮</span>
+                                      <span>{game}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            /* Missing Game Activity Guard */
+                            <div className="py-4 flex flex-col items-center justify-center text-center space-y-1">
+                              <HelpCircle className="w-6 h-6 text-slate-300" />
+                              <div className="text-xs font-black text-slate-600">Oyun / Test Kaydı Bulunmuyor</div>
+                              <div className="text-[11px] text-slate-400 max-w-xs">
+                                Öğrenci bu kazanımdaki hafıza kartı, bulmaca veya testleri henüz sisteme kaydetmemiştir.
+                              </div>
                             </div>
                           )}
                         </div>
-                      ) : (
-                        /* Missing Rubric Guard */
-                        <div className="py-4 flex flex-col items-center justify-center text-center space-y-1">
-                          <AlertCircle className="w-6 h-6 text-amber-400" />
-                          <div className="text-xs font-black text-slate-600">Rubrik Doldurulmadı</div>
-                          <div className="text-[11px] text-slate-400 max-w-xs">
-                            Öğrenci bu kazanım için henüz öz değerlendirme rubriğini doldurmamıştır.
+
+                        {/* Column 2: Öz Değerlendirme Rubrik Sonucu */}
+                        <div className={`p-4 rounded-2xl border transition-all ${
+                          item.hasRubricData
+                            ? 'bg-indigo-50/40 border-indigo-200'
+                            : 'bg-slate-50/80 border-dashed border-slate-300 text-slate-400'
+                        }`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-800">
+                              <ClipboardCheck className={`w-4 h-4 ${item.hasRubricData ? 'text-indigo-600' : 'text-slate-400'}`} />
+                              <span>Öz Değerlendirme Rubriği</span>
+                            </div>
+                            {item.hasRubricData && item.rubricLevel && (
+                              <span className={`text-[10px] font-black px-2 py-0.5 rounded border ${
+                                item.rubricLevel === 'Mükemmel'
+                                  ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                  : item.rubricLevel === 'Başarılı'
+                                  ? 'bg-teal-100 text-teal-800 border-teal-200'
+                                  : item.rubricLevel === 'Orta'
+                                  ? 'bg-amber-100 text-amber-800 border-amber-200'
+                                  : 'bg-rose-100 text-rose-800 border-rose-200'
+                              }`}>
+                                {item.rubricLevel}
+                              </span>
+                            )}
                           </div>
+
+                          {item.hasRubricData && item.rubricScore !== null ? (
+                            <div className="space-y-2">
+                              <div className="flex items-baseline justify-between">
+                                <span className="text-2xl font-black text-indigo-700">
+                                  %{item.rubricScore}
+                                </span>
+                                <span className="text-xs text-slate-600 font-bold">
+                                  {item.rubricSubmission?.totalScore || 0} / {item.rubricSubmission?.maxScore || 20} Puan
+                                </span>
+                              </div>
+
+                              <div className="w-full bg-indigo-200 h-2 rounded-full overflow-hidden">
+                                <div
+                                  className="bg-indigo-600 h-full rounded-full transition-all"
+                                  style={{ width: `${item.rubricScore}%` }}
+                                />
+                              </div>
+
+                              {/* Student Self Note if present */}
+                              {item.rubricSubmission?.studentNote && (
+                                <div className="p-2 rounded-xl bg-white border border-indigo-100 text-[11px] text-slate-700 italic">
+                                  &ldquo;{item.rubricSubmission.studentNote}&rdquo;
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            /* Missing Rubric Guard */
+                            <div className="py-4 flex flex-col items-center justify-center text-center space-y-1">
+                              <AlertCircle className="w-6 h-6 text-amber-400" />
+                              <div className="text-xs font-black text-slate-600">Rubrik Doldurulmadı</div>
+                              <div className="text-[11px] text-slate-400 max-w-xs">
+                                Öğrenci bu kazanım için henüz öz değerlendirme rubriğini doldurmamıştır.
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
+
+                      {/* 3. LEARNING JOURNAL (ÖĞRENME GÜNLÜĞÜ / ÇIKIŞ BİLETİ) SECTION */}
+                      {item.hasJournalData && item.journalEntry && (
+                        <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-xs font-black text-indigo-950">
+                              <BookOpen className="w-4 h-4 text-indigo-600" />
+                              <span>Öğrenme Günlüğü (Çıkış Bileti Yansıtması)</span>
+                            </div>
+                            {item.journalEntry.teacherLiked && (
+                              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold flex items-center gap-1">
+                                <Heart className="w-3 h-3 fill-amber-500 text-amber-500" />
+                                <span>Öğretmen Yıldızlı</span>
+                              </span>
+                            )}
+                          </div>
+
+                          {item.journalEntry.prompt && (
+                            <div className="text-[11px] text-indigo-900 font-semibold">
+                              💡 <em>&quot;{item.journalEntry.prompt}&quot;</em>
+                            </div>
+                          )}
+
+                          <div className="p-3 rounded-xl bg-white border border-indigo-100 text-xs text-slate-800 italic leading-relaxed">
+                            &ldquo;{item.journalEntry.studentReflection}&rdquo;
+                          </div>
+
+                          {item.journalEntry.teacherFeedback && (
+                            <div className="p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-xs text-teal-950 space-y-0.5">
+                              <div className="text-[10px] font-bold text-teal-800 flex items-center gap-1">
+                                <MessageSquare className="w-3 h-3 text-teal-600" />
+                                <span>Öğretmen Geri Bildirimi:</span>
+                              </div>
+                              <p className="italic text-teal-900">&ldquo;{item.journalEntry.teacherFeedback}&rdquo;</p>
+                            </div>
+                          )}
                         </div>
                       )}
-                    </div>
 
-                  </div>
-
-                  {/* 3. LEARNING JOURNAL (ÖĞRENME GÜNLÜĞÜ / ÇIKIŞ BİLETİ) SECTION */}
-                  {item.hasJournalData && item.journalEntry && (
-                    <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-xs font-black text-indigo-950">
-                          <BookOpen className="w-4 h-4 text-indigo-600" />
-                          <span>Öğrenme Günlüğü (Çıkış Bileti Yansıtması)</span>
+                      {/* 4. COMPARATIVE PEDAGOGICAL INSIGHT BANNER */}
+                      <div className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${item.alignmentInsight.badgeClass}`}>
+                        <div className="flex items-start gap-2.5">
+                          <div className="p-1 rounded-lg bg-white/80 shrink-0 mt-0.5">
+                            {item.comparisonStatus === 'both_present' ? (
+                              <Sparkles className="w-4 h-4 text-emerald-700" />
+                            ) : (
+                              <Info className="w-4 h-4 text-slate-600" />
+                            )}
+                          </div>
+                          <div className="space-y-0.5">
+                            <div className="text-xs font-black">
+                              {item.alignmentInsight.title}
+                            </div>
+                            <div className="text-[11px] opacity-90 leading-relaxed">
+                              {item.alignmentInsight.description}
+                            </div>
+                          </div>
                         </div>
-                        {item.journalEntry.teacherLiked && (
-                          <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold flex items-center gap-1">
-                            <Heart className="w-3 h-3 fill-amber-500 text-amber-500" />
-                            <span>Öğretmen Yıldızlı</span>
-                          </span>
+
+                        {/* Comparison Delta Tag */}
+                        {item.comparisonStatus === 'both_present' && item.alignmentDelta !== null && (
+                          <div className="self-end sm:self-auto px-3 py-1 rounded-xl bg-white/90 border border-slate-300 text-slate-900 font-black text-xs shrink-0 flex items-center gap-1 shadow-xs">
+                            <span>Δ Fark:</span>
+                            <span className={item.alignmentDelta === 0 ? 'text-emerald-600' : 'text-indigo-600'}>
+                              {item.alignmentDelta > 0 ? `+${item.alignmentDelta}%` : `${item.alignmentDelta}%`}
+                            </span>
+                          </div>
                         )}
                       </div>
 
-                      {item.journalEntry.prompt && (
-                        <div className="text-[11px] text-indigo-900 font-semibold">
-                          💡 <em>&quot;{item.journalEntry.prompt}&quot;</em>
-                        </div>
-                      )}
-
-                      <div className="p-3 rounded-xl bg-white border border-indigo-100 text-xs text-slate-800 italic leading-relaxed">
-                        &ldquo;{item.journalEntry.studentReflection}&rdquo;
-                      </div>
-
-                      {item.journalEntry.teacherFeedback && (
-                        <div className="p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-xs text-teal-950 space-y-0.5">
-                          <div className="text-[10px] font-bold text-teal-800 flex items-center gap-1">
-                            <MessageSquare className="w-3 h-3 text-teal-600" />
-                            <span>Öğretmen Geri Bildirimi:</span>
-                          </div>
-                          <p className="italic text-teal-900">&ldquo;{item.journalEntry.teacherFeedback}&rdquo;</p>
-                        </div>
-                      )}
                     </div>
-                  )}
+                  );
+                })
+              )}
+            </div>
+          </>
+        )}
 
-                  {/* 4. COMPARATIVE PEDAGOGICAL INSIGHT BANNER */}
-                  <div className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${item.alignmentInsight.badgeClass}`}>
-                    <div className="flex items-start gap-2.5">
-                      <div className="p-1 rounded-lg bg-white/80 shrink-0 mt-0.5">
-                        {item.comparisonStatus === 'both_present' ? (
-                          <Sparkles className="w-4 h-4 text-emerald-700" />
-                        ) : (
-                          <Info className="w-4 h-4 text-slate-600" />
-                        )}
-                      </div>
-                      <div className="space-y-0.5">
-                        <div className="text-xs font-black">
-                          {item.alignmentInsight.title}
-                        </div>
-                        <div className="text-[11px] opacity-90 leading-relaxed">
-                          {item.alignmentInsight.description}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Comparison Delta Tag */}
-                    {item.comparisonStatus === 'both_present' && item.alignmentDelta !== null && (
-                      <div className="self-end sm:self-auto px-3 py-1 rounded-xl bg-white/90 border border-slate-300 text-slate-900 font-black text-xs shrink-0 flex items-center gap-1 shadow-xs">
-                        <span>Δ Fark:</span>
-                        <span className={item.alignmentDelta === 0 ? 'text-emerald-600' : 'text-indigo-600'}>
-                          {item.alignmentDelta > 0 ? `+${item.alignmentDelta}%` : `${item.alignmentDelta}%`}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {/* 5. MODAL FOOTER */}
+        {/* 4. MODAL FOOTER */}
         <div className="p-4 sm:p-5 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-xs text-slate-500 text-center sm:text-left">
             Türkiye Yüzyılı Maarif Modeli • Öğrenci Bireysel Başarı & Öz Değerlendirme Takip Sistemi
@@ -728,14 +1083,6 @@ export function StudentOutcomeDetailModal({
         </div>
 
       </div>
-
-      {/* Dedicated Student Game & Activity History Modal */}
-      <StudentGameHistoryModal
-        isOpen={isGameHistoryModalOpen}
-        onClose={() => setIsGameHistoryModalOpen(false)}
-        profile={profile}
-        initialOutcomeFilter={gameHistoryOutcomeFilter}
-      />
     </div>
   );
 }
