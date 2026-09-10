@@ -347,7 +347,7 @@ export function PrimeFactorsBench() {
 
   const [activeTab, setActiveTab] = useState<'sieve' | 'tree' | 'algorithm'>('sieve');
   const [sieveCrossed, setSieveCrossed] = useState<Set<number>>(new Set([1]));
-  const [activePrimeFilter, setActivePrimeFilter] = useState<number | null>(null);
+  const [appliedFilters, setAppliedFilters] = useState<Set<number>>(new Set());
 
   // TREE & ALGORITHM NUMBER
   const [primeTargetNumber, setPrimeTargetNumber] = useState<number>(72);
@@ -364,7 +364,14 @@ export function PrimeFactorsBench() {
   // Sieve Step Click
   const handleSieveFilter = (p: number) => {
     playSound('select');
-    setActivePrimeFilter(p);
+    setAppliedFilters((prev) => {
+      const next = new Set(prev);
+      next.add(p);
+      if (next.size === 4) {
+        addPoints(20);
+      }
+      return next;
+    });
     setSieveCrossed((prev) => {
       const next = new Set(prev);
       for (let i = p * 2; i <= 100; i += p) {
@@ -377,8 +384,17 @@ export function PrimeFactorsBench() {
   const handleResetSieve = () => {
     playSound('clear');
     setSieveCrossed(new Set([1]));
-    setActivePrimeFilter(null);
+    setAppliedFilters(new Set());
   };
+
+  const sieveButtons = [
+    { prime: 2, label: "2'nin Katlarını Ele" },
+    { prime: 3, label: "3'ün Katlarını Ele" },
+    { prime: 5, label: "5'in Katlarını Ele" },
+    { prime: 7, label: "7'nin Katlarını Ele" }
+  ];
+
+  const allFiltersApplied = sieveButtons.every((b) => appliedFilters.has(b.prime));
 
   // Algorithm Division Steps
   const algorithmSteps = useMemo(() => {
@@ -496,15 +512,23 @@ export function PrimeFactorsBench() {
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
-              {[2, 3, 5, 7].map((p) => (
-                <button
-                  key={p}
-                  onClick={() => handleSieveFilter(p)}
-                  className="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-black transition-all cursor-pointer"
-                >
-                  {p}'nin Katlarını Ele ✖
-                </button>
-              ))}
+              {sieveButtons.map(({ prime: p, label }) => {
+                const isApplied = appliedFilters.has(p);
+                return (
+                  <button
+                    key={p}
+                    onClick={() => handleSieveFilter(p)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                      isApplied
+                        ? 'bg-emerald-600 text-white shadow-md ring-1 ring-emerald-400 scale-102'
+                        : 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300'
+                    }`}
+                  >
+                    <span>{label}</span>
+                    <span>{isApplied ? '✓' : '✖'}</span>
+                  </button>
+                );
+              })}
               <button
                 onClick={handleResetSieve}
                 className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
@@ -517,18 +541,18 @@ export function PrimeFactorsBench() {
           {/* 100 Grid */}
           <div className="grid grid-cols-10 gap-1.5 p-3 bg-slate-900 rounded-2xl border border-slate-800">
             {Array.from({ length: 100 }, (_, i) => i + 1).map((n) => {
+              const isOne = n === 1;
               const isEliminated = sieveCrossed.has(n);
-              const isPrimeNum = isPrime(n);
 
               return (
                 <div
                   key={n}
                   className={`h-8 sm:h-9 rounded-lg flex items-center justify-center font-mono font-bold text-xs transition-all ${
-                    n === 1
-                      ? 'bg-slate-800 text-slate-500 line-through'
+                    isOne
+                      ? 'bg-slate-800/80 text-slate-500 line-through opacity-50'
                       : isEliminated
                       ? 'bg-slate-800/80 text-slate-500 line-through opacity-50'
-                      : isPrimeNum
+                      : allFiltersApplied
                       ? 'bg-amber-500 text-slate-950 font-black shadow-md scale-105 ring-2 ring-amber-300'
                       : 'bg-slate-800 text-white'
                   }`}
@@ -539,9 +563,23 @@ export function PrimeFactorsBench() {
             })}
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs text-amber-950 font-medium">
-            💡 <strong>Keşif:</strong> 1-100 arasında toplam <strong>25 adet</strong> asal sayı vardır. 2 en küçük ve tek çift asaldır!
-          </div>
+          {allFiltersApplied ? (
+            <div className="bg-emerald-50 border border-emerald-300 p-4 rounded-2xl text-xs text-emerald-950 font-bold flex items-center gap-3 animate-in fade-in duration-300">
+              <span className="text-2xl">🎉</span>
+              <div>
+                <strong>Tebrikler!</strong> 2, 3, 5 ve 7'nin tüm katlarını elediniz. 1-100 arasında kalan <strong>25 sayının tamamı ASAL SAYIDIR</strong> ve altın sarısı ile parlatılmıştır!
+              </div>
+            </div>
+          ) : (
+            <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs text-amber-950 font-medium flex items-center justify-between gap-2">
+              <div>
+                💡 <strong>Görev:</strong> Sırasıyla 2, 3, 5 ve 7 eleme butonlarına basarak asal sayıları keşfedin. Tüm eleme adımları tamamlandığında asal sayılar altın sarısı renkte parlayacaktır!
+              </div>
+              <span className="shrink-0 px-2.5 py-1 rounded-lg bg-amber-200/80 text-amber-900 font-bold font-mono">
+                {appliedFilters.size} / 4 Adım
+              </span>
+            </div>
+          )}
         </div>
       )}
 

@@ -1735,7 +1735,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-slate-800">
                       <span className="text-[11px] font-black text-amber-400">🛡️ Asal Kalburu (1-30):</span>
                       <div className="flex items-center gap-1">
-                        {[2, 3, 5].map((p) => (
+                        {[
+                          { p: 2, label: "2'nin Katlarını Ele" },
+                          { p: 3, label: "3'ün Katlarını Ele" },
+                          { p: 5, label: "5'in Katlarını Ele" }
+                        ].map(({ p, label }) => (
                           <button
                             key={p}
                             onClick={() => {
@@ -1748,7 +1752,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                                 : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                             }`}
                           >
-                            {p}'nin Katlarını Ele
+                            {label}
                           </button>
                         ))}
                       </div>
