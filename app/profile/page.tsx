@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from '@/lib/auth-store';
+import { useAuth, splitFullName, formatFullName } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import {
   getAllProvinces,
@@ -21,6 +21,7 @@ import {
   MapPin,
   BookOpen,
   Lock,
+  KeyRound,
   CheckCircle2,
   Sparkles,
   Save,
@@ -31,7 +32,9 @@ import {
   AlertCircle,
   Search,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 const BRANCH_OPTIONS = [
@@ -52,12 +55,13 @@ const BRANCH_OPTIONS = [
 ];
 
 export default function ProfilePage() {
-  const { currentUser, updateTeacherProfile } = useAuth();
+  const { currentUser, updateUserProfile, setUserPassword } = useAuth();
   const { playSound } = useApp();
   const router = useRouter();
 
   // Form states
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [branch, setBranch] = useState('Matematik');
@@ -69,6 +73,12 @@ export default function ProfilePage() {
   const [customSchoolName, setCustomSchoolName] = useState('');
   const [assignedClasses, setAssignedClasses] = useState<string[]>(['5-A', '5-B']);
   const [newClassInput, setNewClassInput] = useState('');
+
+  // Password Setup States
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   // Live API States
   const [districtsList, setDistrictsList] = useState<string[]>([]);
@@ -87,7 +97,9 @@ export default function ProfilePage() {
   // Initialize form with currentUser data
   useEffect(() => {
     if (currentUser) {
-      setName(currentUser.name || '');
+      const parts = splitFullName(currentUser.name || '');
+      setFirstName(currentUser.firstName || parts.firstName || '');
+      setLastName(currentUser.lastName || parts.lastName || '');
       setEmail(currentUser.email || '');
 
       if (currentUser.role === 'teacher') {
@@ -209,27 +221,65 @@ export default function ProfilePage() {
     setAssignedClasses(assignedClasses.filter((c) => c !== cls));
   };
 
+  // Handle Password Direct Update
+  const handleUpdatePassword = () => {
+    setPasswordMsg(null);
+    if (!password) {
+      setPasswordMsg({ text: 'Lütfen bir şifre giriniz.', type: 'error' });
+      return;
+    }
+    if (password.length < 6) {
+      setPasswordMsg({ text: 'Şifreniz en az 6 karakter olmalıdır.', type: 'error' });
+      return;
+    }
+    if (password !== passwordConfirm) {
+      setPasswordMsg({ text: 'Girdiğiniz şifreler eşleşmiyor.', type: 'error' });
+      return;
+    }
+
+    if (currentUser) {
+      const ok = setUserPassword(currentUser.id, password);
+      if (ok) {
+        playSound('success');
+        setPasswordMsg({ text: 'Giriş şifreniz başarıyla kaydedildi! Artık e-posta ve şifrenizle giriş yapabilirsiniz.', type: 'success' });
+        setPassword('');
+        setPasswordConfirm('');
+      }
+    }
+  };
+
   // Form Submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
     setSavedSuccess(false);
 
-    if (!name.trim()) {
-      setErrorMsg('Lütfen ad ve soyadınızı giriniz.');
+    if (!firstName.trim()) {
+      setErrorMsg('Lütfen adınızı giriniz.');
       return;
     }
 
-    if (!phone.trim()) {
-      setErrorMsg('Lütfen iletişim telefon numaranızı giriniz.');
+    if (!lastName.trim()) {
+      setErrorMsg('Lütfen soyadınızı giriniz.');
       return;
+    }
+
+    if (password) {
+      if (password.length < 6) {
+        setErrorMsg('Şifreniz en az 6 karakter olmalıdır.');
+        return;
+      }
+      if (password !== passwordConfirm) {
+        setErrorMsg('Girdiğiniz şifreler eşleşmiyor.');
+        return;
+      }
     }
 
     const finalSchoolName = isCustomSchool && customSchoolName.trim()
       ? customSchoolName.trim()
       : school;
 
-    if (!finalSchoolName.trim()) {
+    if (currentUser?.role === 'teacher' && !finalSchoolName.trim()) {
       setErrorMsg('Lütfen okulunuzu seçiniz veya adını yazınız.');
       return;
     }
@@ -237,9 +287,12 @@ export default function ProfilePage() {
     setIsSubmitting(true);
     playSound('success');
 
-    if (currentUser && currentUser.role === 'teacher') {
-      updateTeacherProfile(currentUser.id, {
-        name: name.trim(),
+    if (currentUser) {
+      const formatted = formatFullName(firstName, lastName);
+      updateUserProfile(currentUser.id, {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        name: formatted,
         phone: phone.trim(),
         branch,
         city,
@@ -249,6 +302,10 @@ export default function ProfilePage() {
         assignedClasses,
         isProfileComplete: true
       });
+
+      if (password) {
+        setUserPassword(currentUser.id, password);
+      }
     }
 
     setSavedSuccess(true);
@@ -281,6 +338,8 @@ export default function ProfilePage() {
     );
   }
 
+  const currentFullName = formatFullName(firstName, lastName, currentUser.name);
+
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 space-y-6 animate-in fade-in duration-300">
       
@@ -300,7 +359,7 @@ export default function ProfilePage() {
               <Sparkles className="w-5 h-5 text-teal-500" />
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              MEB Maarif Modeli kurum ve öğretmen bilgilerinizi buradan güncelleyebilirsiniz.
+              Ad, soyad, şifre ve kurum bilgilerinizi buradan güncelleyebilirsiniz.
             </p>
           </div>
         </div>
@@ -345,12 +404,12 @@ export default function ProfilePage() {
         <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 p-6 sm:p-8 text-white flex flex-col sm:flex-row items-center sm:items-start gap-5">
           <UserAvatar
             avatar={currentUser.avatar}
-            name={currentUser.name}
+            name={currentFullName}
             size="xl"
             className="w-20 h-20 border-2 border-teal-400 bg-teal-500/20 shadow-inner shrink-0"
           />
           <div className="space-y-1 text-center sm:text-left flex-1">
-            <h2 className="text-xl sm:text-2xl font-black">{name || currentUser.name}</h2>
+            <h2 className="text-xl sm:text-2xl font-black">{currentFullName}</h2>
             <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-teal-200 font-medium flex-wrap">
               <span className="flex items-center gap-1">
                 <School className="w-3.5 h-3.5 text-teal-400" />
@@ -363,7 +422,7 @@ export default function ProfilePage() {
               </span>
             </div>
             <div className="pt-2 text-[11px] text-slate-300">
-              🔒 Google Hesabı ile oturum açıldı. E-posta adresi güvenli şekilde doğrulanmıştır.
+              🔒 Güvenli Kullanıcı Hesabı. E-posta adresi doğrulanmıştır.
             </div>
           </div>
         </div>
@@ -371,31 +430,50 @@ export default function ProfilePage() {
         {/* Inputs Body */}
         <div className="p-6 sm:p-8 space-y-6">
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            
-            {/* Adı Soyadı */}
+          {/* Ad & Soyad Grid (Ayrı Ayrı) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Ad */}
             <div className="space-y-1.5">
               <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-teal-600" />
-                <span>Adı ve Soyadı</span>
+                <span>Ad (İsim)</span>
                 <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
                 required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Örn: Mimar Sinan"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Örn: Ahmet"
                 className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
               />
             </div>
 
-            {/* Google Mail Adresi (Disabled / Read Only) */}
+            {/* Soyad */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-teal-600" />
+                <span>Soyad</span>
+                <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Örn: Yılmaz"
+                className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* E-Posta Adresi (Disabled / Read Only) */}
             <div className="space-y-1.5">
               <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Google E-Posta Adresi</span>
+                  <span>Kayıtlı E-Posta Adresi</span>
                 </span>
                 <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
                   <Lock className="w-3 h-3 text-slate-400" />
@@ -412,7 +490,7 @@ export default function ProfilePage() {
                 />
                 <div className="absolute right-3.5 top-3.5 flex items-center gap-1 text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
                   <ShieldCheck className="w-3 h-3 text-blue-600" />
-                  <span>OAuth Doğrulandı</span>
+                  <span>Doğrulandı</span>
                 </div>
               </div>
             </div>
@@ -435,7 +513,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Branş */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 md:col-span-2">
               <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5 text-teal-600" />
                 <span>Öğretmenlik Branşı</span>
@@ -453,7 +531,86 @@ export default function ProfilePage() {
                 ))}
               </select>
             </div>
+          </div>
 
+          {/* PASSWORD MANAGEMENT CARD (GOOGLE İLE GİRİŞ YAPANLAR İÇİN ŞİFRE BELİRLEME) */}
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-50/60 to-indigo-50/40 border-2 border-indigo-100 space-y-4">
+            <div className="flex items-start justify-between gap-2">
+              <div className="space-y-1">
+                <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                  <KeyRound className="w-4 h-4 text-indigo-600" />
+                  <span>Giriş Şifresi Belirleme / Güncelleme</span>
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Google veya başka yöntemle girmiş olsanız bile buradan şifre belirleyerek sonraki girişlerinizde <strong>e-posta ve şifrenizle</strong> giriş yapabilirsiniz.
+                </p>
+              </div>
+              <span className="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-900 text-[10px] font-black shrink-0">
+                Şifreli Giriş
+              </span>
+            </div>
+
+            {passwordMsg && (
+              <div
+                className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${
+                  passwordMsg.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                    : 'bg-rose-50 text-rose-900 border border-rose-200'
+                }`}
+              >
+                {passwordMsg.type === 'success' ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                )}
+                <span>{passwordMsg.text}</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">Yeni Şifre</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="En az 6 karakter"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-900 outline-none focus:border-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">Yeni Şifre (Tekrar)</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Şifreyi tekrar yazınız"
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-900 outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <button
+                type="button"
+                onClick={handleUpdatePassword}
+                disabled={!password || !passwordConfirm}
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Sadece Şifreyi Kaydet</span>
+              </button>
+            </div>
           </div>
 
           {/* Location & School Selection (Provinces -> Districts -> Schools) */}

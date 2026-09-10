@@ -12,10 +12,10 @@ async function main() {
 
   // 1. Admin Kullanıcılar
   const adminUsers = [
-    { email: 'admin@maarif.gov.tr', name: 'Maarif Sistem Yöneticisi', avatar: '🛡️' },
-    { email: 'powerose@gmail.com', name: 'Sistem Yöneticisi (Powerose)', avatar: '🛡️' },
-    { email: 'maarifakademi.com.tr@gmail.com', name: 'Maarif Akademi Yönetim', avatar: '🛡️' },
-    { email: 'viziteci325@gmail.com', name: 'Sistem Yöneticisi', avatar: '🛡️' },
+    { email: 'admin@maarif.gov.tr', firstName: 'Maarif Sistem', lastName: 'Yöneticisi', name: 'Maarif Sistem Yöneticisi', avatar: '🛡️' },
+    { email: 'powerose@gmail.com', firstName: 'Sistem Yöneticisi', lastName: 'Powerose', name: 'Sistem Yöneticisi (Powerose)', avatar: '🛡️' },
+    { email: 'maarifakademi.com.tr@gmail.com', firstName: 'Maarif Akademi', lastName: 'Yönetim', name: 'Maarif Akademi Yönetim', avatar: '🛡️' },
+    { email: 'viziteci325@gmail.com', firstName: 'Sistem Yöneticisi', lastName: 'Viziteci', name: 'Sistem Yöneticisi', avatar: '🛡️' },
   ];
 
   for (const admin of adminUsers) {
@@ -24,7 +24,10 @@ async function main() {
       update: { role: Role.ADMIN },
       create: {
         email: admin.email,
+        firstName: admin.firstName,
+        lastName: admin.lastName,
         name: admin.name,
+        password: 'admin',
         role: Role.ADMIN,
         avatar: admin.avatar,
       },
@@ -38,7 +41,10 @@ async function main() {
     update: {},
     create: {
       email: 'ahmet.ogretmen@meb.k12.tr',
+      firstName: 'Mimar Sinan & Hasan',
+      lastName: 'Hoca',
       name: 'Mimar Sinan & Hasan Hoca',
+      password: 'admin',
       role: Role.TEACHER,
       avatar: '👨‍🏫',
       teacherProfile: {
@@ -70,7 +76,10 @@ async function main() {
     update: {},
     create: {
       email: 'zeynep.kaya@meb.k12.tr',
+      firstName: 'Zeynep',
+      lastName: 'Kaya',
       name: 'Zeynep Kaya',
+      password: 'admin',
       role: Role.TEACHER,
       avatar: '👩‍🏫',
       teacherProfile: {
@@ -89,13 +98,20 @@ async function main() {
   console.log('✅ Onay Bekleyen Öğretmen oluşturuldu:', teacher2User.email);
 
   // 4. Öğrenciler
-  if (teacher1User.teacherProfile) {
+  const teacher1Profile = await prisma.teacherProfile.findFirst({
+    where: { user: { email: 'ahmet.ogretmen@meb.k12.tr' } }
+  });
+
+  if (teacher1Profile) {
     const student1 = await prisma.user.upsert({
       where: { email: 'hasan.ogrenci@meb.k12.tr' },
       update: {},
       create: {
         email: 'hasan.ogrenci@meb.k12.tr',
+        firstName: 'Çırak',
+        lastName: 'Hasan',
         name: 'Çırak Hasan',
+        password: 'admin',
         role: Role.STUDENT,
         avatar: '🎓',
         studentProfile: {
@@ -106,7 +122,7 @@ async function main() {
             city: 'Edirne',
             district: 'Merkez',
             school: 'Edirne Selimiye İmam Hatip Ortaokulu',
-            teacherId: teacher1User.teacherProfile.id,
+            teacherId: teacher1Profile.id,
             points: 450,
           },
         },

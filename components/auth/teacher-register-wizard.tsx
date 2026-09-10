@@ -49,7 +49,8 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
 
   // Step 1: Form Data
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     passwordConfirm: '',
@@ -67,9 +68,14 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
   const [copiedCode, setCopiedCode] = useState(false);
 
   const handleGoogleQuickRegister = (account: { name: string; email: string; avatar?: string }) => {
+    const parts = (account.name || '').trim().split(/\s+/);
+    const lName = parts.length > 1 ? parts.pop() || '' : '';
+    const fName = parts.join(' ') || account.name || 'Öğretmen';
+
     setFormData((prev) => ({
       ...prev,
-      name: account.name,
+      firstName: fName,
+      lastName: lName,
       email: account.email,
       password: 'google_oauth_verified',
       passwordConfirm: 'google_oauth_verified'
@@ -77,6 +83,8 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
 
     // Start registration
     const res = startTeacherRegistration({
+      firstName: fName,
+      lastName: lName,
       name: account.name,
       email: account.email,
       password: 'google_oauth_verified',
@@ -193,8 +201,12 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
     e.preventDefault();
     setErrorMessage('');
 
-    if (!formData.name.trim()) {
-      setErrorMessage('Lütfen adınızı ve soyadınızı giriniz.');
+    if (!formData.firstName.trim()) {
+      setErrorMessage('Lütfen adınızı giriniz.');
+      return;
+    }
+    if (!formData.lastName.trim()) {
+      setErrorMessage('Lütfen soyadınızı giriniz.');
       return;
     }
     if (!formData.email.trim() || !formData.email.includes('@')) {
@@ -210,8 +222,12 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
       return;
     }
 
+    const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
+
     const res = startTeacherRegistration({
-      name: formData.name,
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      name: fullName,
       email: formData.email,
       password: formData.password,
       phone: formData.phone,
@@ -297,9 +313,13 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
       return;
     }
 
+    const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
+
     // Update teacher info with finalized school in store
     startTeacherRegistration({
-      name: formData.name,
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      name: fullName,
       email: formData.email,
       password: formData.password,
       phone: formData.phone,
@@ -380,20 +400,40 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
           </div>
 
           <div className="space-y-3">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Ad Soyad <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                <input
-                  type="text"
-                  required
-                  placeholder="Örn: Ayşe Yılmaz"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 text-xs sm:text-sm outline-none"
-                />
+            {/* Ad ve Soyad (Ayrı Ayrı) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Ad <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="Örn: Ayşe"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 text-xs sm:text-sm outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Soyad <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="Örn: Yılmaz"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 text-xs sm:text-sm outline-none"
+                  />
+                </div>
               </div>
             </div>
 
@@ -513,7 +553,7 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
                 </span>
               </div>
               <div className="text-xs text-amber-950 font-medium">
-                "Sayın {formData.name}, Maarif Akademi öğretmen kaydı onay kodunuz: <strong className="text-sm font-black text-slate-900 tracking-wider bg-white px-2 py-0.5 rounded border border-amber-300">{simulatedCodeReceived}</strong>"
+                "Sayın {formData.firstName} {formData.lastName}, Maarif Akademi öğretmen kaydı onay kodunuz: <strong className="text-sm font-black text-slate-900 tracking-wider bg-white px-2 py-0.5 rounded border border-amber-300">{simulatedCodeReceived}</strong>"
               </div>
               <button
                 type="button"
@@ -751,7 +791,7 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs space-y-2">
             <div className="flex justify-between border-b border-slate-200 pb-2">
               <span className="text-slate-500 font-medium">Öğretmen:</span>
-              <span className="font-extrabold text-slate-900">{formData.name}</span>
+              <span className="font-extrabold text-slate-900">{formData.firstName} {formData.lastName}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-2">
               <span className="text-slate-500 font-medium">E-Posta:</span>

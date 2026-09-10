@@ -34,6 +34,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
   const [activeTab, setActiveTab] = useState<'login' | 'register'>(defaultTab);
   const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [showGoogleModal, setShowGoogleModal] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -70,13 +72,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-    if (!emailInput.trim()) return;
+    if (!emailInput.trim()) {
+      setLoginError('Lütfen e-posta adresinizi giriniz.');
+      return;
+    }
 
-    const success = loginWithEmail(emailInput);
+    const success = loginWithEmail(emailInput, passwordInput || undefined);
     if (success) {
       onClose();
     } else {
-      setLoginError('Bu e-posta adresine ait kullanıcı bulunamadı.');
+      setLoginError('E-posta adresi veya şifre hatalı. Lütfen kontrol ediniz.');
     }
   };
 
@@ -214,11 +219,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
               </button>
             </div>
 
-            {/* Email Login Form */}
+            {/* Email & Password Login Form */}
             <div className="pt-2 border-t border-slate-100">
               <form onSubmit={handleEmailLogin} className="space-y-3">
                 <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-left">
-                  veya Kayıtlı E-Posta ile Giriş
+                  veya Kayıtlı E-Posta ve Şifre ile Giriş
                 </div>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -226,9 +231,27 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     type="email"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
-                    placeholder="ornek@meb.k12.tr"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
+                    placeholder="ornek@meb.k12.tr veya gmail"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium"
                   />
+                </div>
+
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    placeholder="Şifreniz (Varsayılan: 123456 veya belirlenen)"
+                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
                 </div>
 
                 {loginError && (

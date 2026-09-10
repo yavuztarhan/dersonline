@@ -4,8 +4,11 @@ export type TeacherApprovalStatus = 'pending_email' | 'pending_admin_approval' |
 
 export interface BaseUser {
   id: string;
-  name: string;
+  name: string; // Tam Ad (firstName + lastName)
+  firstName: string; // Ad
+  lastName: string; // Soyad
   email: string;
+  password?: string; // Profilde belirlenebilen giriş şifresi
   role: UserRole;
   avatar?: string;
   createdAt: string;
@@ -71,7 +74,9 @@ export interface ProvinceItem {
 }
 
 export interface TeacherRegistrationPayload {
-  name: string;
+  firstName: string;
+  lastName: string;
+  name?: string;
   email: string;
   password?: string;
   phone?: string;

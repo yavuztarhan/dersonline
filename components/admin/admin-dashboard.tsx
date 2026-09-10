@@ -97,7 +97,9 @@ export function AdminDashboard() {
   const handleCreateMockPendingTeacher = () => {
     const randomNum = Math.floor(10 + Math.random() * 90);
     const mockPayload = {
-      name: `Öğr. Selin Aktaş ${randomNum}`,
+      firstName: 'Selin',
+      lastName: `Aktaş ${randomNum}`,
+      name: `Selin Aktaş ${randomNum}`,
       email: `selin.aktas${randomNum}@meb.k12.tr`,
       phone: `0533 555 ${randomNum} 00`,
       city: 'İzmir',

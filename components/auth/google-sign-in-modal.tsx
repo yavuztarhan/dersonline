@@ -79,7 +79,8 @@ export function GoogleSignInModal({
   mode = 'login'
 }: GoogleSignInModalProps) {
   const [customMode, setCustomMode] = useState(false);
-  const [customName, setCustomName] = useState('');
+  const [customFirstName, setCustomFirstName] = useState('');
+  const [customLastName, setCustomLastName] = useState('');
   const [customEmail, setCustomEmail] = useState('');
   const [customError, setCustomError] = useState('');
   const [mounted, setMounted] = useState(false);
@@ -94,8 +95,12 @@ export function GoogleSignInModal({
     e.preventDefault();
     setCustomError('');
 
-    if (!customName.trim()) {
-      setCustomError('Lütfen ad ve soyad giriniz.');
+    if (!customFirstName.trim()) {
+      setCustomError('Lütfen adınızı giriniz.');
+      return;
+    }
+    if (!customLastName.trim()) {
+      setCustomError('Lütfen soyadınızı giriniz.');
       return;
     }
     if (!customEmail.trim() || !customEmail.includes('@')) {
@@ -103,8 +108,10 @@ export function GoogleSignInModal({
       return;
     }
 
+    const fullName = `${customFirstName.trim()} ${customLastName.trim()}`;
+
     onSelectAccount({
-      name: customName.trim(),
+      name: fullName,
       email: customEmail.trim().toLowerCase(),
       avatar: '🌟'
     });
@@ -224,18 +231,34 @@ export function GoogleSignInModal({
                 </div>
               )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Ad Soyad
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Örn: Melis Yıldız"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs outline-none focus:border-teal-500"
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Ad
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Örn: Melis"
+                    value={customFirstName}
+                    onChange={(e) => setCustomFirstName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs outline-none focus:border-teal-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Soyad
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Örn: Yıldız"
+                    value={customLastName}
+                    onChange={(e) => setCustomLastName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs outline-none focus:border-teal-500"
+                  />
+                </div>
               </div>
 
               <div>

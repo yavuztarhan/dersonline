@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useApp } from '@/lib/store';
-import { useAuth } from '@/lib/auth-store';
+import { useAuth, splitFullName } from '@/lib/auth-store';
 import { StudentUser, TeacherUser } from '@/types/auth';
 import confetti from 'canvas-confetti';
 import {
@@ -108,9 +108,12 @@ export function RandomStudentPickerModal() {
 
     const tch = currentUser && currentUser.role === 'teacher' ? (currentUser as TeacherUser) : null;
     const targetClass = newStudentClass || (selectedClassFilter !== 'ALL' ? selectedClassFilter : '5-A');
+    const { firstName, lastName } = splitFullName(newStudentName.trim());
 
     const newStudentObj: StudentUser = {
       id: `stu-${Date.now()}`,
+      firstName: firstName || 'Öğrenci',
+      lastName: lastName || '',
       name: newStudentName.trim(),
       email: `${newStudentNumber.trim() || Date.now()}@okul.meb.k12.tr`,
       role: 'student',

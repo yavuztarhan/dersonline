@@ -24,7 +24,10 @@ enum TeacherStatus {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  firstName String   @default("")
+  lastName  String   @default("")
   name      String
+  password  String?  // Giriş şifresi (Google veya e-posta ile giriş yapanlar için)
   role      Role     @default(STUDENT)
   avatar    String?
   createdAt DateTime @default(now())

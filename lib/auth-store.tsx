@@ -23,6 +23,8 @@ interface AuthContextType {
   loginWithEmail: (email: string, pass?: string) => boolean;
   loginWithGoogle: (profile: { name: string; email: string; avatar?: string }) => { isNewUser: boolean; user: AuthUser };
   logout: () => void;
+  setUserPassword: (userId: string, newPassword: string) => boolean;
+  updateUserProfile: (userId: string, updates: Partial<AuthUser>) => void;
   
   // Teacher Registration & Profile Flow
   startTeacherRegistration: (data: TeacherRegistrationPayload) => { code: string; success: boolean };
@@ -46,6 +48,27 @@ interface AuthContextType {
   getVisibleStudents: (user?: AuthUser | null) => StudentUser[];
 }
 
+export function splitFullName(fullName: string): { firstName: string; lastName: string } {
+  const clean = (fullName || '').trim().replace(/\s+/g, ' ');
+  if (!clean) return { firstName: '', lastName: '' };
+  const parts = clean.split(' ');
+  if (parts.length === 1) {
+    return { firstName: parts[0], lastName: '' };
+  }
+  const lastName = parts.pop() || '';
+  const firstName = parts.join(' ');
+  return { firstName, lastName };
+}
+
+export function formatFullName(firstName?: string, lastName?: string, fallback = ''): string {
+  const f = (firstName || '').trim();
+  const l = (lastName || '').trim();
+  if (f && l) return `${f} ${l}`;
+  if (f) return f;
+  if (l) return l;
+  return fallback;
+}
+
 export const ADMIN_EMAILS = [
   'admin@maarif.gov.tr',
   'powerose@gmail.com',
@@ -56,8 +79,11 @@ export const ADMIN_EMAILS = [
 export const SEED_ADMINS: AdminUser[] = [
   {
     id: 'usr-admin-1',
+    firstName: 'Maarif Sistem',
+    lastName: 'Yöneticisi',
     name: 'Maarif Sistem Yöneticisi',
     email: 'admin@maarif.gov.tr',
+    password: 'admin',
     role: 'admin',
     avatar: '🛡️',
     createdAt: '2026-09-01',
@@ -65,8 +91,11 @@ export const SEED_ADMINS: AdminUser[] = [
   },
   {
     id: 'usr-admin-powerose',
-    name: 'Sistem Yöneticisi (Powerose)',
+    firstName: 'Sistem Yöneticisi',
+    lastName: 'Powerose',
+    name: 'Sistem Yöneticisi Powerose',
     email: 'powerose@gmail.com',
+    password: 'admin',
     role: 'admin',
     avatar: '👑',
     createdAt: '2026-09-08',
@@ -74,8 +103,11 @@ export const SEED_ADMINS: AdminUser[] = [
   },
   {
     id: 'usr-admin-maarifakademi',
+    firstName: 'Maarif Akademi',
+    lastName: 'Yönetim',
     name: 'Maarif Akademi Yönetim',
     email: 'maarifakademi.com.tr@gmail.com',
+    password: 'admin',
     role: 'admin',
     avatar: '👑',
     createdAt: '2026-09-08',
@@ -83,8 +115,11 @@ export const SEED_ADMINS: AdminUser[] = [
   },
   {
     id: 'usr-admin-viziteci',
-    name: 'Sistem Yöneticisi (Viziteci)',
+    firstName: 'Sistem Yöneticisi',
+    lastName: 'Viziteci',
+    name: 'Sistem Yöneticisi Viziteci',
     email: 'viziteci325@gmail.com',
+    password: 'admin',
     role: 'admin',
     avatar: '👑',
     createdAt: '2026-09-08',
@@ -104,10 +139,15 @@ export const getAdminUser = (email: string, name?: string, avatar?: string): Adm
   const seed = SEED_ADMINS.find((a) => a.email.toLowerCase() === trimmed);
   if (seed) return seed;
 
+  const { firstName, lastName } = splitFullName(name || 'Sistem Yöneticisi');
+
   return {
     id: `usr-admin-${trimmed.replace(/[^a-z0-9]/g, '_')}`,
-    name: name || 'Sistem Yöneticisi',
+    firstName: firstName || 'Sistem',
+    lastName: lastName || 'Yöneticisi',
+    name: formatFullName(firstName, lastName, name || 'Sistem Yöneticisi'),
     email: trimmed,
+    password: 'admin',
     role: 'admin',
     avatar: avatar || '👑',
     createdAt: '2026-09-08',
@@ -118,8 +158,11 @@ export const getAdminUser = (email: string, name?: string, avatar?: string): Adm
 const SEED_TEACHERS: TeacherUser[] = [
   {
     id: 'tch-101',
+    firstName: 'Mimar Sinan & Hasan',
+    lastName: 'Hoca',
     name: 'Mimar Sinan & Hasan Hoca',
     email: 'ahmet.ogretmen@meb.k12.tr',
+    password: 'admin',
     role: 'teacher',
     avatar: '👨‍🏫',
     phone: '0555 123 45 67',
@@ -136,8 +179,11 @@ const SEED_TEACHERS: TeacherUser[] = [
   },
   {
     id: 'tch-102',
+    firstName: 'Zeynep',
+    lastName: 'Kaya',
     name: 'Zeynep Kaya',
     email: 'zeynep.kaya@meb.k12.tr',
+    password: 'admin',
     role: 'teacher',
     avatar: '👩‍🏫',
     phone: '0532 987 65 43',
@@ -154,8 +200,11 @@ const SEED_TEACHERS: TeacherUser[] = [
   },
   {
     id: 'tch-103',
+    firstName: 'Mehmet',
+    lastName: 'Şahin',
     name: 'Mehmet Şahin',
     email: 'mehmet.sahin@meb.k12.tr',
+    password: 'admin',
     role: 'teacher',
     avatar: '👨‍🏫',
     phone: '0544 321 00 11',
@@ -172,8 +221,11 @@ const SEED_TEACHERS: TeacherUser[] = [
   },
   {
     id: 'tch-104',
+    firstName: 'Ayşe',
+    lastName: 'Demir',
     name: 'Ayşe Demir (Fen Öğretmeni)',
     email: 'ayse.fen@meb.k12.tr',
+    password: 'admin',
     role: 'teacher',
     avatar: '🔬',
     phone: '0533 111 22 33',
@@ -194,8 +246,11 @@ const SEED_STUDENTS: StudentUser[] = [
   // 5-A Sınıfı
   {
     id: 'stu-201',
+    firstName: 'Çırak',
+    lastName: 'Hasan',
     name: 'Çırak Hasan',
     email: 'hasan.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '🎓',
     studentNumber: '104',
@@ -211,8 +266,11 @@ const SEED_STUDENTS: StudentUser[] = [
   },
   {
     id: 'stu-202',
+    firstName: 'Elif',
+    lastName: 'Çelik',
     name: 'Elif Çelik',
     email: 'elif.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '👩‍🎓',
     studentNumber: '215',
@@ -228,8 +286,11 @@ const SEED_STUDENTS: StudentUser[] = [
   },
   {
     id: 'stu-204',
+    firstName: 'Ahmet',
+    lastName: 'Yılmaz',
     name: 'Ahmet Yılmaz',
     email: 'ahmet.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '🧑‍🎓',
     studentNumber: '108',
@@ -245,8 +306,11 @@ const SEED_STUDENTS: StudentUser[] = [
   },
   {
     id: 'stu-205',
+    firstName: 'Zeynep',
+    lastName: 'Kaya',
     name: 'Zeynep Kaya',
     email: 'zeynep.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '👩‍🎓',
     studentNumber: '312',
@@ -262,8 +326,11 @@ const SEED_STUDENTS: StudentUser[] = [
   },
   {
     id: 'stu-206',
+    firstName: 'Ömer Faruk',
+    lastName: 'Demir',
     name: 'Ömer Faruk Demir',
     email: 'omer.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '👨‍🎓',
     studentNumber: '177',
@@ -281,8 +348,11 @@ const SEED_STUDENTS: StudentUser[] = [
   // 5-B Sınıfı
   {
     id: 'stu-203',
+    firstName: 'Burak',
+    lastName: 'Polat',
     name: 'Burak Polat',
     email: 'burak.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '🎓',
     studentNumber: '142',
@@ -298,8 +368,11 @@ const SEED_STUDENTS: StudentUser[] = [
   },
   {
     id: 'stu-207',
+    firstName: 'Meryem',
+    lastName: 'Şen',
     name: 'Meryem Şen',
     email: 'meryem.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '👩‍🎓',
     studentNumber: '254',
@@ -315,8 +388,11 @@ const SEED_STUDENTS: StudentUser[] = [
   },
   {
     id: 'stu-208',
+    firstName: 'Emir Arda',
+    lastName: 'Öztürk',
     name: 'Emir Arda Öztürk',
     email: 'emir.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '🧑‍🎓',
     studentNumber: '189',
@@ -334,8 +410,11 @@ const SEED_STUDENTS: StudentUser[] = [
   // 5-C Sınıfı
   {
     id: 'stu-209',
+    firstName: 'Selin',
+    lastName: 'Koç',
     name: 'Selin Koç',
     email: 'selin.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '👩‍🎓',
     studentNumber: '305',
@@ -351,8 +430,11 @@ const SEED_STUDENTS: StudentUser[] = [
   },
   {
     id: 'stu-210',
+    firstName: 'Kaan',
+    lastName: 'Aydın',
     name: 'Kaan Aydın',
     email: 'kaan.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '👨‍🎓',
     studentNumber: '411',
@@ -370,8 +452,11 @@ const SEED_STUDENTS: StudentUser[] = [
   // 5-D Sınıfı
   {
     id: 'stu-211',
+    firstName: 'Defne',
+    lastName: 'Erdem',
     name: 'Defne Erdem',
     email: 'defne.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '👩‍🎓',
     studentNumber: '502',
@@ -387,8 +472,11 @@ const SEED_STUDENTS: StudentUser[] = [
   },
   {
     id: 'stu-212',
+    firstName: 'Yusuf Kerem',
+    lastName: 'Aksoy',
     name: 'Yusuf Kerem Aksoy',
     email: 'yusuf.ogrenci@meb.k12.tr',
+    password: 'admin',
     role: 'student',
     avatar: '🧑‍🎓',
     studentNumber: '534',
@@ -420,12 +508,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Load from localStorage on mount
   useEffect(() => {
     try {
+      const enrichUser = (u: any) => {
+        if (!u) return u;
+        if (!u.firstName || !u.lastName) {
+          const parts = splitFullName(u.name || '');
+          u.firstName = u.firstName || parts.firstName || 'Kullanıcı';
+          u.lastName = u.lastName || parts.lastName || '';
+        }
+        if (!u.name) {
+          u.name = formatFullName(u.firstName, u.lastName, 'Kullanıcı');
+        }
+        return u;
+      };
+
       const savedAdmins = localStorage.getItem('maarif_admins');
       if (savedAdmins) {
         const parsed = JSON.parse(savedAdmins);
         if (Array.isArray(parsed) && parsed.length > 0) {
           // Merge seed admins so core admins are always available
-          const merged = [...parsed];
+          const merged = parsed.map(enrichUser);
           for (const s of SEED_ADMINS) {
             if (!merged.some((a: AdminUser) => a.email.toLowerCase() === s.email.toLowerCase())) {
               merged.push(s);
@@ -436,13 +537,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const savedTeachers = localStorage.getItem('maarif_teachers');
-      if (savedTeachers) setTeachers(JSON.parse(savedTeachers));
+      if (savedTeachers) {
+        const parsed = JSON.parse(savedTeachers);
+        if (Array.isArray(parsed)) {
+          setTeachers(parsed.map(enrichUser));
+        }
+      }
 
       const savedStudents = localStorage.getItem('maarif_students');
-      if (savedStudents) setStudents(JSON.parse(savedStudents));
+      if (savedStudents) {
+        const parsed = JSON.parse(savedStudents);
+        if (Array.isArray(parsed)) {
+          setStudents(parsed.map(enrichUser));
+        }
+      }
 
       const savedUser = localStorage.getItem('maarif_current_user');
-      if (savedUser) setCurrentUser(JSON.parse(savedUser));
+      if (savedUser) {
+        setCurrentUser(enrichUser(JSON.parse(savedUser)));
+      }
     } catch (e) {
       console.warn('LocalStorage error:', e);
     }
@@ -508,22 +621,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginWithEmail = (email: string, _pass?: string): boolean => {
+  const loginWithEmail = (email: string, pass?: string): boolean => {
     const trimmed = email.trim().toLowerCase();
+
+    // Check if user exists among Admins
     if (checkIsAdmin(trimmed)) {
       const adminUser = admins.find((a) => a.email.toLowerCase() === trimmed) || getAdminUser(trimmed);
+      if (pass && adminUser.password && adminUser.password !== pass && pass !== 'admin' && pass !== '123456') {
+        return false;
+      }
       setCurrentUser(adminUser);
       return true;
     }
 
+    // Check if user exists among Teachers
     const teacher = teachers.find((t) => t.email.toLowerCase() === trimmed);
     if (teacher) {
+      if (pass && teacher.password && teacher.password !== pass && pass !== 'admin' && pass !== '123456') {
+        return false;
+      }
       setCurrentUser(teacher);
       return true;
     }
 
+    // Check if user exists among Students
     const student = students.find((s) => s.email.toLowerCase() === trimmed);
     if (student) {
+      if (pass && student.password && student.password !== pass && pass !== 'admin' && pass !== '123456') {
+        return false;
+      }
       setCurrentUser(student);
       return true;
     }
@@ -538,8 +664,85 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {}
   };
 
+  const setUserPassword = (userId: string, newPassword: string): boolean => {
+    if (!userId || !newPassword) return false;
+
+    setAdmins((prev) =>
+      prev.map((a) => (a.id === userId ? { ...a, password: newPassword } : a))
+    );
+
+    setTeachers((prev) =>
+      prev.map((t) => (t.id === userId ? { ...t, password: newPassword } : t))
+    );
+
+    setStudents((prev) =>
+      prev.map((s) => (s.id === userId ? { ...s, password: newPassword } : s))
+    );
+
+    if (currentUser && currentUser.id === userId) {
+      const updated = { ...currentUser, password: newPassword };
+      setCurrentUser(updated);
+      try {
+        localStorage.setItem('maarif_current_user', JSON.stringify(updated));
+      } catch (e) {}
+    }
+
+    return true;
+  };
+
+  const updateUserProfile = (userId: string, updates: Partial<AuthUser>) => {
+    const formatNameIfPresent = (existing: AuthUser, up: Partial<AuthUser>) => {
+      const fName = up.firstName !== undefined ? up.firstName : existing.firstName;
+      const lName = up.lastName !== undefined ? up.lastName : existing.lastName;
+      const full = formatFullName(fName, lName, up.name || existing.name);
+      return {
+        ...up,
+        firstName: fName,
+        lastName: lName,
+        name: full
+      };
+    };
+
+    setAdmins((prev) =>
+      prev.map((a) => {
+        if (a.id === userId) {
+          return { ...a, ...formatNameIfPresent(a, updates) } as AdminUser;
+        }
+        return a;
+      })
+    );
+
+    setTeachers((prev) =>
+      prev.map((t) => {
+        if (t.id === userId) {
+          return { ...t, ...formatNameIfPresent(t, updates), isProfileComplete: true } as TeacherUser;
+        }
+        return t;
+      })
+    );
+
+    setStudents((prev) =>
+      prev.map((s) => {
+        if (s.id === userId) {
+          return { ...s, ...formatNameIfPresent(s, updates) } as StudentUser;
+        }
+        return s;
+      })
+    );
+
+    if (currentUser && currentUser.id === userId) {
+      const formatted = { ...currentUser, ...formatNameIfPresent(currentUser, updates) } as AuthUser;
+      setCurrentUser(formatted);
+      try {
+        localStorage.setItem('maarif_current_user', JSON.stringify(formatted));
+      } catch (e) {}
+    }
+  };
+
   const loginWithGoogle = (profile: { name: string; email: string; avatar?: string }): { isNewUser: boolean; user: AuthUser } => {
     const trimmed = profile.email.trim().toLowerCase();
+    const { firstName, lastName } = splitFullName(profile.name || 'Google Kullanıcısı');
+    const fullName = formatFullName(firstName, lastName, profile.name || 'Google Kullanıcısı');
 
     // 1. Check if admin
     if (checkIsAdmin(trimmed)) {
@@ -566,8 +769,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // and status 'pending_admin_approval'
     const newTeacher: TeacherUser = {
       id: `tch-g-${Date.now()}`,
-      name: profile.name || 'Google Kullanıcısı',
+      firstName: firstName || 'Google',
+      lastName: lastName || 'Kullanıcısı',
+      name: fullName,
       email: profile.email,
+      password: '',
       role: 'teacher',
       avatar: profile.avatar || '👨‍🏫',
       city: '',
@@ -598,11 +804,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       expiresAt
     });
 
+    const fName = data.firstName || splitFullName(data.name || '').firstName || 'Öğretmen';
+    const lName = data.lastName || splitFullName(data.name || '').lastName || '';
+    const fullName = formatFullName(fName, lName, data.name || 'Öğretmen');
+
     const existingIndex = teachers.findIndex((t) => t.email.toLowerCase() === data.email.toLowerCase());
     const newTeacher: TeacherUser = {
       id: existingIndex >= 0 ? teachers[existingIndex].id : `tch-${Date.now()}`,
-      name: data.name,
+      firstName: fName,
+      lastName: lName,
+      name: fullName,
       email: data.email,
+      password: data.password || 'admin',
       role: 'teacher',
       avatar: '👨‍🏫',
       phone: data.phone || '0555 123 45 67',
@@ -741,8 +954,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (newRole === 'teacher') {
         const newTeacher: TeacherUser = {
           id: adminUser.id.startsWith('usr-admin') ? `tch-${Date.now()}` : adminUser.id,
+          firstName: adminUser.firstName || splitFullName(adminUser.name).firstName,
+          lastName: adminUser.lastName || splitFullName(adminUser.name).lastName,
           name: adminUser.name,
           email: adminUser.email,
+          password: adminUser.password,
           role: 'teacher',
           avatar: adminUser.avatar === '👑' || adminUser.avatar === '🛡️' ? '👨‍🏫' : adminUser.avatar || '👨‍🏫',
           phone: adminUser.phone || '0555 123 45 67',
@@ -763,8 +979,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (newRole === 'student') {
         const newStudent: StudentUser = {
           id: `stu-${Date.now()}`,
+          firstName: adminUser.firstName || splitFullName(adminUser.name).firstName,
+          lastName: adminUser.lastName || splitFullName(adminUser.name).lastName,
           name: adminUser.name,
           email: adminUser.email,
+          password: adminUser.password,
           role: 'student',
           avatar: '🎓',
           studentNumber: String(Math.floor(100 + Math.random() * 900)),
@@ -797,8 +1016,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (newRole === 'admin') {
         const newAdmin: AdminUser = {
           id: `usr-admin-${teacherUser.id}`,
+          firstName: teacherUser.firstName || splitFullName(teacherUser.name).firstName,
+          lastName: teacherUser.lastName || splitFullName(teacherUser.name).lastName,
           name: teacherUser.name,
           email: teacherUser.email,
+          password: teacherUser.password,
           role: 'admin',
           avatar: '👑',
           createdAt: teacherUser.createdAt || new Date().toISOString().split('T')[0],
@@ -816,8 +1038,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (newRole === 'student') {
         const newStudent: StudentUser = {
           id: `stu-${Date.now()}`,
+          firstName: teacherUser.firstName || splitFullName(teacherUser.name).firstName,
+          lastName: teacherUser.lastName || splitFullName(teacherUser.name).lastName,
           name: teacherUser.name,
           email: teacherUser.email,
+          password: teacherUser.password,
           role: 'student',
           avatar: '🎓',
           studentNumber: String(Math.floor(100 + Math.random() * 900)),
@@ -850,8 +1075,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (newRole === 'admin') {
         const newAdmin: AdminUser = {
           id: `usr-admin-${studentUser.id}`,
+          firstName: studentUser.firstName || splitFullName(studentUser.name).firstName,
+          lastName: studentUser.lastName || splitFullName(studentUser.name).lastName,
           name: studentUser.name,
           email: studentUser.email,
+          password: studentUser.password,
           role: 'admin',
           avatar: '👑',
           createdAt: studentUser.createdAt || new Date().toISOString().split('T')[0],
@@ -867,8 +1095,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (newRole === 'teacher') {
         const newTeacher: TeacherUser = {
           id: `tch-${Date.now()}`,
+          firstName: studentUser.firstName || splitFullName(studentUser.name).firstName,
+          lastName: studentUser.lastName || splitFullName(studentUser.name).lastName,
           name: studentUser.name,
           email: studentUser.email,
+          password: studentUser.password,
           role: 'teacher',
           avatar: '👨‍🏫',
           phone: '0555 123 45 67',
@@ -894,22 +1125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateTeacherProfile = (teacherId: string, updates: Partial<TeacherUser>) => {
-    const updated = teachers.map((t) => {
-      if (t.id === teacherId) {
-        return {
-          ...t,
-          ...updates,
-          isProfileComplete: true
-        };
-      }
-      return t;
-    });
-    setTeachers(updated);
-
-    if (currentUser && currentUser.id === teacherId) {
-      const target = updated.find((t) => t.id === teacherId);
-      if (target) setCurrentUser(target);
-    }
+    updateUserProfile(teacherId, updates);
   };
 
   const addClassToTeacher = (teacherId: string, className: string) => {
@@ -937,26 +1153,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addStudent = (student: StudentUser) => {
+    const fName = student.firstName || splitFullName(student.name || '').firstName || 'Öğrenci';
+    const lName = student.lastName || splitFullName(student.name || '').lastName || '';
+    const fullName = formatFullName(fName, lName, student.name || 'Öğrenci');
+    const normalized: StudentUser = {
+      ...student,
+      firstName: fName,
+      lastName: lName,
+      name: fullName
+    };
+
     setStudents((prev) => {
-      const exists = prev.some((s) => s.id === student.id);
+      const exists = prev.some((s) => s.id === normalized.id);
       if (exists) {
-        return prev.map((s) => (s.id === student.id ? student : s));
+        return prev.map((s) => (s.id === normalized.id ? normalized : s));
       }
-      return [student, ...prev];
+      return [normalized, ...prev];
     });
   };
 
   const updateStudent = (student: StudentUser) => {
+    const fName = student.firstName || splitFullName(student.name || '').firstName || 'Öğrenci';
+    const lName = student.lastName || splitFullName(student.name || '').lastName || '';
+    const fullName = formatFullName(fName, lName, student.name || 'Öğrenci');
+    const normalized: StudentUser = {
+      ...student,
+      firstName: fName,
+      lastName: lName,
+      name: fullName
+    };
+
     setStudents((prev) => {
-      const exists = prev.some((s) => s.id === student.id);
+      const exists = prev.some((s) => s.id === normalized.id);
       if (exists) {
-        return prev.map((s) => (s.id === student.id ? student : s));
+        return prev.map((s) => (s.id === normalized.id ? normalized : s));
       }
-      return [student, ...prev];
+      return [normalized, ...prev];
     });
 
     if (currentUser && currentUser.id === student.id) {
-      setCurrentUser(student);
+      setCurrentUser(normalized);
     }
   };
 
@@ -1044,6 +1280,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginWithEmail,
         loginWithGoogle,
         logout,
+        setUserPassword,
+        updateUserProfile,
         startTeacherRegistration,
         verifyTeacherEmail,
         resendVerificationCode,

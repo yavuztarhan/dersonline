@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/auth-store';
+import { useAuth, splitFullName } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import Link from 'next/link';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -108,9 +108,12 @@ export function TeacherDashboard() {
     if (!newStudentName.trim() || !newStudentNumber.trim()) return;
 
     const targetClass = newStudentClass || selectedClass;
+    const { firstName, lastName } = splitFullName(newStudentName.trim());
 
     const newStudent = {
       id: `stu-${Date.now()}`,
+      firstName: firstName || 'Öğrenci',
+      lastName: lastName || '',
       name: newStudentName.trim(),
       email: `${newStudentNumber.trim()}@okul.meb.k12.tr`,
       role: 'student' as const,
