@@ -45,21 +45,21 @@ export function ClassLeaderboard({
   // Selected Student for Detailed Outcome & Rubric Analytics Modal
   const [selectedStudentForDetail, setSelectedStudentForDetail] = useState<any | null>(null);
 
-  // Selected Class Filter
-  const [selectedClass, setSelectedClass] = useState<string>(
-    currentUser?.role === 'student' && (currentUser as StudentUser).classSection
-      ? (currentUser as StudentUser).classSection
-      : initialClassSection
-  );
+  // Teacher Selected Class Filter & Search States
+  const [selectedClass, setSelectedClass] = useState<string>(initialClassSection);
   const [searchQuery, setSearchQuery] = useState('');
   const [rewardAmount, setRewardAmount] = useState<number>(25);
+
+  // Student Own Class vs Teacher Selected Class (Students can ONLY see their own class)
+  const studentClassSection = (currentUser as StudentUser)?.classSection || initialClassSection || '5-A';
+  const effectiveClass = isStudent ? studentClassSection : selectedClass;
 
   const CLASS_OPTIONS = ['5-A', '5-B', '5-C', '5-D', 'Tümü'];
 
   // Filter & Sort Students by Points (XP)
   const filteredStudents = students
     .filter((s) => {
-      const matchesClass = selectedClass === 'Tümü' || s.classSection === selectedClass;
+      const matchesClass = effectiveClass === 'Tümü' ? true : s.classSection === effectiveClass;
       const matchesSearch =
         !searchQuery ||
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,34 +97,48 @@ export function ClassLeaderboard({
           <h3 className="text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-2">
             <span>Matematik Liderleri</span>
             <span className="text-xs px-2.5 py-0.5 rounded-lg bg-teal-50 text-teal-700 font-extrabold border border-teal-200">
-              {selectedClass === 'Tümü' ? 'Tüm Sınıflar' : `${selectedClass} Şubesi`}
+              {effectiveClass === 'Tümü' ? 'Tüm Sınıflar' : `${effectiveClass} Şubesi`}
             </span>
           </h3>
           <p className="text-xs sm:text-sm text-slate-500">
-            Ders içi oyunlar, bulmacalar ve değerlendirmelerden kazanılan <strong>XP puanlarına</strong> göre anlık sıralama.
+            {isStudent
+              ? `Yalnızca kayıtlı olduğunuz ${effectiveClass} şubesinin ders içi etkinlik ve oyun XP sıralaması gösterilmektedir.`
+              : 'Ders içi oyunlar, bulmacalar ve değerlendirmelerden kazanılan XP puanlarına göre anlık sıralama.'}
           </p>
         </div>
 
-        {/* Class Selection Tabs */}
-        <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-black self-stretch md:self-auto overflow-x-auto">
-          {CLASS_OPTIONS.map((cls) => (
-            <button
-              key={cls}
-              type="button"
-              onClick={() => {
-                playSound('select');
-                setSelectedClass(cls);
-              }}
-              className={`px-4 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer ${
-                selectedClass === cls
-                  ? 'bg-slate-900 text-white shadow-sm font-black'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-              }`}
-            >
-              {cls === 'Tümü' ? 'Tüm Okul' : `${cls} Şubesi`}
-            </button>
-          ))}
-        </div>
+        {/* Class Selection Tabs (Teachers / Admins) or Fixed Class Badge (Students) */}
+        {isTeacher ? (
+          <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-black self-stretch md:self-auto overflow-x-auto">
+            {CLASS_OPTIONS.map((cls) => (
+              <button
+                key={cls}
+                type="button"
+                onClick={() => {
+                  playSound('select');
+                  setSelectedClass(cls);
+                }}
+                className={`px-4 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer ${
+                  selectedClass === cls
+                    ? 'bg-slate-900 text-white shadow-sm font-black'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                }`}
+              >
+                {cls === 'Tümü' ? 'Tüm Okul' : `${cls} Şubesi`}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 bg-teal-50 border border-teal-200 px-4 py-2.5 rounded-2xl shadow-2xs">
+            <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black text-sm">
+              🎓
+            </div>
+            <div>
+              <div className="text-[10px] text-teal-700 font-bold uppercase tracking-wider">Kayıtlı Sınıfın</div>
+              <div className="text-xs font-black text-slate-900">{effectiveClass} Şubesi Sıralaması</div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 2. TOP 3 PODIUM DISPLAY */}
