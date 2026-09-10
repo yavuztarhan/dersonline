@@ -310,9 +310,9 @@ export const CURRICULUM_OUTCOMES_LIST = [
   },
   {
     code: 'MAT.5.1.1',
-    title: 'Doğal Sayılarla İşlemler ve Problem Çözme',
+    title: 'Doğal Sayılarla İşlemler ve Çarpım Tablosu',
     category: 'Sayılar & İşlemler',
-    description: 'Doğal sayılarla dört işlem stratejilerini etkili kullanır, çok adımlı günlük hayat problemlerini çözüp modeller.'
+    description: 'Doğal sayılarla çarpma ve dört işlem stratejilerini etkili kullanır, hızlı zihinden hesaplama yapar.'
   }
 ];
 

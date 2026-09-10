@@ -168,6 +168,8 @@ export function StudentOutcomeDetailModal({
 
   const getGameIcon = (gameType: string) => {
     switch (gameType) {
+      case 'multiplication-rush':
+        return <Zap className="w-5 h-5 text-amber-500" />;
       case 'angle-radar':
         return <Target className="w-5 h-5 text-teal-600" />;
       case 'construction-bench':

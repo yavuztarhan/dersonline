@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { MascotCharacter } from '@/components/mascot';
 import { STANDALONE_GAMES, StandaloneGame } from '@/lib/standalone-games-data';
+import { MultiplicationGame } from '@/components/games/multiplication-game';
 import {
   Gamepad2,
   Sparkles,
@@ -35,6 +36,15 @@ export default function GamesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeGameId, setActiveGameId] = useState<string | null>(null);
+
+  // If a game is currently active, render that game directly!
+  if (activeGameId === 'carpim-tablosu') {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <MultiplicationGame onBackToHub={() => setActiveGameId(null)} />
+      </div>
+    );
+  }
 
   const categories = [
     { id: 'all', label: 'Tümü', icon: '🌟' },
