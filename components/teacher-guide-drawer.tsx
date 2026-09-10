@@ -17,6 +17,8 @@ import {
   FileText,
   Download
 } from 'lucide-react';
+import { MascotCharacter } from '@/components/mascot';
+import { MASCOT_CONFIG } from '@/lib/mascot-config';
 
 interface TeacherGuideDrawerProps {
   outcomeCode: string;
@@ -68,6 +70,21 @@ export function TeacherGuideDrawer({ outcomeCode, outcomeTitle, guide, outcome }
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           
+          {/* Mascot Assistant Card */}
+          <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-teal-50 border border-amber-200/80 shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-white p-1 border border-amber-200 shadow-xs shrink-0 flex items-center justify-center">
+              <MascotCharacter pose="thinking" size="sm" />
+            </div>
+            <div>
+              <div className="text-[10px] font-black uppercase text-amber-800 tracking-wider">
+                {MASCOT_CONFIG.name} • {MASCOT_CONFIG.title}
+              </div>
+              <p className="text-xs font-semibold text-slate-800 mt-0.5 leading-relaxed">
+                "{MASCOT_CONFIG.quotes.teacherHelp}"
+              </p>
+            </div>
+          </div>
+
           {/* Top Quick Action: Daily Lesson Plan Download */}
           {outcome && (
             <div className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-2xl p-4 shadow-md flex items-center justify-between gap-3">

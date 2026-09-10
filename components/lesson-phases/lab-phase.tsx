@@ -39,6 +39,7 @@ import {
   Check,
   Ruler
 } from 'lucide-react';
+import { MascotLabHelper } from '@/components/mascot';
 
 interface LabPhaseProps {
   data: LabPhaseData;
@@ -1674,7 +1675,11 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <MascotLabHelper
+            toolName={data.title}
+            hint="Pergel ve cetvel ile çizim yaparken uç noktaları hassas birleştirin. Her doğru parçasının iki ucu sınırlıdır!"
+          />
           <button
             onClick={() => setShowGrid(!showGrid)}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all ${

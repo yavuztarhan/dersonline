@@ -24,6 +24,8 @@ import {
   LayoutDashboard,
   Tv
 } from 'lucide-react';
+import { MascotCharacter } from '@/components/mascot';
+import { MASCOT_CONFIG } from '@/lib/mascot-config';
 
 export default function HomePage() {
   const { role, playSound } = useApp();
@@ -127,25 +129,45 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Primary Action Buttons */}
-          <div className="flex items-center gap-3 shrink-0 self-stretch sm:self-auto justify-end">
-            <Link
-              href={dashboardHref}
-              className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>{dashboardLabel}</span>
-              <ChevronRight className="w-4 h-4" />
-            </Link>
+          {/* Primary Action Buttons & Mascot Companion */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 self-stretch sm:self-auto justify-end">
+            
+            {/* Selim Greeting Avatar */}
+            <div className="hidden md:flex items-center gap-3 bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 shadow-inner">
+              <MascotCharacter
+                pose="proud"
+                size="sm"
+                showBadge
+                badgeText="Selim"
+              />
+              <div className="text-left max-w-[170px]">
+                <div className="text-[10px] uppercase font-black text-amber-300">Öğrenme Yoldaşı</div>
+                <div className="text-[11px] text-slate-100 font-semibold leading-tight line-clamp-2">
+                  "{MASCOT_CONFIG.quotes.heroWelcome}"
+                </div>
+              </div>
+            </div>
 
-            <Link
-              href="/profile"
-              className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer"
-              title="Profilimi Düzenle"
-            >
-              <User className="w-4 h-4 text-teal-300" />
-              <span className="hidden sm:inline">Profilim</span>
-            </Link>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <Link
+                href={dashboardHref}
+                className="flex-1 sm:flex-initial px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>{dashboardLabel}</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+
+              <Link
+                href="/profile"
+                className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Profilimi Düzenle"
+              >
+                <User className="w-4 h-4 text-teal-300" />
+                <span className="hidden sm:inline">Profilim</span>
+              </Link>
+            </div>
+
           </div>
         </div>
       </div>

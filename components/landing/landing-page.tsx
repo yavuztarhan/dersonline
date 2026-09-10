@@ -29,6 +29,8 @@ import {
   FileCheck2,
   Sparkle
 } from 'lucide-react';
+import { MascotCharacter } from '@/components/mascot';
+import { MASCOT_CONFIG, isMascotEnabled } from '@/lib/mascot-config';
 
 interface LandingPageProps {
   onOpenAuth?: (tab: 'login' | 'register') => void;
@@ -76,91 +78,114 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
         <div className="absolute -right-16 -top-16 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute right-1/3 -bottom-16 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 max-w-4xl space-y-6">
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
           
-          {/* Badge & Logo */}
-          <div className="flex items-center gap-3.5 flex-wrap">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg border border-amber-500/40 shrink-0 bg-slate-950">
-              <Image
-                src="/logo-192.png"
-                alt="Maarif Akademi Logo"
-                width={48}
-                height={48}
-                className="w-full h-full object-cover"
-                priority
-              />
+          <div className="max-w-3xl space-y-6 flex-1">
+            
+            {/* Badge & Logo */}
+            <div className="flex items-center gap-3.5 flex-wrap">
+              <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg border border-amber-500/40 shrink-0 bg-slate-950">
+                <Image
+                  src="/logo-192.png"
+                  alt="Maarif Akademi Logo"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                  priority
+                />
+              </div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-black uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-teal-400" />
+                <span>Türkiye Yüzyılı Maarif Modeli • 5. Sınıf Matematik</span>
+              </div>
             </div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-black uppercase tracking-wider">
-              <Sparkles className="w-4 h-4 text-teal-400" />
-              <span>Türkiye Yüzyılı Maarif Modeli • 5. Sınıf Matematik</span>
+
+            {/* Headline */}
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-white">
+              Matematiği Keşfet, <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-300 to-teal-200">
+                Geleceğin Akıllı Sınıfını
+              </span>{' '}
+              İnşa Et!
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl">
+              Edirne Selimiye Camii'nin kubbesinden uzay geometrisine uzanan 4 fazlı hikâye, deney atölyesi, kavram bulmacası ve değerlendirme odalarıyla yeni nesil akıllı tahta deneyimi.
+            </p>
+
+            {/* Hero CTAs */}
+            <div className="pt-4 flex flex-wrap items-center gap-3 sm:gap-4">
+              <button
+                onClick={handleOpenLogin}
+                className="px-6 py-3.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/30 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
+              >
+                <span>Hemen Başla / Giriş Yap</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setGoogleModalOpen(true)}
+                className="px-5 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-800 font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-2.5 active:scale-95 cursor-pointer"
+              >
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.43 7.34 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.98 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.57 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+                <span>Google ile Giriş</span>
+              </button>
+
+              <button
+                onClick={handleOpenRegister}
+                className="px-5 py-3.5 rounded-2xl bg-slate-800/80 hover:bg-slate-800 text-teal-300 font-bold text-xs sm:text-sm border border-teal-500/30 transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <GraduationCap className="w-4 h-4 text-teal-400" />
+                <span>Öğretmen Kaydı (Yeni)</span>
+              </button>
             </div>
+
+            {/* Key Indicators */}
+            <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-slate-300 border-t border-slate-800/80">
+              <div className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50">
+                <Tv className="w-4 h-4 text-teal-400 shrink-0" />
+                <span>4K / Dokunmatik Tahta</span>
+              </div>
+              <div className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50">
+                <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>81 İl & MEB Okul Ağı</span>
+              </div>
+              <div className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50">
+                <Compass className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>SDB1.3 Öz Düzenleme</span>
+              </div>
+              <div className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50">
+                <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span>Yönetici Onaylı Güvenlik</span>
+              </div>
+            </div>
+
           </div>
 
-          {/* Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-white">
-            Matematiği Keşfet, <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-300 to-teal-200">
-              Geleceğin Akıllı Sınıfını
-            </span>{' '}
-            İnşa Et!
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl">
-            Edirne Selimiye Camii'nin kubbesinden uzay geometrisine uzanan 4 fazlı hikâye, deney atölyesi, kavram bulmacası ve değerlendirme odalarıyla yeni nesil akıllı tahta deneyimi.
-          </p>
-
-          {/* Hero CTAs */}
-          <div className="pt-4 flex flex-wrap items-center gap-3 sm:gap-4">
-            <button
-              onClick={handleOpenLogin}
-              className="px-6 py-3.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/30 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
-            >
-              <span>Hemen Başla / Giriş Yap</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={() => setGoogleModalOpen(true)}
-              className="px-5 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-800 font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-2.5 active:scale-95 cursor-pointer"
-            >
-              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
-                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.43 7.34 24 12 24z"/>
-                <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.98 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/>
-                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.57 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-              </svg>
-              <span>Google ile Giriş</span>
-            </button>
-
-            <button
-              onClick={handleOpenRegister}
-              className="px-5 py-3.5 rounded-2xl bg-slate-800/80 hover:bg-slate-800 text-teal-300 font-bold text-xs sm:text-sm border border-teal-500/30 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <GraduationCap className="w-4 h-4 text-teal-400" />
-              <span>Öğretmen Kaydı (Yeni)</span>
-            </button>
-          </div>
-
-          {/* Key Indicators */}
-          <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-slate-300 border-t border-slate-800/80">
-            <div className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50">
-              <Tv className="w-4 h-4 text-teal-400 shrink-0" />
-              <span>4K / Dokunmatik Tahta</span>
+          {/* Selim Mascot Hero Card on Right */}
+          {isMascotEnabled() && (
+            <div className="hidden lg:flex flex-col items-center justify-center p-6 rounded-3xl bg-gradient-to-b from-teal-500/10 via-amber-500/10 to-transparent border border-teal-400/20 shadow-2xl relative">
+              <div className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider shadow-sm">
+                Öğrenme Yoldaşın
+              </div>
+              <div className="w-48 h-48 relative">
+                <MascotCharacter pose="pointing" size="xl" />
+              </div>
+              <div className="text-center mt-2 space-y-1 max-w-[220px]">
+                <div className="text-sm font-black text-white">Selim</div>
+                <div className="text-[11px] font-bold text-teal-300">{MASCOT_CONFIG.title}</div>
+                <p className="text-[11px] text-slate-300 italic pt-1 leading-snug">
+                  "{MASCOT_CONFIG.quotes.heroWelcome}"
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50">
-              <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>81 İl & MEB Okul Ağı</span>
-            </div>
-            <div className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50">
-              <Compass className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>SDB1.3 Öz Düzenleme</span>
-            </div>
-            <div className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50">
-              <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
-              <span>Yönetici Onaylı Güvenlik</span>
-            </div>
-          </div>
+          )}
 
         </div>
       </section>
@@ -338,6 +363,90 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
           </div>
         </div>
       </section>
+
+      {/* 3.5. MASCOT SHOWCASE: SELİM - ANADOLU'NUN MATEMATİK DAHİSİ */}
+      {isMascotEnabled() && (
+        <section className="bg-gradient-to-br from-amber-500/10 via-teal-500/5 to-emerald-500/10 rounded-3xl p-8 sm:p-12 border-2 border-amber-200/80 shadow-sm space-y-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <span>Öğrenme Yoldaşımız</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Selim: Anadolu'nun Matematik Dahisi
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
+                {MASCOT_CONFIG.origin}. Merakı, azmi ve sevgisiyle ders odalarında öğrencilerimize rehberlik eder, akıllı tahtada matematiği eğlenceli ve anlaşılır kılar.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-amber-200 shadow-xs">
+              <MascotCharacter pose="proud" size="sm" />
+              <div className="text-left">
+                <div className="text-xs font-black text-slate-900">Selim ile Öğren</div>
+                <div className="text-[10px] font-bold text-teal-700">4 Fazlı Rehberlik Sistemi</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* 1. Merak & Keşif */}
+            <div className="bg-white p-5 rounded-2xl border border-amber-100 shadow-xs space-y-3 text-center flex flex-col items-center">
+              <div className="w-20 h-20 rounded-2xl bg-amber-50 p-1 border border-amber-200 flex items-center justify-center">
+                <MascotCharacter pose="curious" size="md" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-900">1. Merak & Keşif</h4>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">
+                  Selimiye Camii ve tarihi mekanların geometrik sırlarını hikâyelerle anlatır.
+                </p>
+              </div>
+            </div>
+
+            {/* 2. Atölye & Ölçüm */}
+            <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-xs space-y-3 text-center flex flex-col items-center">
+              <div className="w-20 h-20 rounded-2xl bg-teal-50 p-1 border border-teal-200 flex items-center justify-center">
+                <MascotCharacter pose="measuring" size="md" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-900">2. Atölye & Ölçüm</h4>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">
+                  Pergel, iletki ve cetvel kullanımında canlı ipuçlarıyla el becerisini geliştirir.
+                </p>
+              </div>
+            </div>
+
+            {/* 3. Problem Çözme */}
+            <div className="bg-white p-5 rounded-2xl border border-indigo-100 shadow-xs space-y-3 text-center flex flex-col items-center">
+              <div className="w-20 h-20 rounded-2xl bg-indigo-50 p-1 border border-indigo-200 flex items-center justify-center">
+                <MascotCharacter pose="thinking" size="md" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-900">3. Derin Düşünme</h4>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">
+                  Zorlu bulmacalarda pedagojik ipuçları vererek öğrencinin kendi çıkarımını yapmasını sağlar.
+                </p>
+              </div>
+            </div>
+
+            {/* 4. Başarı & Rozet */}
+            <div className="bg-white p-5 rounded-2xl border border-emerald-100 shadow-xs space-y-3 text-center flex flex-col items-center">
+              <div className="w-20 h-20 rounded-2xl bg-emerald-50 p-1 border border-emerald-200 flex items-center justify-center">
+                <MascotCharacter pose="success" size="md" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-900">4. Coşkulu Tebrik</h4>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">
+                  Kazanılan Maarif rozetleri ve seviye atlamalarında öğrenciyle birlikte sevinir.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      )}
 
       {/* 4. ROLES OVERVIEW */}
       <section className="space-y-6">

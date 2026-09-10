@@ -24,6 +24,7 @@ import {
   RotateCcw,
   Maximize2
 } from 'lucide-react';
+import { MascotDialogueBox } from '@/components/mascot';
 
 interface StoryPhaseProps {
   data: StoryPhaseData;
@@ -2167,21 +2168,14 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
               
               <div className="space-y-4">
                 
-                {/* Character Dialogue Bubble */}
+                {/* Character Dialogue Bubble (Powered by Mascot Architecture) */}
                 {currentPage.characterDialogue && (
-                  <div className="flex items-start gap-3 bg-teal-50/70 p-4 rounded-2xl border border-teal-200/80">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center text-2xl shrink-0 shadow-xs">
-                      {data.character.avatar}
-                    </div>
-                    <div className="space-y-0.5">
-                      <div className="text-xs font-black text-teal-900">
-                        {currentPage.characterDialogue.speaker}
-                      </div>
-                      <p className="text-xs sm:text-sm font-semibold text-slate-700 italic leading-relaxed">
-                        "{currentPage.characterDialogue.text}"
-                      </p>
-                    </div>
-                  </div>
+                  <MascotDialogueBox
+                    pose={currentPageIndex % 2 === 0 ? 'curious' : 'thinking'}
+                    speaker={currentPage.characterDialogue.speaker}
+                    dialogue={currentPage.characterDialogue.text}
+                    highlightText={currentPage.conceptBadge}
+                  />
                 )}
 
                 {/* Narrative Text */}

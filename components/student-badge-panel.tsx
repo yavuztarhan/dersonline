@@ -14,6 +14,8 @@ import {
   Shapes,
   Puzzle
 } from 'lucide-react';
+import { MascotCharacter } from '@/components/mascot';
+import { MASCOT_CONFIG } from '@/lib/mascot-config';
 
 const BADGE_ICONS: Record<string, React.ReactNode> = {
   Sparkles: <Sparkles className="w-6 h-6" />,
@@ -35,8 +37,8 @@ export function StudentBadgePanel() {
       {/* Student Level & Points Banner */}
       <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 rounded-2xl p-6 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl shadow-inner">
-            🎒
+          <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center p-1 shadow-inner shrink-0">
+            <MascotCharacter pose={unlockedCount > 0 ? 'success' : 'proud'} size="sm" />
           </div>
           <div>
             <div className="flex items-center gap-2">
