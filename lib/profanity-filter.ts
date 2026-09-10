@@ -3,60 +3,73 @@
  * Maarif Akademi İletişim Güvenlik Modülü
  */
 
-// Temel uygunsuz kök ve kelime listesi
-const FORBIDDEN_WORDS_LIST: string[] = [
-  'küfür',
+// Temel uygunsuz tam kelimeler (yalnızca bağımsız kelime olarak eşleşir)
+const FORBIDDEN_EXACT_WORDS = new Set([
+  'kufur',
   'aptal',
   'salak',
-  'gerizekalı',
+  'gerizekali',
   'mal',
   'ahmak',
   'dangalak',
-  'şerefsiz',
+  'serefsiz',
   'haysiyetsiz',
   'terbiyesiz',
   'pislik',
   'lan',
   'lanet',
   'ulan',
-  'öküz',
-  'eşek',
-  'köpek',
+  'okuz',
+  'esek',
+  'kopek',
   'it',
   'moron',
-  'ahmak',
   'defol',
-  'zıkkım',
-  'zavallı',
+  'zikkim',
+  'zavalli',
   'sahtekar',
-  'dolandırıcı',
-  'hırsız',
+  'dolandirici',
+  'hirsiz',
   'orospu',
-  'piç',
+  'pic',
   'sik',
   'siktir',
   'amk',
   'aq',
-  'oç',
+  'oc',
   'sg',
-  'yavşak',
-  'göt',
+  'yavsak',
+  'got',
   'ibne',
-  'puşt',
+  'pust',
   'kahpe',
   'pezevenk',
-  'ananı',
-  'bacını',
-  'avradını',
+  'anani',
+  'bacini',
+  'avradini',
   'sikerim',
   'sikeyim',
   'gavat',
   'dalyarak',
-  'amcık',
+  'amcik',
   'yarrak',
-  'taşak',
-  'meme',
-  'pezevenk'
+  'tasak'
+]);
+
+// Açıkça küfür olan ve ek alsa bile yasaklanması gereken kökler (en az 4 harfli belirgin küfürler)
+const FORBIDDEN_ROOT_PATTERNS = [
+  'orospu',
+  'siktir',
+  'pezevenk',
+  'yavsak',
+  'dalyarak',
+  'amcik',
+  'yarrak',
+  'tasak',
+  'sikerim',
+  'sikeyim',
+  'gerizekali',
+  'haysiyetsiz'
 ];
 
 /**
@@ -93,6 +106,7 @@ export interface ContentSafetyResult {
 
 /**
  * Mesaj içeriğini güvenlik ve ahlaki kurallara göre denetler.
+ * Yanıt, eğitim, alan, vakit gibi eğitim kelimelerinin yanlışlıkla engellenmesini önler.
  */
 export function checkContentSafety(text: string): ContentSafetyResult {
   if (!text || typeof text !== 'string') {
@@ -100,27 +114,29 @@ export function checkContentSafety(text: string): ContentSafetyResult {
   }
 
   const normalized = normalizeText(text);
-  const words = normalized.split(/\s+/);
+  const tokens = normalized.split(/\s+/).filter(Boolean);
   const detectedWords: string[] = [];
   let censored = text;
 
-  // 1. Kelime bazlı tam eşleşme ve içerik taraması
-  for (const forbidden of FORBIDDEN_WORDS_LIST) {
-    const forbiddenNorm = normalizeText(forbidden);
-    if (!forbiddenNorm) continue;
-
-    // Kelime içinde veya tam kelime olarak geçiyor mu
-    const wordRegex = new RegExp(`\\b${forbiddenNorm}\\b`, 'i');
-    const directRegex = new RegExp(forbiddenNorm, 'i');
-
-    if (wordRegex.test(normalized) || directRegex.test(normalized)) {
-      if (!detectedWords.includes(forbidden)) {
-        detectedWords.push(forbidden);
+  // 1. Bağımsız kelime kontrolü (Word-token matching)
+  for (const token of tokens) {
+    if (FORBIDDEN_EXACT_WORDS.has(token)) {
+      if (!detectedWords.includes(token)) {
+        detectedWords.push(token);
       }
+      const tokenRegex = new RegExp(`\\b${token}\\b`, 'gi');
+      censored = censored.replace(tokenRegex, '***');
+    }
+  }
 
-      // Yıldızlama (Censorship)
-      const censorRegex = new RegExp(forbidden, 'gi');
-      censored = censored.replace(censorRegex, '***');
+  // 2. Belirgin ağır küfür kökleri kontrolü (yalnızca güvenli kökler)
+  for (const root of FORBIDDEN_ROOT_PATTERNS) {
+    if (normalized.includes(root)) {
+      if (!detectedWords.includes(root)) {
+        detectedWords.push(root);
+      }
+      const rootRegex = new RegExp(root, 'gi');
+      censored = censored.replace(rootRegex, '***');
     }
   }
 
@@ -131,7 +147,7 @@ export function checkContentSafety(text: string): ContentSafetyResult {
     censoredText: censored,
     detectedWords,
     warningMessage: !isClean
-      ? 'Mesajınız topluluk kurallarına aykırı veya uygunsuz ifadeler içerdiği için iletilemez. Lütfen nezaket kurallarına uygun bir dil kullanınız.'
+      ? 'Mesajınız uygunsuz ifadeler içerdiği için iletilemez. Lütfen nezaket kurallarına uygun bir dil kullanınız.'
       : undefined
   };
 }
