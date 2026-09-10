@@ -431,6 +431,202 @@ export function PrimeFactorsBench() {
       .join(' · ');
   }, [primeTargetNumber]);
 
+  // Step-by-step reveal for Factor Tree
+  const [revealedTreeRow, setRevealedTreeRow] = useState<number | null>(null);
+
+  // Factor Tree Generator (MEB Textbook Model)
+  const treeData = useMemo(() => {
+    const n = Math.max(2, Math.min(999, primeTargetNumber || 2));
+
+    const getSmallestPrimeFactor = (num: number) => {
+      for (let i = 2; i * i <= num; i++) {
+        if (num % i === 0) return i;
+      }
+      return num;
+    };
+
+    const checkIsPrime = (num: number) => num > 1 && getSmallestPrimeFactor(num) === num;
+
+    type RawTreeNode = {
+      id: string;
+      value: number;
+      isPrime: boolean;
+      isLeaf: boolean;
+      row: number;
+      col: number;
+      parentId?: string;
+      branchType: 'root' | 'left' | 'right' | 'continue';
+      childrenIds: string[];
+    };
+
+    const rawRows: RawTreeNode[][] = [];
+
+    // Row 0 (Root)
+    const rootNode: RawTreeNode = {
+      id: 'r0-c0',
+      value: n,
+      isPrime: checkIsPrime(n),
+      isLeaf: checkIsPrime(n),
+      row: 0,
+      col: 0,
+      branchType: 'root',
+      childrenIds: []
+    };
+    rawRows.push([rootNode]);
+
+    if (!rootNode.isPrime) {
+      let rowIdx = 0;
+      while (rowIdx < 10) {
+        const prevRow = rawRows[rowIdx];
+        const hasComposite = prevRow.some((node) => !node.isPrime);
+        if (!hasComposite) break;
+
+        const nextRow: RawTreeNode[] = [];
+        let colIdx = 0;
+
+        for (const parent of prevRow) {
+          if (parent.isPrime) {
+            const child: RawTreeNode = {
+              id: `r${rowIdx + 1}-c${colIdx++}`,
+              value: parent.value,
+              isPrime: true,
+              isLeaf: false,
+              row: rowIdx + 1,
+              col: nextRow.length,
+              parentId: parent.id,
+              branchType: 'continue',
+              childrenIds: []
+            };
+            parent.childrenIds.push(child.id);
+            nextRow.push(child);
+          } else {
+            const p = getSmallestPrimeFactor(parent.value);
+            const q = Math.floor(parent.value / p);
+
+            const leftChild: RawTreeNode = {
+              id: `r${rowIdx + 1}-c${colIdx++}`,
+              value: p,
+              isPrime: true,
+              isLeaf: false,
+              row: rowIdx + 1,
+              col: nextRow.length,
+              parentId: parent.id,
+              branchType: 'left',
+              childrenIds: []
+            };
+            parent.childrenIds.push(leftChild.id);
+            nextRow.push(leftChild);
+
+            const rightChild: RawTreeNode = {
+              id: `r${rowIdx + 1}-c${colIdx++}`,
+              value: q,
+              isPrime: checkIsPrime(q),
+              isLeaf: false,
+              row: rowIdx + 1,
+              col: nextRow.length,
+              parentId: parent.id,
+              branchType: 'right',
+              childrenIds: []
+            };
+            parent.childrenIds.push(rightChild.id);
+            nextRow.push(rightChild);
+          }
+        }
+
+        rawRows.push(nextRow);
+        rowIdx++;
+      }
+    }
+
+    // Mark leaves in last row
+    const lastRow = rawRows[rawRows.length - 1];
+    lastRow.forEach((node) => {
+      node.isLeaf = true;
+    });
+
+    const numLeaves = lastRow.length;
+    const colSpacing = Math.max(56, Math.min(85, 520 / Math.max(1, numLeaves)));
+    const totalWidth = Math.max(380, numLeaves * colSpacing + 120);
+    const rowHeight = 72;
+    const paddingX = 60;
+    const paddingY = 45;
+    const totalHeight = rawRows.length * rowHeight + paddingY + 30;
+
+    type PlacedNode = RawTreeNode & { x: number; y: number };
+    const nodeMap = new Map<string, PlacedNode>();
+
+    // Assign x coordinates to leaves first
+    lastRow.forEach((leaf, idx) => {
+      let x = totalWidth / 2;
+      if (numLeaves > 1) {
+        x = paddingX + (idx * (totalWidth - 2 * paddingX)) / (numLeaves - 1);
+      }
+      const y = paddingY + leaf.row * rowHeight;
+      nodeMap.set(leaf.id, { ...leaf, x, y });
+    });
+
+    // Assign x coordinates bottom-up
+    for (let r = rawRows.length - 2; r >= 0; r--) {
+      const row = rawRows[r];
+      for (const node of row) {
+        let x = totalWidth / 2;
+        if (node.childrenIds.length === 1) {
+          const childPos = nodeMap.get(node.childrenIds[0]);
+          if (childPos) x = childPos.x;
+        } else if (node.childrenIds.length === 2) {
+          const leftPos = nodeMap.get(node.childrenIds[0]);
+          const rightPos = nodeMap.get(node.childrenIds[1]);
+          if (leftPos && rightPos) {
+            x = (leftPos.x + rightPos.x) / 2;
+          }
+        }
+        const y = paddingY + node.row * rowHeight;
+        nodeMap.set(node.id, { ...node, x, y });
+      }
+    }
+
+    // Generate directed connecting edges
+    const edges: Array<{ fromId: string; toId: string; fromRow: number; toRow: number; x1: number; y1: number; x2: number; y2: number }> = [];
+    rawRows.forEach((row) => {
+      row.forEach((parent) => {
+        const parentPos = nodeMap.get(parent.id);
+        if (!parentPos) return;
+        parent.childrenIds.forEach((childId) => {
+          const childPos = nodeMap.get(childId);
+          if (!childPos) return;
+          edges.push({
+            fromId: parent.id,
+            toId: childId,
+            fromRow: parent.row,
+            toRow: childPos.row,
+            x1: parentPos.x,
+            y1: parentPos.y + 14,
+            x2: childPos.x,
+            y2: childPos.y - 14
+          });
+        });
+      });
+    });
+
+    const allNodes = Array.from(nodeMap.values());
+    const rowEquations = rawRows.map((r) => r.map((n) => n.value).join(' · '));
+    const finalFactorsList = lastRow.map((n) => n.value);
+
+    return {
+      rows: rawRows,
+      nodes: allNodes,
+      edges,
+      width: totalWidth,
+      height: totalHeight,
+      rowEquations,
+      finalFactorsList,
+      maxRow: rawRows.length - 1
+    };
+  }, [primeTargetNumber]);
+
+  const activeTreeStep = revealedTreeRow === null ? treeData.maxRow : Math.min(revealedTreeRow, treeData.maxRow);
+
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header Banner */}
@@ -646,29 +842,286 @@ export function PrimeFactorsBench() {
 
       {/* TAB 3: TREE */}
       {activeTab === 'tree' && (
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-6 text-center">
-          <div>
-            <h3 className="text-base font-black text-slate-900">
-              {primeTargetNumber} Sayısının Asal Çarpan Ağacı
-            </h3>
-            <p className="text-xs text-slate-600">
-              Dalların ucundaki asal sayılar yaprakları oluşturur; yaprakların çarpımı ana sayıyı verir.
-            </p>
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-6">
+          {/* Header & Controls */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <GitBranch className="w-5 h-5 text-amber-600" />
+                <span>{primeTargetNumber} Sayısının Asal Çarpan Ağacı Modeli</span>
+              </h3>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Bileşik sayılar asal çarpanlarına ayrılır, bulunan asal sayılar ağacın en altındaki kırmızı yapraklara kadar taşınır.
+              </p>
+            </div>
+
+            {/* Target number and quick presets */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                <span className="text-[11px] font-bold text-slate-600 pl-2">Sayı:</span>
+                <input
+                  type="number"
+                  value={primeTargetNumber}
+                  min={2}
+                  max={999}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 2;
+                    setPrimeTargetNumber(Math.max(2, Math.min(999, val)));
+                    setRevealedTreeRow(null);
+                  }}
+                  className="w-20 p-1.5 rounded-xl border border-slate-300 font-mono font-black text-sm text-center bg-white"
+                />
+              </div>
+
+              {/* Step Navigation */}
+              <div className="flex items-center gap-1 bg-amber-50 p-1.5 rounded-2xl border border-amber-200">
+                <button
+                  onClick={() => {
+                    playSound('select');
+                    setRevealedTreeRow(0);
+                  }}
+                  disabled={activeTreeStep === 0}
+                  className="p-1.5 rounded-xl hover:bg-amber-200 disabled:opacity-40 text-amber-900 font-bold text-xs cursor-pointer"
+                  title="İlk Adım"
+                >
+                  ⏮
+                </button>
+                <button
+                  onClick={() => {
+                    playSound('select');
+                    setRevealedTreeRow(Math.max(0, activeTreeStep - 1));
+                  }}
+                  disabled={activeTreeStep === 0}
+                  className="px-2 py-1 rounded-xl bg-white hover:bg-amber-100 border border-amber-300 disabled:opacity-40 text-amber-900 font-bold text-xs cursor-pointer"
+                >
+                  ◀ Geri
+                </button>
+                <span className="px-2 text-xs font-mono font-bold text-amber-950">
+                  Adım {activeTreeStep + 1} / {treeData.rows.length}
+                </span>
+                <button
+                  onClick={() => {
+                    playSound('select');
+                    setRevealedTreeRow(Math.min(treeData.maxRow, activeTreeStep + 1));
+                  }}
+                  disabled={activeTreeStep >= treeData.maxRow}
+                  className="px-2 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 disabled:opacity-40 font-black text-xs cursor-pointer"
+                >
+                  İleri ▶
+                </button>
+                <button
+                  onClick={() => {
+                    playSound('select');
+                    setRevealedTreeRow(null);
+                  }}
+                  className="px-2.5 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs cursor-pointer ml-1"
+                >
+                  Tüm Ağaç
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 flex flex-col items-center justify-center space-y-6">
-            {/* Root Node */}
-            <div className="w-16 h-16 rounded-2xl bg-amber-500 text-slate-950 font-mono font-black text-xl flex items-center justify-center shadow-lg ring-4 ring-amber-400/40">
-              {primeTargetNumber}
+          {/* Quick Presets */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[11px] font-bold text-slate-400 mr-1">Örnek Sayılar:</span>
+            {[24, 36, 48, 60, 72, 84, 90, 108, 120, 144, 180].map((num) => (
+              <button
+                key={num}
+                onClick={() => {
+                  setPrimeTargetNumber(num);
+                  setRevealedTreeRow(null);
+                  playSound('select');
+                }}
+                className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                  primeTargetNumber === num
+                    ? 'bg-amber-600 text-white shadow-md scale-105 ring-2 ring-amber-400'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                }`}
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+
+          {/* SVG Factor Tree Canvas */}
+          <div className="bg-slate-950 rounded-3xl p-4 sm:p-6 border border-slate-800 shadow-inner overflow-x-auto flex justify-center items-center min-h-[360px]">
+            <svg
+              viewBox={`0 0 ${treeData.width} ${treeData.height}`}
+              className="w-full max-w-2xl h-auto select-none"
+              style={{ minWidth: `${Math.min(treeData.width, 360)}px` }}
+            >
+              <defs>
+                <marker
+                  id="tree-arrow-marker"
+                  viewBox="0 0 10 10"
+                  refX="8"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#f59e0b" />
+                </marker>
+              </defs>
+
+              {/* Connecting Branch Directed Arrows */}
+              {treeData.edges
+                .filter((e) => e.toRow <= activeTreeStep)
+                .map((edge, idx) => (
+                  <line
+                    key={`edge-${idx}`}
+                    x1={edge.x1}
+                    y1={edge.y1}
+                    x2={edge.x2}
+                    y2={edge.y2}
+                    stroke="#f59e0b"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    markerEnd="url(#tree-arrow-marker)"
+                    opacity="0.9"
+                  />
+                ))}
+
+              {/* Multiplication Dots Between Nodes in Each Row */}
+              {treeData.rows.map((row, rIdx) => {
+                if (rIdx > activeTreeStep) return null;
+                const rowNodes = row
+                  .map((rn) => treeData.nodes.find((n) => n.id === rn.id))
+                  .filter(Boolean) as typeof treeData.nodes;
+
+                return rowNodes.slice(0, -1).map((leftNode, idx) => {
+                  const rightNode = rowNodes[idx + 1];
+                  if (!leftNode || !rightNode) return null;
+                  const dotX = (leftNode.x + rightNode.x) / 2;
+                  const dotY = leftNode.y;
+                  return (
+                    <text
+                      key={`dot-${rIdx}-${idx}`}
+                      x={dotX}
+                      y={dotY + 4}
+                      textAnchor="middle"
+                      fontSize="18"
+                      fontWeight="900"
+                      fill="#64748b"
+                    >
+                      ·
+                    </text>
+                  );
+                });
+              })}
+
+              {/* Tree Nodes */}
+              {treeData.nodes
+                .filter((node) => node.row <= activeTreeStep)
+                .map((node) => {
+                  const isBottomLeaf = node.row === activeTreeStep && (node.isLeaf || node.isPrime);
+                  const isRoot = node.row === 0;
+
+                  if (isBottomLeaf && (node.isLeaf || activeTreeStep === treeData.maxRow)) {
+                    // Final Prime Leaf: Circled in Red/Crimson (MEB Textbook Style)
+                    return (
+                      <g key={node.id} className="transition-all duration-300">
+                        <circle
+                          cx={node.x}
+                          cy={node.y}
+                          r="18"
+                          fill="#450a0a"
+                          stroke="#ef4444"
+                          strokeWidth="2.5"
+                          className="drop-shadow-md"
+                        />
+                        <text
+                          x={node.x}
+                          y={node.y + 5}
+                          textAnchor="middle"
+                          fontSize="15"
+                          fontWeight="900"
+                          fill="#fecaca"
+                          fontFamily="monospace"
+                        >
+                          {node.value}
+                        </text>
+                      </g>
+                    );
+                  }
+
+                  if (isRoot) {
+                    // Root Node (72)
+                    return (
+                      <g key={node.id}>
+                        <rect
+                          x={node.x - 26}
+                          y={node.y - 18}
+                          width="52"
+                          height="36"
+                          rx="12"
+                          fill="#f59e0b"
+                          stroke="#d97706"
+                          strokeWidth="2"
+                          className="shadow-lg"
+                        />
+                        <text
+                          x={node.x}
+                          y={node.y + 6}
+                          textAnchor="middle"
+                          fontSize="17"
+                          fontWeight="900"
+                          fill="#0f172a"
+                          fontFamily="monospace"
+                        >
+                          {node.value}
+                        </text>
+                      </g>
+                    );
+                  }
+
+                  // Intermediate Node (2, 36, 18, 9...)
+                  return (
+                    <g key={node.id}>
+                      <text
+                        x={node.x}
+                        y={node.y + 5}
+                        textAnchor="middle"
+                        fontSize="16"
+                        fontWeight="800"
+                        fill={node.isPrime ? '#38bdf8' : '#f1f5f9'}
+                        fontFamily="monospace"
+                      >
+                        {node.value}
+                      </text>
+                    </g>
+                  );
+                })}
+            </svg>
+          </div>
+
+          {/* Step Breakdown & Final Equation Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-amber-50 border border-amber-200 p-5 rounded-2xl space-y-2">
+              <div className="text-xs uppercase font-black text-amber-800 tracking-wider">
+                {activeTreeStep === treeData.maxRow ? 'Sonuç: Asal Çarpanlar Çarpımı' : `Mevcut Adım (${activeTreeStep + 1}. Satır)`}
+              </div>
+              <div className="text-xl sm:text-2xl font-mono font-black text-amber-950">
+                {primeTargetNumber} = {treeData.rowEquations[activeTreeStep] || primeTargetNumber}
+              </div>
+              {activeTreeStep === treeData.maxRow && (
+                <div className="text-sm font-mono font-bold text-amber-800 pt-1 border-t border-amber-200">
+                  Üslü Gösterim: <span className="text-base font-black text-slate-900">{primeTargetNumber} = {exponentialForm}</span>
+                </div>
+              )}
             </div>
 
-            {/* Branches preview */}
-            <div className="text-xs font-mono text-slate-400">
-              Dallar: {primeTargetNumber} = {exponentialForm}
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-bold bg-emerald-950 px-4 py-2 rounded-xl border border-emerald-500/40">
-              <span>🍃 Asal Yapraklar: {exponentialForm}</span>
+            <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-2 text-xs text-slate-700">
+              <div className="font-black text-slate-900 text-sm flex items-center gap-1.5">
+                <Info className="w-4 h-4 text-blue-600" />
+                <span>Çarpan Ağacı Modeli Kuralları</span>
+              </div>
+              <ul className="space-y-1 text-[11px] list-disc list-inside text-slate-600">
+                <li>Ağacın her satırındaki sayıların çarpımı daima <strong className="text-slate-900">{primeTargetNumber}</strong> sayısını verir.</li>
+                <li>Bileşik sayılar asal sayılara bölünerek dallanır.</li>
+                <li>Kırmızı halkalı sayılar <strong className="text-rose-700">asal yapraklar</strong>dır ve sayının tüm asal çarpanlarını oluşturur.</li>
+              </ul>
             </div>
           </div>
         </div>
