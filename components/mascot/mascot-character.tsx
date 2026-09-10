@@ -17,21 +17,21 @@ export interface MascotCharacterProps {
 }
 
 const SIZE_MAP = {
-  xs: { width: 36, height: 36, container: "w-9 h-9" },
-  sm: { width: 48, height: 48, container: "w-12 h-12" },
-  md: { width: 72, height: 72, container: "w-18 h-18" },
-  lg: { width: 110, height: 110, container: "w-28 h-28" },
-  xl: { width: 150, height: 150, container: "w-36 h-36" },
-  "2xl": { width: 220, height: 220, container: "w-52 h-52" },
+  xs: { width: 32, height: 32, container: 'w-8 h-8' },
+  sm: { width: 48, height: 48, container: 'w-12 h-12' },
+  md: { width: 64, height: 64, container: 'w-16 h-16' },
+  lg: { width: 96, height: 96, container: 'w-24 h-24' },
+  xl: { width: 128, height: 128, container: 'w-32 h-32' },
+  '2xl': { width: 180, height: 180, container: 'w-44 h-44' },
 };
 
 export function MascotCharacter({
-  pose = "proud",
-  size = "md",
+  pose = 'proud',
+  size = 'md',
   bubble,
-  bubblePosition = "right",
+  bubblePosition = 'right',
   animate = true,
-  className = "",
+  className = '',
   onClick,
   showBadge = false,
   badgeText = MASCOT_CONFIG.name,
@@ -39,30 +39,34 @@ export function MascotCharacter({
   if (!isMascotEnabled()) return null;
 
   const imageSrc = MASCOT_CONFIG.poses[pose] || MASCOT_CONFIG.poses.proud;
-  const sizeConfig = SIZE_MAP[size];
+  const sizeConfig = SIZE_MAP[size] || SIZE_MAP.md;
 
   const bubbleClasses = {
-    right: "left-full ml-3 top-1/2 -translate-y-1/2",
-    left: "right-full mr-3 top-1/2 -translate-y-1/2",
-    top: "bottom-full mb-3 left-1/2 -translate-x-1/2",
-    bottom: "top-full mt-3 left-1/2 -translate-x-1/2",
+    right: 'left-full ml-3 top-1/2 -translate-y-1/2',
+    left: 'right-full mr-3 top-1/2 -translate-y-1/2',
+    top: 'bottom-full mb-3 left-1/2 -translate-x-1/2',
+    bottom: 'top-full mt-3 left-1/2 -translate-x-1/2',
   }[bubblePosition];
 
   return (
     <div
-      className={"relative inline-flex items-center justify-center select-none " + (onClick ? "cursor-pointer group " : "") + className}
+      className={`relative inline-flex items-center justify-center select-none ${
+        onClick ? 'cursor-pointer group ' : ''
+      }${className}`}
       onClick={onClick}
     >
       <div
-        className={"relative shrink-0 " + sizeConfig.container + (animate ? " hover:scale-105 transition-transform duration-300" : "")}
+        className={`relative shrink-0 flex items-center justify-center ${sizeConfig.container} ${
+          animate ? 'hover:scale-105 transition-transform duration-300' : ''
+        }`}
       >
         <Image
           src={imageSrc}
-          alt={MASCOT_CONFIG.name + " - " + pose}
+          alt={`${MASCOT_CONFIG.name} - ${pose}`}
           width={sizeConfig.width}
           height={sizeConfig.height}
-          className="w-full h-full object-contain drop-shadow-md"
-          priority={size === "xl" || size === "2xl"}
+          className="max-w-full max-h-full w-auto h-auto object-contain drop-shadow-md"
+          priority={size === 'xl' || size === '2xl'}
         />
 
         {showBadge && (

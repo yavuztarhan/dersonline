@@ -48,7 +48,7 @@ export function MascotDialogueBox({
           alt={MASCOT_CONFIG.name}
           width={80}
           height={80}
-          className="w-full h-full object-contain drop-shadow-sm"
+          className="max-w-full max-h-full w-auto h-auto object-contain drop-shadow-sm"
         />
         <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-2 py-0.2 rounded-full bg-teal-700 text-white text-[9px] font-black uppercase tracking-wider border border-white">
           {MASCOT_CONFIG.name}

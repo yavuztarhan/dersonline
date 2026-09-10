@@ -170,14 +170,14 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
 
           {/* Selim Mascot Hero Card on Right */}
           {isMascotEnabled() && (
-            <div className="hidden lg:flex flex-col items-center justify-center p-6 rounded-3xl bg-gradient-to-b from-teal-500/10 via-amber-500/10 to-transparent border border-teal-400/20 shadow-2xl relative">
-              <div className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider shadow-sm">
+            <div className="hidden lg:flex flex-col items-center justify-between p-6 rounded-3xl bg-slate-900/85 backdrop-blur-md border border-teal-500/30 shadow-2xl relative shrink-0 w-72 min-h-[300px]">
+              <div className="absolute -top-3.5 right-6 px-3.5 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider shadow-md">
                 Öğrenme Yoldaşın
               </div>
-              <div className="w-48 h-48 relative">
+              <div className="w-full flex-1 flex items-center justify-center py-2 relative">
                 <MascotCharacter pose="pointing" size="xl" />
               </div>
-              <div className="text-center mt-2 space-y-1 max-w-[220px]">
+              <div className="text-center w-full border-t border-slate-800/80 pt-3 space-y-1">
                 <div className="text-sm font-black text-white">Selim</div>
                 <div className="text-[11px] font-bold text-teal-300">{MASCOT_CONFIG.title}</div>
                 <p className="text-[11px] text-slate-300 italic pt-1 leading-snug">
@@ -381,8 +381,10 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
               </p>
             </div>
 
-            <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-amber-200 shadow-xs">
-              <MascotCharacter pose="proud" size="sm" />
+            <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-2xl border border-amber-200 shadow-xs shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center p-0.5">
+                <MascotCharacter pose="proud" size="sm" />
+              </div>
               <div className="text-left">
                 <div className="text-xs font-black text-slate-900">Selim ile Öğren</div>
                 <div className="text-[10px] font-bold text-teal-700">4 Fazlı Rehberlik Sistemi</div>
@@ -390,55 +392,55 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
             {/* 1. Merak & Keşif */}
-            <div className="bg-white p-5 rounded-2xl border border-amber-100 shadow-xs space-y-3 text-center flex flex-col items-center">
-              <div className="w-20 h-20 rounded-2xl bg-amber-50 p-1 border border-amber-200 flex items-center justify-center">
-                <MascotCharacter pose="curious" size="md" />
+            <div className="bg-white rounded-3xl p-5 border-2 border-amber-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="w-full h-36 bg-gradient-to-b from-amber-50 to-amber-100/60 rounded-2xl flex items-center justify-center p-3 mb-4 border border-amber-100 overflow-hidden">
+                <MascotCharacter pose="curious" size="lg" />
               </div>
-              <div>
+              <div className="text-center space-y-1.5 flex-1 flex flex-col justify-start">
                 <h4 className="font-extrabold text-sm text-slate-900">1. Merak & Keşif</h4>
-                <p className="text-xs text-slate-500 mt-1 leading-snug">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   Selimiye Camii ve tarihi mekanların geometrik sırlarını hikâyelerle anlatır.
                 </p>
               </div>
             </div>
 
             {/* 2. Atölye & Ölçüm */}
-            <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-xs space-y-3 text-center flex flex-col items-center">
-              <div className="w-20 h-20 rounded-2xl bg-teal-50 p-1 border border-teal-200 flex items-center justify-center">
-                <MascotCharacter pose="measuring" size="md" />
+            <div className="bg-white rounded-3xl p-5 border-2 border-teal-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="w-full h-36 bg-gradient-to-b from-teal-50 to-teal-100/60 rounded-2xl flex items-center justify-center p-3 mb-4 border border-teal-100 overflow-hidden">
+                <MascotCharacter pose="measuring" size="lg" />
               </div>
-              <div>
+              <div className="text-center space-y-1.5 flex-1 flex flex-col justify-start">
                 <h4 className="font-extrabold text-sm text-slate-900">2. Atölye & Ölçüm</h4>
-                <p className="text-xs text-slate-500 mt-1 leading-snug">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   Pergel, iletki ve cetvel kullanımında canlı ipuçlarıyla el becerisini geliştirir.
                 </p>
               </div>
             </div>
 
             {/* 3. Problem Çözme */}
-            <div className="bg-white p-5 rounded-2xl border border-indigo-100 shadow-xs space-y-3 text-center flex flex-col items-center">
-              <div className="w-20 h-20 rounded-2xl bg-indigo-50 p-1 border border-indigo-200 flex items-center justify-center">
-                <MascotCharacter pose="thinking" size="md" />
+            <div className="bg-white rounded-3xl p-5 border-2 border-indigo-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="w-full h-36 bg-gradient-to-b from-indigo-50 to-indigo-100/60 rounded-2xl flex items-center justify-center p-3 mb-4 border border-indigo-100 overflow-hidden">
+                <MascotCharacter pose="thinking" size="lg" />
               </div>
-              <div>
+              <div className="text-center space-y-1.5 flex-1 flex flex-col justify-start">
                 <h4 className="font-extrabold text-sm text-slate-900">3. Derin Düşünme</h4>
-                <p className="text-xs text-slate-500 mt-1 leading-snug">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   Zorlu bulmacalarda pedagojik ipuçları vererek öğrencinin kendi çıkarımını yapmasını sağlar.
                 </p>
               </div>
             </div>
 
             {/* 4. Başarı & Rozet */}
-            <div className="bg-white p-5 rounded-2xl border border-emerald-100 shadow-xs space-y-3 text-center flex flex-col items-center">
-              <div className="w-20 h-20 rounded-2xl bg-emerald-50 p-1 border border-emerald-200 flex items-center justify-center">
-                <MascotCharacter pose="success" size="md" />
+            <div className="bg-white rounded-3xl p-5 border-2 border-emerald-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="w-full h-36 bg-gradient-to-b from-emerald-50 to-emerald-100/60 rounded-2xl flex items-center justify-center p-3 mb-4 border border-emerald-100 overflow-hidden">
+                <MascotCharacter pose="success" size="lg" />
               </div>
-              <div>
+              <div className="text-center space-y-1.5 flex-1 flex flex-col justify-start">
                 <h4 className="font-extrabold text-sm text-slate-900">4. Coşkulu Tebrik</h4>
-                <p className="text-xs text-slate-500 mt-1 leading-snug">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   Kazanılan Maarif rozetleri ve seviye atlamalarında öğrenciyle birlikte sevinir.
                 </p>
               </div>
