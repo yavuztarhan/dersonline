@@ -20,6 +20,8 @@ import {
   downloadBulkClassRubricPDF
 } from '@/lib/pdf-report-generator';
 import { useAuth } from '@/lib/auth-store';
+import { OutcomeSubmissionModal } from '@/components/teacher/outcome-submission-modal';
+import { StudentOutcomeDetailModal } from '@/components/gamification/student-outcome-detail-modal';
 import {
   ClipboardCheck,
   Users,
@@ -56,6 +58,7 @@ interface TeacherRubricAnalyticsProps {
   teacherSchool?: string;
   teacherName?: string;
   teacherBranch?: string;
+  onOpenStudentDetail?: (student: any) => void;
 }
 
 type MainTabMode = 'outcome_cards' | 'student_table' | 'learning_journals' | 'cross_class';
@@ -64,10 +67,11 @@ export function TeacherRubricAnalytics({
   teacherClasses = ['5-A', '5-B', '6-A', '6-B'],
   teacherSchool,
   teacherName,
-  teacherBranch
+  teacherBranch,
+  onOpenStudentDetail
 }: TeacherRubricAnalyticsProps) {
   const { playSound } = useApp();
-  const { currentUser } = useAuth();
+  const { currentUser, students } = useAuth();
 
   const currentTeacher = currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin') ? currentUser : null;
   const activeSchool = teacherSchool || (currentTeacher as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
@@ -80,6 +84,10 @@ export function TeacherRubricAnalytics({
   // Submissions & Journals State
   const [submissions, setSubmissions] = useState<RubricSubmissionRecord[]>([]);
   const [journalEntries, setJournalEntries] = useState<LearningJournalEntry[]>([]);
+
+  // Outcome Tracking Modal State
+  const [selectedOutcomeForTracking, setSelectedOutcomeForTracking] = useState<{ code: string; title: string } | null>(null);
+  const [localSelectedStudentForDetail, setLocalSelectedStudentForDetail] = useState<any | null>(null);
 
   // Filters for Class & Outcome
   const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '5-A');
@@ -578,11 +586,24 @@ export function TeacherRubricAnalytics({
                   </div>
                 </div>
 
-                {/* Bulk Outcome PDF Download Button */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                  <div className="text-[11px] text-slate-500 font-medium">
-                    {selectedClass} • {stat.outcomeCode}
-                  </div>
+                {/* Action Buttons: Tracking Modal & Bulk PDF */}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playSound('click');
+                      setSelectedOutcomeForTracking({
+                        code: stat.outcomeCode,
+                        title: stat.outcomeTitle
+                      });
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    title={`${selectedClass} şubesindeki öğrencilerin kimlerin doldurup doldurmadığını ve gelişimlerini incele`}
+                  >
+                    <Users className="w-3.5 h-3.5 text-teal-200" />
+                    <span>Öğrenci Takibi & Formlar</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => handleDownloadBulkPDF(
@@ -1392,6 +1413,38 @@ export function TeacherRubricAnalytics({
 
           </div>
         </div>
+      )}
+
+      {/* 8. OUTCOME SUBMISSION & TRACKING MODAL (Kazanım Form Takip Paneli) */}
+      {selectedOutcomeForTracking && (
+        <OutcomeSubmissionModal
+          isOpen={!!selectedOutcomeForTracking}
+          onClose={() => setSelectedOutcomeForTracking(null)}
+          outcomeCode={selectedOutcomeForTracking.code}
+          outcomeTitle={selectedOutcomeForTracking.title}
+          selectedClass={selectedClass}
+          onOpenStudentDetail={(student) => {
+            if (onOpenStudentDetail) {
+              onOpenStudentDetail(student);
+            } else {
+              setLocalSelectedStudentForDetail(student);
+            }
+          }}
+          onOpenRubricInspector={(sub) => {
+            handleOpenInspector(sub);
+          }}
+        />
+      )}
+
+      {/* 9. LOCAL STUDENT OUTCOME DETAIL MODAL (Öğrenci Bütünsel Gelişim Kartı) */}
+      {localSelectedStudentForDetail && (
+        <StudentOutcomeDetailModal
+          isOpen={!!localSelectedStudentForDetail}
+          onClose={() => setLocalSelectedStudentForDetail(null)}
+          student={localSelectedStudentForDetail}
+          allStudents={students}
+          isTeacher={true}
+        />
       )}
 
     </div>

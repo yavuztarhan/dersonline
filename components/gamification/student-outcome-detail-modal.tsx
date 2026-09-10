@@ -7,6 +7,8 @@ import {
   OutcomePerformanceItem,
   getStudentPerformanceProfile
 } from '@/lib/student-performance-store';
+import { downloadStudentDevelopmentReportPDF } from '@/lib/pdf-report-generator';
+import { useAuth } from '@/lib/auth-store';
 import {
   X,
   Trophy,
@@ -30,7 +32,13 @@ import {
   BookmarkCheck,
   MinusCircle,
   ExternalLink,
-  Percent
+  Percent,
+  Download,
+  FileText,
+  Loader2,
+  BookOpen,
+  MessageSquare,
+  Heart
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -51,8 +59,10 @@ export function StudentOutcomeDetailModal({
   onAwardXp,
   isTeacher = false
 }: StudentOutcomeDetailModalProps) {
+  const { currentUser } = useAuth();
   const [filterMode, setFilterMode] = useState<'all' | 'completed' | 'missing'>('all');
   const [profile, setProfile] = useState<StudentPerformanceProfile | null>(null);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   // Load and calculate profile defensively
   useEffect(() => {
@@ -74,6 +84,7 @@ export function StudentOutcomeDetailModal({
           totalBadges: Array.isArray(student?.unlockedBadges) ? student.unlockedBadges.length : 0,
           overallSuccessRate: 0,
           overallRubricRate: 0,
+          totalJournalsCount: 0,
           completedOutcomesCount: 0,
           totalOutcomesCount: 5,
           outcomes: []
@@ -109,6 +120,7 @@ export function StudentOutcomeDetailModal({
     totalBadges: Array.isArray(student?.unlockedBadges) ? student.unlockedBadges.length : 0,
     overallSuccessRate: 0,
     overallRubricRate: 0,
+    totalJournalsCount: 0,
     completedOutcomesCount: 0,
     totalOutcomesCount: 5,
     outcomes: []
@@ -136,6 +148,24 @@ export function StudentOutcomeDetailModal({
   };
 
   const rankInfo = getRankBadge(safeProfile.totalPoints);
+
+  const handleDownloadDevelopmentCardPDF = async () => {
+    if (!profile) return;
+    try {
+      setIsDownloadingPdf(true);
+      await downloadStudentDevelopmentReportPDF(profile, {
+        schoolName: (currentUser as any)?.school || (student as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+        teacherName: (currentUser?.role === 'teacher' ? currentUser?.name : undefined) || 'Ahmet Yılmaz',
+        teacherBranch: (currentUser as any)?.branch || 'Matematik',
+        academicYear: '2025 - 2026 Eğitim Öğretim Yılı'
+      });
+    } catch (err) {
+      console.error('Öğrenci Gelişim Kartı PDF hatası:', err);
+      alert('Gelişim kartı PDF dosyası oluşturulurken bir hata oluştu.');
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200">
@@ -192,13 +222,35 @@ export function StudentOutcomeDetailModal({
               </div>
             </div>
 
-            {/* Total Points Card */}
-            <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center p-3 sm:p-4 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-sm shrink-0">
-              <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Toplam XP Puanı</div>
-              <div className="text-xl sm:text-2xl font-black text-amber-400 flex items-center gap-1.5">
-                <Zap className="w-5 h-5 fill-amber-400" />
-                <span>{safeProfile.totalPoints} XP</span>
+            {/* Total Points Card & PDF Download Button */}
+            <div className="flex items-center gap-3 shrink-0 flex-wrap sm:flex-nowrap">
+              <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center p-3 sm:p-4 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-sm shrink-0">
+                <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Toplam XP Puanı</div>
+                <div className="text-xl sm:text-2xl font-black text-amber-400 flex items-center gap-1.5">
+                  <Zap className="w-5 h-5 fill-amber-400" />
+                  <span>{safeProfile.totalPoints} XP</span>
+                </div>
               </div>
+
+              <button
+                type="button"
+                onClick={handleDownloadDevelopmentCardPDF}
+                disabled={isDownloadingPdf}
+                className="px-4 py-3.5 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 active:scale-95 shrink-0"
+                title="MEB Türkiye Yüzyılı Maarif Modeli Öğrenci Gelişim Kartını Resmi PDF Olarak İndir"
+              >
+                {isDownloadingPdf ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                    <span>PDF Hazırlanıyor...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4 text-slate-950" />
+                    <span>Gelişim Kartı İndir (PDF)</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -533,7 +585,45 @@ export function StudentOutcomeDetailModal({
 
                   </div>
 
-                  {/* 3. COMPARATIVE PEDAGOGICAL INSIGHT BANNER */}
+                  {/* 3. LEARNING JOURNAL (ÖĞRENME GÜNLÜĞÜ / ÇIKIŞ BİLETİ) SECTION */}
+                  {item.hasJournalData && item.journalEntry && (
+                    <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-black text-indigo-950">
+                          <BookOpen className="w-4 h-4 text-indigo-600" />
+                          <span>Öğrenme Günlüğü (Çıkış Bileti Yansıtması)</span>
+                        </div>
+                        {item.journalEntry.teacherLiked && (
+                          <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold flex items-center gap-1">
+                            <Heart className="w-3 h-3 fill-amber-500 text-amber-500" />
+                            <span>Öğretmen Yıldızlı</span>
+                          </span>
+                        )}
+                      </div>
+
+                      {item.journalEntry.prompt && (
+                        <div className="text-[11px] text-indigo-900 font-semibold">
+                          💡 <em>&quot;{item.journalEntry.prompt}&quot;</em>
+                        </div>
+                      )}
+
+                      <div className="p-3 rounded-xl bg-white border border-indigo-100 text-xs text-slate-800 italic leading-relaxed">
+                        &ldquo;{item.journalEntry.studentReflection}&rdquo;
+                      </div>
+
+                      {item.journalEntry.teacherFeedback && (
+                        <div className="p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-xs text-teal-950 space-y-0.5">
+                          <div className="text-[10px] font-bold text-teal-800 flex items-center gap-1">
+                            <MessageSquare className="w-3 h-3 text-teal-600" />
+                            <span>Öğretmen Geri Bildirimi:</span>
+                          </div>
+                          <p className="italic text-teal-900">&ldquo;{item.journalEntry.teacherFeedback}&rdquo;</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* 4. COMPARATIVE PEDAGOGICAL INSIGHT BANNER */}
                   <div className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${item.alignmentInsight.badgeClass}`}>
                     <div className="flex items-start gap-2.5">
                       <div className="p-1 rounded-lg bg-white/80 shrink-0 mt-0.5">
@@ -576,7 +666,21 @@ export function StudentOutcomeDetailModal({
             Türkiye Yüzyılı Maarif Modeli • Öğrenci Bireysel Başarı & Öz Değerlendirme Takip Sistemi
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <button
+              type="button"
+              onClick={handleDownloadDevelopmentCardPDF}
+              disabled={isDownloadingPdf}
+              className="px-4 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {isDownloadingPdf ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-700" />
+              ) : (
+                <Download className="w-3.5 h-3.5 text-teal-700" />
+              )}
+              <span>PDF İndir</span>
+            </button>
+
             {isTeacher && onAwardXp && (
               <button
                 type="button"

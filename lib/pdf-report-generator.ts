@@ -309,3 +309,233 @@ export async function downloadBulkClassRubricPDF(
   const fileName = `${classSec}_${outCode}_Toplu_Ogrenci_Raporlari.pdf`;
   pdf.save(fileName);
 }
+
+/**
+ * Creates an HTML element formatted as an official MEB Student Development & Performance Card (Öğrenci Gelişim ve Başarı Karnesi).
+ */
+export function createStudentDevelopmentCardHTML(
+  profile: import('@/lib/student-performance-store').StudentPerformanceProfile,
+  options?: ReportMetaOptions
+): HTMLDivElement {
+  const school = options?.schoolName || 'Edirne Selimiye İmam Hatip Ortaokulu';
+  const teacher = options?.teacherName || 'Ahmet Yılmaz';
+  const rawBranch = options?.teacherBranch || 'Matematik';
+  const teacherBranch = rawBranch.toLowerCase().includes('öğretmen') ? rawBranch : `${rawBranch} Öğretmeni`;
+  const year = options?.academicYear || '2026 - 2027 Eğitim-Öğretim Yılı';
+  const formattedDate = new Date().toLocaleDateString('tr-TR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  const container = document.createElement('div');
+  container.style.width = '794px'; // Standard A4 width in px at 96 DPI
+  container.style.minHeight = '1123px'; // Standard A4 height in px
+  container.style.padding = '36px 40px';
+  container.style.backgroundColor = '#ffffff';
+  container.style.color = '#0f172a';
+  container.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  container.style.boxSizing = 'border-box';
+  container.style.position = 'relative';
+
+  // Outcomes Rows
+  const outcomeRowsHTML = profile.outcomes
+    .map((item, idx) => {
+      const actScore = item.hasActivityData && item.activitySuccessRate !== null ? `%${item.activitySuccessRate}` : '-';
+      const rubricScore = item.hasRubricData && item.rubricScore !== null ? `%${item.rubricScore}` : '-';
+      const rubricBadge = item.rubricLevel || 'Değerlendirilmedi';
+
+      let rubricColor = '#64748b';
+      let rubricBg = '#f1f5f9';
+      if (item.rubricLevel === 'Mükemmel') {
+        rubricColor = '#15803d';
+        rubricBg = '#dcfce7';
+      } else if (item.rubricLevel === 'Başarılı') {
+        rubricColor = '#0f766e';
+        rubricBg = '#ccfbf1';
+      } else if (item.rubricLevel === 'Orta') {
+        rubricColor = '#b45309';
+        rubricBg = '#fef3c7';
+      } else if (item.rubricLevel === 'Geliştirilmeli') {
+        rubricColor = '#be123c';
+        rubricBg = '#ffe4e6';
+      }
+
+      const journalText = item.journalEntry?.studentReflection
+        ? `"${item.journalEntry.studentReflection.slice(0, 90)}..."`
+        : item.rubricSubmission?.studentNote
+        ? `"${item.rubricSubmission.studentNote.slice(0, 90)}..."`
+        : '-';
+
+      return `
+        <tr style="border-bottom: 1px solid #e2e8f0; font-size: 10.5px;">
+          <td style="padding: 8px 6px; font-weight: 700; text-align: center; color: #475569;">${idx + 1}</td>
+          <td style="padding: 8px 8px;">
+            <div style="font-weight: 800; color: #0d9488; font-size: 10px;">${item.outcomeCode}</div>
+            <div style="font-weight: 700; color: #0f172a; line-height: 1.25; margin-top: 2px;">${item.outcomeTitle}</div>
+          </td>
+          <td style="padding: 8px 6px; text-align: center; font-weight: 800; color: #059669;">
+            ${actScore}
+          </td>
+          <td style="padding: 8px 6px; text-align: center;">
+            <div style="font-weight: 800; color: #4338ca;">${rubricScore}</div>
+            <span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; background-color: ${rubricBg}; color: ${rubricColor}; margin-top: 2px;">
+              ${rubricBadge}
+            </span>
+          </td>
+          <td style="padding: 8px 8px; color: #334155; font-size: 9.5px; line-height: 1.35; font-style: italic;">
+            ${journalText}
+          </td>
+          <td style="padding: 8px 6px; font-size: 9.5px; font-weight: 700; color: #1e293b;">
+            ${item.alignmentInsight.title}
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  container.innerHTML = `
+    <!-- HEADER -->
+    <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-bottom: 14px;">
+      <div style="font-size: 12px; font-weight: 900; letter-spacing: 0.8px; color: #b91c1c; text-transform: uppercase;">
+        T.C. MİLLÎ EĞİTİM BAKANLIĞI
+      </div>
+      <div style="font-size: 15px; font-weight: 900; color: #0f172a; margin-top: 3px;">
+        ${school}
+      </div>
+      <div style="font-size: 11px; font-weight: 700; color: #0d9488; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px;">
+        TÜRKİYE YÜZYILI MAARİF MODELİ • ÖĞRENCİ BİREYSEL GELİŞİM VE BAŞARI KARNESİ
+      </div>
+      <div style="font-size: 10px; color: #64748b; font-weight: 600; margin-top: 2px;">
+        ${year} • Düzenlenme Tarihi: ${formattedDate}
+      </div>
+    </div>
+
+    <!-- STUDENT META CARD -->
+    <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px;">
+      <div>
+        <div style="color: #64748b; font-size: 9.5px; font-weight: 700; text-transform: uppercase;">Öğrenci Adı Soyadı</div>
+        <div style="font-weight: 900; color: #0f172a; font-size: 12px; margin-top: 1px;">${profile.studentName}</div>
+      </div>
+      <div>
+        <div style="color: #64748b; font-size: 9.5px; font-weight: 700; text-transform: uppercase;">Sınıf / Şube / No</div>
+        <div style="font-weight: 800; color: #0f172a; margin-top: 1px;">${profile.classSection} Şubesi • No: #${profile.studentNumber}</div>
+      </div>
+      <div>
+        <div style="color: #64748b; font-size: 9.5px; font-weight: 700; text-transform: uppercase;">Toplam XP & Sıralama</div>
+        <div style="font-weight: 800; color: #d97706; margin-top: 1px;">⚡ ${profile.totalPoints} XP (Sınıf #${profile.rank})</div>
+      </div>
+      <div>
+        <div style="color: #64748b; font-size: 9.5px; font-weight: 700; text-transform: uppercase;">Ders / Alan</div>
+        <div style="font-weight: 800; color: #0f172a; margin-top: 1px;">${teacherBranch}</div>
+      </div>
+    </div>
+
+    <!-- KPI SUMMARY STRIP -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
+      <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 8px 10px; text-align: center;">
+        <div style="font-size: 9.5px; font-weight: 700; color: #065f46; text-transform: uppercase;">Oyun / Etkinlik Ort.</div>
+        <div style="font-size: 16px; font-weight: 900; color: #047857; margin-top: 2px;">%${profile.overallSuccessRate || 0}</div>
+      </div>
+      <div style="background-color: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 8px 10px; text-align: center;">
+        <div style="font-size: 9.5px; font-weight: 700; color: #3730a3; text-transform: uppercase;">Öz Değerlendirme Rubrik Ort.</div>
+        <div style="font-size: 16px; font-weight: 900; color: #4338ca; margin-top: 2px;">%${profile.overallRubricRate || 0}</div>
+      </div>
+      <div style="background-color: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; padding: 8px 10px; text-align: center;">
+        <div style="font-size: 9.5px; font-weight: 700; color: #115e59; text-transform: uppercase;">Tamamlanan Kazanım</div>
+        <div style="font-size: 16px; font-weight: 900; color: #0f766e; margin-top: 2px;">${profile.completedOutcomesCount} / ${profile.totalOutcomesCount}</div>
+      </div>
+      <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 8px 10px; text-align: center;">
+        <div style="font-size: 9.5px; font-weight: 700; color: #92400e; text-transform: uppercase;">Öğrenme Günlüğü</div>
+        <div style="font-size: 16px; font-weight: 900; color: #b45309; margin-top: 2px;">${profile.totalJournalsCount || 0} Günlük</div>
+      </div>
+    </div>
+
+    <!-- OUTCOMES TABLE -->
+    <div style="margin-bottom: 16px;">
+      <div style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+        KAZANIM BAZLI BAŞARI, ÖZ DEĞERLENDİRME VE GELİŞİM TABLOSU
+      </div>
+      <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden;">
+        <thead>
+          <tr style="background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1; font-size: 10px; font-weight: 800; color: #475569; text-align: left;">
+            <th style="padding: 7px 6px; width: 24px; text-align: center;">#</th>
+            <th style="padding: 7px 8px; width: 230px;">Kazanım / Öğrenme Çıktısı</th>
+            <th style="padding: 7px 6px; width: 60px; text-align: center;">Oyun (%)</th>
+            <th style="padding: 7px 6px; width: 95px; text-align: center;">Rubrik / Düzey</th>
+            <th style="padding: 7px 8px;">Öğrenci Yansıtması / Notu</th>
+            <th style="padding: 7px 6px; width: 110px;">Gelişim Durumu</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${outcomeRowsHTML}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TEACHER PEDAGOGICAL ASSESSMENT NOTE -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 18px; font-size: 10.5px; line-height: 1.45;">
+      <div style="font-weight: 800; color: #0d9488; text-transform: uppercase; font-size: 10px; margin-bottom: 3px;">
+        ÖĞRETMENİN GENEL PEDAGOJİK DEĞERLENDİRMESİ VE GELİŞİM YORUMU
+      </div>
+      <div style="color: #334155;">
+        Öğrenci, Türkiye Yüzyılı Maarif Modeli kapsamında tasarlanan kavram çıkarımı, çizim atölyesi ve matematiksel modelleme etkinliklerinde aktif katılım sağlamıştır. Öz değerlendirme rubriklerindeki farkındalık seviyesi genel başarıyla tutarlı olup, analitik düşünme ve problem çözme becerileri desteklenmeye devam edilmektedir.
+      </div>
+    </div>
+
+    <!-- SIGNATURE BLOCK -->
+    <div style="border-top: 1px solid #cbd5e1; padding-top: 14px; margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-size: 10.5px; color: #334155;">
+      <div style="text-align: center; width: 220px;">
+        <div style="font-weight: 800; color: #0f172a; font-size: 11px;">${profile.studentName}</div>
+        <div style="font-size: 9.5px; color: #64748b;">Öğrenci İmzası</div>
+        <div style="margin-top: 24px; border-bottom: 1px dashed #94a3b8; width: 140px; margin-left: auto; margin-right: auto;"></div>
+      </div>
+
+      <div style="text-align: center; width: 220px;">
+        <div style="font-weight: 800; color: #0f172a; font-size: 11px;">${teacher}</div>
+        <div style="font-size: 9.5px; color: #475569; margin-top: 1px; font-weight: 600;">${teacherBranch}</div>
+        <div style="margin-top: 16px; border-bottom: 1px dashed #94a3b8; width: 140px; margin-left: auto; margin-right: auto;"></div>
+      </div>
+    </div>
+  `;
+
+  return container;
+}
+
+/**
+ * Downloads a comprehensive Student Development Report Card (Gelişim Karnesi) as a PDF.
+ */
+export async function downloadStudentDevelopmentReportPDF(
+  profile: import('@/lib/student-performance-store').StudentPerformanceProfile,
+  options?: ReportMetaOptions
+): Promise<void> {
+  const container = createStudentDevelopmentCardHTML(profile, options);
+  document.body.appendChild(container);
+
+  try {
+    const canvas = await html2canvas(container, {
+      scale: 2, // High resolution
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+    const cleanStudentName = profile.studentName.trim().replace(/\s+/g, '_');
+    const fileName = `${cleanStudentName}_${profile.classSection}_Gelisim_Karnesi.pdf`;
+    pdf.save(fileName);
+  } finally {
+    document.body.removeChild(container);
+  }
+}

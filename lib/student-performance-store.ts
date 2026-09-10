@@ -1,6 +1,7 @@
 'use client';
 
 import { RubricSubmissionRecord, getStoredSubmissions } from '@/lib/rubric-store';
+import { LearningJournalEntry, getStoredJournalEntries } from '@/lib/journal-store';
 
 export interface StudentActivityScore {
   id: string;
@@ -38,6 +39,10 @@ export interface OutcomePerformanceItem {
   rubricLevel: 'Mükemmel' | 'Başarılı' | 'Orta' | 'Geliştirilmeli' | null;
   rubricSubmission: RubricSubmissionRecord | null;
 
+  // Learning Journal Reflection
+  hasJournalData: boolean;
+  journalEntry: LearningJournalEntry | null;
+
   // Comparative Insight
   comparisonStatus: 'both_present' | 'only_activity' | 'only_rubric' | 'no_data';
   alignmentDelta: number | null; // difference between activity and rubric percentage
@@ -64,10 +69,12 @@ export interface StudentPerformanceProfile {
   overallRubricRate: number; // average rubric score across active submissions
   completedOutcomesCount: number;
   totalOutcomesCount: number;
+  totalJournalsCount: number;
   outcomes: OutcomePerformanceItem[];
 }
 
 const STORAGE_ACTIVITY_KEY = 'maarif_student_activity_scores_v1';
+
 
 // Seed Activity Performance for standard curriculum outcomes
 const SEED_STUDENT_ACTIVITIES: StudentActivityScore[] = [
@@ -406,10 +413,26 @@ export function getStudentPerformanceProfile(
         (a.studentName && a.studentName.trim().toLowerCase() === studentName.trim().toLowerCase()))
   );
 
+  let allJournals: LearningJournalEntry[] = [];
+  try {
+    allJournals = getStoredJournalEntries() ?? [];
+  } catch {
+    allJournals = [];
+  }
+
+  const studentJournals = allJournals.filter(
+    (j) =>
+      j &&
+      (j.studentId === studentId ||
+        j.studentNumber === studentNumber ||
+        (j.studentName && j.studentName.trim().toLowerCase() === studentName.trim().toLowerCase()))
+  );
+
   // Map each outcome in the curriculum
   const outcomeItems: OutcomePerformanceItem[] = CURRICULUM_OUTCOMES_LIST.map((curricOutcome) => {
     const matchingActs = studentActs.filter((a) => a.outcomeCode === curricOutcome.code);
     const matchingSub = studentSubs.find((s) => s.outcomeCode === curricOutcome.code) || null;
+    const matchingJournal = studentJournals.find((j) => j.outcomeCode === curricOutcome.code) || null;
 
     // Activity Metrics
     const hasActivityData = matchingActs.length > 0;
@@ -432,6 +455,9 @@ export function getStudentPerformanceProfile(
     const hasRubricData = !!matchingSub;
     const rubricScore = matchingSub?.percentage ?? null;
     const rubricLevel = matchingSub?.performanceLevel ?? null;
+
+    // Journal Metrics
+    const hasJournalData = !!matchingJournal;
 
     // Comparison Status
     let comparisonStatus: 'both_present' | 'only_activity' | 'only_rubric' | 'no_data' = 'no_data';
@@ -526,6 +552,8 @@ export function getStudentPerformanceProfile(
       rubricScore,
       rubricLevel,
       rubricSubmission: matchingSub,
+      hasJournalData,
+      journalEntry: matchingJournal,
       comparisonStatus,
       alignmentDelta,
       alignmentScore,
@@ -547,6 +575,7 @@ export function getStudentPerformanceProfile(
       : 0;
 
   const completedOutcomesCount = outcomeItems.filter((o) => o.hasActivityData || o.hasRubricData).length;
+  const totalJournalsCount = studentJournals.length;
 
   return {
     studentId,
@@ -561,6 +590,8 @@ export function getStudentPerformanceProfile(
     overallRubricRate,
     completedOutcomesCount,
     totalOutcomesCount: CURRICULUM_OUTCOMES_LIST.length,
+    totalJournalsCount,
     outcomes: outcomeItems
   };
 }
+

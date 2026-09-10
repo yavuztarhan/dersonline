@@ -469,6 +469,7 @@ export function TeacherDashboard() {
             teacherSchool={teacher?.school}
             teacherName={teacher?.name}
             teacherBranch={teacher?.branch}
+            onOpenStudentDetail={(stu) => setSelectedStudentForDetail(stu)}
           />
         </div>
       )}
