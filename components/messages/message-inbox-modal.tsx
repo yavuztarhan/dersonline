@@ -11,7 +11,10 @@ import {
   sendMessage,
   markMessageAsRead,
   deleteMessage,
-  canUserMessageRecipient
+  canUserMessageRecipient,
+  DAILY_MESSAGE_LIMIT,
+  getRemainingDailyMessages,
+  getDailySentMessageCount
 } from '@/lib/message-store';
 import { checkContentSafety } from '@/lib/profanity-filter';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -165,6 +168,7 @@ export function MessageInboxModal({
   // Real-time Content Safety check
   const safetyStatus = checkContentSafety(content);
   const remainingChars = 300 - content.length;
+  const remainingDaily = getRemainingDailyMessages(userId);
 
   const handleOpenMessage = (msg: MessageRecord) => {
     setSelectedMessage(msg);
@@ -194,6 +198,11 @@ export function MessageInboxModal({
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     setComposeError(null);
+
+    if (remainingDaily <= 0) {
+      setComposeError(`Günlük ${DAILY_MESSAGE_LIMIT} mesaj gönderme sınırına ulaştınız. Yarın tekrar mesaj gönderebilirsiniz.`);
+      return;
+    }
 
     if (!recipientId) {
       setComposeError('Lütfen mesaj göndermek istediğiniz kişiyi seçiniz.');
@@ -550,6 +559,47 @@ export function MessageInboxModal({
           {activeTab === 'compose' && (
             <form onSubmit={handleSendMessage} className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
               
+              {/* Daily Quota Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 rounded-lg bg-teal-50 text-teal-700">
+                    <Sparkles className="w-4 h-4" />
+                  </span>
+                  <div>
+                    <h4 className="text-xs font-black text-slate-900">Yeni Mesaj Oluştur</h4>
+                    <p className="text-[10px] text-slate-500">
+                      {userRole === 'student' ? 'Öğretmeninize ders ve ödev sorularınızı iletebilirsiniz.' : 'Hiyerarşik kurallar dahilinde mesaj iletin.'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className={`px-3 py-1 rounded-full text-[11px] font-black border flex items-center gap-1.5 shadow-2xs ${
+                  remainingDaily > 0
+                    ? 'bg-teal-50 text-teal-800 border-teal-200'
+                    : 'bg-amber-50 text-amber-900 border-amber-300'
+                }`}>
+                  <span>⚡ Günlük Mesaj Hakkı:</span>
+                  <span className={`px-1.5 py-0.2 rounded-md ${
+                    remainingDaily > 0 ? 'bg-teal-600 text-white' : 'bg-amber-600 text-white'
+                  }`}>
+                    {remainingDaily} / {DAILY_MESSAGE_LIMIT}
+                  </span>
+                </div>
+              </div>
+
+              {/* If Daily Quota Reached Banner */}
+              {remainingDaily <= 0 && (
+                <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-900 space-y-1.5 animate-in fade-in">
+                  <div className="flex items-center gap-2 font-black text-xs text-amber-950">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Günlük Mesajlaşma Sınırına Ulaştınız (5/5)</span>
+                  </div>
+                  <p className="text-[11px] text-amber-800 leading-relaxed font-medium">
+                    Topluluk ve iletişim düzenini korumak amacıyla her kullanıcı günde en fazla <strong>5 mesaj</strong> gönderebilir. Yeni mesaj hakkınız her gece saat <strong>00:00</strong>'da otomatik olarak sıfırlanacaktır.
+                  </p>
+                </div>
+              )}
+
               {composeSuccess && (
                 <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 font-bold text-xs flex items-center gap-2 animate-in fade-in">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -575,7 +625,8 @@ export function MessageInboxModal({
                 <select
                   value={recipientId}
                   onChange={(e) => setRecipientId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 cursor-pointer"
+                  disabled={remainingDaily <= 0}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   required
                 >
                   <option value="">-- Lütfen Alıcı Seçiniz --</option>
@@ -597,8 +648,9 @@ export function MessageInboxModal({
                   placeholder="Örn: Grup Ödevi veya Kazanım Sorusu"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
+                  disabled={remainingDaily <= 0}
                   maxLength={60}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -613,7 +665,7 @@ export function MessageInboxModal({
                   </span>
                 </div>
                 <textarea
-                  placeholder="Mesajınızı nezaket ve saygı kurallarına uygun şekilde yazınız..."
+                  placeholder={remainingDaily > 0 ? "Mesajınızı nezaket ve saygı kurallarına uygun şekilde yazınız..." : "Günlük mesaj limitine ulaştınız."}
                   value={content}
                   onChange={(e) => {
                     if (e.target.value.length <= 300) {
@@ -621,8 +673,9 @@ export function MessageInboxModal({
                       if (composeError) setComposeError(null);
                     }
                   }}
+                  disabled={remainingDaily <= 0}
                   rows={5}
-                  className={`w-full p-3.5 bg-slate-50 border rounded-2xl text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all resize-none ${
+                  className={`w-full p-3.5 bg-slate-50 border rounded-2xl text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all resize-none disabled:opacity-50 disabled:cursor-not-allowed ${
                     !safetyStatus.isClean
                       ? 'border-rose-400 focus:ring-2 focus:ring-rose-500/20 bg-rose-50/20'
                       : 'border-slate-200 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500'
@@ -650,9 +703,9 @@ export function MessageInboxModal({
                 </button>
                 <button
                   type="submit"
-                  disabled={!safetyStatus.isClean || !content.trim() || !recipientId}
+                  disabled={remainingDaily <= 0 || !safetyStatus.isClean || !content.trim() || !recipientId}
                   className={`px-6 py-2.5 rounded-xl font-black text-xs transition-all flex items-center gap-2 shadow-md cursor-pointer ${
-                    safetyStatus.isClean && content.trim() && recipientId
+                    remainingDaily > 0 && safetyStatus.isClean && content.trim() && recipientId
                       ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-teal-600/20 active:scale-95'
                       : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
                   }`}

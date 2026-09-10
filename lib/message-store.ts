@@ -120,9 +120,35 @@ export function getInboxForUser(userId: string): MessageRecord[] {
   return all.filter((m) => m.receiverId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
+export const DAILY_MESSAGE_LIMIT = 5;
+
 export function getSentForUser(userId: string): MessageRecord[] {
   const all = getStoredMessages();
   return all.filter((m) => m.senderId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+/**
+ * Kullanıcının bugün gönderdiği toplam mesaj sayısını döner.
+ */
+export function getDailySentMessageCount(userId: string): number {
+  const sent = getSentForUser(userId);
+  const todayStr = new Date().toDateString();
+  return sent.filter((m) => {
+    try {
+      const msgDate = new Date(m.createdAt).toDateString();
+      return msgDate === todayStr;
+    } catch {
+      return false;
+    }
+  }).length;
+}
+
+/**
+ * Kullanıcının bugünkü kalan mesaj gönderme hakkını döner.
+ */
+export function getRemainingDailyMessages(userId: string): number {
+  const sentToday = getDailySentMessageCount(userId);
+  return Math.max(0, DAILY_MESSAGE_LIMIT - sentToday);
 }
 
 export function getUnreadMessageCount(userId: string): number {
@@ -156,7 +182,16 @@ export interface SendMessagePayload {
 }
 
 export function sendMessage(payload: SendMessagePayload): { success: boolean; message?: MessageRecord; error?: string } {
-  // 1. İzin Hiyerarşisi Doğrulaması
+  // 1. Günlük Mesaj Gönderme Kotası Kontrolü (Maksimum 5 Mesaj / Gün)
+  const sentToday = getDailySentMessageCount(payload.senderId);
+  if (sentToday >= DAILY_MESSAGE_LIMIT) {
+    return {
+      success: false,
+      error: `Günlük mesaj gönderme sınırına (${DAILY_MESSAGE_LIMIT} mesaj/gün) ulaştınız. Yeni mesaj göndermek için lütfen yarını bekleyiniz.`
+    };
+  }
+
+  // 2. İzin Hiyerarşisi Doğrulaması
   if (!canUserMessageRecipient(payload.senderRole, payload.receiverRole)) {
     let err = 'Bu kullanıcı rolüne mesaj gönderme yetkiniz bulunmamaktadır.';
     if (payload.senderRole === 'student') {
@@ -165,7 +200,7 @@ export function sendMessage(payload: SendMessagePayload): { success: boolean; me
     return { success: false, error: err };
   }
 
-  // 2. Karakter Sınırı Denetimi (Maksimum 300 Karakter)
+  // 3. Karakter Sınırı Denetimi (Maksimum 300 Karakter)
   const trimmedContent = payload.content.trim();
   if (!trimmedContent) {
     return { success: false, error: 'Mesaj içeriği boş bırakılamaz.' };
@@ -174,7 +209,7 @@ export function sendMessage(payload: SendMessagePayload): { success: boolean; me
     return { success: false, error: `Mesajınız 300 karakter sınırını aşıyor (${trimmedContent.length}/300).` };
   }
 
-  // 3. Küfür, Hakaret ve Uygunsuz İçerik Filtresi
+  // 4. Küfür, Hakaret ve Uygunsuz İçerik Filtresi
   const safetyCheck = checkContentSafety(trimmedContent);
   if (!safetyCheck.isClean) {
     return {
