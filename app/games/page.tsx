@@ -7,6 +7,7 @@ import { useApp } from '@/lib/store';
 import { MascotCharacter } from '@/components/mascot';
 import { STANDALONE_GAMES, StandaloneGame } from '@/lib/standalone-games-data';
 import { MultiplicationGame } from '@/components/games/multiplication-game';
+import { MathWheelGame } from '@/components/games/math-wheel-game';
 import {
   Gamepad2,
   Sparkles,
@@ -38,6 +39,14 @@ export default function GamesPage() {
   const [activeGameId, setActiveGameId] = useState<string | null>(null);
 
   // If a game is currently active, render that game directly!
+  if (activeGameId === 'matematik-carki') {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <MathWheelGame onBackToHub={() => setActiveGameId(null)} />
+      </div>
+    );
+  }
+
   if (activeGameId === 'carpim-tablosu') {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
