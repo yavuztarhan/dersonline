@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
 import { useAuth } from '@/lib/auth-store';
-import { getRubricForOutcome } from '@/lib/rubric-data';
+import { getPeerRubricForOutcome } from '@/lib/rubric-data';
 import { savePeerEvaluation } from '@/lib/peer-evaluation-store';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import confetti from 'canvas-confetti';
@@ -120,7 +120,7 @@ export function PeerAssessmentRubricModal({
   const { playSound, addPoints, unlockBadge } = useApp();
   const { awardPointsToStudent } = useAuth();
 
-  const rubric = getRubricForOutcome(outcomeId, outcomeTitle, outcomeCode);
+  const rubric = getPeerRubricForOutcome(outcomeId, outcomeTitle, outcomeCode);
   const totalCriteriaCount = rubric.criteria.length;
   const maxPossibleScore = totalCriteriaCount * 4;
 

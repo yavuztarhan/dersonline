@@ -651,3 +651,662 @@ export function getRubricForOutcome(outcomeId: string, outcomeTitle: string, out
     ]
   };
 }
+
+/**
+ * Türkiye Yüzyılı Maarif Modeli - Akran Değerlendirme Rubrikleri (3. Şahıs / Gözlemci Dili)
+ */
+export const PEER_OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
+  'MAT.6.1.1': {
+    id: 'peer-rubric-mat-6-1-1',
+    outcomeId: 'MAT.6.1.1',
+    title: 'Akran Değerlendirme Rubriği: Bir Doğal Sayının Çarpanları ve Katları',
+    description:
+      'Takım arkadaşınızın doğal sayının çarpan ve katlarına yönelik muhakeme yapabilme, alan ve gökkuşağı modellerini kullanma becerilerini ve grup içi iş birliğini dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Çarpan Kavramını Anlama (Bölen İlişkisi & Kalansız Bölme)',
+        category: 'Kavramsal Anlama & Alan Modeli',
+        levelDescriptions: {
+          1: 'Sayının çarpanlarını bulurken eksik bırakıyor, kalansız bölme ilişkisini kurmakta zorlanıyor.',
+          2: 'Küçük sayıların çarpanlarını bulabiliyor ancak büyük sayılarda bazı çarpanları atlıyor.',
+          3: 'Bir doğal sayının tüm pozitif çarpanlarını sistematik (alan/gökkuşağı) olarak bulabiliyor.',
+          4: 'Çarpan sayısı ile sayının geometrik modelleri arasında bağıntı kurup arkadaşlarına tam açıklıyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Kat Kavramını Uygulama (Ritmik Sayma & Aralık Sınırlamaları)',
+        category: 'Matematiksel Uygulama & Örüntü',
+        levelDescriptions: {
+          1: 'Bir sayının katlarını ritmik saymada zorlanıyor, işlem hatası yapabiliyor.',
+          2: 'Sayının ardışık katlarını yazabiliyor fakat aralık sınırlamalarında (örn: 50 ile 100 arası) zorlanıyor.',
+          3: 'İstenen aralıktaki katları eksiksiz listeliyor ve kat ilişkisini doğru yorumluyor.',
+          4: 'Farklı iki sayının kat örüntülerini karşılaştırarak ortak kat mantığını açıkça izah edebiliyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Problem Durumunda Muhakeme (İyilik Kolisi & Paylaştırma)',
+        category: 'Problem Çözme & Karar Verme',
+        levelDescriptions: {
+          1: 'Verilen problem durumunda çarpan mı kat mı kullanacağına karar vermekte zorlanıyor.',
+          2: 'Öğretmenin veya ipuçlarının rehberliğinde çarpan/kat ilişkisini probleme uygulayabiliyor.',
+          3: 'Günlük hayat problemlerinde çarpan ve katları bağımsız olarak doğru modelliyor.',
+          4: 'Problemi birden fazla stratejiyle çözüyor, gerekçelendiriyor ve takıma yeni çözümler sunuyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Matematiksel Temsil ve Dil (Alan Modeli, Gökkuşağı, Sayı Doğrusu)',
+        category: 'Temsil & Matematiksel Dil',
+        levelDescriptions: {
+          1: 'Çarpanları rastgele yazıyor, gösterim modellerini (alan/gökkuşağı) kullanmakta zorlanıyor.',
+          2: 'Sadece liste yöntemini kullanabiliyor, modelleme araçlarını sınırlı kullanıyor.',
+          3: 'Alan modeli, gökkuşağı ve sayı doğrusu temsillerini amacına uygun ve doğru kullanıyor.',
+          4: 'Temsiller arası geçiş yapabiliyor ve çıkarımlarını matematiksel önermelerle net biçimde ifade ediyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması ve Öğrenme Sorumluluğu (SDB1.2 - SDB1.3)',
+        category: 'Süreç Becerileri & İş Birliği',
+        levelDescriptions: {
+          1: 'Grup çalışmasında çarpan ve kat bulma adımlarında rastgele tahminler yapıyor, kontrol etmiyor.',
+          2: 'Hata yaptığında ipucu ile düzeltiyor ancak nedenini açıklamakta zorlanıyor.',
+          3: 'Çarpan ağacı ve alan modelleriyle çözümlerini sabırla kontrol ediyor, takım arkadaşlarına destek oluyor.',
+          4: 'Grup çalışmalarına aktif liderlik ediyor, çözümlerini ve gerekçelerini arkadaşlarıyla paylaşıyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Bir doğal sayının çarpanı ile böleninin aynı anlama geldiğini kavradı.' },
+      { id: 'chk2', text: 'Dikdörtgensel alan modelini kullanarak sayının çarpanlarını bulabiliyor.' },
+      { id: 'chk3', text: 'Gökkuşağı yönteminde uçlardaki sayıların çarpım ilişkisini fark etti.' },
+      { id: 'chk4', text: 'Bir sayının katlarını belirli bir sınıra kadar ritmik ve hatasız listeleyebiliyor.' },
+      { id: 'chk5', text: 'Grup içi paylaştırma ve problem çözümlerine aktif katkı sağlıyor.' }
+    ]
+  },
+  'MAT.6.1.2': {
+    id: 'peer-rubric-mat-6-1-2',
+    outcomeId: 'MAT.6.1.2',
+    title: 'Akran Değerlendirme Rubriği: Bölünebilme Kriterleri (2, 3, 4, 5, 6, 9, 10)',
+    description:
+      'Takım arkadaşınızın 2, 3, 4, 5, 6, 9 ve 10 ile kalansız bölünebilme kriterlerini uygulama, analiz etme ve problem çözme becerilerini değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Son Basamak Kriterlerini Uygulama (2, 5 ve 10 ile Bölünebilme)',
+        category: 'Kavramsal Anlama & Son Basamak',
+        levelDescriptions: {
+          1: '2, 5 ve 10 ile bölünebilmede birler basamağına bakılması gerektiğini karıştırıyor.',
+          2: 'Çift sayıların 2\'ye, sonu 0 ve 5 olanların 5\'e bölündüğünü biliyor ancak 10 ile kalan ilişkisinde zorlanıyor.',
+          3: 'Birler basamağını inceleyerek bir sayının 2, 5 ve 10 ile tam bölünüp bölünmediğini ve kalanını doğru bulabiliyor.',
+          4: 'Birler basamağı 0 olan sayıların 2, 5 ve 10\'un ortak katı olduğunu basamak değerleriyle arkadaşlarına tam açıklıyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Rakamlar Toplamı Kuralı ve Basamak Çözümleme (3 ve 9 ile Bölünebilme)',
+        category: 'Matematiksel Muhakeme & Basamak Toplamı',
+        levelDescriptions: {
+          1: '3 ve 9 ile bölünebilmede rakamları toplamak yerine birler basamağına bakma hatasına düşebiliyor.',
+          2: 'Rakamları toplayarak 3\'ün katı olup olmadığını buluyor fakat 9 ile bölünebilme ve kalan bulmada zorlanıyor.',
+          3: 'Rakamları toplamı 3\'ün katı olanların 3\'e, 9\'un katı olanların 9\'a bölündüğünü ve kalanı hatasız hesaplıyor.',
+          4: '100=99+1 basamak açılımı üzerinden 3 ve 9 kurallarının mantıksal ispatını yapıp grupta kanıtlıyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Son İki Basamak ve Çift Kriter Muhakemesi (4 ve 6 ile Bölünebilme)',
+        category: 'Analiz & Çoklu Kriter',
+        levelDescriptions: {
+          1: '4 ile bölünebilmede son iki basamağa, 6 ile bölünebilmede hem 2 hem 3 şartına bakmayı unutabiliyor.',
+          2: '4 ve 6 kurallarını hatırlıyor ancak bilinmeyen basamaklı sorularda tüm değerleri bulmakta zorlanıyor.',
+          3: 'Son iki basamağı 00 veya 4\'ün katı olanları 4\'e; hem çift hem rakamlar toplamı 3k olanları 6\'ya doğru çözümlüyor.',
+          4: 'Yüzlüklerin 4\'e bölündüğünü gerekçelendirip 6 ile bölünebilen hiçbir sayının tek olamayacağını matematiksel olarak izah ediyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Problem Durumlarında Pratik Bölünebilme ve Algoritmik Çıkarım',
+        category: 'Uygulama & Problem Çözme',
+        levelDescriptions: {
+          1: 'Problem durumlarında bölme işlemi yapmadan kural uygulayarak pratik karar vermekte zorlanıyor.',
+          2: 'Basit paketleme ve basamak bulma sorularında ipucuyla kuralları uygulayabiliyor.',
+          3: 'Günlük hayat problemlerinde (koli, oturma düzeni, şifre) bölünebilme kurallarını bağımsız ve doğru kullanıyor.',
+          4: 'T.C. kimlik veya barkod algoritmalarında bölünebilme mantığını modelleyip alternatif stratejiler üretiyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması ve Öğrenme Sorumluluğu (SDB1.2 - SDB3.3)',
+        category: 'Süreç Becerileri & İş Birliği',
+        levelDescriptions: {
+          1: 'Bölünebilme adımlarında rastgele tahminler yapıyor, kontrollerini yapmıyor.',
+          2: 'Hata yaptığında öğretmen veya takım arkadaşı uyardığında düzeltiyor ancak nedenini açıklamakta zorlanıyor.',
+          3: 'Bölünebilme kurallarını adım adım kontrol ediyor, basamak toplama ve son basamak hatalarını fark edip düzeltiyor.',
+          4: 'Grup çalışmalarına etkin katkı sağlıyor, bölünebilme çıkarımlarını gerekçeleriyle arkadaşlarına aktarabiliyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Birler basamağı çift olan sayıların 2 ile, 0 veya 5 olanların 5 ile bölündüğünü biliyor.' },
+      { id: 'chk2', text: '3 ve 9 kurallarında rakamlar toplamına bakılması gerektiğini kavradı.' },
+      { id: 'chk3', text: '4 kuralında son iki basamağın incelendiğini uyguluyor.' },
+      { id: 'chk4', text: '6 ile bölünebilmede hem 2 hem 3 koşulunu doğru kontrol ediyor.' },
+      { id: 'chk5', text: 'Grup etkinliklerinde bölünebilme kurallarını pratik kararlar için kullanıyor.' }
+    ]
+  },
+  'MAT.6.1.3': {
+    id: 'peer-rubric-mat-6-1-3',
+    outcomeId: 'MAT.6.1.3',
+    title: 'Akran Değerlendirme Rubriği: Asal Sayılar ve Asal Çarpanlar',
+    description:
+      'Takım arkadaşınızın asal sayı kavramını kavrama, Eratosthenes kalburunu deneyimleme, asal çarpan ağacı ve bölen listesi ile sayıları çözümleme becerilerini dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Asal Sayı Kavramı ve 1-100 Arası Asallar (Eratosthenes Kalburu)',
+        category: 'Kavramsal Anlama & Sınıflandırma',
+        levelDescriptions: {
+          1: '1\'in neden asal olmadığını ve asal sayıların sadece 2 böleni olduğunu karıştırıyor.',
+          2: 'Küçük asal sayıları tanıyor fakat iki basamaklı tek sayıların (örn: 51, 91) asallığında tereddüt ediyor.',
+          3: '1 ile 100 arasındaki 25 asal sayıyı Eratosthenes kalburu mantığıyla doğru tespit edip sınıflandırıyor.',
+          4: '2\'nin tek çift asal olduğunu ve tüm bileşik sayıların asalların çarpımı olduğunu arkadaşlarına tam açıklıyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Asal Çarpan Ağacı ile Sayıların Çözümlenmesi',
+        category: 'Görsel Modelleme & Ayrıştırma',
+        levelDescriptions: {
+          1: 'Çarpan ağacında dalları ayırırken asal olmayan sayılarda takılıyor, yaprakları tamamlayamıyor.',
+          2: 'Ağaç dallarını oluşturuyor ancak en alt satırdaki asal yaprakları eksik yazabiliyor.',
+          3: 'Bileşik sayıları asal çarpan ağacı modeliyle adım adım dallandırıp asal yapraklara ulaşıyor.',
+          4: 'Farklı dallanmaların (örn: 24 = 2×12 veya 4×6) en altta daima aynı asal yaprakları verdiğini grupta kanıtlıyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Asal Çarpan Algoritması (Bölen Listesi) ve Üslü Gösterim',
+        category: 'Algoritmik Düşünme & Sembolik Temsil',
+        levelDescriptions: {
+          1: 'Bölen listesinde asal olmayan sayılara (örn: 4, 6) bölme hatası yapabiliyor.',
+          2: 'Dikey çizgide bölme işlemlerini yapabiliyor fakat üslü ifade biçiminde yazarken üsleri karıştırıyor.',
+          3: 'Bir sayıyı en küçük asaldan başlayarak 1\'e kadar bölüyor ve üslü gösterimini hatasız yazıyor.',
+          4: 'Asal çarpanların üsleri ile sayının toplam çarpan sayısı arasındaki bağlantıyı fark edip derinlikli yorumluyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Gerçek Yaşam, Kriptografi ve Problem Çözme',
+        category: 'Uygulama & Disiplinler Arası',
+        levelDescriptions: {
+          1: 'Asal sayıların günlük hayat ve şifrelemedeki rolünü kavramakta zorlanıyor.',
+          2: 'Asal çarpanlarla ilgili basit problemleri çözebiliyor.',
+          3: 'Asal sayı özelliklerini alan, çevre ve şifreleme problemlerinde doğru modelleyip çözüyor.',
+          4: 'RSA şifreleme ve dijital güvenlikte iki büyük asalın çarpım gücünü kavrayıp takıma yeni senaryolar sunuyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması ve Öğrenme Sorumluluğu (SDB1.2 - SDB3.3)',
+        category: 'Süreç Becerileri & İş Birliği',
+        levelDescriptions: {
+          1: 'Asal sayı testlerinde acele ediyor, bölünebilme kontrollerini yapmadan karar veriyor.',
+          2: 'Hata yaptığında ipucu ile düzeltiyor ancak neden asal olmadığını açıklamada zorlanıyor.',
+          3: 'Bölen listesi ve kalbur adımlarını sabırla kontrol ediyor, işlem hatalarını kendi başına düzeltiyor.',
+          4: 'Grup arkadaşlarına asal çarpan algoritmasında yol gösteriyor, çözümlerini kanıtlayarak paylaşıyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: '1 sayısının asal olmadığını, en küçük asalın 2 olduğunu biliyor.' },
+      { id: 'chk2', text: 'Eratosthenes kalburunu kullanarak asal sayıları tespit edebiliyor.' },
+      { id: 'chk3', text: 'Bileşik sayıları çarpan ağacı yöntemiyle asal yapraklarına ayırabiliyor.' },
+      { id: 'chk4', text: 'Bölen listesi algoritmasıyla asal çarpanların üslü çarpımını yazabiliyor.' },
+      { id: 'chk5', text: 'Grup çalışmalarında asal sayıların şifreleme ve güvenlikle ilişkisini yorumluyor.' }
+    ]
+  },
+  'MAT.6.1.4': {
+    id: 'peer-rubric-mat-6-1-4',
+    outcomeId: 'MAT.6.1.4',
+    title: 'Akran Değerlendirme Rubriği: Ortak Kat ve Ortak Bölen',
+    description:
+      'Takım arkadaşınızın iki doğal sayının ortak bölen ve ortak katlarını inceleme, modellerle temsil etme ve aralarında asallığı yorumlama becerilerini değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'İki Sayının Ortak Bölenlerini Belirleme ve Modelleme',
+        category: 'Kavramsal Anlama & Kesişim Kümesi',
+        levelDescriptions: {
+          1: 'İki sayının bölenlerini ayrı ayrı bulurken zorlanıyor, ortak olanları belirleyemiyor.',
+          2: 'Küçük sayıların ortak bölenlerini buluyor fakat büyük sayılarda bazı ortak bölenleri atlıyor.',
+          3: 'İki doğal sayının tüm bölenlerini listeleyip kesişim kümesindeki ortak bölenleri eksiksiz bulabiliyor.',
+          4: 'Ortak bölenler kümesini Venn şeması ve alan ızgarası ile modelleyip en büyük ortak bölenin mantığını açıklıyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'İki Sayının Ortak Katlarını Çift Sayı Doğrusunda İnceleme',
+        category: 'Örüntü & Sayı Doğrusu Temsili',
+        levelDescriptions: {
+          1: 'Ortak katları bulurken ritmik saymada işlem hatası yapıyor, ortak noktaları kaçırıyor.',
+          2: 'İlk ortak katı bulabiliyor ancak ardışık ortak katların kuralını genellemekte desteğe ihtiyaç duyuyor.',
+          3: 'Çift sayı doğrusu ve tablo üzerinde iki sayının katlarını eşleştirerek istenen aralıktaki ortak katları eksiksiz listeliyor.',
+          4: 'Ortak katların en küçük ortak katın katları şeklinde devam ettiğini çift sayı doğrusunda kanıtlıyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Aralarında Asal Sayıların Mantığını Kavrama',
+        category: 'Matematiksel Muhakeme & Çıkarım',
+        levelDescriptions: {
+          1: 'Aralarında asal olabilmek için sayıların tek tek asal olması gerektiğini zannediyor.',
+          2: '1\'den başka ortak böleni olmadığını fark ediyor ancak aralarında asal sayı çiftlerini belirlerken tereddüt ediyor.',
+          3: 'Kendileri asal olmasa bile ortak böleni yalnızca 1 olan sayıların (örn: 8 ve 15) aralarında asal olduğunu biliyor.',
+          4: 'Ardışık sayıların daima aralarında asal olduğunu matematiksel olarak gerekçelendirip arkadaşlarına açıklıyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Gerçek Yaşam Problemleri (Merhamet, Paylaşım, Periyot)',
+        category: 'Problem Çözme & Değerler',
+        levelDescriptions: {
+          1: 'Verilen problemde ortak bölen mi yoksa ortak kat mı kullanacağına karar vermekte zorlanıyor.',
+          2: 'Eşit aralıklı fidan dikimi veya ortak sefer problemlerini rehberlikle çözebiliyor.',
+          3: 'Sokak hayvanlarına eşit paketleme, tarla sulama ve ortak nöbet problemlerini bağımsız olarak doğru modelliyor.',
+          4: 'Çoklu stratejiler kullanarak problem bağlamlarını optimize ediyor (en az paket, en az fidan) ve gerekçelendiriyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması ve Sosyal Farkındalık (SDB2.3 - D9 Merhamet)',
+        category: 'Süreç Becerileri & İş Birliği',
+        levelDescriptions: {
+          1: 'Problem çözümlerinde ve grup paylaşımlarında iş birliği yapmakta zorlanıyor.',
+          2: 'Hatalarını fark ettiğinde düzeltiyor ancak grup tartışmalarına katkısı sınırlı kalıyor.',
+          3: 'Yardımlaşma ve merhamet bağlamlı problemlerde matematiksel modellerini özenle kuruyor ve kontrol ediyor.',
+          4: 'Grup çalışmasında adil görev dağılımı yapıyor, merhamet ve tasarruf değerleriyle arkadaşlarına destek oluyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'İki doğal sayıyı kalansız bölen sayıların "ortak bölenler" olduğunu biliyor.' },
+      { id: 'chk2', text: 'Ortak katların en küçük ortak katın katları şeklinde devam ettiğini kavradı.' },
+      { id: 'chk3', text: '1\'den başka ortak böleni olmayan sayıların "aralarında asal" olduğunu uyguluyor.' },
+      { id: 'chk4', text: 'Paylaşım ve paketleme problemlerinde ortak bölenleri doğru kullanabiliyor.' },
+      { id: 'chk5', text: 'Periyodik sefer ve nöbet problemlerinde ortak katlarla hesaplama yapabiliyor.' }
+    ]
+  },
+  'MAT.5.3.4': {
+    id: 'peer-rubric-mat-5-3-4',
+    outcomeId: 'MAT.5.3.4',
+    title: 'Akran Değerlendirme Rubriği: Doğruların Durumları ve Açı Çıkarımları',
+    description:
+      'Takım arkadaşınızın düzlemde iki veya üç doğrunun durumları, ters, komşu, tümler, bütünler açılar ve geometrik çıkarım yapma becerilerini değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Doğruların Durumlarını Tanıma (Kesişen, Paralel, Dik, Kesen)',
+        category: 'Kavramsal Anlama & Sınıflandırma',
+        levelDescriptions: {
+          1: 'Kesişen, paralel, dik ve kesen doğruların özelliklerini ve aralarındaki farkları karıştırıyor.',
+          2: 'Paralel ve dik doğruları ayırt ediyor fakat kesen doğrunun oluşturduğu açıları açıklamakta zorlanıyor.',
+          3: 'Kesişen, dik, paralel, çakışık ve kesen doğruları doğru tanımlıyor; paralel doğruların açı oluşturmadığını biliyor.',
+          4: 'Düzlemde iki ve üç doğrunun tüm durumlarını eksiksiz sınıflandırıp modelleyebiliyor, açı oluşumunu arkadaşlarına tam açıklıyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Ters Açıların Eşitliğini Keşfetme ve Uygulama',
+        category: 'Geometrik Çıkarım & Aksiyom',
+        levelDescriptions: {
+          1: 'Kesişen iki doğrudan oluşan karşılıklı açıların (ters açılar) eşit olduğunu hatırlamakta zorlanıyor.',
+          2: 'Ters açıların eşit olduğunu biliyor fakat eğik kesişen doğrularda ters açı çiftlerini belirlemekte tereddüt ediyor.',
+          3: 'Kesişen iki doğrudan oluşan karşılıklı açıların ters açılar olduğunu ve ölçülerinin daima eşit olduğunu gösteriyor.',
+          4: 'Ters açıların eşitliğini dinamik geometri yazılımında ve problem durumlarında hatasız uygulayıp kanıtlayabiliyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Tümler, Bütünler ve Komşu Açı İlişkilerini Çözümleme',
+        category: 'Matematiksel Muhakeme & Hesaplama',
+        levelDescriptions: {
+          1: 'Tümler (90°) ve bütünler (180°) açıların derece toplamlarını birbirine karıştırıyor.',
+          2: 'Tümler ve bütünler açı toplamlarını biliyor ancak komşu tümler ve komşu bütünler açıları şekilde ayırt etmekte zorlanıyor.',
+          3: 'Ölçüleri toplamı 90° olan açıları tümler, 180° olanları bütünler olarak adlandırıyor ve doğru üzerindeki komşu bütünler açıları hesaplıyor.',
+          4: 'Tümler ve bütünler açı ilişkilerini cebirsel ve geometrik modellerle hatasız çözümlüyor, komşu açıların ayrık bölgelerini gerekçelendiriyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Üç Doğrunun Durumları ve Açı Önermeleri (OB2 & MAB3)',
+        category: 'Tablo Temsili & Önerme Geliştirme',
+        levelDescriptions: {
+          1: 'Üç doğrunun kesişiminde oluşan açıları saymakta ve tabloya kaydetmekte zorlanıyor.',
+          2: 'Üç doğrunun durumlarını gözlemliyor fakat açı çeşitlerine dair genel bir önerme kurmakta desteğe ihtiyaç duyuyor.',
+          3: 'Üç doğrunun tek noktada kesişimi veya paralel-kesen durumlarında oluşan açıları tablo temsili üzerinde listeleyip önermeler sunabiliyor.',
+          4: 'İki ve üç doğru için geliştirdiği açı önermelerini üçten fazla doğrunun durumlarına genelleştirebiliyor ve mantıksal gerekçeler sunuyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması ve Mantıksal Çıkarım (SDB1.2 - SDB3.3)',
+        category: 'Süreç Becerileri & İş Birliği',
+        levelDescriptions: {
+          1: 'Açı ölçümü ve tablo doldurma aşamalarında rastgele tahminler yapıyor, kontrol etmiyor.',
+          2: 'Hata yaptığında ipucu ile düzeltiyor ancak nedenini matematiksel olarak açıklamakta zorlanıyor.',
+          3: 'Açıölçer ve dinamik laboratuvar araçlarıyla ölçümlerini sabırla kontrol ediyor, varsayımlarını ölçüm sonuçlarıyla sınıyor.',
+          4: 'Grup ortamında geometrik varsayımlarını kanıtlayıp arkadaşlarıyla fikir alışverişinde bulunuyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Kesişen, paralel ve dik doğruların özelliklerini biliyor.' },
+      { id: 'chk2', text: 'Kesişen doğrularda ters açıların eşitliğini kavradı.' },
+      { id: 'chk3', text: 'Tümler ve bütünler açı hesaplamalarını doğru yapabiliyor.' },
+      { id: 'chk4', text: 'Komşu açıların ortak ışınını ve iç bölgelerini ayırt edebiliyor.' },
+      { id: 'chk5', text: 'Üç doğrunun kesişiminde oluşan açı durumlarını analiz edebiliyor.' }
+    ]
+  },
+  'MAT.5.3.3': {
+    id: 'peer-rubric-mat-5-3-3',
+    outcomeId: 'MAT.5.3.3',
+    title: 'Akran Değerlendirme Rubriği: Açıları Ölçme ve Matematiksel Araç Kullanımı',
+    description:
+      'Takım arkadaşınızın açı kavramını anlama, açıölçeri (iletki) kullanma, açıları sınıflandırma ve kavram yanılgılarını aşma düzeyini dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Açı Kavramı ve İsimlendirme',
+        category: 'Kavramsal Anlama & Sembolik Temsil',
+        levelDescriptions: {
+          1: 'Açının iki ışından oluştuğunu ve köşe harfinin ortada olması gerektiğini karıştırıyor.',
+          2: 'Açının köşesini tanıyor ancak sembolle gösterirken köşe harfini bazen ortaya yazmayı unutuyor.',
+          3: 'Açının başlangıç noktası ortak iki ışından oluştuğunu biliyor, sembolle (AOB veya O) doğru yazabiliyor.',
+          4: 'Açıyı köşe ve kollar üzerinden hatasız isimlendiriyor, açı sembolü (∠AOB) ve ölçü gösterimini tam uyguluyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'İletki (Açıölçer) Kullanımı ve Doğru Cetvel Seçimi',
+        category: 'Matematiksel Araç ve Teknoloji',
+        levelDescriptions: {
+          1: 'İletkinin merkezini açının köşesine koymakta ve taban koluna hizalamakta zorlanıyor.',
+          2: 'İletkiyi köşeye koyabiliyor fakat iç ve dış cetvel (ters açı) arasında tereddüt yaşıyor.',
+          3: 'İletkiyi açının köşesine ve tabanına tam oturtup açının yönüne göre doğru cetvelden dereceyi okuyor.',
+          4: 'Uzayda eğik, ters veya dikey duran açıları iletkiyi serbestçe döndürüp sıfırlayarak tam isabetle (±1°) ölçüyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Açı Türlerini Sınıflandırma (Dar, Dik, Geniş, Doğru)',
+        category: 'Matematiksel Muhakeme & Sınıflandırma',
+        levelDescriptions: {
+          1: 'Dik açıyı (90°) tanıyor fakat dar ve geniş açıların derece sınırlarını karıştırıyor.',
+          2: 'Açının 90°den küçük veya büyük olduğunu fark ediyor fakat sınıflandırmada bazen tereddüt ediyor.',
+          3: 'Açıları ölçülerine göre dar (<90°), dik (90°), geniş (>90°) ve doğru (180°) açı olarak doğru sınıflandırıyor.',
+          4: 'Açı türlerini hem görsel tahminle hem de iletkiyle anında sınıflandırıp gerçek hayattaki modellerle eşleştiriyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Kavram Yanılgısını Aşma (Işın Kollarının Uzunluğu)',
+        category: 'Eleştirel Düşünme & Maarif İlkesi',
+        levelDescriptions: {
+          1: 'Açının kollarının (ışınlarının) boyu uzadığında açının derecesinin de büyüyeceğini düşünüyor.',
+          2: 'Kollar uzadığında açının değişmediğini biliyor ancak nedenini ışınların sonsuza uzamasıyla açıklamakta zorlanıyor.',
+          3: 'Açının kolları uzatılsa bile açıklığın ve açıölçer derecesinin kesinlikle değişmediğini açıklayabiliyor.',
+          4: 'Işınların sonsuza uzama özelliğini kullanarak kol boyunun açıyı değiştirmediğini grup arkadaşlarına gerekçeleriyle kanıtlıyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması ve Dijital Radar Simülasyonu (SDB1.2 - SDB1.3)',
+        category: 'Süreç Becerileri & İş Birliği',
+        levelDescriptions: {
+          1: 'Radar oyununda ve simülasyonlarda rastgele tahminler yapıyor, hatalarını kontrol etmiyor.',
+          2: 'Hata yaptığında ipucuna bakıyor ancak hatasının nedenini kendi başına bulmakta zorlanıyor.',
+          3: 'Açı radarında iletkiyi doğru döndürüp ayarlayarak lazer antenini hedefe kilitliyor ve ölçümünü kontrol ediyor.',
+          4: 'Grup çalışmasında açı ölçümünde yüksek hassasiyet gösteriyor, hata nedenini anında fark edip düzeltiyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Açıyı köşe harfi ortada olacak şekilde sembolle doğru isimlendirebiliyor.' },
+      { id: 'chk2', text: 'İletkinin merkezini açının köşesine yerleştirip doğru cetvelden dereceyi okuyor.' },
+      { id: 'chk3', text: 'Açıları dar, dik, geniş ve doğru açı olarak hatasız sınıflandırıyor.' },
+      { id: 'chk4', text: 'Işın kollarının boyu uzasa da açının ölçüsünün değişmediğini kavradı.' },
+      { id: 'chk5', text: 'Dijital radar ve simülasyon araçlarıyla açı ölçümlerini başarıyla tamamlıyor.' }
+    ]
+  },
+  'MAT.5.3.2': {
+    id: 'peer-rubric-mat-5-3-2',
+    outcomeId: 'MAT.5.3.2',
+    title: 'Akran Değerlendirme Rubriği: Temel Geometrik Çizimler ve Matematiksel Araçlar',
+    description:
+      'Takım arkadaşınızın ölçüsüz cetvel, pergel ve gönye ile yaptığı geometrik çizimleri ve bu çizimlerden elde ettiği matematiksel çıkarımları değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Ölçüsüz Cetvel ve İki Noktadan Tek Doğru Çıkarımı',
+        category: 'Kavramsal Muhakeme & Doğru İnşası',
+        levelDescriptions: {
+          1: 'Ölçüsüz cetvelin uzunluk ölçmek için değil düz çizgi çizmek için kullanıldığını karıştırıyor.',
+          2: 'İki noktadan doğru çiziyor fakat iki noktadan sadece tek bir doğru geçebileceği kuralını açıklamakta zorlanıyor.',
+          3: 'Herhangi iki farklı noktadan yalnız ve yalnız tek bir doğru çizilebileceğini ölçüsüz cetvel kullanarak gösteriyor.',
+          4: 'İki noktadan tek bir doğru geçme ilkesini ve ölçüsüz cetvelin geometrik mantığını gerekçeleriyle tam açıklıyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Pergel ile Çember ve Yarıçap Eşitliği Çıkarımı',
+        category: 'Matematiksel Araç & Çember Geometrisi',
+        levelDescriptions: {
+          1: 'Pergelin sabit ayağı ile kalem ayağının rolünü karıştırıyor, yarıçapın sabit kaldığını fark edemiyor.',
+          2: 'Pergelle çember çizebiliyor fakat merkezden çember üzerindeki noktalara giden yarıçapların eşitliğini açıklamada zorlanıyor.',
+          3: 'Çemberin merkezinden çember üzerindeki tüm noktalara çizilen doğru parçalarının eşit uzunlukta olduğunu biliyor ve gösteriyor.',
+          4: 'Yarıçap uzunlukları eşit olan çemberleri pergel açıklığını koruyarak hatasız inşa ediyor ve yarıçap eşitliğini kanıtlıyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Pergel ve Cetvelle Işın/Açı Kollarında Eşit Parça Kesme',
+        category: 'Geometrik İnşa & Adımlama',
+        levelDescriptions: {
+          1: 'Pergel açıklığını bozmadan ardışık parça kesme adımlarını uygulamakta zorlanıyor.',
+          2: 'Işın üzerinde pergel ile yay kesiyor fakat açının iki kolunda aynı açıklıkla eşit parça işaretlemekte tereddüt ediyor.',
+          3: 'Bir ışının başlangıç noktasından itibaren ve bir açının her iki kolundan pergel açıklığıyla ardışık eşit parçalar kesebiliyor.',
+          4: 'Kareli ve çizgisiz düzlemde pergel ve ölçüsüz cetvelle eşit uzunlukta doğru parçalarını hatasız aktarıp inşa ediyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Gönye ile Dış Noktadan Tek Dikme Çizimi',
+        category: 'Matematiksel Araç & Diklik',
+        levelDescriptions: {
+          1: 'Gönyenin 90 derecelik dik köşesini taban doğrusuna oturtmakta zorlanıyor.',
+          2: 'Gönyeyle dikme çizebiliyor ancak dışındaki bir noktadan sadece tek bir dikme indirilebileceği kuralını açıklayamıyor.',
+          3: 'Bir doğruya dışındaki bir noktadan yalnız bir dikme çizilebildiğini, farklı noktalardan eşit dikmeler çizilebileceğini gösteriyor.',
+          4: 'Gönyeyi taban doğrusu üzerinde kaydırarak dış noktadan tek dikmeyi hatasız inşa ediyor ve diklik sembolü (⊥) ile ifade ediyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Eşit Uzaklıktaki Noktalar ve Paralel Doğrular İnşası (OB2)',
+        category: 'Modelleme & Matematiksel Çıkarım',
+        levelDescriptions: {
+          1: 'Paralel doğruların arasındaki mesafenin her yerde eşit olması gerektiğini karıştırıyor.',
+          2: 'Gönyeyle eşit uzaklıkta noktalar alabiliyor ancak bunları birleştirerek paralel ray modeli oluşturmakta desteğe ihtiyaç duyuyor.',
+          3: 'Bir doğruya gönye ile eşit mesafede noktalar belirleyip birleştirerek paralel doğru (d₁ // d₂) inşa ediyor ve tren rayı modeliyle ilişkilendiriyor.',
+          4: 'Dinamik geometri simülasyonunda mesafe değişse bile paralelliğin bozulmadığını ve doğruların kesişmeyeceğini tam açıklıyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Ölçüsüz cetvelle iki noktadan tek bir doğru geçtiğini kavradı.' },
+      { id: 'chk2', text: 'Pergel kullanarak çember ve yarıçap eşitliğini çizebiliyor.' },
+      { id: 'chk3', text: 'Pergel açıklığıyla ışın üzerinde eşit parçalar kesebiliyor.' },
+      { id: 'chk4', text: 'Gönye yardımıyla doğruya dış noktadan tek dikme çizebiliyor.' },
+      { id: 'chk5', text: 'Eşit uzaklıktaki noktaları birleştirerek paralel doğrular inşa edebiliyor.' }
+    ]
+  },
+  'MAT.5.3.1': {
+    id: 'peer-rubric-mat-5-3-1',
+    outcomeId: 'MAT.5.3.1',
+    title: 'Akran Değerlendirme Rubriği: Temel Geometrik Kavramlar ve Çizimler',
+    description:
+      'Takım arkadaşınızın nokta, doğru, doğru parçası ve ışın kavramlarını ayırt etme, sembolik olarak gösterme ve çizim araçlarını kullanma becerilerini değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Kavramsal Ayırt Etme (Nokta, Doğru, Doğru Parçası, Işın)',
+        category: 'Kavramsal Anlama',
+        levelDescriptions: {
+          1: 'Doğru, doğru parçası ve ışının sınır durumlarını (uç noktalarını) karıştırıyor.',
+          2: 'Doğru ve doğru parçasını ayırt ediyor fakat ışının tek yönde sonsuza uzamasını açıklamakta zorlanıyor.',
+          3: 'Dört temel kavramı başlangıç/bitiş sınırlarına ve uzunluklarının ölçülebilirliğine göre doğru ayırt ediyor.',
+          4: 'Kavramların tüm geometrik özelliklerini, uzunluk durumlarını ve modellerini eksiksiz açıklayabiliyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Sembolik Temsilleri Doğru Kullanma',
+        category: 'Matematiksel Dil ve Semboller',
+        levelDescriptions: {
+          1: 'Köşeli parantez [ ve ] işaretlerinin sınırlı uç noktayı gösterdiğini karıştırıyor.',
+          2: 'Doğru parçası [AB] sembolünü biliyor fakat ışın [AB ve doğru AB sembollerinde tereddüt ediyor.',
+          3: 'AB, [AB], [AB sembollerini modelleriyle doğru eşleştiriyor.',
+          4: 'Sembolik dili matematiksel iletişimde hatasız kullanıyor, uzunluk sembolü |AB| ile nesne sembolünü ayırt ediyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Gerçek Yaşam Modelleriyle İlişkilendirme',
+        category: 'Matematiksel Modelleme',
+        levelDescriptions: {
+          1: 'Çevresindeki nesneleri geometrik kavramlarla ilişkilendirmekte zorlanıyor.',
+          2: 'Cetveli doğru parçasına benzetiyor ancak elektrik teli veya lazer ışığını eşleştirmede zorlanıyor.',
+          3: 'Lazer ışığını ışına, cetveli doğru parçasına, tren rayını doğruya başarıyla eşleştiriyor.',
+          4: 'Çevresindeki karmaşık yapıları inceleyip doğru, ışın ve doğru parçası modellerini özgün örneklerle açıklıyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Çizim ve Geometrik Araç Kullanımı',
+        category: 'Psikomotor & Dijital Beceriler',
+        levelDescriptions: {
+          1: 'Cetvel ve dijital çizim araçlarında başlangıç ve ok uçlarını çizmekte zorlanıyor.',
+          2: 'Cetvelle doğru parçası çiziyor fakat ışının ok ucunu bazen yanlış yöne koyuyor.',
+          3: 'Cetvel ve sanal tahta araçlarıyla nokta, doğru, doğru parçası ve ışın çizimlerini hatasız yapıyor.',
+          4: 'Geometrik çizimleri yüksek hassasiyetle tamamlıyor, takım arkadaşlarının çizimlerindeki hataları düzeltebiliyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması ve İletişim (SDB1.3)',
+        category: 'Süreç Becerileri & İş Birliği',
+        levelDescriptions: {
+          1: 'Grup çalışmalarında öğrenme adımlarını ve çizimlerini değerlendirmekte zorlanıyor.',
+          2: 'Grupta üstlendiği görevleri yerine getiriyor ancak kavramsal derinlik kurmakta zorlanıyor.',
+          3: 'Grup çalışmasında takım arkadaşlarına yapıcı destek oluyor, kendi ve takımının güçlü yönlerini fark ediyor.',
+          4: 'Grup içi matematiksel tartışmalara aktif katılıyor, çizim ve çıkarımlarını arkadaşlarına net ve özgün şekilde aktarıyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Nokta, doğru, doğru parçası ve ışın arasındaki farkları kavradı.' },
+      { id: 'chk2', text: '[AB], [AB ve AB sembollerini modelleriyle eşleştirebiliyor.' },
+      { id: 'chk3', text: 'Çevresindeki nesneleri geometrik modellerle ilişkilendirebiliyor.' },
+      { id: 'chk4', text: 'Cetvel ve dijital çizim araçlarıyla çizimleri hatasız yapabiliyor.' },
+      { id: 'chk5', text: 'Grup içi iş birliğinde yapıcı ve destekleyici bir rol üstleniyor.' }
+    ]
+  }
+};
+
+/**
+ * Akran değerlendirmesi için 3. tekil şahıs dilinde (arkadaşını değerlendiren dil) rubrik döner.
+ */
+export function getPeerRubricForOutcome(
+  outcomeId: string,
+  outcomeTitle: string,
+  outcomeCode: string
+): SelfAssessmentRubric {
+  if (PEER_OUTCOME_RUBRICS[outcomeId]) {
+    return PEER_OUTCOME_RUBRICS[outcomeId];
+  }
+
+  // Fallback 3rd person peer rubric generator for any other outcome
+  return {
+    id: `peer-rubric-${outcomeId}`,
+    outcomeId,
+    title: `Akran Değerlendirme Rubriği: ${outcomeTitle}`,
+    description: `Takım arkadaşınızın "${outcomeCode} - ${outcomeTitle}" kazanımına yönelik kavramsal anlama, araç kullanımı, muhakeme ve grup içi katkısını dereceli olarak değerlendiriniz.`,
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Kazanım Temel Kavramlarını Anlama',
+        category: 'Kavramsal Anlama',
+        levelDescriptions: {
+          1: 'Konudaki temel matematiksel kavramları ve tanımları hatırlamakta zorlanıyor.',
+          2: 'Temel kavramları kısmen tanıyor ancak aralarındaki ilişkileri açıklamakta zorlanıyor.',
+          3: 'Konudaki kavramları ve temel özellikleri doğru şekilde anlıyor ve ifade edebiliyor.',
+          4: 'Kavramları derinlemesine kavradı; kavramlar arası bağlantıları ve matematiksel mantığı arkadaşlarına tam açıklayabiliyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Matematiksel Araç ve Teknoloji Kullanımı',
+        category: 'Araç & Teknoloji Becerisi',
+        levelDescriptions: {
+          1: 'Ders araçlarını (cetvel, iletki, dijital simülatör) kullanırken rehberliğe ihtiyaç duyuyor.',
+          2: 'Araçları temel düzeyde kullanabiliyor ancak karmaşık durumlarda yardım alıyor.',
+          3: 'Matematiksel araçları ve dijital laboratuvarı bağımsız ve doğru şekilde kullanıyor.',
+          4: 'Tüm matematiksel ve dijital araçları ustalıkla kullanarak ölçüm ve modellemeleri hatasız yapıyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Problem Çözme ve Günlük Hayat Modellemesi',
+        category: 'Uygulama ve Modelleme',
+        levelDescriptions: {
+          1: 'Öğrendiği matematiksel bilgileri günlük hayat durumlarında fark etmekte zorlanıyor.',
+          2: 'Basit günlük hayat problemlerinde konuyu uygulayabiliyor.',
+          3: 'Gerçek yaşam senaryolarını matematiksel olarak modelleyip doğru çözümlere ulaşıyor.',
+          4: 'Öğrendiklerini yeni ve alışılmadık durumlara transfer ediyor, özgün model ve örnekler üretebiliyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Kavram Yanılgılarını Fark Etme ve Çözümleme',
+        category: 'Eleştirel Düşünme & Muhakeme',
+        levelDescriptions: {
+          1: 'Konuyla ilgili yaygın yanılgılara düşebiliyor, doğru gerekçeyi bulmakta zorlanıyor.',
+          2: 'Yanılgıyı fark ettiğinde düzeltiyor ancak nedenini matematiksel olarak açıklamakta zorlanıyor.',
+          3: 'Kavram yanılgılarını fark ediyor, kural ve gerekçeleriyle birlikte doğruyu açıklayabiliyor.',
+          4: 'Olası yanılgıları önceden tahmin ediyor, grup arkadaşlarına mantıksal ve görsel kanıtlarla doğruyu gösteriyor.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması ve Grup İçi Katkı (SDB1.2 - SDB1.3)',
+        category: 'Süreç Bileşeni & İş Birliği',
+        levelDescriptions: {
+          1: 'Grup çalışmasında takım içi iletişim ve ortak problem çözümünde desteğe ihtiyaç duyuyor.',
+          2: 'Takım çalışmalarına katılıyor ancak fikirlerini açıklamakta bazen çekingen kalıyor.',
+          3: 'Grup içinde yapıcı ve iş birlikçi bir tutum sergiliyor, takım arkadaşlarına destek oluyor.',
+          4: 'Takım çalışmasında liderlik ve pozitif katkı sağlıyor, matematiksel çıkarımları arkadaşlarına net biçimde aktarıyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Bu kazanıma ait temel kavram ve tanımları anladı.' },
+      { id: 'chk2', text: 'Matematiksel ve dijital araçları bağımsız olarak kullanabiliyor.' },
+      { id: 'chk3', text: 'Öğrendiği kavramları günlük hayat problemlerine uygulayabiliyor.' },
+      { id: 'chk4', text: 'Kavram yanılgılarını fark edip doğru çözümleri gerekçelendirebiliyor.' },
+      { id: 'chk5', text: 'Grup çalışmalarında yapıcı ve aktif rol üstleniyor.' }
+    ]
+  };
+}

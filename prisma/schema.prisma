@@ -186,3 +186,34 @@ model LearningJournal {
   @@map("learning_journals")
 }
 
+model PeerEvaluationSubmission {
+  id                   String   @id @default(cuid())
+  evaluatorStudentId   String?
+  evaluatorStudentName String
+  evaluatorStudentNumber String?
+  targetStudentId      String?
+  targetStudentName    String
+  targetStudentNumber  String?
+  targetAvatar         String?
+  groupId              String?
+  groupName            String?
+  gradeLevel           Int      @default(5)
+  classSection         String   // 5-A, 5-B
+  school               String?
+  outcomeId            String   // MAT.5.3.3
+  outcomeCode          String   // MAT.5.3.3
+  outcomeTitle         String
+  ratings              Json     // { "c1": 4, "c2": 3, ... }
+  totalScore           Int
+  maxScore             Int      @default(20)
+  percentage           Int
+  performanceLevel     String   // "Mükemmel", "Başarılı", "Orta", "Geliştirilmeli"
+  evaluatorNote        String?
+  submittedAt          DateTime @default(now())
+
+  @@index([outcomeCode, classSection])
+  @@index([targetStudentId])
+  @@index([evaluatorStudentId])
+  @@map("peer_evaluation_submissions")
+}
+

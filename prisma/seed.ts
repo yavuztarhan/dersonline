@@ -274,6 +274,82 @@ async function main() {
   }
   console.log('✅ Öğrenme Günlükleri oluşturuldu.');
 
+  // 8. Akran Değerlendirme Formları (PeerEvaluationSubmission)
+  const samplePeerEvaluations = [
+    {
+      id: 'pe-seed-01',
+      evaluatorStudentName: 'Ahmet Yılmaz',
+      evaluatorStudentNumber: '101',
+      targetStudentName: 'Çırak Hasan',
+      targetStudentNumber: '104',
+      targetAvatar: '👦',
+      groupName: 'Pisagor Kaşifleri',
+      gradeLevel: 5,
+      classSection: '5-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.5.3.3',
+      outcomeCode: 'MAT.5.3.3',
+      outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+      ratings: { c1: 4, c2: 4, c3: 4, c4: 4, c5: 4 },
+      totalScore: 20,
+      maxScore: 20,
+      percentage: 100,
+      performanceLevel: 'Mükemmel',
+      evaluatorNote: 'Hasan iletkiyi ve radarı çok hızlı kullanıyor, grupta dar ve geniş açıları modellerken bize liderlik etti.',
+    },
+    {
+      id: 'pe-seed-02',
+      evaluatorStudentName: 'Zeynep Kaya',
+      evaluatorStudentNumber: '102',
+      targetStudentName: 'Çırak Hasan',
+      targetStudentNumber: '104',
+      targetAvatar: '👦',
+      groupName: 'Pisagor Kaşifleri',
+      gradeLevel: 5,
+      classSection: '5-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.5.3.3',
+      outcomeCode: 'MAT.5.3.3',
+      outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+      ratings: { c1: 4, c2: 4, c3: 4, c4: 3, c5: 4 },
+      totalScore: 19,
+      maxScore: 20,
+      percentage: 95,
+      performanceLevel: 'Mükemmel',
+      evaluatorNote: 'Işınları döndürüp açı oluşturmada ve derece ölçmede çok başarılı.',
+    },
+    {
+      id: 'pe-seed-03',
+      evaluatorStudentName: 'Çırak Hasan',
+      evaluatorStudentNumber: '104',
+      targetStudentName: 'Ahmet Yılmaz',
+      targetStudentNumber: '101',
+      targetAvatar: '👦',
+      groupName: 'Pisagor Kaşifleri',
+      gradeLevel: 5,
+      classSection: '5-A',
+      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: 'MAT.5.3.3',
+      outcomeCode: 'MAT.5.3.3',
+      outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+      ratings: { c1: 4, c2: 4, c3: 4, c4: 4, c5: 4 },
+      totalScore: 20,
+      maxScore: 20,
+      percentage: 100,
+      performanceLevel: 'Mükemmel',
+      evaluatorNote: 'Ahmet açı çeşitlerini ve derece okumalarını hatasız yaptı.',
+    }
+  ];
+
+  for (const pe of samplePeerEvaluations) {
+    await prisma.peerEvaluationSubmission.upsert({
+      where: { id: pe.id },
+      update: pe,
+      create: pe,
+    });
+  }
+  console.log('✅ Akran Değerlendirme Formları oluşturuldu.');
+
   console.log('✨ Tohumlama (Seed) işlemi başarıyla tamamlandı!');
 }
 
