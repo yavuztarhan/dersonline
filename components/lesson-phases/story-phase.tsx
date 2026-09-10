@@ -2227,7 +2227,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                 }}
                 className="w-full sm:w-auto px-8 py-3 rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-black text-sm shadow-lg shadow-teal-600/25 transition-all flex items-center justify-center gap-2 active:scale-95"
               >
-                <span>2. Aşamaya Geç: Çizim Atölyesi</span>
+                <span>2. Aşamaya Geç: Atölye</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
             ) : (

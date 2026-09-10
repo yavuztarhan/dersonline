@@ -156,7 +156,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Kademeli hiyerarşik akış ile sınıf, ders, ünite ve kazanımınızı seçin; 4 fazlı (Hikâye, Çizim Atölyesi, Bulmaca ve Değerlendirme) akıllı tahta ders odasını başlatın.
+            Kademeli hiyerarşik akış ile sınıf, ders, ünite ve kazanımınızı seçin; 4 fazlı (Hikâye, Atölye, Bulmaca ve Değerlendirme) akıllı tahta ders odasını başlatın.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-300">

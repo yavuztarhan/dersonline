@@ -779,7 +779,7 @@ export function TeacherDashboard() {
                 Temel Geometrik Çizimler ve Sembolik Gösterimler
               </div>
               <div className="text-xs text-slate-500">
-                4 Aşama: Hikaye, Çizim Atölyesi, Kelime Avı, 8 Soru Test, Rubrik Öz Değerlendirme
+                4 Aşama: Hikaye, Atölye, Kelime Avı, 8 Soru Test, Rubrik Öz Değerlendirme
               </div>
             </div>
 

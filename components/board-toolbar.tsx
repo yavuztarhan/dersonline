@@ -36,7 +36,7 @@ interface BoardToolbarProps {
 
 const PHASES: Array<{ id: LessonPhaseId; number: number; label: string; icon: string }> = [
   { id: 'story', number: 1, label: 'Hikâye & Bağlam', icon: '📖' },
-  { id: 'lab', number: 2, label: 'Çizim Atölyesi', icon: '📐' },
+  { id: 'lab', number: 2, label: 'Atölye', icon: '📐' },
   { id: 'puzzle', number: 3, label: 'Kavram Bulmacası', icon: '🧩' },
   { id: 'assessment', number: 4, label: 'Değerlendirme', icon: '📝' },
 ];
