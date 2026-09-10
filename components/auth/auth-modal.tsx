@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { TeacherRegisterWizard } from './teacher-register-wizard';
@@ -43,6 +44,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     onClose();
   };
 
+  const router = useRouter();
+
   const handleGoogleAccountSelect = (profile: { name: string; email: string; avatar?: string }) => {
     const result = loginWithGoogle(profile);
     if (result.user.role === 'student') {
@@ -52,6 +55,10 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     }
     setShowGoogleModal(false);
     onClose();
+
+    if (result.isNewUser || (result.user.role === 'teacher' && !(result.user as any).isProfileComplete && !(result.user as any).school)) {
+      router.push('/profile');
+    }
   };
 
   const handleEmailLogin = (e: React.FormEvent) => {

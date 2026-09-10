@@ -9,30 +9,21 @@ import { useAuth } from '@/lib/auth-store';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import {
-  GraduationCap,
-  Sparkles,
-  Maximize2,
-  Minimize2,
   Volume2,
   VolumeX,
-  UserCheck,
-  BookOpen,
   Award,
-  Tv2,
   RotateCcw,
-  ShieldCheck,
   User,
   LogIn,
   LogOut,
-  ChevronDown
+  ChevronRight,
+  Sparkles,
+  LayoutDashboard
 } from 'lucide-react';
 
 export function Navbar() {
   const {
     role,
-    setRole,
-    isFullscreen,
-    toggleFullscreen,
     soundEnabled,
     setSoundEnabled,
     playSound,
@@ -40,7 +31,7 @@ export function Navbar() {
     resetSelection,
   } = useApp();
 
-  const { currentUser, logout, loginAsRole } = useAuth();
+  const { currentUser, logout } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalDefaultTab, setAuthModalDefaultTab] = useState<'login' | 'register'>('login');
 
@@ -66,19 +57,43 @@ export function Navbar() {
     setAuthModalOpen(true);
   };
 
+  // Determine user's target dashboard
+  const userDashboardHref =
+    currentUser?.role === 'admin'
+      ? '/admin'
+      : currentUser?.role === 'teacher'
+      ? '/teacher'
+      : '/student';
+
+  const userDashboardLabel =
+    currentUser?.role === 'admin'
+      ? 'Yönetici Paneli'
+      : currentUser?.role === 'teacher'
+      ? 'Öğretmen Paneli'
+      : 'Öğrenci Paneli';
+
+  const userDashboardIcon =
+    currentUser?.role === 'admin'
+      ? '🛡️'
+      : currentUser?.role === 'teacher'
+      ? '👨‍🏫'
+      : '🎓';
+
+  const isCurrentDashboardActive = pathname === userDashboardHref;
+
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs">
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
           
-          {/* Brand Logo & Title */}
+          {/* 1. Brand Logo & Title */}
           <div className="flex items-center gap-4">
             <button
               onClick={handleResetHome}
-              className="flex items-center gap-3 group text-left transition-transform active:scale-95"
+              className="flex items-center gap-3 group text-left transition-transform active:scale-95 cursor-pointer"
               title="Ana Sayfaya Dön"
             >
-              <div className="w-11 h-11 rounded-xl overflow-hidden shadow-md shadow-red-950/20 group-hover:scale-105 transition-all shrink-0 border border-amber-500/30">
+              <div className="w-11 h-11 rounded-2xl overflow-hidden shadow-md shadow-teal-950/10 group-hover:scale-105 transition-all shrink-0 border border-teal-500/20 bg-slate-900 flex items-center justify-center">
                 <Image
                   src="/logo-192.png"
                   alt="Maarif Akademi Logo"
@@ -89,144 +104,127 @@ export function Navbar() {
                 />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-xl tracking-tight text-slate-800">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-black text-lg sm:text-xl tracking-tight text-slate-900">
                     MAARİF <span className="text-teal-600 font-black">AKADEMİ</span>
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 font-medium hidden sm:block">
-                  İnteraktif Dersler & Oyunlaştırma
+                <p className="text-[11px] text-slate-500 font-medium hidden sm:block">
+                  Türkiye Yüzyılı Maarif Modeli • İnteraktif Dersler
                 </p>
               </div>
             </button>
-
-            {/* Quick Navigation Links to Role Dashboards */}
-            <div className="hidden lg:flex items-center gap-1 border-l border-slate-200 pl-4 text-xs font-bold">
-              <Link
-                href="/admin"
-                className={`px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5 ${
-                  pathname === '/admin' ? 'bg-indigo-50 text-indigo-900 font-black' : 'text-slate-600 hover:text-indigo-900'
-                }`}
-              >
-                <span>🛡️ Admin Paneli</span>
-              </Link>
-              <Link
-                href="/teacher"
-                className={`px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5 ${
-                  pathname === '/teacher' ? 'bg-teal-50 text-teal-900 font-black' : 'text-slate-600 hover:text-teal-900'
-                }`}
-              >
-                <span>👨‍🏫 Öğretmen Paneli</span>
-              </Link>
-              <Link
-                href="/student"
-                className={`px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5 ${
-                  pathname === '/student' ? 'bg-blue-50 text-blue-900 font-black' : 'text-slate-600 hover:text-blue-900'
-                }`}
-              >
-                <span>🎓 Öğrenci Paneli</span>
-              </Link>
-            </div>
           </div>
 
-          {/* Action Controls */}
+          {/* 2. Right Side: Context-Aware Single Dashboard Button & User Controls */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             
-            {/* Student Gamification Badge */}
-            {role === 'student' && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-sm font-semibold shadow-xs">
+            {/* Student Points Badge if student */}
+            {currentUser?.role === 'student' && (
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-xs">
                 <Award className="w-4 h-4 text-amber-500 fill-amber-400" />
-                <span>{studentPoints} Puan</span>
+                <span>{studentPoints} XP</span>
               </div>
             )}
 
-            {/* User Account / Login Button / Logout Button */}
+            {/* Authenticated State: Single Dynamic Role Panel Button + Profile Controls */}
             {currentUser ? (
-              <div className="flex items-center gap-1.5">
-                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 p-1 rounded-2xl shadow-xs">
+              <div className="flex items-center gap-2">
+                
+                {/* Single Context-Aware Role Panel Button */}
+                <Link
+                  href={userDashboardHref}
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 shadow-xs cursor-pointer ${
+                    isCurrentDashboardActive
+                      ? 'bg-teal-700 text-white shadow-teal-700/20 scale-102'
+                      : 'bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200/80 hover:border-teal-300'
+                  }`}
+                  title={`${userDashboardLabel}ne Git`}
+                >
+                  <span className="text-sm">{userDashboardIcon}</span>
+                  <span className="hidden sm:inline">{userDashboardLabel}</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-teal-600" />
+                </Link>
+
+                {/* User Pill with Avatar & Name */}
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 p-1 rounded-2xl">
                   <Link
-                    href={
-                      currentUser.role === 'admin'
-                        ? '/admin'
-                        : currentUser.role === 'teacher'
-                        ? '/teacher'
-                        : '/student'
-                    }
+                    href="/profile"
                     className="flex items-center gap-2 px-2.5 py-1 rounded-xl hover:bg-white transition-all text-xs group"
-                    title="Panelime Git"
+                    title="Profilimi ve Okul Bilgilerimi Düzenle"
                   >
                     <UserAvatar avatar={currentUser.avatar} name={currentUser.name} size="sm" />
-                    <div className="text-left hidden sm:block">
-                      <div className="font-extrabold text-slate-900 leading-tight">
+                    <div className="text-left hidden md:block max-w-[130px] truncate">
+                      <div className="font-extrabold text-slate-900 leading-tight truncate">
                         {currentUser.name}
                       </div>
-                      <div className="text-[10px] text-teal-700 uppercase font-bold">
+                      <div className="text-[10px] text-slate-400 uppercase font-bold truncate">
                         {currentUser.role === 'admin'
-                          ? '🛡️ Yönetici'
+                          ? 'Yönetici'
                           : currentUser.role === 'teacher'
-                          ? '👨‍🏫 Öğretmen'
-                          : '🎓 Öğrenci'}
+                          ? (currentUser as any).school || 'Öğretmen'
+                          : `${(currentUser as any).classSection || '5-A'} Şubesi`}
                       </div>
                     </div>
                   </Link>
 
                   <Link
                     href="/profile"
-                    className="p-1.5 rounded-xl hover:bg-teal-50 text-slate-500 hover:text-teal-700 text-xs font-bold transition-colors cursor-pointer"
-                    title="Profilim & Okul Bilgilerim"
+                    className="p-1.5 rounded-xl hover:bg-white text-slate-500 hover:text-teal-700 transition-colors cursor-pointer"
+                    title="Profil Ayarları"
                   >
                     <User className="w-3.5 h-3.5" />
                   </Link>
 
                   <button
                     onClick={handleOpenLogin}
-                    className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-800 text-xs font-bold transition-colors cursor-pointer"
+                    className="p-1.5 rounded-xl hover:bg-white text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
                     title="Hesap Değiştir / Hızlı Giriş"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                {/* Prominent Logout Button */}
+                {/* Logout Button */}
                 <button
                   onClick={() => {
                     playSound('click');
                     logout();
                     router.push('/');
                   }}
-                  className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-900 border border-rose-200 font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer"
-                  title="Oturumu Kapat (Çıkış Yap)"
+                  className="p-2 sm:px-3 sm:py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                  title="Oturumu Kapat"
                 >
                   <LogOut className="w-3.5 h-3.5 text-rose-600" />
-                  <span className="hidden md:inline">Çıkış Yap</span>
+                  <span className="hidden lg:inline">Çıkış</span>
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={handleOpenLogin}
-                  className="px-3.5 py-2 rounded-xl text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors flex items-center gap-1.5 border border-slate-200"
+                  className="px-3.5 py-2 rounded-xl text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors flex items-center gap-1.5 border border-slate-200 cursor-pointer"
                 >
                   <LogIn className="w-3.5 h-3.5" />
-                  <span>Giriş</span>
+                  <span>Giriş Yap</span>
                 </button>
                 <button
                   onClick={handleOpenRegister}
-                  className="px-3.5 py-2 rounded-xl bg-teal-600 text-white font-bold text-xs hover:bg-teal-700 transition-all shadow-xs"
+                  className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-xs cursor-pointer"
                 >
                   Öğretmen Kaydı
                 </button>
               </div>
             )}
 
-            {/* Sound Toggle */}
+            {/* Sound Effects Toggle */}
             <button
               onClick={() => {
                 setSoundEnabled(!soundEnabled);
                 if (!soundEnabled) playSound('click');
               }}
               title={soundEnabled ? 'Ses Efektlerini Kapat' : 'Ses Efektlerini Aç'}
-              className={`p-2.5 rounded-xl border transition-all ${
+              className={`p-2 rounded-xl border transition-all cursor-pointer ${
                 soundEnabled
                   ? 'bg-slate-50 border-slate-200 text-teal-700 hover:bg-slate-100'
                   : 'bg-slate-100 border-slate-200 text-slate-400'
@@ -235,38 +233,12 @@ export function Navbar() {
               {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
             </button>
 
-            {/* Fullscreen / Smart Board Mode */}
-            <button
-              onClick={() => {
-                playSound('click');
-                toggleFullscreen();
-              }}
-              title={isFullscreen ? 'Tam Ekrandan Çık' : 'Akıllı Tahta / Tam Ekran Modu'}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                isFullscreen
-                  ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-md shadow-amber-500/20'
-                  : 'bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/10'
-              }`}
-            >
-              {isFullscreen ? (
-                <>
-                  <Minimize2 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Küçült</span>
-                </>
-              ) : (
-                <>
-                  <Tv2 className="w-4 h-4 text-emerald-400" />
-                  <span className="hidden sm:inline">Akıllı Tahta</span>
-                </>
-              )}
-            </button>
-
-            {/* Return to Home if in Lesson */}
+            {/* Return to Home button when in Lesson Room */}
             {isLessonPage && (
               <button
                 onClick={handleResetHome}
-                title="Ders Seçimine Dön"
-                className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-all active:scale-95"
+                title="Ders Seçimine / Ana Sayfaya Dön"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-all active:scale-95 cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
@@ -276,7 +248,7 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Auth Modal Trigger */}
+      {/* Auth Modal */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
@@ -285,4 +257,3 @@ export function Navbar() {
     </>
   );
 }
-

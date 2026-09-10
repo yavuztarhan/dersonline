@@ -7,6 +7,7 @@ import { AuthModal } from '@/components/auth/auth-modal';
 import { GoogleSignInModal } from '@/components/auth/google-sign-in-modal';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
+import { useRouter } from 'next/navigation';
 import {
   GraduationCap,
   Sparkles,
@@ -34,6 +35,7 @@ interface LandingPageProps {
 }
 
 export function LandingPage({ onOpenAuth }: LandingPageProps) {
+  const router = useRouter();
   const { loginWithGoogle } = useAuth();
   const { setRole, playSound } = useApp();
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -60,6 +62,10 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
       setRole('teacher');
     }
     setGoogleModalOpen(false);
+
+    if (result.isNewUser || (result.user.role === 'teacher' && !(result.user as any).isProfileComplete && !(result.user as any).school)) {
+      router.push('/profile');
+    }
   };
 
   return (

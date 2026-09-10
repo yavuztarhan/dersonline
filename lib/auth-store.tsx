@@ -131,7 +131,8 @@ const SEED_TEACHERS: TeacherUser[] = [
     status: 'approved',
     createdAt: '2026-09-02',
     approvedAt: '2026-09-02',
-    assignedClasses: ['5-A', '5-B']
+    assignedClasses: ['5-A', '5-B'],
+    isProfileComplete: true
   },
   {
     id: 'tch-102',
@@ -148,7 +149,8 @@ const SEED_TEACHERS: TeacherUser[] = [
     status: 'pending_admin_approval',
     createdAt: '2026-09-06',
     verifiedAt: '2026-09-06',
-    assignedClasses: ['5-C']
+    assignedClasses: ['5-C'],
+    isProfileComplete: true
   },
   {
     id: 'tch-103',
@@ -165,7 +167,8 @@ const SEED_TEACHERS: TeacherUser[] = [
     status: 'pending_admin_approval',
     createdAt: '2026-09-07',
     verifiedAt: '2026-09-07',
-    assignedClasses: ['5-A']
+    assignedClasses: ['5-A'],
+    isProfileComplete: true
   }
 ];
 
@@ -549,14 +552,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email: profile.email,
       role: 'teacher',
       avatar: profile.avatar || '👨‍🏫',
-      city: 'Edirne',
-      district: 'Merkez',
-      school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+      city: '',
+      district: '',
+      school: '',
       branch: 'Matematik',
       status: 'pending_admin_approval',
       verifiedAt: new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString().split('T')[0],
-      assignedClasses: ['5-A']
+      assignedClasses: ['5-A'],
+      isProfileComplete: false
     };
 
     const updated = [...teachers, newTeacher];

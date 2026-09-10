@@ -12,23 +12,22 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   GraduationCap,
   Sparkles,
-  Tv,
-  CheckCircle2,
   BookOpen,
   Award,
   Zap,
   Target,
   Compass,
-  LogOut,
   User,
   ShieldCheck,
   ChevronRight,
-  School
+  School,
+  LayoutDashboard,
+  Tv
 } from 'lucide-react';
 
 export default function HomePage() {
   const { role, playSound } = useApp();
-  const { currentUser, logout } = useAuth();
+  const { currentUser } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
   // 1. If not authenticated -> Render rich Landing Page
@@ -41,82 +40,34 @@ export default function HomePage() {
     );
   }
 
-  // 2. If authenticated -> Render Personal Workspace with Welcome Bar & Logout
+  // Check if teacher profile is incomplete
+  const isTeacher = currentUser.role === 'teacher';
+  const teacherUser = isTeacher ? (currentUser as any) : null;
+  const isTeacherProfileComplete = isTeacher
+    ? Boolean(teacherUser?.isProfileComplete || (teacherUser?.school && teacherUser?.city && teacherUser?.district && teacherUser?.branch))
+    : true;
+
+  const dashboardHref =
+    currentUser.role === 'admin'
+      ? '/admin'
+      : currentUser.role === 'teacher'
+      ? '/teacher'
+      : '/student';
+
+  const dashboardLabel =
+    currentUser.role === 'admin'
+      ? 'Yönetici Paneli'
+      : currentUser.role === 'teacher'
+      ? 'Öğretmen Paneli'
+      : 'Öğrenci Paneli';
+
+  // 2. Authenticated User Experience
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-300">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 animate-in fade-in duration-300">
       
-      {/* Authenticated User Welcome Bar */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <UserAvatar
-            avatar={currentUser.avatar}
-            name={currentUser.name}
-            size="lg"
-            className="border-teal-200 bg-teal-50 shadow-inner"
-          />
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-base sm:text-lg font-black text-slate-900">
-                Hoş geldiniz, {currentUser.name}
-              </h2>
-              <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase">
-                {currentUser.role === 'admin'
-                  ? '🛡️ Sistem Yöneticisi'
-                  : currentUser.role === 'teacher'
-                  ? '👨‍🏫 Matematik Öğretmeni'
-                  : '🎓 Öğrenci'}
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {currentUser.role === 'teacher' && (currentUser as any).school
-                ? `${(currentUser as any).city} • ${(currentUser as any).school}`
-                : 'Türkiye Yüzyılı Maarif Modeli interaktif çalışma alanınızdasınız.'}
-            </p>
-          </div>
-        </div>
-
-        {/* Quick Dashboard & Logout Action */}
-        <div className="flex items-center gap-2 self-end sm:self-center">
-          <Link
-            href="/profile"
-            className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
-            title="Profil Bilgilerim"
-          >
-            <User className="w-3.5 h-3.5 text-slate-500" />
-            <span className="hidden sm:inline">Profilim</span>
-          </Link>
-
-          <Link
-            href={
-              currentUser.role === 'admin'
-                ? '/admin'
-                : currentUser.role === 'teacher'
-                ? '/teacher'
-                : '/student'
-            }
-            className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            <span>Panelime Git</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
-
-          <button
-            onClick={() => {
-              playSound('click');
-              logout();
-            }}
-            className="px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
-            title="Oturumu Kapat"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Çıkış</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Teacher Incomplete Profile Notice Banner */}
-      {currentUser.role === 'teacher' && !(currentUser as any).isProfileComplete && (
-        <div className="p-5 rounded-3xl bg-teal-50/80 border-2 border-teal-300 text-teal-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in slide-in-from-top">
+      {/* Teacher Incomplete Profile Alert (Only shown if genuinely incomplete) */}
+      {isTeacher && !isTeacherProfileComplete && (
+        <div className="p-5 rounded-3xl bg-teal-50 border-2 border-teal-300 text-teal-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in slide-in-from-top">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-teal-600 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-sm">
               ✨
@@ -124,7 +75,7 @@ export default function HomePage() {
             <div>
               <div className="font-black text-sm text-teal-950">Öğretmen Profilinizi & Okulunuzu Belirleyin</div>
               <div className="text-xs text-teal-800">
-                Google ile bağlandınız. İl, ilçe, okul, branş ve telefon bilgilerinizi kaydederek sınıfınızı yönetmeye başlayın.
+                İl, ilçe, okul ve branş bilgilerinizi tamamlayarak sınıfınızı ve öğrenci değerlendirmelerinizi yönetmeye başlayın.
               </div>
             </div>
           </div>
@@ -132,52 +83,75 @@ export default function HomePage() {
             href="/profile"
             className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer"
           >
-            <span>Profili Düzenle ➔</span>
+            <span>Profili Tamamla ➔</span>
           </Link>
         </div>
       )}
 
-      {/* Hero Welcome Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-8 sm:p-10 text-white shadow-2xl border border-slate-800">
+      {/* Unified Professional Hero Welcome Card */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-10 text-white shadow-xl border border-slate-800">
         <div className="absolute -right-10 -top-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute right-1/3 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 space-y-4 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-4 h-4 text-teal-400" />
-            <span>Türkiye Yüzyılı Maarif Modeli Müfredatı</span>
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-3xl">
+            
+            {/* Model Tag */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-black uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-teal-400" />
+              <span>Türkiye Yüzyılı Maarif Modeli</span>
+            </div>
+
+            {/* Greeting */}
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
+              Hoş geldiniz, <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-300 to-teal-200">{currentUser.name}</span>
+            </h1>
+
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
+              {isTeacher && teacherUser?.school
+                ? `📍 ${teacherUser.city || 'İl'} • ${teacherUser.school} (${teacherUser.branch || 'Matematik'})`
+                : currentUser.role === 'student'
+                ? `🎓 ${(currentUser as any).school || 'Ortaokul'} • ${(currentUser as any).classSection || '5-A'} Şubesi`
+                : 'Sistem Yöneticisi • Maarif Akademi Yönetim Portalı'}
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center gap-2.5 text-xs text-slate-300 font-medium">
+              <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/80">
+                <Tv className="w-3.5 h-3.5 text-teal-400" />
+                <span>Akıllı Tahta & 4 Fazlı Ders Odası</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/80">
+                <Compass className="w-3.5 h-3.5 text-emerald-400" />
+                <span>SDB Becerileri & Süreç Odaklı Rubrik</span>
+              </div>
+            </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white">
-            Geleceğin Akıllı Sınıfı & <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-300">
-              İnteraktif Matematik Platformu
-            </span>
-          </h1>
+          {/* Primary Action Buttons */}
+          <div className="flex items-center gap-3 shrink-0 self-stretch sm:self-auto justify-end">
+            <Link
+              href={dashboardHref}
+              className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              <span>{dashboardLabel}</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
 
-          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Kademeli hiyerarşik akış ile sınıf, ders, ünite ve kazanımınızı seçin; 4 fazlı (Hikâye, Atölye, Bulmaca ve Değerlendirme) akıllı tahta ders odasını başlatın.
-          </p>
-
-          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-300">
-            <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
-              <Tv className="w-4 h-4 text-teal-400" />
-              <span>4K / Dokunmatik Akıllı Tahta Uyumlu</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
-              <Compass className="w-4 h-4 text-emerald-400" />
-              <span>SDB Becerileri ve Süreç Bileşenleri</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
-              <Target className="w-4 h-4 text-amber-400" />
-              <span>{role === 'teacher' ? '👨‍🏫 Öğretmen Modu Aktif' : '🎒 Öğrenci Modu Aktif'}</span>
-            </div>
+            <Link
+              href="/profile"
+              className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer"
+              title="Profilimi Düzenle"
+            >
+              <User className="w-4 h-4 text-teal-300" />
+              <span className="hidden sm:inline">Profilim</span>
+            </Link>
           </div>
         </div>
       </div>
 
       {/* Student Badge Panel (shown in Student Mode) */}
-      {role === 'student' && (
+      {currentUser.role === 'student' && (
         <div className="animate-in fade-in duration-300">
           <StudentBadgePanel />
         </div>
@@ -185,39 +159,6 @@ export default function HomePage() {
 
       {/* Step-by-Step Cascading Selection Wizard */}
       <StepSelector />
-
-      {/* Maarif Modeli Pillars Footer Info */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-4">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
-            1
-          </div>
-          <h4 className="font-extrabold text-slate-900 text-sm">Somuttan Soyuta Anlamlandırma</h4>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Günlük hayat hikayesiyle başlayan kazanım, zihinde soyut sembollere dönüştürülür.
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
-            2
-          </div>
-          <h4 className="font-extrabold text-slate-900 text-sm">Etkileşimli Atölye ve Çizim</h4>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Doğru, doğru parçası ve ışın çizimleri ekranda anlık sembolik formüllerle eşleşir.
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold">
-            3
-          </div>
-          <h4 className="font-extrabold text-slate-900 text-sm">Bilişsel & SDB Gelişimi</h4>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Kura çarkı ile katılım artırılır, akran öğrenmesi ve öz düzenleme desteklenir.
-          </p>
-        </div>
-      </div>
 
     </div>
   );

@@ -133,6 +133,32 @@ export function BoardToolbar({
                 );
               })}
             </div>
+
+            {/* Fullscreen (Tam Ekran) Button for Smart Board */}
+            <button
+              onClick={() => {
+                playSound('click');
+                toggleFullscreen();
+              }}
+              title={isFullscreen ? 'Tam Ekrandan Çık (Küçült)' : 'Ders Akışını Tam Ekran Yap (Akıllı Tahta)'}
+              className={`px-3.5 py-2.5 rounded-2xl font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 ${
+                isFullscreen
+                  ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-amber-500/20'
+                  : 'bg-slate-900 hover:bg-slate-800 text-white shadow-slate-900/10'
+              }`}
+            >
+              {isFullscreen ? (
+                <>
+                  <Minimize2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Küçült</span>
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="w-4 h-4 text-teal-400" />
+                  <span className="hidden sm:inline">Tam Ekran</span>
+                </>
+              )}
+            </button>
           </div>
 
         </div>
