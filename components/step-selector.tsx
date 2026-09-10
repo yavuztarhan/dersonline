@@ -31,8 +31,7 @@ import {
   ArrowLeft,
   FileText,
   Download,
-  ShieldCheck,
-  UserCheck
+  ShieldCheck
 } from 'lucide-react';
 import { LessonPlanModal } from '@/components/lesson-plan-modal';
 
@@ -193,51 +192,6 @@ export function StepSelector() {
   return (
     <div className="w-full space-y-6">
       
-      {/* Role & Filter Info Banner */}
-      {currentUser && (
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-100/90 rounded-2xl border border-slate-200/80 text-xs text-slate-700">
-          <div className="flex items-center gap-2">
-            {isAdmin ? (
-              <>
-                <span className="flex items-center gap-1 font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-200">
-                  <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
-                  Yönetici Görünümü
-                </span>
-                <span className="text-slate-500 font-medium">
-                  Tüm sınıf seviyeleri ve ders branşları filtre uygulanmadan görüntüleniyor.
-                </span>
-              </>
-            ) : isTeacher ? (
-              <>
-                <span className="flex items-center gap-1 font-bold text-teal-800 bg-teal-100 px-2.5 py-1 rounded-lg border border-teal-200">
-                  <UserCheck className="w-3.5 h-3.5 text-teal-700" />
-                  Öğretmen Branşı: {teacherBranch}
-                </span>
-                <span className="text-slate-500 font-medium">
-                  Yalnızca branşınıza ait ({teacherBranch}) ders ve üniteler gösteriliyor, ders seçimi otomatik tamamlanır.
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="flex items-center gap-1 font-bold text-blue-800 bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200">
-                  <GraduationCap className="w-3.5 h-3.5 text-blue-700" />
-                  Kayıtlı Sınıf: {studentUser?.classSection || `${studentGradeLevel}. Sınıf`}
-                </span>
-                <span className="text-slate-500 font-medium">
-                  Yalnızca kendi sınıf seviyenize ait ders içerikleri listelenmektedir.
-                </span>
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400 font-mono text-[11px]">
-              {availableGrades.length} Kademe • {isTeacher ? `${availableSubjectsForGrade.length || 1} Branş Dersi` : 'Tüm Dersler'}
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* Dynamic Breadcrumb Navigation */}
       <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
         <div className="flex flex-wrap items-center gap-2 text-sm">
