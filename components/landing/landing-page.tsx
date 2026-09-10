@@ -111,8 +111,8 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
             </h1>
 
             {/* Subtitle */}
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl">
-              Edirne Selimiye Camii'nin kubbesinden uzay geometrisine uzanan 4 fazlı hikâye, deney atölyesi, kavram bulmacası ve değerlendirme odalarıyla yeni nesil akıllı tahta deneyimi.
+            <p className="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl">
+              Edirne Selimiye Camii'nin kubbesinden uzay geometrisine uzanan 4 fazlı hikâye, atölye, oyunlaştırma ve değerlendirme odalarıyla yeni nesil akıllı tahta deneyimi.
             </p>
 
             {/* Hero CTAs */}
@@ -216,7 +216,7 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
               Müfredat İçerikleri & Ders Odaları
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
-              5. Sınıf Geometri & Uzay Kazanımları
+              5. Sınıf Matematik Kazanımları
             </h2>
           </div>
           <p className="text-xs text-slate-500 max-w-md">
@@ -254,10 +254,10 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
                 <span>📖 1. Faz: Hikâye</span>
               </div>
               <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-1.5">
-                <span>📐 2. Faz: Laboratuvar</span>
+                <span>📐 2. Faz: Atölye</span>
               </div>
               <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-1.5">
-                <span>🧩 3. Faz: Bulmaca</span>
+                <span>🧩 3. Faz: Oyunlaştırma</span>
               </div>
               <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-1.5">
                 <span>📝 4. Faz: Değerlendirme</span>
@@ -302,10 +302,10 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
                 <span>📖 1. Faz: Sinan'ın Sırrı</span>
               </div>
               <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-1.5">
-                <span>🧪 2. Faz: Deney Masası</span>
+                <span>📐 2. Faz: Atölye</span>
               </div>
               <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-1.5">
-                <span>🧩 3. Faz: Çengel Bulmaca</span>
+                <span>🧩 3. Faz: Oyunlaştırma</span>
               </div>
               <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-1.5">
                 <span>📔 4. Faz: SDB1.3 Günlük</span>
@@ -354,9 +354,9 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
             <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 font-black flex items-center justify-center text-sm border border-emerald-500/30">
               2
             </div>
-            <h4 className="font-extrabold text-sm text-white">Deney Laboratuvarı</h4>
+            <h4 className="font-extrabold text-sm text-white">Atölye</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Dinamik çizim araçları, cetvel, lazer ve açıölçer ile somut çizim deneyleri.
+              Dinamik çizim araçları, cetvel, iletki ve pergel ile somut matematik atölyesi.
             </p>
           </div>
 
@@ -364,9 +364,9 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 font-black flex items-center justify-center text-sm border border-amber-500/30">
               3
             </div>
-            <h4 className="font-extrabold text-sm text-white">Kavram Çıkarımı</h4>
+            <h4 className="font-extrabold text-sm text-white">Oyunlaştırma</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              İnteraktif çengel bulmacalar ve tümevarım eşleştirmeleriyle sembolik matematik.
+              İnteraktif çengel bulmacalar, yarışmalar ve oyunlaştırılmış zihin jimnastiği.
             </p>
           </div>
 
