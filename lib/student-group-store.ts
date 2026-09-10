@@ -16,6 +16,9 @@ export interface StudentGroup {
   teacherName: string;
   colorGradient: string;
   members: StudentGroupMember[];
+  peerEvaluationEnabled?: boolean;
+  peerEvaluationOutcomeCode?: string;
+  peerEvaluationOutcomeTitle?: string;
   createdAt: string;
 }
 
@@ -74,6 +77,9 @@ const SEED_GROUPS: StudentGroup[] = [
     teacherId: 'tch-101',
     teacherName: 'Ayşe Yılmaz',
     colorGradient: 'from-teal-600 to-emerald-600',
+    peerEvaluationEnabled: true,
+    peerEvaluationOutcomeCode: 'MAT.5.3.3',
+    peerEvaluationOutcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
     createdAt: '2026-09-08T10:00:00Z',
     members: [
       { id: 'stu-201', name: 'Çırak Hasan', studentNumber: '104', avatar: '👦', classSection: '5-A' },
@@ -88,6 +94,9 @@ const SEED_GROUPS: StudentGroup[] = [
     teacherId: 'tch-101',
     teacherName: 'Ayşe Yılmaz',
     colorGradient: 'from-indigo-600 to-purple-600',
+    peerEvaluationEnabled: true,
+    peerEvaluationOutcomeCode: 'MAT.5.3.3',
+    peerEvaluationOutcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
     createdAt: '2026-09-08T10:00:00Z',
     members: [
       { id: 'stu-103', name: 'Mustafa Demir', studentNumber: '103', avatar: '👦', classSection: '5-A' },
@@ -349,6 +358,30 @@ export function getGroupForStudent(studentId: string, studentNumber?: string): S
       g.members.some((m) => m.id === studentId || (studentNumber && m.studentNumber === studentNumber))
     ) || null
   );
+}
+
+export function toggleGroupPeerEvaluation(
+  groupId: string,
+  enabled: boolean,
+  outcomeCode: string = 'MAT.5.3.3',
+  outcomeTitle: string = 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme'
+): StudentGroup | null {
+  const groups = getStoredGroups();
+  let updatedGroup: StudentGroup | null = null;
+  const updated = groups.map((g) => {
+    if (g.id === groupId) {
+      updatedGroup = {
+        ...g,
+        peerEvaluationEnabled: enabled,
+        peerEvaluationOutcomeCode: enabled ? outcomeCode : undefined,
+        peerEvaluationOutcomeTitle: enabled ? outcomeTitle : undefined
+      };
+      return updatedGroup;
+    }
+    return g;
+  });
+  saveStoredGroups(updated);
+  return updatedGroup;
 }
 
 export function getTasksForGroup(groupId: string): GroupTask[] {

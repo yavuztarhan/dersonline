@@ -327,6 +327,20 @@ export function AppDrawer({
                     <span className="text-[10px] text-slate-400">Gelen Kutusu</span>
                   )}
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('/student')}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-700 hover:bg-teal-50 hover:text-teal-900 transition-all cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-4 h-4 text-teal-600" />
+                    <span>Akran Değerlendirmelerim</span>
+                  </div>
+                  <span className="text-[9px] bg-teal-100 text-teal-800 font-bold px-1.5 py-0.2 rounded-full">
+                    +25 XP
+                  </span>
+                </button>
               </div>
 
               {/* Bölüm: İnteraktif Kazanım Dersleri */}
@@ -482,6 +496,24 @@ export function AppDrawer({
               <div className="space-y-1">
                 <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3">
                   Sınıf & Ders Yönetimi
+                </div>
+
+                <div
+                  onClick={() => handleNavigate('/teacher')}
+                  className="p-3 rounded-xl bg-teal-50/70 hover:bg-teal-100/80 border border-teal-200 transition-all cursor-pointer space-y-1"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-black text-teal-900">
+                      <BarChart3 className="w-3.5 h-3.5 text-teal-700" />
+                      <span>Öğrenci Formları & Raporlar</span>
+                    </div>
+                    <span className="text-[9px] bg-teal-600 text-white font-bold px-1.5 py-0.2 rounded-full">
+                      3D Korelasyon
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-teal-800">
+                    Öz & Akran değerlendirme ve oyun başarısı korelasyonu
+                  </div>
                 </div>
 
                 <div

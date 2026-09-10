@@ -8,6 +8,7 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { getOutcomeById } from '@/lib/curriculum-data';
 import { LessonPlanModal } from '@/components/lesson-plan-modal';
 import { TeacherRubricAnalytics } from '@/components/teacher/teacher-rubric-analytics';
+import { TeacherFormsAnalyticsReport } from '@/components/teacher/teacher-forms-analytics-report';
 import { TeacherGroupsPanel } from '@/components/teacher/teacher-groups-panel';
 import {
   ClassroomFileRecord,
@@ -57,7 +58,7 @@ export function TeacherDashboard() {
   const { currentUser, students, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher, awardPointsToStudent } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
   const [activePlanOutcome, setActivePlanOutcome] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState<'analytics' | 'students' | 'groups' | 'leaderboard' | 'plans' | 'files'>('analytics');
+  const [activeSection, setActiveSection] = useState<'analytics' | 'forms' | 'students' | 'groups' | 'leaderboard' | 'plans' | 'files'>('analytics');
   const [selectedStudentForDetail, setSelectedStudentForDetail] = useState<any | null>(null);
 
   // Classroom Files State
@@ -289,9 +290,47 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* Executive Module Switcher (6 Primary Sections) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
-        {/* 1. Öz Değerlendirme Rubrik Raporları */}
+      {/* Executive Module Switcher (7 Primary Sections) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
+        {/* 1. Öz & Akran Değerlendirme Korelasyon Raporları */}
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
+            setActiveSection('forms');
+          }}
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
+            activeSection === 'forms'
+              ? 'bg-white shadow-md border-teal-500 ring-2 ring-teal-500/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeSection === 'forms' ? 'bg-teal-600 text-white shadow-sm' : 'bg-teal-50 text-teal-700'
+              }`}
+            >
+              <BarChart2 className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider border border-emerald-200">
+              3D Rapor
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'forms' ? 'text-teal-950' : 'text-slate-800'}`}>
+              Öğrenci Formları
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Akran & Korelasyon
+            </div>
+          </div>
+          {activeSection === 'forms' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-teal-600 rounded-full" />
+          )}
+        </button>
+
+        {/* 2. Öz Değerlendirme Rubrik Raporları */}
         <button
           type="button"
           onClick={() => {
@@ -300,32 +339,32 @@ export function TeacherDashboard() {
           }}
           className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
             activeSection === 'analytics'
-              ? 'bg-white shadow-md border-teal-500 ring-2 ring-teal-500/10'
+              ? 'bg-white shadow-md border-indigo-500 ring-2 ring-indigo-500/10'
               : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
           }`}
         >
           <div className="flex items-center justify-between gap-2 mb-2">
             <div
               className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
-                activeSection === 'analytics' ? 'bg-teal-600 text-white shadow-sm' : 'bg-teal-50 text-teal-700'
+                activeSection === 'analytics' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-indigo-50 text-indigo-700'
               }`}
             >
               <ClipboardCheck className="w-5 h-5" />
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase tracking-wider border border-teal-200">
-              Yeni
+            <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold border border-indigo-200">
+              Rubrik
             </span>
           </div>
           <div>
-            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'analytics' ? 'text-teal-950' : 'text-slate-800'}`}>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'analytics' ? 'text-indigo-950' : 'text-slate-800'}`}>
               Öz Değerlendirme
             </div>
             <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-              Rubrik Raporları
+              Rubrik Detayları
             </div>
           </div>
           {activeSection === 'analytics' && (
-            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-teal-600 rounded-full" />
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-indigo-600 rounded-full" />
           )}
         </button>
 
@@ -535,6 +574,18 @@ export function TeacherDashboard() {
             selectedClass={selectedClass}
             onSelectClass={(cls) => setSelectedClass(cls)}
             availableClasses={teacherClasses}
+          />
+        </div>
+      )}
+
+      {/* SECTION: FORMS & 3-WAY CORRELATION ANALYTICS */}
+      {activeSection === 'forms' && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <TeacherFormsAnalyticsReport
+            teacherClasses={teacherClasses}
+            teacherSchool={teacher?.school}
+            teacherName={teacher?.name}
+            teacherBranch={teacher?.branch}
           />
         </div>
       )}

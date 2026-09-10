@@ -12,7 +12,8 @@ import {
   createGroupManual,
   deleteGroup,
   assignTaskToGroup,
-  gradeGroupTask
+  gradeGroupTask,
+  toggleGroupPeerEvaluation
 } from '@/lib/student-group-store';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import {
@@ -329,6 +330,39 @@ export function TeacherGroupsPanel({
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Peer Evaluation Status & Toggle Checkbox */}
+                  <div className="p-3 rounded-2xl bg-indigo-50/70 border border-indigo-200 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <input
+                        type="checkbox"
+                        id={`peer-toggle-${group.id}`}
+                        checked={!!group.peerEvaluationEnabled}
+                        onChange={(e) => {
+                          playSound('click');
+                          toggleGroupPeerEvaluation(group.id, e.target.checked, 'MAT.5.3.3', 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme');
+                          reloadData();
+                        }}
+                        className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                      />
+                      <label htmlFor={`peer-toggle-${group.id}`} className="text-xs font-black text-indigo-950 cursor-pointer flex items-center gap-1.5 select-none">
+                        <span>Akran Değerlendirmesi</span>
+                        {group.peerEvaluationEnabled ? (
+                          <span className="px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-black">
+                            Aktif
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.2 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold">
+                            Kapalı
+                          </span>
+                        )}
+                      </label>
+                    </div>
+
+                    <span className="text-[10px] font-extrabold text-indigo-700 bg-white px-2 py-0.5 rounded-md border border-indigo-200">
+                      {group.peerEvaluationOutcomeCode || 'MAT.5.3.3'}
+                    </span>
                   </div>
 
                   {/* Group Tasks Sub-Section */}

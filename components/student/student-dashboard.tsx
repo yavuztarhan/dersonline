@@ -14,6 +14,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentGroupsCard } from '@/components/student/student-groups-card';
+import { StudentPeerEvaluationCard } from '@/components/student/student-peer-evaluation-card';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG } from '@/lib/mascot-config';
@@ -319,6 +320,9 @@ export function StudentDashboard() {
         </div>
 
       </div>
+
+      {/* Akran Değerlendirme Formları & Takım Arkadaşı İncelemeleri */}
+      <StudentPeerEvaluationCard />
 
       {/* Öğrenci Çalışma Grubu & Grup Görevleri */}
       <StudentGroupsCard />
