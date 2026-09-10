@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   StudentPerformanceProfile,
@@ -72,6 +73,11 @@ export function StudentOutcomeDetailModal({
   const [gameSearchQuery, setGameSearchQuery] = useState<string>('');
   const [profile, setProfile] = useState<StudentPerformanceProfile | null>(null);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load and calculate profile defensively
   useEffect(() => {
@@ -116,7 +122,7 @@ export function StudentOutcomeDetailModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen || !student) return null;
+  if (!isOpen || !student || !mounted) return null;
 
   // Safe Fallback Data
   const safeProfile = profile ?? {
@@ -237,8 +243,8 @@ export function StudentOutcomeDetailModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200">
       <div
         className="bg-slate-50 w-full max-w-4xl max-h-[92vh] rounded-3xl shadow-2xl border border-slate-300/80 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
@@ -1086,6 +1092,7 @@ export function StudentOutcomeDetailModal({
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '@/lib/store';
 import { useAuth } from '@/lib/auth-store';
 import { getPeerRubricForOutcome } from '@/lib/rubric-data';
@@ -128,6 +129,11 @@ export function PeerAssessmentRubricModal({
   const [checklist, setChecklist] = useState<Record<string, boolean>>({});
   const [peerNote, setPeerNote] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close on ESC
   useEffect(() => {
@@ -150,7 +156,7 @@ export function PeerAssessmentRubricModal({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleSelectRating = (criteriaId: string, level: number) => {
     playSound('select');
@@ -226,8 +232,8 @@ export function PeerAssessmentRubricModal({
     setIsSubmitted(true);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
       
       {/* Backdrop */}
       <div
@@ -486,6 +492,7 @@ export function PeerAssessmentRubricModal({
 
       </div>
 
-    </div>
+    </div>,
+    document.body
   );
 }

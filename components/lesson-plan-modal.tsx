@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { Outcome } from '@/types';
@@ -57,6 +58,11 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
   const [isGenerating, setIsGenerating] = useState(false);
   const [saveToProfile, setSaveToProfile] = useState(true);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const singlePageRef = useRef<HTMLDivElement>(null);
   const page1Ref = useRef<HTMLDivElement>(null);
@@ -91,7 +97,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
     }
   }, [teacher, admin, annualPlan, isOpen, outcome.code, gradeLevel]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   // Download PDF Handler: Zero character-cut guarantee
   const handleDownloadPdf = async () => {
@@ -102,16 +108,23 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
       // Save changes to teacher profile if checked
       if (saveToProfile && teacher && teacher.id) {
         updateTeacherProfile(teacher.id, {
-          school: schoolName,
-          principalName: principalName,
-          branch: teacherBranch
+          school: schoolName.trim(),
+          name: teacherName.trim(),
+          branch: teacherBranch.trim(),
+          principalName: principalName.trim()
         });
       }
+
+      playSound('select');
+
+      // Small delay to ensure clean render
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
+        compress: true
       });
 
       // Standard A4 dimensions and safe printable margins
@@ -138,14 +151,12 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
         const finalWidth = printableWidth * scale;
         const finalHeight = totalImgHeightMm * scale;
         const offsetX = marginX + (printableWidth - finalWidth) / 2;
+        const offsetY = marginTop + (printableHeight - finalHeight) / 2;
 
         const imgData = canvas.toDataURL('image/jpeg', 0.98);
-        pdf.addImage(imgData, 'JPEG', offsetX, marginTop, finalWidth, finalHeight, '', 'FAST');
-
-        const safeOutcome = outcome.code.replace(/[^a-zA-Z0-9]/g, '_');
-        pdf.save(`MEB_Maarif_Gunluk_Plan_${safeOutcome}.pdf`);
+        pdf.addImage(imgData, 'JPEG', offsetX, offsetY, finalWidth, finalHeight, undefined, 'FAST');
       } else {
-        // 2-Page Mode: Discrete page capturing (Never slices text)
+        // Multi-page layout
         if (!page1Ref.current || !page2Ref.current) return;
 
         // Page 1
@@ -192,8 +203,8 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in duration-200">
       
       {/* Modal Card */}
       <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
@@ -810,7 +821,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
         </div>
 
       </div>
-
-    </div>
+    </div>,
+    document.body
   );
 }

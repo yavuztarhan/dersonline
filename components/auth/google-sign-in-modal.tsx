@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { signIn } from 'next-auth/react';
 import { X, Check, Globe, Sparkles, User, Mail, ArrowRight } from 'lucide-react';
 
@@ -81,8 +82,13 @@ export function GoogleSignInModal({
   const [customName, setCustomName] = useState('');
   const [customEmail, setCustomEmail] = useState('');
   const [customError, setCustomError] = useState('');
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handleCustomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,8 +118,8 @@ export function GoogleSignInModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-60 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden relative animate-in zoom-in-95 duration-200">
         
         {/* Close Button */}
@@ -274,6 +280,7 @@ export function GoogleSignInModal({
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import {
@@ -172,7 +173,13 @@ export function MessageInboxModal({
     return list;
   }, [currentUser, userRole, userId, admins, teachers, getVisibleStudents]);
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const unreadCount = inboxMessages.filter((m) => !m.read).length;
 
@@ -282,8 +289,8 @@ export function MessageInboxModal({
       m.receiverName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-4xl h-[90vh] max-h-[750px] rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         
         {/* Modal Top Header */}
@@ -732,6 +739,7 @@ export function MessageInboxModal({
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
