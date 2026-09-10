@@ -431,8 +431,8 @@ export function PrimeFactorsBench() {
       .join(' · ');
   }, [primeTargetNumber]);
 
-  // Step-by-step reveal for Factor Tree
-  const [revealedTreeRow, setRevealedTreeRow] = useState<number | null>(null);
+  // Step-by-step reveal for Factor Tree (starts from step 0 / first step)
+  const [revealedTreeRow, setRevealedTreeRow] = useState<number | null>(0);
 
   // Factor Tree Generator (MEB Textbook Model)
   const treeData = useMemo(() => {
@@ -867,7 +867,7 @@ export function PrimeFactorsBench() {
                   onChange={(e) => {
                     const val = parseInt(e.target.value) || 2;
                     setPrimeTargetNumber(Math.max(2, Math.min(999, val)));
-                    setRevealedTreeRow(null);
+                    setRevealedTreeRow(0);
                   }}
                   className="w-20 p-1.5 rounded-xl border border-slate-300 font-mono font-black text-sm text-center bg-white"
                 />
@@ -930,7 +930,7 @@ export function PrimeFactorsBench() {
                 key={num}
                 onClick={() => {
                   setPrimeTargetNumber(num);
-                  setRevealedTreeRow(null);
+                  setRevealedTreeRow(0);
                   playSound('select');
                 }}
                 className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
