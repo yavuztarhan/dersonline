@@ -54,7 +54,6 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
   const [bonusTimePopup, setBonusTimePopup] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isAnswerChecking, setIsAnswerChecking] = useState<boolean>(false);
-  const [savedToDb, setSavedToDb] = useState<boolean>(false);
   const [lastEarnedXp, setLastEarnedXp] = useState<number>(0);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -125,7 +124,6 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
     setWrongCount(0);
     setSelectedOption(null);
     setIsAnswerChecking(false);
-    setSavedToDb(false);
     setLastEarnedXp(0);
 
     const firstQ = generateQuestion();
@@ -189,8 +187,6 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
         maxScore: Math.max(score, totalQuestions * 15),
         xpEarned,
       });
-
-      setSavedToDb(true);
     }
   }, [timeLeft, gameState, correctCount, wrongCount, score, maxStreak, currentUser, addPoints, playSound]);
 
@@ -358,11 +354,11 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
 
               <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200/80 space-y-2 text-center sm:text-left">
                 <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm mx-auto sm:mx-0 shadow-xs">
-                  💾
+                  🎯
                 </div>
-                <div className="font-black text-xs text-indigo-950">Gelişim Kartına Kayıt</div>
+                <div className="font-black text-xs text-indigo-950">3 Seçenek & Hızlı Cevap</div>
                 <div className="text-[11px] text-indigo-800 leading-snug">
-                  Oyun bitiminde başarın, hızın ve kazandığın XP doğrudan profiline ve öğretmen paneline işlenir.
+                  Doğru çarpım sonucunu 3 şıktan seç veya klavyenden 1, 2, 3 tuşlarına basarak hız kazan.
                 </div>
               </div>
             </div>
@@ -584,28 +580,21 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
 
           </div>
 
-          {/* XP & Database Confirmation Banner */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* XP Banner */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-teal-50 border border-amber-200/80 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black text-lg shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-lg shrink-0 shadow-xs">
                 ⭐
               </div>
               <div className="text-left">
-                <div className="text-xs font-black text-teal-950">
-                  +{lastEarnedXp} XP Hesabınıza Eklendi!
+                <div className="text-sm font-black text-slate-900">
+                  +{lastEarnedXp} XP Kazandın!
                 </div>
-                <div className="text-[11px] text-teal-800">
-                  Sonuçlarınız ve başarı yüzdeniz öğrenci gelişim kartınıza başarıyla kaydedildi.
+                <div className="text-xs text-slate-600">
+                  Tebrikler, puanın hesabına eklendi.
                 </div>
               </div>
             </div>
-
-            {savedToDb && (
-              <span className="text-xs font-black text-emerald-700 bg-white px-3 py-1.5 rounded-xl border border-emerald-300 shadow-xs flex items-center gap-1.5 shrink-0">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Veritabanına İşlendi</span>
-              </span>
-            )}
           </div>
 
           {/* Action Buttons */}
