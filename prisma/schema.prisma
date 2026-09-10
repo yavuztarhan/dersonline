@@ -6,7 +6,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -77,8 +76,10 @@ model StudentProfile {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  badges        StudentBadge[]
-  progresses    OutcomeProgress[]
+  badges           StudentBadge[]
+  progresses       OutcomeProgress[]
+  selfAssessments  SelfAssessmentSubmission[]
+  learningJournals LearningJournal[]
 
   @@map("student_profiles")
 }
@@ -160,3 +161,28 @@ model SelfAssessmentSubmission {
   @@index([classSection])
   @@map("self_assessment_submissions")
 }
+
+model LearningJournal {
+  id                String   @id @default(cuid())
+  studentId         String?
+  studentName       String
+  studentNumber     String?
+  gradeLevel        Int      @default(5)
+  classSection      String   // 5-A, 6-A
+  school            String?
+  outcomeId         String   // MAT.6.1.3
+  outcomeCode       String   // MAT.6.1.3
+  outcomeTitle      String
+  prompt            String   // SDB1.3 Yansıtma sorusu
+  studentReflection String   // Öğrenci cevabı
+  teacherFeedback   String?
+  teacherLiked      Boolean  @default(false)
+  submittedAt       DateTime @default(now())
+
+  student           StudentProfile? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@index([outcomeCode, classSection])
+  @@index([classSection])
+  @@map("learning_journals")
+}
+
