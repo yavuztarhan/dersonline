@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { getUnreadMessageCount } from '@/lib/message-store';
 import { StudentUser, TeacherUser } from '@/types/auth';
 import {
@@ -707,22 +708,31 @@ export function AppDrawer({
 
             {/* Direct Message shortcut if logged in */}
             {currentUser && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenMessageModal?.();
-                }}
-                className="relative p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all cursor-pointer"
-                title="Gelen Kutusu"
-              >
-                <Mail className="w-4 h-4 text-teal-700" />
-                {unreadMessages > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-black text-[9px] flex items-center justify-center">
-                    {unreadMessages}
-                  </span>
-                )}
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenMessageModal?.();
+                  }}
+                  className="relative p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 transition-all cursor-pointer"
+                  title="Gelen Kutusu"
+                >
+                  <Mail className="w-4 h-4 text-teal-700" />
+                  {unreadMessages > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-black text-[9px] flex items-center justify-center">
+                      {unreadMessages}
+                    </span>
+                  )}
+                </button>
+
+                <FeedbackButton
+                  contextTitle="Menü (Drawer)"
+                  tooltip="Görüş Bildir"
+                  className="p-2 rounded-xl bg-white hover:bg-teal-50 border border-slate-200 text-slate-700 transition-all cursor-pointer flex items-center justify-center"
+                  iconClassName="w-4 h-4 text-teal-700"
+                />
+              </>
             )}
 
           </div>

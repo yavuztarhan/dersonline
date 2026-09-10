@@ -5,6 +5,7 @@ import { useApp } from '@/lib/store';
 import { LessonPhaseId, Outcome } from '@/types';
 import { getOutcomeById } from '@/lib/curriculum-data';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
+import { FeedbackButton } from '@/components/feedback/feedback-button';
 import {
   PenTool,
   Highlighter,
@@ -159,6 +160,14 @@ export function BoardToolbar({
                 </>
               )}
             </button>
+
+            {/* Görüş & Geri Bildirim Butonu (Sadece İkon) */}
+            <FeedbackButton
+              contextTitle={`${outcomeCode} (${outcomeTitle}) Ders Akışı`}
+              tooltip="Bu ders akışı hakkında görüş / geri bildirim ilet"
+              className="p-2.5 rounded-2xl bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 hover:border-teal-300 shadow-2xs transition-all cursor-pointer flex items-center justify-center active:scale-95"
+              iconClassName="w-4 h-4 text-teal-700"
+            />
           </div>
 
         </div>

@@ -29,6 +29,7 @@ import {
   Check
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { FeedbackButton } from '@/components/feedback/feedback-button';
 import confetti from 'canvas-confetti';
 
 export function AdminDashboard() {
@@ -157,13 +158,22 @@ export function AdminDashboard() {
           </p>
         </div>
 
-        <button
-          onClick={handleCreateMockPendingTeacher}
-          className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
-        >
-          <Plus className="w-4 h-4" />
-          <span>+ Test Başvurusu Ekle</span>
-        </button>
+        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <FeedbackButton
+            contextTitle="Yönetici Paneli"
+            tooltip="Yönetim Paneli & Sistem Hakkında Görüş / Not Bırak"
+            className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-sm transition-all cursor-pointer flex items-center justify-center active:scale-95"
+            iconClassName="w-4 h-4 text-indigo-300"
+          />
+
+          <button
+            onClick={handleCreateMockPendingTeacher}
+            className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
+          >
+            <Plus className="w-4 h-4" />
+            <span>+ Test Başvurusu Ekle</span>
+          </button>
+        </div>
       </div>
 
       {/* Notification Toast Alert */}

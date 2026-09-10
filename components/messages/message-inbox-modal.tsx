@@ -14,7 +14,8 @@ import {
   canUserMessageRecipient,
   DAILY_MESSAGE_LIMIT,
   getRemainingDailyMessages,
-  getDailySentMessageCount
+  getDailySentMessageCount,
+  formatMessageDateTime
 } from '@/lib/message-store';
 import { checkContentSafety } from '@/lib/profanity-filter';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -144,7 +145,7 @@ export function MessageInboxModal({
       });
     }
 
-    // 3. If Student: CAN ONLY MESSAGE TEACHERS
+    // 3. If Student: Can message Teachers AND System Admin (Görüş & Destek)
     if (userRole === 'student') {
       teachers.forEach((t) => {
         list.push({
@@ -154,6 +155,16 @@ export function MessageInboxModal({
           roleLabel: 'Öğretmen',
           avatar: t.avatar || '👨‍🏫',
           extraInfo: `${t.school || 'Okul'} (${t.branch || 'Matematik'})`
+        });
+      });
+
+      admins.forEach((a) => {
+        list.push({
+          id: a.id,
+          name: a.name,
+          role: 'admin',
+          roleLabel: 'Sistem Yöneticisi (Görüş & Destek)',
+          avatar: a.avatar || '🛡️'
         });
       });
     }
@@ -421,14 +432,14 @@ export function MessageInboxModal({
                     </div>
                   </div>
 
-                  <div className="space-y-1">
+                    <div className="space-y-1">
                     <h3 className="text-base sm:text-lg font-black text-slate-900">
                       {selectedMessage.title}
                     </h3>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
                       <span className="font-bold text-slate-700">Gönderen: {selectedMessage.senderName}</span>
                       <span>•</span>
-                      <span>{new Date(selectedMessage.createdAt).toLocaleString('tr-TR')}</span>
+                      <span>{formatMessageDateTime(selectedMessage.createdAt)}</span>
                     </div>
                   </div>
 
@@ -472,9 +483,9 @@ export function MessageInboxModal({
                         </div>
                       </div>
 
-                      <div className="flex flex-col items-end gap-2 shrink-0">
-                        <span className="text-[10px] text-slate-400 font-semibold">
-                          {new Date(msg.createdAt).toLocaleDateString('tr-TR')}
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className="text-[10px] text-slate-400 font-bold">
+                          {formatMessageDateTime(msg.createdAt)}
                         </span>
                         <button
                           onClick={(e) => handleDeleteMsg(msg.id, e)}
@@ -529,8 +540,8 @@ export function MessageInboxModal({
                           <span className="text-xs font-bold text-slate-500">Alıcı:</span>
                           <span className="font-black text-xs text-slate-900">{msg.receiverName}</span>
                         </div>
-                        <span className="text-[10px] text-slate-400">
-                          {new Date(msg.createdAt).toLocaleString('tr-TR')}
+                        <span className="text-[10px] text-slate-400 font-bold">
+                          {formatMessageDateTime(msg.createdAt)}
                         </span>
                       </div>
                       <div className="text-xs font-bold text-slate-800">{msg.title}</div>

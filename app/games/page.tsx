@@ -8,6 +8,7 @@ import { MascotCharacter } from '@/components/mascot';
 import { STANDALONE_GAMES, StandaloneGame } from '@/lib/standalone-games-data';
 import { MultiplicationGame } from '@/components/games/multiplication-game';
 import { MathWheelGame } from '@/components/games/math-wheel-game';
+import { FeedbackModal } from '@/components/feedback/feedback-modal';
 import {
   Gamepad2,
   Sparkles,
@@ -27,7 +28,8 @@ import {
   Layers,
   CheckCircle2,
   Lock,
-  ArrowLeft
+  ArrowLeft,
+  MessageSquarePlus
 } from 'lucide-react';
 
 export default function GamesPage() {
@@ -37,6 +39,7 @@ export default function GamesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeGameId, setActiveGameId] = useState<string | null>(null);
+  const [gameRequestModalOpen, setGameRequestModalOpen] = useState<boolean>(false);
 
   // If a game is currently active, render that game directly!
   if (activeGameId === 'matematik-carki') {
@@ -285,12 +288,32 @@ export default function GamesPage() {
         </div>
 
         <div className="shrink-0">
-          <div className="px-5 py-3 rounded-2xl bg-white border border-teal-200 text-teal-900 font-black text-xs shadow-sm flex items-center gap-2">
-            <Gamepad2 className="w-4 h-4 text-teal-600" />
-            <span>Oyunlar Sayfası Hazır ✨</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              playSound('click');
+              setGameRequestModalOpen(true);
+            }}
+            className="px-6 py-3.5 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-black text-xs sm:text-sm shadow-md shadow-teal-600/25 transition-all flex items-center gap-2.5 cursor-pointer"
+          >
+            <Gamepad2 className="w-5 h-5 text-teal-200" />
+            <span>🎮 İstek Oyun / Yeni Oyun Fikri Bildir</span>
+          </button>
         </div>
       </div>
+
+      {/* Game Request Modal */}
+      {gameRequestModalOpen && (
+        <FeedbackModal
+          isOpen={gameRequestModalOpen}
+          onClose={() => setGameRequestModalOpen(false)}
+          contextTitle="Maarif Oyun Salonu (Oyunlar Sayfası)"
+          type="game_request"
+          defaultSubject="[İstek Oyun] Maarif Oyun Salonu Yeni Oyun Önerisi"
+          description="Oynamak istediğiniz veya matematik öğrenimini daha eğlenceli hale getirecek yeni bir oyun fikrini tarif edin. Sistem Yöneticimiz önerinizi inceleyip oyun geliştirme takvimine alacaktır."
+          placeholder="Örn: Kesirlerle pizza dilimleme yarışı olsun, doğru kesri seçtikçe puan katlansın ve zamana karşı kombo yapalım..."
+        />
+      )}
 
     </div>
   );

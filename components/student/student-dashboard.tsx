@@ -15,6 +15,7 @@ import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentGroupsCard } from '@/components/student/student-groups-card';
 import { StudentPeerEvaluationCard } from '@/components/student/student-peer-evaluation-card';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
+import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG } from '@/lib/mascot-config';
 import {
@@ -151,17 +152,27 @@ export function StudentDashboard() {
             </div>
           </div>
 
-          {/* XP / Point Pill */}
-          <div className="p-4 rounded-2xl bg-amber-400/20 border border-amber-400/40 backdrop-blur-sm flex items-center gap-3 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-lg shadow-sm">
-              ⚡
-            </div>
-            <div>
-              <div className="text-xs font-bold text-amber-300">Toplam Puanın:</div>
-              <div className="text-xl sm:text-2xl font-black text-white">
-                +{studentPoints || 450} XP
+          {/* XP / Point Pill & Feedback Button */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="p-4 rounded-2xl bg-amber-400/20 border border-amber-400/40 backdrop-blur-sm flex items-center gap-3 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-lg shadow-sm">
+                ⚡
+              </div>
+              <div>
+                <div className="text-xs font-bold text-amber-300">Toplam Puanın:</div>
+                <div className="text-xl sm:text-2xl font-black text-white">
+                  +{studentPoints || 450} XP
+                </div>
               </div>
             </div>
+
+            {/* Icon-Only Feedback Button */}
+            <FeedbackButton
+              contextTitle="Öğrenci Paneli"
+              tooltip="Öğrenci Paneli & Dersler Hakkında Görüş Bildir"
+              className="p-3.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white border border-white/25 shadow-sm transition-all cursor-pointer flex items-center justify-center active:scale-95"
+              iconClassName="w-5 h-5 text-amber-300"
+            />
           </div>
 
         </div>

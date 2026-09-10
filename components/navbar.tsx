@@ -10,6 +10,7 @@ import { AuthModal } from '@/components/auth/auth-modal';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { MessageInboxModal } from '@/components/messages/message-inbox-modal';
 import { AppDrawer } from '@/components/navigation/app-drawer';
+import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { getUnreadMessageCount } from '@/lib/message-store';
 import {
   Volume2,
@@ -257,6 +258,28 @@ export function Navbar() {
                     </span>
                   )}
                 </button>
+
+                {/* Görüş Bildir Quick Action (Sadece İkon) */}
+                <FeedbackButton
+                  contextTitle={
+                    isLessonPage
+                      ? 'Ders Akışı'
+                      : pathname === '/teacher'
+                      ? 'Öğretmen Paneli'
+                      : pathname === '/student'
+                      ? 'Öğrenci Paneli'
+                      : pathname === '/admin'
+                      ? 'Yönetici Paneli'
+                      : pathname === '/games'
+                      ? 'Oyunlar Sayfası'
+                      : pathname === '/profile'
+                      ? 'Profil Sayfası'
+                      : 'Genel Platform'
+                  }
+                  tooltip="Görüş & Geri Bildirim Bildir"
+                  className="p-2 rounded-xl bg-slate-50 hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 hover:border-teal-300 transition-all cursor-pointer flex items-center justify-center active:scale-95"
+                  iconClassName="w-4 h-4 text-teal-600"
+                />
 
                 {/* Logout Button */}
                 <button

@@ -23,6 +23,7 @@ import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentOutcomeDetailModal } from '@/components/gamification/student-outcome-detail-modal';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG } from '@/lib/mascot-config';
+import { FeedbackButton } from '@/components/feedback/feedback-button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -250,6 +251,13 @@ export function TeacherDashboard() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+            <FeedbackButton
+              contextTitle="Öğretmen Paneli"
+              tooltip="Öğretmen Paneli Hakkında Görüş & Geri Bildirim İlet"
+              className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-sm transition-all cursor-pointer flex items-center justify-center active:scale-95"
+              iconClassName="w-4 h-4 text-teal-300"
+            />
+
             <Link
               href="/profile"
               className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5"

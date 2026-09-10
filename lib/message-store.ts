@@ -100,19 +100,41 @@ function saveStoredMessages(messages: MessageRecord[]): void {
  * Hiyerarşik İzin Kontrolü:
  * - Admin: Öğretmenlere ve Adminlere yazabilir.
  * - Öğretmen: Adminlere ve Öğrencilere yazabilir.
- * - Öğrenci: SADECE Öğretmenlere yazabilir (Öğrenciler arası doğrudan mesajlaşma kapalıdır).
+ * - Öğrenci: Öğretmenlerine ve Sistem Yöneticisine (Görüş Bildirme/Admin) mesaj gönderebilir.
+ * - Tüm roller geri bildirim ve destek için Admin'e mesaj gönderebilir.
  */
 export function canUserMessageRecipient(senderRole: UserRole, receiverRole: UserRole): boolean {
+  // Tüm kullanıcılar (öğrenci, öğretmen, admin) Sistem Yöneticisine (Admin) görüş/mesaj iletebilir
+  if (receiverRole === 'admin') return true;
+
   if (senderRole === 'admin') {
-    return receiverRole === 'teacher' || receiverRole === 'admin';
+    return receiverRole === 'teacher';
   }
   if (senderRole === 'teacher') {
-    return receiverRole === 'admin' || receiverRole === 'student';
+    return receiverRole === 'student';
   }
   if (senderRole === 'student') {
     return receiverRole === 'teacher';
   }
   return false;
+}
+
+/**
+ * Mesajların gönderilme tarih ve saatini formatlar (Örn: 11 Eylül 2026, 14:30)
+ */
+export function formatMessageDateTime(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleString('tr-TR', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return dateStr;
+  }
 }
 
 export function getInboxForUser(userId: string): MessageRecord[] {
