@@ -32,6 +32,7 @@ export interface OutcomePerformanceItem {
   activityXp: number;
   completedGames: string[]; // e.g. ['Hafıza Kartı', 'Doğru-Yanlış', 'Mini Test']
   activitiesCount: number;
+  activitiesList: StudentActivityScore[];
 
   // Rubric Performance
   hasRubricData: boolean;
@@ -70,6 +71,7 @@ export interface StudentPerformanceProfile {
   completedOutcomesCount: number;
   totalOutcomesCount: number;
   totalJournalsCount: number;
+  allActivities: StudentActivityScore[];
   outcomes: OutcomePerformanceItem[];
 }
 
@@ -548,6 +550,7 @@ export function getStudentPerformanceProfile(
       activityXp,
       completedGames,
       activitiesCount: matchingActs.length,
+      activitiesList: matchingActs,
       hasRubricData,
       rubricScore,
       rubricLevel,
@@ -591,6 +594,7 @@ export function getStudentPerformanceProfile(
     completedOutcomesCount,
     totalOutcomesCount: CURRICULUM_OUTCOMES_LIST.length,
     totalJournalsCount,
+    allActivities: studentActs,
     outcomes: outcomeItems
   };
 }
