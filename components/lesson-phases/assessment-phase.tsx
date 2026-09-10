@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AssessmentPhaseData, AssessmentQuestion } from '@/types';
 import { useApp } from '@/lib/store';
 import confetti from 'canvas-confetti';
+import { generateTestVariant } from '@/lib/question-variation-engine';
 import { SelfAssessmentRubricComponent } from '@/components/lesson-phases/self-assessment-rubric';
 import { ActivitySheetView } from '@/components/lesson-phases/activity-sheet-view';
 import {
@@ -15,6 +16,7 @@ import {
   Eye,
   EyeOff,
   RotateCcw,
+  PlusCircle,
   Trophy,
   Award,
   ChevronRight,
@@ -47,13 +49,46 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
   } = useApp();
 
   const [activeAssessmentTab, setActiveAssessmentTab] = useState<'test' | 'worksheet' | 'rubric' | 'journal'>('test');
+  const [questions, setQuestions] = useState<AssessmentQuestion[]>(data.questions);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({});
   const [isTestFinished, setIsTestFinished] = useState(false);
+  const [isDynamicTest, setIsDynamicTest] = useState(false);
 
-  const questions = data.questions;
+  // Sync questions when data changes
+  useEffect(() => {
+    setQuestions(data.questions);
+    setSelectedAnswers({});
+    setSubmitted({});
+    setIsTestFinished(false);
+    setCurrentQuestionIndex(0);
+    setIsDynamicTest(false);
+  }, [data.questions]);
+
   const currentQuestion = questions[currentQuestionIndex] || questions[0];
+
+  const handleResetCurrentTest = () => {
+    playSound('clear');
+    setSelectedAnswers({});
+    setSubmitted({});
+    setCurrentQuestionIndex(0);
+    setIsTestFinished(false);
+  };
+
+  const handleGenerateNewTestVariant = () => {
+    playSound('success');
+    const newVariants = generateTestVariant(data.questions);
+    setQuestions(newVariants);
+    setSelectedAnswers({});
+    setSubmitted({});
+    setCurrentQuestionIndex(0);
+    setIsTestFinished(false);
+    setIsDynamicTest(true);
+    try {
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.3 } });
+    } catch (e) {}
+  };
 
   const handleSelectOption = (question: AssessmentQuestion, optIndex: number) => {
     playSound('click');
@@ -149,7 +184,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Teacher Show Answers Toggle */}
           {role === 'teacher' && (
             <button
@@ -157,7 +192,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
                 setShowAnswers(!showAnswers);
                 playSound('click');
               }}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
                 showAnswers
                   ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-xs'
                   : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
@@ -168,12 +203,24 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
             </button>
           )}
 
+          {/* YENİLE: Oklu çember butonu - Mevcut testi aynı sorularla baştan başlatır */}
           <button
-            onClick={resetTest}
-            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors"
-            title="Testi Baştan Başlat"
+            onClick={handleResetCurrentTest}
+            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+            title="Testi Aynı Sorularla Baştan Başlat"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-4 h-4 text-slate-600" />
+            <span>Yenile</span>
+          </button>
+
+          {/* YENİ TEST: Çember içinde + butonu - Aynı testi yeni sayılarla dinamik üretir */}
+          <button
+            onClick={handleGenerateNewTestVariant}
+            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-xs font-black shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+            title="Aynı Kazanımda Yeni Sayılarla Yeni Bir Test Oluştur"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Yeni Test</span>
           </button>
         </div>
       </div>
@@ -378,11 +425,19 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
               </div>
             </div>
 
-            {currentQuestion.bloomLevel && (
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
-                🎯 {currentQuestion.bloomLevel}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {isDynamicTest && (
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1.5 shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Dinamik Sayılar</span>
+                </span>
+              )}
+              {currentQuestion.bloomLevel && (
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
+                  🎯 {currentQuestion.bloomLevel}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Question Text */}
@@ -585,17 +640,25 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
                 setIsTestFinished(false);
                 setCurrentQuestionIndex(0);
               }}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Soruları Tekrar İncele</span>
             </button>
 
             <button
-              onClick={resetTest}
-              className="w-full sm:w-auto px-7 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              onClick={handleResetCurrentTest}
+              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
-              <span>Testi Baştan Çöz</span>
+              <span>Yenile (Aynı Test)</span>
+            </button>
+
+            <button
+              onClick={handleGenerateNewTestVariant}
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-black text-xs shadow-md shadow-teal-600/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Yeni Test (Farklı Sayılar)</span>
             </button>
           </div>
 
