@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/auth-store';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { MessageInboxModal } from '@/components/messages/message-inbox-modal';
+import { AppDrawer } from '@/components/navigation/app-drawer';
 import { getUnreadMessageCount } from '@/lib/message-store';
 import {
   Volume2,
@@ -22,7 +23,8 @@ import {
   Sparkles,
   LayoutDashboard,
   Gamepad2,
-  Mail
+  Mail,
+  Menu
 } from 'lucide-react';
 
 export function Navbar() {
@@ -36,6 +38,7 @@ export function Navbar() {
   } = useApp();
 
   const { currentUser, logout } = useAuth();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalDefaultTab, setAuthModalDefaultTab] = useState<'login' | 'register'>('login');
   const [messageModalOpen, setMessageModalOpen] = useState(false);
@@ -93,8 +96,22 @@ export function Navbar() {
       <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
           
-          {/* 1. Brand Logo & Title */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          {/* 1. Brand Logo, Left Drawer Toggle & Title */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            
+            {/* Left Drawer Toggle Button */}
+            <button
+              type="button"
+              onClick={() => {
+                playSound('click');
+                setDrawerOpen(true);
+              }}
+              className="p-2 sm:p-2.5 rounded-2xl bg-slate-100/80 hover:bg-teal-50 text-slate-700 hover:text-teal-900 border border-slate-200/80 hover:border-teal-300 transition-all flex items-center justify-center cursor-pointer active:scale-95 shadow-2xs group"
+              title="Kişisel Menüyü ve Özellikleri Aç"
+            >
+              <Menu className="w-5 h-5 text-slate-700 group-hover:text-teal-700 transition-colors" />
+            </button>
+
             <button
               onClick={handleResetHome}
               className="flex items-center gap-3 group text-left transition-transform active:scale-95 cursor-pointer"
@@ -315,6 +332,17 @@ export function Navbar() {
       <MessageInboxModal
         isOpen={messageModalOpen}
         onClose={() => setMessageModalOpen(false)}
+      />
+
+      {/* Role-Based Navigation App Drawer */}
+      <AppDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        onOpenAuthModal={(tab) => {
+          setAuthModalDefaultTab(tab);
+          setAuthModalOpen(true);
+        }}
+        onOpenMessageModal={() => setMessageModalOpen(true)}
       />
     </>
   );
