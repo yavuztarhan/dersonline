@@ -140,12 +140,14 @@ export function ClassLeaderboard({
             {/* 2nd Place (Silver) */}
             {top3[1] && (
               <div
-                onClick={() => {
+                onClick={isTeacher ? () => {
                   playSound('select');
                   setSelectedStudentForDetail(top3[1]);
-                }}
-                className="order-2 md:order-1 bg-gradient-to-b from-slate-50 to-slate-100/80 rounded-3xl p-6 border-2 border-slate-300 shadow-sm flex flex-col items-center text-center relative group hover:border-teal-500 hover:shadow-lg transition-all cursor-pointer"
-                title="Kazanım Başarı ve Rubrik Karnesini İncele"
+                } : undefined}
+                className={`order-2 md:order-1 bg-gradient-to-b from-slate-50 to-slate-100/80 rounded-3xl p-6 border-2 border-slate-300 shadow-sm flex flex-col items-center text-center relative group ${
+                  isTeacher ? 'hover:border-teal-500 hover:shadow-lg transition-all cursor-pointer' : 'cursor-default'
+                }`}
+                title={isTeacher ? "Kazanım Başarı ve Rubrik Karnesini İncele" : undefined}
               >
                 <div className="absolute -top-4 w-9 h-9 rounded-full bg-slate-200 border-2 border-slate-400 text-slate-700 flex items-center justify-center font-black text-sm shadow-md">
                   🥈 2
@@ -158,7 +160,7 @@ export function ClassLeaderboard({
                 />
                 <h4 className="text-base font-black text-slate-900 mt-3 group-hover:text-teal-700 transition-colors flex items-center gap-1">
                   <span>{top3[1].name}</span>
-                  <BarChart3 className="w-3.5 h-3.5 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {isTeacher && <BarChart3 className="w-3.5 h-3.5 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />}
                 </h4>
                 <div className="text-xs text-slate-500 font-bold">{top3[1].classSection} • #{top3[1].studentNumber}</div>
                 <div className="mt-3 px-3 py-1 rounded-xl bg-slate-200/80 text-slate-800 font-black text-sm flex items-center gap-1">
@@ -168,22 +170,26 @@ export function ClassLeaderboard({
                 <div className="text-[10px] text-slate-400 font-bold mt-1">
                   {getRankTitle(top3[1].points).title}
                 </div>
-                <div className="mt-2 text-[10px] font-extrabold text-teal-700 opacity-80 group-hover:opacity-100 flex items-center gap-1 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
-                  <BarChart3 className="w-3 h-3 text-teal-600" />
-                  <span>Kazanım Karnesini Gör</span>
-                </div>
+                {isTeacher && (
+                  <div className="mt-2 text-[10px] font-extrabold text-teal-700 opacity-80 group-hover:opacity-100 flex items-center gap-1 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
+                    <BarChart3 className="w-3 h-3 text-teal-600" />
+                    <span>Kazanım Karnesini Gör</span>
+                  </div>
+                )}
               </div>
             )}
 
             {/* 1st Place (Gold - Taller & Highlighted) */}
             {top3[0] && (
               <div
-                onClick={() => {
+                onClick={isTeacher ? () => {
                   playSound('select');
                   setSelectedStudentForDetail(top3[0]);
-                }}
-                className="order-1 md:order-2 bg-gradient-to-b from-amber-50 via-yellow-50/60 to-amber-100/50 rounded-3xl p-6 sm:p-7 border-2 border-amber-400 shadow-xl flex flex-col items-center text-center relative group hover:scale-102 hover:border-amber-500 transition-all cursor-pointer"
-                title="Kazanım Başarı ve Rubrik Karnesini İncele"
+                } : undefined}
+                className={`order-1 md:order-2 bg-gradient-to-b from-amber-50 via-yellow-50/60 to-amber-100/50 rounded-3xl p-6 sm:p-7 border-2 border-amber-400 shadow-xl flex flex-col items-center text-center relative group ${
+                  isTeacher ? 'hover:scale-102 hover:border-amber-500 transition-all cursor-pointer' : 'cursor-default'
+                }`}
+                title={isTeacher ? "Kazanım Başarı ve Rubrik Karnesini İncele" : undefined}
               >
                 <div className="absolute -top-5 px-3 py-1 rounded-full bg-amber-400 border-2 border-amber-500 text-slate-950 flex items-center gap-1 font-black text-xs shadow-lg animate-bounce">
                   <Crown className="w-3.5 h-3.5 fill-slate-950" />
@@ -197,7 +203,7 @@ export function ClassLeaderboard({
                 />
                 <h4 className="text-lg font-black text-slate-900 mt-3 group-hover:text-amber-800 transition-colors flex items-center gap-1">
                   <span>{top3[0].name}</span>
-                  <BarChart3 className="w-4 h-4 text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {isTeacher && <BarChart3 className="w-4 h-4 text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" />}
                 </h4>
                 <div className="text-xs text-amber-900 font-bold">{top3[0].classSection} • #{top3[0].studentNumber}</div>
                 <div className="mt-3 px-4 py-1.5 rounded-2xl bg-amber-400 text-slate-950 font-black text-base shadow-sm flex items-center gap-1.5">
@@ -207,22 +213,26 @@ export function ClassLeaderboard({
                 <div className="text-xs text-amber-700 font-extrabold mt-1">
                   🏆 {getRankTitle(top3[0].points).title}
                 </div>
-                <div className="mt-2 text-[10px] font-black text-slate-950 flex items-center gap-1 bg-amber-300/80 px-3 py-1 rounded-lg border border-amber-400 shadow-xs">
-                  <BarChart3 className="w-3.5 h-3.5 text-slate-950" />
-                  <span>Kazanım Karnesini İncele</span>
-                </div>
+                {isTeacher && (
+                  <div className="mt-2 text-[10px] font-black text-slate-950 flex items-center gap-1 bg-amber-300/80 px-3 py-1 rounded-lg border border-amber-400 shadow-xs">
+                    <BarChart3 className="w-3.5 h-3.5 text-slate-950" />
+                    <span>Kazanım Karnesini İncele</span>
+                  </div>
+                )}
               </div>
             )}
 
             {/* 3rd Place (Bronze) */}
             {top3[2] && (
               <div
-                onClick={() => {
+                onClick={isTeacher ? () => {
                   playSound('select');
                   setSelectedStudentForDetail(top3[2]);
-                }}
-                className="order-3 md:order-3 bg-gradient-to-b from-orange-50/50 to-amber-50/80 rounded-3xl p-6 border-2 border-amber-300 shadow-sm flex flex-col items-center text-center relative group hover:border-teal-500 hover:shadow-lg transition-all cursor-pointer"
-                title="Kazanım Başarı ve Rubrik Karnesini İncele"
+                } : undefined}
+                className={`order-3 md:order-3 bg-gradient-to-b from-orange-50/50 to-amber-50/80 rounded-3xl p-6 border-2 border-amber-300 shadow-sm flex flex-col items-center text-center relative group ${
+                  isTeacher ? 'hover:border-teal-500 hover:shadow-lg transition-all cursor-pointer' : 'cursor-default'
+                }`}
+                title={isTeacher ? "Kazanım Başarı ve Rubrik Karnesini İncele" : undefined}
               >
                 <div className="absolute -top-4 w-9 h-9 rounded-full bg-amber-200 border-2 border-amber-400 text-amber-900 flex items-center justify-center font-black text-sm shadow-md">
                   🥉 3
@@ -235,7 +245,7 @@ export function ClassLeaderboard({
                 />
                 <h4 className="text-base font-black text-slate-900 mt-3 group-hover:text-teal-700 transition-colors flex items-center gap-1">
                   <span>{top3[2].name}</span>
-                  <BarChart3 className="w-3.5 h-3.5 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {isTeacher && <BarChart3 className="w-3.5 h-3.5 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />}
                 </h4>
                 <div className="text-xs text-slate-500 font-bold">{top3[2].classSection} • #{top3[2].studentNumber}</div>
                 <div className="mt-3 px-3 py-1 rounded-xl bg-amber-100 text-amber-900 font-black text-sm flex items-center gap-1">
@@ -245,10 +255,12 @@ export function ClassLeaderboard({
                 <div className="text-[10px] text-slate-400 font-bold mt-1">
                   {getRankTitle(top3[2].points).title}
                 </div>
-                <div className="mt-2 text-[10px] font-extrabold text-teal-700 opacity-80 group-hover:opacity-100 flex items-center gap-1 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
-                  <BarChart3 className="w-3 h-3 text-teal-600" />
-                  <span>Kazanım Karnesini Gör</span>
-                </div>
+                {isTeacher && (
+                  <div className="mt-2 text-[10px] font-extrabold text-teal-700 opacity-80 group-hover:opacity-100 flex items-center gap-1 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
+                    <BarChart3 className="w-3 h-3 text-teal-600" />
+                    <span>Kazanım Karnesini Gör</span>
+                  </div>
+                )}
               </div>
             )}
 
@@ -260,7 +272,10 @@ export function ClassLeaderboard({
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
-            Tüm Sınıf Sıralaması ({filteredStudents.length} Öğrenci) • <span className="text-teal-700 font-bold">Öğrenciye tıklayarak karnesini açabilirsiniz</span>
+            Tüm Sınıf Sıralaması ({filteredStudents.length} Öğrenci)
+            {isTeacher && (
+              <> • <span className="text-teal-700 font-bold">Öğrenciye tıklayarak karnesini açabilirsiniz</span></>
+            )}
           </div>
 
           <div className="relative w-full sm:w-64">
@@ -284,18 +299,24 @@ export function ClassLeaderboard({
             return (
               <div
                 key={student.id}
-                onClick={() => {
+                onClick={isTeacher ? () => {
                   playSound('select');
                   setSelectedStudentForDetail(student);
-                }}
-                className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer group ${
+                } : undefined}
+                className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${
+                  isTeacher ? 'cursor-pointer' : 'cursor-default'
+                } ${
                   isMe
                     ? 'bg-teal-50/80 border-teal-400 ring-2 ring-teal-400 shadow-md scale-101'
                     : rank <= 3
-                    ? 'bg-slate-50/60 border-slate-200 hover:bg-teal-50/40 hover:border-teal-300 hover:shadow-sm'
-                    : 'bg-white border-slate-200/80 hover:bg-teal-50/30 hover:border-teal-300 hover:shadow-sm'
+                    ? isTeacher
+                      ? 'bg-slate-50/60 border-slate-200 hover:bg-teal-50/40 hover:border-teal-300 hover:shadow-sm'
+                      : 'bg-slate-50/60 border-slate-200'
+                    : isTeacher
+                    ? 'bg-white border-slate-200/80 hover:bg-teal-50/30 hover:border-teal-300 hover:shadow-sm'
+                    : 'bg-white border-slate-200/80'
                 }`}
-                title={`${student.name} - Kazanım Başarı ve Rubrik Karnesini Aç`}
+                title={isTeacher ? `${student.name} - Kazanım Başarı ve Rubrik Karnesini Aç` : undefined}
               >
                 {/* Left: Rank + Avatar + Name */}
                 <div className="flex items-center gap-3.5">
@@ -317,12 +338,12 @@ export function ClassLeaderboard({
                     avatar={student.avatar}
                     name={student.name}
                     size="md"
-                    className="w-10 h-10 border border-slate-200 shrink-0 group-hover:scale-105 transition-transform"
+                    className={`w-10 h-10 border border-slate-200 shrink-0 ${isTeacher ? 'group-hover:scale-105 transition-transform' : ''}`}
                   />
 
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-black text-slate-900 text-sm group-hover:text-teal-800 transition-colors">
+                      <span className={`font-black text-slate-900 text-sm ${isTeacher ? 'group-hover:text-teal-800 transition-colors' : ''}`}>
                         {student.name}
                       </span>
                       {isMe && (
@@ -356,21 +377,23 @@ export function ClassLeaderboard({
                     <div className="text-[10px] font-bold text-slate-400">Toplam Başarı Puanı</div>
                   </div>
 
-                  {/* Detail Badge Button */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      playSound('select');
-                      setSelectedStudentForDetail(student);
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-bold text-xs transition-all flex items-center gap-1 active:scale-95 cursor-pointer shadow-2xs"
-                    title="Kazanım Karnesini Görüntüle"
-                  >
-                    <BarChart3 className="w-3.5 h-3.5 text-teal-600" />
-                    <span className="hidden md:inline">Kazanım Karnesi</span>
-                    <ChevronRight className="w-3 h-3 text-teal-500" />
-                  </button>
+                  {/* Teacher Detail Badge Button */}
+                  {isTeacher && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playSound('select');
+                        setSelectedStudentForDetail(student);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-bold text-xs transition-all flex items-center gap-1 active:scale-95 cursor-pointer shadow-2xs"
+                      title="Kazanım Karnesini Görüntüle"
+                    >
+                      <BarChart3 className="w-3.5 h-3.5 text-teal-600" />
+                      <span className="hidden md:inline">Kazanım Karnesi</span>
+                      <ChevronRight className="w-3 h-3 text-teal-500" />
+                    </button>
+                  )}
 
                   {/* Teacher Quick Award XP Button */}
                   {isTeacher && (
@@ -394,15 +417,17 @@ export function ClassLeaderboard({
         </div>
       </div>
 
-      {/* STUDENT DETAILED OUTCOME & RUBRIC COMPARISON MODAL */}
-      <StudentOutcomeDetailModal
-        isOpen={!!selectedStudentForDetail}
-        onClose={() => setSelectedStudentForDetail(null)}
-        student={selectedStudentForDetail}
-        allStudents={students}
-        onAwardXp={handleTeacherAwardXP}
-        isTeacher={isTeacher}
-      />
+      {/* STUDENT DETAILED OUTCOME & RUBRIC COMPARISON MODAL (TEACHER ONLY) */}
+      {isTeacher && (
+        <StudentOutcomeDetailModal
+          isOpen={!!selectedStudentForDetail}
+          onClose={() => setSelectedStudentForDetail(null)}
+          student={selectedStudentForDetail}
+          allStudents={students}
+          onAwardXp={handleTeacherAwardXP}
+          isTeacher={isTeacher}
+        />
+      )}
 
     </div>
   );
