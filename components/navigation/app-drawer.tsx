@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { getUnreadMessageCount } from '@/lib/message-store';
 import { StudentUser, TeacherUser } from '@/types/auth';
 import {
@@ -725,13 +724,6 @@ export function AppDrawer({
                     </span>
                   )}
                 </button>
-
-                <FeedbackButton
-                  contextTitle="Menü (Drawer)"
-                  tooltip="Görüş Bildir"
-                  className="p-2 rounded-xl bg-white hover:bg-teal-50 border border-slate-200 text-slate-700 transition-all cursor-pointer flex items-center justify-center"
-                  iconClassName="w-4 h-4 text-teal-700"
-                />
               </>
             )}
 

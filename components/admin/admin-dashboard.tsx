@@ -26,10 +26,13 @@ import {
   Crown,
   ChevronDown,
   UserCog,
-  Check
+  Check,
+  BarChart3,
+  TrendingUp
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
+import { AdminAnalyticsReports } from '@/components/admin/admin-analytics-reports';
 import confetti from 'canvas-confetti';
 
 export function AdminDashboard() {
@@ -47,7 +50,7 @@ export function AdminDashboard() {
     startTeacherRegistration
   } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'pending' | 'admins' | 'teachers' | 'students'>('pending');
+  const [activeTab, setActiveTab] = useState<'pending' | 'admins' | 'teachers' | 'students' | 'reports'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCityFilter, setSelectedCityFilter] = useState('Tümü');
   const [notificationMsg, setNotificationMsg] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
@@ -195,7 +198,7 @@ export function AdminDashboard() {
       )}
 
       {/* Overview Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         
         {/* Card 1: Pending Approvals */}
         <div
@@ -289,10 +292,45 @@ export function AdminDashboard() {
           </div>
         </div>
 
+        {/* Card 5: Analytics & Reports */}
+        <div
+          onClick={() => setActiveTab('reports')}
+          className={`p-5 rounded-3xl border-2 cursor-pointer transition-all duration-200 ${
+            activeTab === 'reports'
+              ? 'bg-indigo-50/80 border-indigo-600 ring-2 ring-indigo-300 shadow-md'
+              : 'bg-white border-slate-200 hover:border-indigo-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black uppercase tracking-wider text-indigo-900">İl Analitiği</span>
+            <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black">
+              📊
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-indigo-950 mt-2">
+            81 İl
+          </div>
+          <div className="text-[11px] text-indigo-700 font-bold mt-0.5">
+            Süreklilik & Raporlama
+          </div>
+        </div>
+
       </div>
 
       {/* Tabs Navigation */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2 flex-wrap">
+        <button
+          onClick={() => setActiveTab('reports')}
+          className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
+            activeTab === 'reports'
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+          }`}
+        >
+          <BarChart3 className="w-4 h-4" />
+          <span>📊 Detaylı İl & Kurum Analitiği / Raporlar</span>
+        </button>
+
         <button
           onClick={() => setActiveTab('pending')}
           className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
@@ -765,6 +803,11 @@ export function AdminDashboard() {
           </div>
 
         </div>
+      )}
+
+      {/* TAB 5: ANALYTICS & REGIONAL REPORTS */}
+      {activeTab === 'reports' && (
+        <AdminAnalyticsReports />
       )}
 
     </div>
