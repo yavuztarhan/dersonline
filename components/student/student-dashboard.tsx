@@ -151,171 +151,102 @@ export function StudentDashboard() {
         </div>
       </div>
 
-      {/* Badges & Active Lessons Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Badges & Quick Action Hub */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Active Lessons Hub (2 Cols) */}
-        <div className="md:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-teal-600" />
-              <span>İnteraktif Maarif Derslerim</span>
-            </h3>
-            <span className="text-xs font-bold text-slate-400">5. Sınıf Matematik</span>
-          </div>
-
-          {/* Lesson 1 Card */}
-          <div className="p-6 rounded-3xl bg-white border-2 border-slate-200 hover:border-teal-400 transition-all shadow-sm space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full bg-teal-50 text-teal-800 text-xs font-black border border-teal-200">
-                1. Hafta Kazanımı (MAT.5.3.1)
-              </span>
-              <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Tamamlandı</span>
-              </span>
-            </div>
-
+        {/* Gamified Badges Showcase (2 Cols) */}
+        <div className="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-5">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
             <div>
-              <h4 className="text-base font-black text-slate-900">
-                Doğru, Doğru Parçası ve Işın Çizimleri
-              </h4>
-              <p className="text-xs text-slate-500 mt-1">
-                Kaptan Bilge ve Mimar Defne hikayesi, serbest çizim tahtası, kelime avı bulmacası ve 8 soruluk değerlendirme testi.
+              <h3 className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+                <Award className="w-5 h-5 text-amber-500" />
+                <span>Rozet Vitrinim</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Kazanımları, oyunları ve akran formlarını tamamlayarak yeni rozetler aç!
               </p>
             </div>
-
-            <Link
-              href="/lesson/MAT.5.3.1"
-              className="w-full py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span>Ders Aşamalarına Git</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          {/* Lesson 2 Card */}
-          <div className="p-6 rounded-3xl bg-white border-2 border-indigo-200 hover:border-indigo-400 transition-all shadow-sm space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-black border border-indigo-200">
-                2. Hafta Kazanımı (MAT.5.3.2)
-              </span>
-              <span className="text-xs font-bold text-amber-600 flex items-center gap-1">
-                <Flame className="w-4 h-4" />
-                <span>Yeni Ders!</span>
-              </span>
-            </div>
-
-            <div>
-              <h4 className="text-base font-black text-slate-900">
-                Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye
-              </h4>
-              <p className="text-xs text-slate-500 mt-1">
-                Ölçüsüz Cetvel, Pergel ile Yarıçap & Eşit Parça Kesme, Gönye ile Tek Dikme ve Paralel Raylar.
-              </p>
-            </div>
-
-            <Link
-              href="/lesson/MAT.5.3.2"
-              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span>Keşif Atölyesini Başlat</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          {/* Lesson 3 Card */}
-          <div className="p-6 rounded-3xl bg-white border-2 border-amber-200 hover:border-amber-400 transition-all shadow-sm space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-black border border-amber-200">
-                3. Hafta Kazanımı (MAT.5.3.3)
-              </span>
-              <span className="text-xs font-bold text-amber-600 flex items-center gap-1">
-                <Sparkles className="w-4 h-4" />
-                <span>Açı Laboratuvarı</span>
-              </span>
-            </div>
-
-            <div>
-              <h4 className="text-base font-black text-slate-900">
-                Açı Çeşitleri & İletki ile Ölçüm
-              </h4>
-              <p className="text-xs text-slate-500 mt-1">
-                Açı Dedektifi hikayesi, dijital iletki simülasyonu, Açı Radarı oyunu ve rubrik öz değerlendirmesi.
-              </p>
-            </div>
-
-            <Link
-              href="/lesson/MAT.5.3.3"
-              className="w-full py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span>Açı Laboratuvarına Gir</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-        </div>
-
-        {/* Gamified Badges Showcase (1 Col) */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 h-fit">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-              <Award className="w-4 h-4 text-amber-500" />
-              <span>Rozet Vitrini</span>
-            </h3>
-            <span className="text-xs font-bold text-amber-600">
-              {studentBadges.filter((b) => b.unlocked).length} / {studentBadges.length}
+            <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-black border border-amber-200">
+              {studentBadges.filter((b) => b.unlocked).length} / {studentBadges.length} Kazanıldı
             </span>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {studentBadges.map((badge) => (
               <div
                 key={badge.id}
                 className={`p-3.5 rounded-2xl border transition-all flex items-center gap-3 ${
                   badge.unlocked
-                    ? 'bg-amber-50/60 border-amber-200'
+                    ? 'bg-amber-50/50 border-amber-200 shadow-xs'
                     : 'bg-slate-50 border-slate-200 opacity-60'
                 }`}
               >
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 ${
                     badge.unlocked ? 'bg-amber-400 text-slate-950 shadow-xs' : 'bg-slate-200 text-slate-400'
                   }`}
                 >
                   {badge.unlocked ? '🏆' : '🔒'}
                 </div>
-                <div className="flex-1">
-                  <div className="text-xs font-black text-slate-900">{badge.title}</div>
-                  <div className="text-[10px] text-slate-500">{badge.description}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-black text-slate-900 truncate">{badge.title}</div>
+                  <div className="text-[11px] text-slate-500 line-clamp-2 mt-0.5 leading-snug">{badge.description}</div>
                 </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Standalone Games Quick Access */}
+        {/* Quick Access & Game Hub (1 Col) */}
+        <div className="space-y-4">
+          {/* Standalone Games Card */}
           <Link
             href="/games"
             onClick={() => playSound('click')}
-            className="p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-teal-600 text-white shadow-md flex items-center justify-between gap-3 group hover:scale-[1.02] transition-all cursor-pointer"
+            className="p-6 rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-teal-600 text-white shadow-md flex flex-col justify-between group hover:scale-[1.01] transition-all cursor-pointer space-y-4"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-xl shrink-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl shadow-inner shrink-0">
                 🎮
               </div>
-              <div>
-                <div className="text-xs font-black flex items-center gap-1.5">
-                  <span>Oyun Salonu</span>
-                  <span className="text-[9px] bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full font-black">
-                    Yeni
-                  </span>
+              <span className="text-[10px] bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider">
+                Yeni Oyunlar
+              </span>
+            </div>
+            <div>
+              <h4 className="text-base font-black text-white flex items-center gap-2">
+                <span>Oyun Salonu & Zeka Arenası</span>
+              </h4>
+              <p className="text-xs text-indigo-100 mt-1">
+                Çarpım Tablosu Hız Arenası, Matematik Çarkı ve refleks oyunlarıyla puanını katla!
+              </p>
+            </div>
+            <div className="flex items-center justify-between text-xs font-bold pt-2 border-t border-white/20">
+              <span className="text-teal-200">Hemen Oyna</span>
+              <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1.5 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Home Page Lessons Discovery Link */}
+          <Link
+            href="/"
+            onClick={() => playSound('click')}
+            className="p-5 rounded-3xl bg-white border-2 border-teal-100 hover:border-teal-400 shadow-sm flex items-center justify-between gap-3 group transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-10 h-10 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center text-lg shrink-0">
+                📐
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-black text-slate-900 truncate">
+                  Tüm Maarif Dersleri
                 </div>
-                <div className="text-[10px] text-indigo-100">
-                  Bağımsız zeka ve mantık oyunları
+                <div className="text-[11px] text-slate-500 truncate">
+                  Ana sayfadan haftalık ders akışlarına eriş
                 </div>
               </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform shrink-0" />
+            <ArrowRight className="w-4 h-4 text-teal-600 group-hover:translate-x-1 transition-transform shrink-0" />
           </Link>
         </div>
 
