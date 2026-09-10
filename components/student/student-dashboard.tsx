@@ -290,6 +290,31 @@ export function StudentDashboard() {
               </div>
             ))}
           </div>
+
+          {/* Standalone Games Quick Access */}
+          <Link
+            href="/games"
+            onClick={() => playSound('click')}
+            className="p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-teal-600 text-white shadow-md flex items-center justify-between gap-3 group hover:scale-[1.02] transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-xl shrink-0">
+                🎮
+              </div>
+              <div>
+                <div className="text-xs font-black flex items-center gap-1.5">
+                  <span>Oyun Salonu</span>
+                  <span className="text-[9px] bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full font-black">
+                    Yeni
+                  </span>
+                </div>
+                <div className="text-[10px] text-indigo-100">
+                  Bağımsız zeka ve mantık oyunları
+                </div>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform shrink-0" />
+          </Link>
         </div>
 
       </div>

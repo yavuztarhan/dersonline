@@ -18,7 +18,8 @@ import {
   LogOut,
   ChevronRight,
   Sparkles,
-  LayoutDashboard
+  LayoutDashboard,
+  Gamepad2
 } from 'lucide-react';
 
 export function Navbar() {
@@ -87,7 +88,7 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
           
           {/* 1. Brand Logo & Title */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={handleResetHome}
               className="flex items-center gap-3 group text-left transition-transform active:scale-95 cursor-pointer"
@@ -114,10 +115,42 @@ export function Navbar() {
                 </p>
               </div>
             </button>
+
+            {/* Standalone Games Navigation Link */}
+            <Link
+              href="/games"
+              onClick={() => playSound('click')}
+              className={`hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black transition-all border shadow-xs cursor-pointer ${
+                pathname?.startsWith('/games') || pathname?.startsWith('/oyunlar')
+                  ? 'bg-indigo-600 text-white border-indigo-700 shadow-indigo-600/20 scale-102'
+                  : 'bg-indigo-50/80 hover:bg-indigo-100/80 text-indigo-900 border-indigo-200/80 hover:border-indigo-300'
+              }`}
+              title="Bağımsız Zeka & Eğitici Oyunlar Salonu"
+            >
+              <Gamepad2 className={`w-4 h-4 ${pathname?.startsWith('/games') || pathname?.startsWith('/oyunlar') ? 'text-white' : 'text-indigo-600'}`} />
+              <span>Oyunlar</span>
+              <span className="text-[10px] px-1.5 py-0.2 bg-amber-400 text-slate-950 rounded-full font-black">
+                Yeni
+              </span>
+            </Link>
           </div>
 
           {/* 2. Right Side: Context-Aware Single Dashboard Button & User Controls */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            
+            {/* Mobile Oyunlar Button */}
+            <Link
+              href="/games"
+              onClick={() => playSound('click')}
+              className={`sm:hidden p-2 rounded-xl border transition-all flex items-center justify-center cursor-pointer ${
+                pathname?.startsWith('/games') || pathname?.startsWith('/oyunlar')
+                  ? 'bg-indigo-600 text-white border-indigo-700'
+                  : 'bg-indigo-50 text-indigo-800 border-indigo-200'
+              }`}
+              title="Oyunlar"
+            >
+              <Gamepad2 className="w-4 h-4" />
+            </Link>
             
             {/* Student Points Badge if student */}
             {currentUser?.role === 'student' && (

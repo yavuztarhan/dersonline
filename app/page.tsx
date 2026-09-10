@@ -22,7 +22,8 @@ import {
   ChevronRight,
   School,
   LayoutDashboard,
-  Tv
+  Tv,
+  Gamepad2
 } from 'lucide-react';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG } from '@/lib/mascot-config';
@@ -139,6 +140,18 @@ export default function HomePage() {
                 <LayoutDashboard className="w-4 h-4" />
                 <span>{dashboardLabel}</span>
                 <ChevronRight className="w-4 h-4" />
+              </Link>
+
+              <Link
+                href="/games"
+                className="px-5 py-3.5 rounded-2xl bg-indigo-600/90 hover:bg-indigo-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-indigo-600/20 border border-indigo-400/30 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                title="Bağımsız Zeka & Eğitici Oyunlar"
+              >
+                <Gamepad2 className="w-4 h-4 text-amber-300" />
+                <span>Oyunlar</span>
+                <span className="text-[10px] bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded-full font-black">
+                  Yeni
+                </span>
               </Link>
 
               <Link
