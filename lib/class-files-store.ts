@@ -73,9 +73,13 @@ export interface WhiteboardPageData {
   shapes?: WhiteboardShapeItem[];
 }
 
+export type ClassroomFileType = 'whiteboard_note' | 'activity_sheet';
+
 export interface ClassroomFileRecord {
   id: string;
   title: string;
+  fileType?: ClassroomFileType; // 'whiteboard_note' (Beyaz Tahta Notu) | 'activity_sheet' (Etkinlik Kağıdı)
+  isPublishedToClass?: boolean; // When true, visible to students in classroom files
   classSection: string; // '5-A', '5-B', '5-C', 'Tümü'
   outcomeCode: string; // 'MAT.5.3.4', 'MAT.5.3.3', 'MAT.5.3.2', 'MAT.5.3.1'
   outcomeTitle: string;
@@ -3459,8 +3463,16 @@ export function saveClassroomFile(
   fileData: Omit<ClassroomFileRecord, 'id' | 'createdAt'>
 ): ClassroomFileRecord {
   const current = getStoredClassroomFiles();
+  const fileType = fileData.fileType || 'whiteboard_note';
+  const isPublishedToClass =
+    fileData.isPublishedToClass !== undefined
+      ? fileData.isPublishedToClass
+      : fileType === 'whiteboard_note';
+
   const newRecord: ClassroomFileRecord = {
     ...fileData,
+    fileType,
+    isPublishedToClass,
     id: `file-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     createdAt: new Date().toISOString()
   };
@@ -3495,6 +3507,29 @@ export function updateClassroomFile(
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
   }
   return updatedRecord;
+}
+
+export function publishFileToClass(fileId: string, isPublished: boolean): ClassroomFileRecord | null {
+  return updateClassroomFile(fileId, { isPublishedToClass: isPublished });
+}
+
+export function getVisibleClassroomFilesForStudent(classSection?: string): ClassroomFileRecord[] {
+  const allFiles = getStoredClassroomFiles();
+  return allFiles.filter((f) => {
+    const matchesClass = !classSection || f.classSection === classSection || f.classSection === 'Tümü';
+    const isActivitySheet =
+      f.fileType === 'activity_sheet' ||
+      f.tags?.includes('Etkinlik Kağıdı') ||
+      f.id?.startsWith('file-activity-');
+
+    // Etkinlik kağıtları sadece öğretmen tarafından sınıfa gönderildiyse görünür
+    if (isActivitySheet) {
+      return matchesClass && f.isPublishedToClass === true;
+    }
+
+    // Beyaz tahta ders notları sınıfa doğrudan görünür
+    return matchesClass;
+  });
 }
 
 export function deleteClassroomFile(fileId: string): void {

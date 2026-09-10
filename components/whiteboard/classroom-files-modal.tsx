@@ -52,6 +52,7 @@ export function ClassroomFilesModal({
   const [files, setFiles] = useState<ClassroomFileRecord[]>([]);
   const [selectedOutcomeFilter, setSelectedOutcomeFilter] = useState<string>(outcomeCode || 'all');
   const [selectedClassFilter, setSelectedClassFilter] = useState<string>(classSection || 'all');
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
   const [viewingFile, setViewingFile] = useState<ClassroomFileRecord | null>(null);
@@ -69,6 +70,15 @@ export function ClassroomFilesModal({
   const isTeacherOrAdmin = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
 
   const filteredFiles = files.filter((f) => {
+    const isSheet =
+      f.fileType === 'activity_sheet' ||
+      f.tags?.includes('Etkinlik Kağıdı') ||
+      f.id?.startsWith('file-activity-') ||
+      f.title.toLowerCase().includes('etkinlik');
+    const matchesType =
+      selectedTypeFilter === 'all' ||
+      (selectedTypeFilter === 'activity_sheet' && isSheet) ||
+      (selectedTypeFilter === 'whiteboard_note' && !isSheet);
     const matchesOutcome = selectedOutcomeFilter === 'all' || f.outcomeCode === selectedOutcomeFilter;
     const matchesClass =
       selectedClassFilter === 'all' ||
@@ -80,7 +90,7 @@ export function ClassroomFilesModal({
       f.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
       f.authorName.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesOutcome && matchesClass && matchesSearch;
+    return matchesType && matchesOutcome && matchesClass && matchesSearch;
   });
 
   const handleDelete = (fileId: string, title: string) => {
@@ -139,7 +149,7 @@ export function ClassroomFilesModal({
         </div>
 
         {/* Toolbar & Filter Bar */}
-        <div className="p-4 bg-slate-50 border-b border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 shrink-0">
+        <div className="p-4 bg-slate-50 border-b border-slate-200 grid grid-cols-1 sm:grid-cols-4 gap-3 shrink-0">
           
           {/* Search */}
           <div className="relative">
@@ -152,6 +162,17 @@ export function ClassroomFilesModal({
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-800 outline-none focus:border-teal-500 shadow-2xs font-medium"
             />
           </div>
+
+          {/* Type Filter */}
+          <select
+            value={selectedTypeFilter}
+            onChange={(e) => setSelectedTypeFilter(e.target.value)}
+            className="px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 outline-none focus:border-teal-500 shadow-2xs"
+          >
+            <option value="all">Tüm Türler</option>
+            <option value="whiteboard_note">📐 Beyaz Tahta Notları</option>
+            <option value="activity_sheet">📝 Etkinlik Kağıtları</option>
+          </select>
 
           {/* Outcome Filter */}
           <select
@@ -185,36 +206,55 @@ export function ClassroomFilesModal({
           {filteredFiles.length === 0 ? (
             <div className="py-16 text-center text-slate-400 space-y-3 bg-white rounded-3xl border border-slate-200 p-8">
               <FolderOpen className="w-12 h-12 mx-auto text-slate-300" />
-              <h3 className="font-black text-base text-slate-700">Henüz Kayıtlı Ders Notu Bulunamadı</h3>
+              <h3 className="font-black text-base text-slate-700">Henüz Kayıtlı Dosya Bulunamadı</h3>
               <p className="text-xs text-slate-400 max-w-md mx-auto">
-                Beyaz tahta üzerinde hazırladığınız ders notlarını &quot;Sınıf Dosyalarına Kaydet&quot; butonuna basarak bu arşive ekleyebilirsiniz.
+                Arama kriterlerine uygun ders notu veya etkinlik kağıdı bulunamadı.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredFiles.map((file) => (
-                <div
-                  key={file.id}
-                  className="bg-white rounded-3xl p-5 border-2 border-slate-200 hover:border-teal-400 transition-all shadow-sm hover:shadow-md flex flex-col justify-between space-y-4"
-                >
-                  <div className="space-y-3">
-                    
-                    {/* Top Badges */}
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="px-2.5 py-0.5 rounded-lg bg-teal-50 text-teal-800 font-mono font-black text-[11px] border border-teal-200">
-                          {file.outcomeCode}
-                        </span>
-                        <span className="px-2.5 py-0.5 rounded-lg bg-indigo-50 text-indigo-800 font-bold text-[11px] border border-indigo-200">
-                          {file.classSection} Şubesi
+              {filteredFiles.map((file) => {
+                const isSheet =
+                  file.fileType === 'activity_sheet' ||
+                  file.tags?.includes('Etkinlik Kağıdı') ||
+                  file.id?.startsWith('file-activity-') ||
+                  file.title.toLowerCase().includes('etkinlik');
+
+                return (
+                  <div
+                    key={file.id}
+                    className="bg-white rounded-3xl p-5 border-2 border-slate-200 hover:border-teal-400 transition-all shadow-sm hover:shadow-md flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-3">
+                      
+                      {/* Top Badges */}
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-2.5 py-0.5 rounded-lg bg-teal-50 text-teal-800 font-mono font-black text-[11px] border border-teal-200">
+                            {file.outcomeCode}
+                          </span>
+                          {/* Distinct Type Badge */}
+                          {isSheet ? (
+                            <span className="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 font-black text-[10px] border border-amber-300 flex items-center gap-1">
+                              <span>📝</span>
+                              <span>Etkinlik Kağıdı</span>
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-lg bg-teal-100 text-teal-900 font-black text-[10px] border border-teal-300 flex items-center gap-1">
+                              <span>📐</span>
+                              <span>Beyaz Tahta Notu</span>
+                            </span>
+                          )}
+                          <span className="px-2.5 py-0.5 rounded-lg bg-indigo-50 text-indigo-800 font-bold text-[11px] border border-indigo-200">
+                            {file.classSection}
+                          </span>
+                        </div>
+                        
+                        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                          <Layers className="w-3.5 h-3.5 text-teal-600" />
+                          <span>{file.pageCount} Sayfa A4</span>
                         </span>
                       </div>
-                      
-                      <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                        <Layers className="w-3.5 h-3.5 text-teal-600" />
-                        <span>{file.pageCount} Sayfa A4</span>
-                      </span>
-                    </div>
 
                     {/* Title */}
                     <h3 className="font-black text-base text-slate-900 leading-snug">
@@ -318,9 +358,9 @@ export function ClassroomFilesModal({
                       )}
                     </div>
                   </div>
-
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

@@ -14,6 +14,7 @@ import {
   ClassroomFileRecord,
   getStoredClassroomFiles,
   deleteClassroomFile,
+  publishFileToClass,
   exportClassroomFileToPdf
 } from '@/lib/class-files-store';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
@@ -67,6 +68,7 @@ export function TeacherDashboard() {
   const [editingFileInWhiteboard, setEditingFileInWhiteboard] = useState<ClassroomFileRecord | null>(null);
   const [viewingFile, setViewingFile] = useState<ClassroomFileRecord | null>(null);
   const [filesSearchTerm, setFilesSearchTerm] = useState('');
+  const [filesTypeFilter, setFilesTypeFilter] = useState<'all' | 'whiteboard_note' | 'activity_sheet'>('all');
   const [filesClassFilter, setFilesClassFilter] = useState('all');
   const [filesOutcomeFilter, setFilesOutcomeFilter] = useState('all');
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
@@ -1047,7 +1049,7 @@ export function TeacherDashboard() {
 
           {/* Search & Filter Bar */}
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs grid grid-cols-1 sm:grid-cols-12 gap-3">
-            <div className="sm:col-span-6 relative">
+            <div className="sm:col-span-5 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -1058,7 +1060,20 @@ export function TeacherDashboard() {
               />
             </div>
 
+            {/* File Type Filter */}
             <div className="sm:col-span-3">
+              <select
+                value={filesTypeFilter}
+                onChange={(e) => setFilesTypeFilter(e.target.value as any)}
+                className="w-full py-2.5 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 outline-none focus:border-teal-500"
+              >
+                <option value="all">Tüm Türler</option>
+                <option value="whiteboard_note">📐 Beyaz Tahta Notları</option>
+                <option value="activity_sheet">📝 Etkinlik Kağıtları</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-2">
               <select
                 value={filesOutcomeFilter}
                 onChange={(e) => setFilesOutcomeFilter(e.target.value)}
@@ -1072,7 +1087,7 @@ export function TeacherDashboard() {
               </select>
             </div>
 
-            <div className="sm:col-span-3">
+            <div className="sm:col-span-2">
               <select
                 value={filesClassFilter}
                 onChange={(e) => setFilesClassFilter(e.target.value)}
@@ -1091,6 +1106,15 @@ export function TeacherDashboard() {
           {/* Files Grid */}
           {(() => {
             const filtered = classroomFiles.filter((f) => {
+              const isSheet =
+                f.fileType === 'activity_sheet' ||
+                f.tags?.includes('Etkinlik Kağıdı') ||
+                f.id?.startsWith('file-activity-') ||
+                f.title.toLowerCase().includes('etkinlik');
+              const matchType =
+                filesTypeFilter === 'all' ||
+                (filesTypeFilter === 'activity_sheet' && isSheet) ||
+                (filesTypeFilter === 'whiteboard_note' && !isSheet);
               const matchOutcome = filesOutcomeFilter === 'all' || f.outcomeCode === filesOutcomeFilter;
               const matchClass =
                 filesClassFilter === 'all' ||
@@ -1101,7 +1125,7 @@ export function TeacherDashboard() {
                 f.title.toLowerCase().includes(filesSearchTerm.toLowerCase()) ||
                 f.tags.some((t) => t.toLowerCase().includes(filesSearchTerm.toLowerCase())) ||
                 f.authorName.toLowerCase().includes(filesSearchTerm.toLowerCase());
-              return matchOutcome && matchClass && matchSearch;
+              return matchType && matchOutcome && matchClass && matchSearch;
             });
 
             if (filtered.length === 0) {
@@ -1111,15 +1135,16 @@ export function TeacherDashboard() {
                     📂
                   </div>
                   <div className="text-sm font-black text-slate-800">
-                    Aramanıza Uygun Ders Notu Bulunamadı
+                    Aramanıza Uygun Dosya Bulunamadı
                   </div>
                   <p className="text-xs text-slate-500 max-w-md mx-auto">
-                    Henüz bu filtreye ait bir beyaz tahta ders notu kaydedilmemiş veya arama kriteriyle eşleşen sonuç yok.
+                    Henüz bu filtreye ait bir beyaz tahta ders notu veya etkinlik kağıdı kaydedilmemiş.
                   </p>
                   <button
                     type="button"
                     onClick={() => {
                       setFilesSearchTerm('');
+                      setFilesTypeFilter('all');
                       setFilesOutcomeFilter('all');
                       setFilesClassFilter('all');
                     }}
@@ -1133,49 +1158,94 @@ export function TeacherDashboard() {
 
             return (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filtered.map((file) => (
-                  <div
-                    key={file.id}
-                    className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-800 font-black text-[11px] border border-teal-200">
-                          {file.outcomeCode} • {file.classSection}
-                        </span>
-                        <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
-                          <Layers className="w-3.5 h-3.5" />
-                          <span>{file.pageCount} Sayfa</span>
-                        </span>
-                      </div>
+                {filtered.map((file) => {
+                  const isSheet =
+                    file.fileType === 'activity_sheet' ||
+                    file.tags?.includes('Etkinlik Kağıdı') ||
+                    file.id?.startsWith('file-activity-') ||
+                    file.title.toLowerCase().includes('etkinlik');
 
-                      <div>
-                        <h4 className="font-black text-sm text-slate-900 group-hover:text-teal-700 transition-colors line-clamp-2">
-                          {file.title}
-                        </h4>
-                        <div className="text-[11px] text-slate-500 mt-1 line-clamp-1">
-                          {file.outcomeTitle}
-                        </div>
-                      </div>
-
-                      {file.tags && file.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {file.tags.map((tag, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-semibold"
-                            >
-                              #{tag}
+                  return (
+                    <div
+                      key={file.id}
+                      className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-800 font-black text-[11px] border border-teal-200">
+                              {file.outcomeCode} • {file.classSection}
                             </span>
-                          ))}
+                            {/* Distinct Type Badge */}
+                            {isSheet ? (
+                              <span className="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 font-black text-[10px] border border-amber-300 flex items-center gap-1">
+                                <span>📝</span>
+                                <span>Etkinlik Kağıdı</span>
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-lg bg-teal-100 text-teal-900 font-black text-[10px] border border-teal-300 flex items-center gap-1">
+                                <span>📐</span>
+                                <span>Beyaz Tahta Notu</span>
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                            <Layers className="w-3.5 h-3.5" />
+                            <span>{file.pageCount} Sayfa</span>
+                          </span>
                         </div>
-                      )}
 
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                        <span className="font-semibold">{file.authorName}</span>
-                        <span>{new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
+                        {/* Publish Status for Activity Sheets */}
+                        {isSheet && (
+                          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                            <span className="text-[11px] font-bold text-slate-600">Sınıf Dosyaları Durumu:</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newStatus = !file.isPublishedToClass;
+                                publishFileToClass(file.id, newStatus);
+                                setClassroomFiles(getStoredClassroomFiles());
+                                playSound(newStatus ? 'success' : 'click');
+                              }}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-black cursor-pointer transition-all ${
+                                file.isPublishedToClass
+                                  ? 'bg-emerald-600 text-white shadow-2xs hover:bg-emerald-700'
+                                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                              }`}
+                              title={file.isPublishedToClass ? 'Öğrenciler görüyor. Gizlemek için tıklayın.' : 'Sınıfa göndermek için tıklayın.'}
+                            >
+                              {file.isPublishedToClass ? '✅ Sınıfa Gönderildi' : '🔒 Taslak (Sınıfa Gönder)'}
+                            </button>
+                          </div>
+                        )}
+
+                        <div>
+                          <h4 className="font-black text-sm text-slate-900 group-hover:text-teal-700 transition-colors line-clamp-2">
+                            {file.title}
+                          </h4>
+                          <div className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                            {file.outcomeTitle}
+                          </div>
+                        </div>
+
+                        {file.tags && file.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {file.tags.map((tag, idx) => (
+                              <span
+                                key={idx}
+                                className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-semibold"
+                              >
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                          <span className="font-semibold">{file.authorName}</span>
+                          <span>{new Date(file.createdAt).toLocaleDateString('tr-TR')}</span>
+                        </div>
                       </div>
-                    </div>
 
                     {/* Action Buttons */}
                     <div className="pt-4 border-t border-slate-100 space-y-2">
@@ -1243,7 +1313,8 @@ export function TeacherDashboard() {
                       </div>
                     </div>
                   </div>
-                ))}
+                );
+              })}
               </div>
             );
           })()}

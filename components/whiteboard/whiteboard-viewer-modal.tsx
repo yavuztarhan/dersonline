@@ -197,11 +197,21 @@ export function WhiteboardViewerModal({
               <span className="px-2 py-0.5 rounded-md bg-teal-500/20 border border-teal-400/40 text-teal-300 font-mono font-black text-[10px]">
                 {file.outcomeCode}
               </span>
+              {/* File Type Badge */}
+              {file.fileType === 'activity_sheet' || file.tags?.includes('Etkinlik Kağıdı') || file.id?.startsWith('file-activity-') || file.title?.toLowerCase().includes('etkinlik') ? (
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-black text-[10px]">
+                  📝 Etkinlik Kağıdı
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-300 font-black text-[10px]">
+                  📐 Beyaz Tahta Notu
+                </span>
+              )}
               <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 font-bold text-[10px]">
                 {file.classSection} Şubesi
               </span>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold">
-                👀 Salt Okunur Görüntüleme Modu
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[10px] font-bold">
+                👀 Salt Okunur Mod
               </span>
             </div>
             <h3 className="text-xs sm:text-sm font-black text-white truncate mt-0.5">

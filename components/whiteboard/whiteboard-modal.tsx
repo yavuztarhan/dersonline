@@ -667,6 +667,8 @@ export function WhiteboardModal({
   const [selectedClass, setSelectedClass] = useState<string>(defaultClass);
   const [documentTitle, setDocumentTitle] = useState<string>(`${defaultClass} ${outcomeCode} Ders Notları`);
   const [loadedFileId, setLoadedFileId] = useState<string | null>(initialFile?.id || null);
+  const [isActivitySheet, setIsActivitySheet] = useState<boolean>(false);
+  const [isPublishedToClass, setIsPublishedToClass] = useState<boolean>(false);
 
   // Load initial file if provided
   useEffect(() => {
@@ -677,11 +679,22 @@ export function WhiteboardModal({
       if (initialFile.title) setDocumentTitle(initialFile.title);
       if (initialFile.classSection) setSelectedClass(initialFile.classSection);
       setLoadedFileId(initialFile.id);
+      const isSheet =
+        initialFile.fileType === 'activity_sheet' ||
+        initialFile.tags?.includes('Etkinlik Kağıdı') ||
+        initialFile.id?.startsWith('file-activity-') ||
+        initialFile.title?.toLowerCase().includes('etkinlik') ||
+        initialFile.title?.toLowerCase().includes('görev');
+      setIsActivitySheet(Boolean(isSheet));
+      setIsPublishedToClass(Boolean(initialFile.isPublishedToClass));
       setActivePageIndex(0);
     } else if (isOpen && !initialFile) {
       setLoadedFileId(null);
+      setIsActivitySheet(false);
+      setIsPublishedToClass(true); // New whiteboard note is published to class by default
+      setDocumentTitle(`${defaultClass} ${outcomeCode} Ders Notları`);
     }
-  }, [isOpen, initialFile]);
+  }, [isOpen, initialFile, defaultClass, outcomeCode]);
 
   // Drawing Tools State
   const [drawingTool, setDrawingTool] = useState<'pen' | 'highlighter' | 'eraser'>('pen');
@@ -1328,6 +1341,29 @@ export function WhiteboardModal({
     );
   };
 
+  // --- TOGGLE PUBLISH TO CLASS (For Activity Sheets) ---
+  const handleTogglePublishToClass = () => {
+    saveCurrentCanvasData();
+    const newStatus = !isPublishedToClass;
+    setIsPublishedToClass(newStatus);
+
+    if (loadedFileId) {
+      updateClassroomFile(loadedFileId, {
+        isPublishedToClass: newStatus,
+        fileType: isActivitySheet ? 'activity_sheet' : 'whiteboard_note'
+      });
+    }
+
+    playSound(newStatus ? 'success' : 'click');
+    setToastMessage(
+      newStatus
+        ? 'Etkinlik kağıdı sınıfa gönderildi! Artık öğrenciler kendi panellerindeki Sınıf Dosyalarında bu kağıdı görebilir.'
+        : 'Etkinlik kağıdı sınıftan kaldırıldı (Öğrenci panellerinde gizlendi).'
+    );
+    setSaveSuccessToast(true);
+    setTimeout(() => setSaveSuccessToast(false), 3500);
+  };
+
   // --- UPDATE EXISTING CLASSROOM FILE (Overwrites existing file & title) ---
   const handleUpdateExistingFile = async () => {
     if (!loadedFileId) {
@@ -1344,22 +1380,33 @@ export function WhiteboardModal({
 
       updateClassroomFile(loadedFileId, {
         title: documentTitle || `${selectedClass} ${outcomeCode} Ders Notları`,
+        fileType: isActivitySheet ? 'activity_sheet' : 'whiteboard_note',
+        isPublishedToClass: isActivitySheet ? isPublishedToClass : true,
         classSection: selectedClass,
         outcomeCode,
         outcomeTitle,
         authorName: teacherName,
         school: teacherSchool,
         pages,
-        tags: [outcomeCode, `${selectedClass} Şubesi`, 'Ders Notu', 'Beyaz Tahta']
+        tags: [
+          outcomeCode,
+          `${selectedClass} Şubesi`,
+          isActivitySheet ? 'Etkinlik Kağıdı' : 'Ders Notu',
+          'Beyaz Tahta'
+        ]
       });
 
       playSound('success');
-      setToastMessage(`"${documentTitle}" ders notu ve değişiklikler başarıyla güncellendi!`);
+      setToastMessage(
+        isActivitySheet
+          ? `"${documentTitle}" etkinlik kağıdı güncellendi!`
+          : `"${documentTitle}" ders notu ve değişiklikler başarıyla güncellendi!`
+      );
       setSaveSuccessToast(true);
       setTimeout(() => setSaveSuccessToast(false), 3500);
     } catch (err) {
       console.error('Dosya güncelleme hatası:', err);
-      alert('Ders notu güncellenirken bir hata oluştu.');
+      alert('Dosya güncellenirken bir hata oluştu.');
     } finally {
       setIsSaving(false);
     }
@@ -1377,6 +1424,8 @@ export function WhiteboardModal({
 
       const newRecord = saveClassroomFile({
         title: documentTitle || `${selectedClass} ${outcomeCode} Ders Notları`,
+        fileType: isActivitySheet ? 'activity_sheet' : 'whiteboard_note',
+        isPublishedToClass: isActivitySheet ? isPublishedToClass : true,
         classSection: selectedClass,
         outcomeCode,
         outcomeTitle,
@@ -1385,12 +1434,21 @@ export function WhiteboardModal({
         school: teacherSchool,
         pageCount: pages.length,
         pages,
-        tags: [outcomeCode, `${selectedClass} Şubesi`, 'Ders Notu', 'Beyaz Tahta']
+        tags: [
+          outcomeCode,
+          `${selectedClass} Şubesi`,
+          isActivitySheet ? 'Etkinlik Kağıdı' : 'Ders Notu',
+          'Beyaz Tahta'
+        ]
       });
 
       setLoadedFileId(newRecord.id);
       playSound('success');
-      setToastMessage(`"${newRecord.title}" yeni ders notu olarak sınıf arşivine eklendi!`);
+      setToastMessage(
+        isActivitySheet
+          ? `"${newRecord.title}" etkinlik kağıdı olarak sınıf arşivine eklendi!`
+          : `"${newRecord.title}" yeni beyaz tahta ders notu olarak sınıf arşivine eklendi!`
+      );
       setSaveSuccessToast(true);
       setTimeout(() => setSaveSuccessToast(false), 3500);
     } catch (err) {
@@ -1496,7 +1554,7 @@ export function WhiteboardModal({
               📐
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <input
                   type="text"
                   value={documentTitle}
@@ -1504,6 +1562,18 @@ export function WhiteboardModal({
                   className="bg-transparent text-xs sm:text-sm font-black text-white hover:bg-slate-800/60 focus:bg-slate-800 px-2 py-0.5 rounded-lg outline-none border border-transparent focus:border-teal-400 max-w-[240px] sm:max-w-md"
                   title="Belge Başlığı (Değiştirmek için tıklayın)"
                 />
+                {/* File Type Badge: Etkinlik Kağıdı vs Beyaz Tahta Notu */}
+                {isActivitySheet ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-black text-[10px] shadow-2xs">
+                    <span>📝</span>
+                    <span>Etkinlik Kağıdı</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-300 font-black text-[10px] shadow-2xs">
+                    <span>📐</span>
+                    <span>Beyaz Tahta Notu</span>
+                  </span>
+                )}
                 {loadedFileId && (
                   <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-[9px]">
                     <span>✏️</span>
@@ -1578,7 +1648,7 @@ export function WhiteboardModal({
             </label>
           </div>
 
-          {/* Right: Actions (Class, Archive, Save, PDF, Close) */}
+          {/* Right: Actions (Class, Sınıfa Gönder, Archive, Save, PDF, Close) */}
           <div className="flex items-center gap-2 flex-wrap">
             <select
               value={selectedClass}
@@ -1591,6 +1661,36 @@ export function WhiteboardModal({
               <option value="5-C">5-C Şubesi</option>
               <option value="Tümü">Tüm Şubeler</option>
             </select>
+
+            {/* Öğretmen İçin: Etkinlik Kağıdını Sınıfa Gönder Butonu */}
+            {isTeacher && isActivitySheet && (
+              <button
+                type="button"
+                onClick={handleTogglePublishToClass}
+                className={`px-3.5 py-1.5 rounded-xl font-black text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer ${
+                  isPublishedToClass
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white ring-2 ring-emerald-400/40 shadow-emerald-950/40'
+                    : 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-950/40'
+                }`}
+                title={
+                  isPublishedToClass
+                    ? 'Etkinlik kağıdı sınıfa gönderildi (Öğrenci dosyalarında yayında). Yayından kaldırmak için tıklayın.'
+                    : 'Bu etkinlik kağıdını sınıfa gönder ve öğrenci sınıf dosyalarında yayınla'
+                }
+              >
+                {isPublishedToClass ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-100 stroke-[3]" />
+                    <span>Sınıfta Yayında</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 text-slate-950" />
+                    <span>Sınıfa Gönder</span>
+                  </>
+                )}
+              </button>
+            )}
 
             <button
               type="button"
