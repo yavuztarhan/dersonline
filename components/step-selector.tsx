@@ -1,9 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/store';
-import { CURRICULUM_DATA } from '@/lib/curriculum-data';
+import { useAuth } from '@/lib/auth-store';
+import {
+  CURRICULUM_DATA,
+  isSubjectMatchingBranch,
+  isGradeMatchingStudent
+} from '@/lib/curriculum-data';
 import { Grade, Subject, Unit, Topic, Outcome } from '@/types';
 import {
   GraduationCap,
@@ -25,7 +30,9 @@ import {
   Award,
   ArrowLeft,
   FileText,
-  Download
+  Download,
+  ShieldCheck,
+  UserCheck
 } from 'lucide-react';
 import { LessonPlanModal } from '@/components/lesson-plan-modal';
 
@@ -42,7 +49,9 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 export function StepSelector() {
   const router = useRouter();
+  const { currentUser } = useAuth();
   const [planModalOutcome, setPlanModalOutcome] = useState<Outcome | null>(null);
+
   const {
     role,
     playSound,
@@ -59,6 +68,66 @@ export function StepSelector() {
     resetSelection
   } = useApp();
 
+  // Role details
+  const isAdmin = currentUser?.role === 'admin';
+  const isTeacher = currentUser?.role === 'teacher';
+  const isStudent = currentUser?.role === 'student';
+  const teacherUser = isTeacher ? (currentUser as any) : null;
+  const teacherBranch = teacherUser?.branch || 'Matematik';
+  const studentUser = isStudent ? (currentUser as any) : null;
+  const studentGradeLevel = studentUser?.gradeLevel || parseInt(studentUser?.classSection?.charAt(0), 10) || 5;
+
+  // 1. Available Grades based on user profile and role
+  const availableGrades = useMemo(() => {
+    if (!currentUser || isAdmin) {
+      return CURRICULUM_DATA;
+    }
+
+    if (isStudent) {
+      const filtered = CURRICULUM_DATA.filter((g) => isGradeMatchingStudent(g, studentUser));
+      return filtered.length > 0 ? filtered : CURRICULUM_DATA;
+    }
+
+    if (isTeacher) {
+      const filtered = CURRICULUM_DATA.filter((g) =>
+        g.subjects.some((s) => isSubjectMatchingBranch(s, teacherBranch))
+      );
+      return filtered.length > 0 ? filtered : CURRICULUM_DATA;
+    }
+
+    return CURRICULUM_DATA;
+  }, [currentUser, isAdmin, isStudent, isTeacher, teacherBranch, studentUser]);
+
+  // 2. Available Subjects for the currently selected grade
+  const availableSubjectsForGrade = useMemo(() => {
+    if (!selectedGrade) return [];
+    if (!currentUser || isAdmin || !isTeacher) return selectedGrade.subjects;
+
+    const filtered = selectedGrade.subjects.filter((s) => isSubjectMatchingBranch(s, teacherBranch));
+    return filtered.length > 0 ? filtered : selectedGrade.subjects;
+  }, [selectedGrade, currentUser, isAdmin, isTeacher, teacherBranch]);
+
+  // 3. Teacher Auto-Selection:
+  // When a teacher selects a grade, if only 1 subject matches their branch, automatically select it!
+  useEffect(() => {
+    if (isTeacher && selectedGrade) {
+      const matching = availableSubjectsForGrade;
+      if (matching.length === 1) {
+        if (!selectedSubject || selectedSubject.id !== matching[0].id) {
+          setSelectedSubject(matching[0]);
+        }
+      }
+    }
+  }, [isTeacher, selectedGrade, availableSubjectsForGrade, selectedSubject, setSelectedSubject]);
+
+  // 4. Student Auto-Selection:
+  // If a student only has 1 grade available and no grade is currently selected, auto-select it.
+  useEffect(() => {
+    if (isStudent && availableGrades.length === 1 && !selectedGrade) {
+      setSelectedGrade(availableGrades[0]);
+    }
+  }, [isStudent, availableGrades, selectedGrade, setSelectedGrade]);
+
   // Current active step calculation:
   // 1: Grade, 2: Subject, 3: Unit, 4: Topic/Outcome, 5: Ready to launch
   let currentStep = 1;
@@ -70,10 +139,20 @@ export function StepSelector() {
   const handleSelectGrade = (grade: Grade) => {
     playSound('select');
     setSelectedGrade(grade);
-    setSelectedSubject(null);
     setSelectedUnit(null);
     setSelectedTopic(null);
     setSelectedOutcome(null);
+
+    // If teacher with 1 matching branch subject, auto-select subject immediately
+    if (isTeacher) {
+      const matching = grade.subjects.filter((s) => isSubjectMatchingBranch(s, teacherBranch));
+      if (matching.length === 1) {
+        setSelectedSubject(matching[0]);
+        return;
+      }
+    }
+
+    setSelectedSubject(null);
   };
 
   const handleSelectSubject = (subject: Subject) => {
@@ -103,9 +182,62 @@ export function StepSelector() {
     router.push(`/lesson/${selectedOutcome.id}`);
   };
 
+  // Check if highlight box matches user scope
+  const showHighlightBox = useMemo(() => {
+    if (isAdmin || !currentUser) return true;
+    if (isStudent) return studentGradeLevel === 5;
+    if (isTeacher) return isSubjectMatchingBranch({ id: 'mat-5', title: 'Matematik', code: 'MAT-5' } as Subject, teacherBranch);
+    return true;
+  }, [isAdmin, currentUser, isStudent, studentGradeLevel, isTeacher, teacherBranch]);
+
   return (
     <div className="w-full space-y-6">
       
+      {/* Role & Filter Info Banner */}
+      {currentUser && (
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-100/90 rounded-2xl border border-slate-200/80 text-xs text-slate-700">
+          <div className="flex items-center gap-2">
+            {isAdmin ? (
+              <>
+                <span className="flex items-center gap-1 font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-200">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+                  Yönetici Görünümü
+                </span>
+                <span className="text-slate-500 font-medium">
+                  Tüm sınıf seviyeleri ve ders branşları filtre uygulanmadan görüntüleniyor.
+                </span>
+              </>
+            ) : isTeacher ? (
+              <>
+                <span className="flex items-center gap-1 font-bold text-teal-800 bg-teal-100 px-2.5 py-1 rounded-lg border border-teal-200">
+                  <UserCheck className="w-3.5 h-3.5 text-teal-700" />
+                  Öğretmen Branşı: {teacherBranch}
+                </span>
+                <span className="text-slate-500 font-medium">
+                  Yalnızca branşınıza ait ({teacherBranch}) ders ve üniteler gösteriliyor, ders seçimi otomatik tamamlanır.
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="flex items-center gap-1 font-bold text-blue-800 bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200">
+                  <GraduationCap className="w-3.5 h-3.5 text-blue-700" />
+                  Kayıtlı Sınıf: {studentUser?.classSection || `${studentGradeLevel}. Sınıf`}
+                </span>
+                <span className="text-slate-500 font-medium">
+                  Yalnızca kendi sınıf seviyenize ait ders içerikleri listelenmektedir.
+                </span>
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400 font-mono text-[11px]">
+              {availableGrades.length} Kademe • {isTeacher ? `${availableSubjectsForGrade.length || 1} Branş Dersi` : 'Tüm Dersler'}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Dynamic Breadcrumb Navigation */}
       <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
         <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -129,13 +261,20 @@ export function StepSelector() {
               <button
                 onClick={() => {
                   playSound('click');
-                  setSelectedSubject(null);
-                  setSelectedUnit(null);
-                  setSelectedTopic(null);
-                  setSelectedOutcome(null);
+                  if (isTeacher || availableSubjectsForGrade.length <= 1) {
+                    // Stay on grade units
+                    setSelectedUnit(null);
+                    setSelectedTopic(null);
+                    setSelectedOutcome(null);
+                  } else {
+                    setSelectedSubject(null);
+                    setSelectedUnit(null);
+                    setSelectedTopic(null);
+                    setSelectedOutcome(null);
+                  }
                 }}
                 className={`font-semibold flex items-center gap-1.5 transition-colors ${
-                  currentStep === 2
+                  currentStep === 2 || (isTeacher && currentStep === 3)
                     ? 'text-teal-700 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-200'
                     : 'text-slate-600 hover:text-teal-600'
                 }`}
@@ -145,7 +284,7 @@ export function StepSelector() {
             </>
           )}
 
-          {selectedSubject && (
+          {selectedSubject && !isTeacher && (
             <>
               <ChevronRight className="w-4 h-4 text-slate-400" />
               <button
@@ -166,6 +305,16 @@ export function StepSelector() {
             </>
           )}
 
+          {selectedSubject && isTeacher && (
+            <>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
+              <span className="font-semibold text-teal-800 bg-teal-50/80 px-2.5 py-1 rounded-md border border-teal-200 text-xs flex items-center gap-1">
+                <span>{selectedSubject.title}</span>
+                <span className="text-[10px] text-teal-600 font-bold bg-teal-100 px-1.5 py-0.5 rounded">Branş</span>
+              </span>
+            </>
+          )}
+
           {selectedUnit && (
             <>
               <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -181,7 +330,7 @@ export function StepSelector() {
                     : 'text-slate-600 hover:text-teal-600'
                 }`}
               >
-                <span>4. {selectedUnit.title.split(':')[0]}</span>
+                <span>{isTeacher ? '3. ' : '4. '}{selectedUnit.title.split(':')[0]}</span>
               </button>
             </>
           )}
@@ -207,7 +356,11 @@ export function StepSelector() {
                 <span>1. Adım:</span> Sınıf Seviyesini Seçiniz
               </h2>
               <p className="text-sm text-slate-500">
-                Türkiye Yüzyılı Maarif Modeli kapsamında hazırlanmış kademe sınıfları
+                {isStudent
+                  ? `${studentGradeLevel}. Sınıf seviyeniz için hazırlanmış Maarif Modeli dersleri`
+                  : isTeacher
+                  ? `${teacherBranch} branşınıza ait sınıf kademeleri`
+                  : 'Türkiye Yüzyılı Maarif Modeli kapsamında hazırlanmış kademe sınıfları'}
               </p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full border border-teal-300">
@@ -216,80 +369,92 @@ export function StepSelector() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {CURRICULUM_DATA.map((grade) => (
-              <button
-                key={grade.id}
-                onClick={() => handleSelectGrade(grade)}
-                className="group relative text-left bg-white rounded-2xl p-6 border-2 border-slate-200 hover:border-teal-500 hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-200 active:scale-98 flex flex-col justify-between min-h-[220px]"
-              >
-                <div>
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${grade.color} flex items-center justify-center text-white shadow-md mb-4 group-hover:scale-110 transition-transform`}>
-                    {ICON_MAP[grade.icon] || <GraduationCap className="w-7 h-7" />}
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 group-hover:text-teal-700 transition-colors">
-                    {grade.title}
-                  </h3>
-                  <p className="text-xs font-medium text-teal-600 mb-2">
-                    {grade.subtitle}
-                  </p>
-                  <p className="text-xs text-slate-500 line-clamp-2">
-                    {grade.description}
-                  </p>
-                </div>
+            {availableGrades.map((grade) => {
+              const matchingSubjects = isTeacher
+                ? grade.subjects.filter((s) => isSubjectMatchingBranch(s, teacherBranch))
+                : grade.subjects;
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600 group-hover:text-teal-600">
-                  <span>{grade.subjects.length} Ders Mevcut</span>
-                  <div className="w-7 h-7 rounded-full bg-slate-100 group-hover:bg-teal-500 group-hover:text-white flex items-center justify-center transition-all">
-                    <ChevronRight className="w-4 h-4" />
+              return (
+                <button
+                  key={grade.id}
+                  onClick={() => handleSelectGrade(grade)}
+                  className="group relative text-left bg-white rounded-2xl p-6 border-2 border-slate-200 hover:border-teal-500 hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-200 active:scale-98 flex flex-col justify-between min-h-[220px]"
+                >
+                  <div>
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${grade.color} flex items-center justify-center text-white shadow-md mb-4 group-hover:scale-110 transition-transform`}>
+                      {ICON_MAP[grade.icon] || <GraduationCap className="w-7 h-7" />}
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-teal-700 transition-colors">
+                      {grade.title}
+                    </h3>
+                    <p className="text-xs font-medium text-teal-600 mb-2">
+                      {grade.subtitle}
+                    </p>
+                    <p className="text-xs text-slate-500 line-clamp-2">
+                      {grade.description}
+                    </p>
                   </div>
-                </div>
-              </button>
-            ))}
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600 group-hover:text-teal-600">
+                    <span>
+                      {isTeacher
+                        ? `${matchingSubjects.length} Branş Dersi (${matchingSubjects.map((s) => s.title).join(', ')})`
+                        : `${grade.subjects.length} Ders Mevcut`}
+                    </span>
+                    <div className="w-7 h-7 rounded-full bg-slate-100 group-hover:bg-teal-500 group-hover:text-white flex items-center justify-center transition-all">
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Quick Highlight Box */}
-          <div className="mt-8 bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-700 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider">
-                  Öne Çıkan İnteraktif Ders
-                </span>
-                <span className="text-xs text-teal-100">MAT.5.3.1</span>
+          {/* Quick Highlight Box (Only shown if relevant to current user) */}
+          {showHighlightBox && (
+            <div className="mt-8 bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-700 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider">
+                    Öne Çıkan İnteraktif Ders
+                  </span>
+                  <span className="text-xs text-teal-100">MAT.5.3.1</span>
+                </div>
+                <h4 className="text-lg font-bold">
+                  5. Sınıf Matematik: Doğru, Doğru Parçası ve Işın Çizim Atölyesi
+                </h4>
+                <p className="text-xs text-teal-100">
+                  4 aşamalı Maarif akıllı tahta ders odasını tek tıkla doğrudan başlatabilirsiniz.
+                </p>
               </div>
-              <h4 className="text-lg font-bold">
-                5. Sınıf Matematik: Doğru, Doğru Parçası ve Işın Çizim Laboratuvarı
-              </h4>
-              <p className="text-xs text-teal-100">
-                4 aşamalı Maarif akıllı tahta ders odasını tek tıkla doğrudan başlatabilirsiniz.
-              </p>
+              <button
+                onClick={() => {
+                  const g5 = CURRICULUM_DATA.find((g) => g.id === 'grade-5');
+                  const m5 = g5?.subjects.find((s) => s.id === 'mat-5');
+                  const uGeo = m5?.units.find((u) => u.id === 'unit-5-geo');
+                  const tGeo1 = uGeo?.topics.find((t) => t.id === 'topic-5-geo-1');
+                  const out1 = tGeo1?.outcomes.find((o) => o.id === 'MAT.5.3.1');
+                  if (g5 && m5 && uGeo && tGeo1 && out1) {
+                    setSelectedGrade(g5);
+                    setSelectedSubject(m5);
+                    setSelectedUnit(uGeo);
+                    setSelectedTopic(tGeo1);
+                    setSelectedOutcome(out1);
+                    playSound('success');
+                    router.push('/lesson/MAT.5.3.1');
+                  }
+                }}
+                className="whitespace-nowrap px-6 py-3 rounded-xl bg-white text-teal-800 font-extrabold text-sm shadow-md hover:bg-teal-50 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
+              >
+                <Play className="w-4 h-4 fill-teal-800" />
+                <span>Dersi Doğrudan Başlat</span>
+              </button>
             </div>
-            <button
-              onClick={() => {
-                const g5 = CURRICULUM_DATA.find((g) => g.id === 'grade-5');
-                const m5 = g5?.subjects.find((s) => s.id === 'mat-5');
-                const uGeo = m5?.units.find((u) => u.id === 'unit-5-geo');
-                const tGeo1 = uGeo?.topics.find((t) => t.id === 'topic-5-geo-1');
-                const out1 = tGeo1?.outcomes.find((o) => o.id === 'MAT.5.3.1');
-                if (g5 && m5 && uGeo && tGeo1 && out1) {
-                  setSelectedGrade(g5);
-                  setSelectedSubject(m5);
-                  setSelectedUnit(uGeo);
-                  setSelectedTopic(tGeo1);
-                  setSelectedOutcome(out1);
-                  playSound('success');
-                  router.push('/lesson/MAT.5.3.1');
-                }
-              }}
-              className="whitespace-nowrap px-6 py-3 rounded-xl bg-white text-teal-800 font-extrabold text-sm shadow-md hover:bg-teal-50 transition-all flex items-center gap-2 active:scale-95"
-            >
-              <Play className="w-4 h-4 fill-teal-800" />
-              <span>Dersi Doğrudan Başlat</span>
-            </button>
-          </div>
+          )}
         </div>
       )}
 
-      {/* STEP 2: SUBJECT SELECTION */}
+      {/* STEP 2: SUBJECT SELECTION (Shown for multiple subjects / admins) */}
       {currentStep === 2 && selectedGrade && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -299,7 +464,7 @@ export function StepSelector() {
                   playSound('click');
                   resetSelection();
                 }}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
                 title="Geri"
               >
                 <ArrowLeft className="w-5 h-5" />
@@ -308,7 +473,11 @@ export function StepSelector() {
                 <h2 className="text-2xl font-black text-slate-800">
                   <span>2. Adım:</span> {selectedGrade.title} İçin Ders Seçiniz
                 </h2>
-                <p className="text-sm text-slate-500">Müfredattaki aktif ders içerikleri</p>
+                <p className="text-sm text-slate-500">
+                  {isTeacher
+                    ? `${teacherBranch} branşınıza uygun aktif dersler`
+                    : 'Müfredattaki aktif ders içerikleri'}
+                </p>
               </div>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full border border-teal-300">
@@ -317,7 +486,7 @@ export function StepSelector() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {selectedGrade.subjects.map((subject) => (
+            {availableSubjectsForGrade.map((subject) => (
               <button
                 key={subject.id}
                 onClick={() => handleSelectSubject(subject)}
@@ -355,9 +524,21 @@ export function StepSelector() {
               <button
                 onClick={() => {
                   playSound('click');
-                  setSelectedSubject(null);
+                  if (isTeacher || availableSubjectsForGrade.length <= 1) {
+                    // Single subject -> go back to grade selection
+                    setSelectedGrade(null);
+                    setSelectedSubject(null);
+                    setSelectedUnit(null);
+                    setSelectedTopic(null);
+                    setSelectedOutcome(null);
+                  } else {
+                    setSelectedSubject(null);
+                    setSelectedUnit(null);
+                    setSelectedTopic(null);
+                    setSelectedOutcome(null);
+                  }
                 }}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
                 title="Geri"
               >
                 <ArrowLeft className="w-5 h-5" />
@@ -367,7 +548,7 @@ export function StepSelector() {
                   <span>3. Adım:</span> {selectedSubject.title} Ünitesi Seçiniz
                 </h2>
                 <p className="text-sm text-slate-500">
-                  {selectedGrade.title} müfredatındaki öğrenme alanları ve üniteler
+                  {selectedGrade.title} {selectedSubject.title} müfredatındaki öğrenme alanları ve üniteler
                 </p>
               </div>
             </div>

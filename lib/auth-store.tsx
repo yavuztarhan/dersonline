@@ -169,6 +169,24 @@ const SEED_TEACHERS: TeacherUser[] = [
     verifiedAt: '2026-09-07',
     assignedClasses: ['5-A'],
     isProfileComplete: true
+  },
+  {
+    id: 'tch-104',
+    name: 'Ayşe Demir (Fen Öğretmeni)',
+    email: 'ayse.fen@meb.k12.tr',
+    role: 'teacher',
+    avatar: '🔬',
+    phone: '0533 111 22 33',
+    city: 'Edirne',
+    district: 'Merkez',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    branch: 'Fen Bilimleri',
+    principalName: 'Mehmet GÜNGÖR',
+    status: 'approved',
+    createdAt: '2026-09-08',
+    approvedAt: '2026-09-08',
+    assignedClasses: ['5-A'],
+    isProfileComplete: true
   }
 ];
 

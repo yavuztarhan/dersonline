@@ -1,4 +1,4 @@
-import { Grade, Outcome } from '@/types';
+import { Grade, Subject, Outcome } from '@/types';
 
 export const CURRICULUM_DATA: Grade[] = [
   {
@@ -2913,6 +2913,101 @@ export function getAllOutcomes(): Outcome[] {
   return outcomes;
 }
 
+export function isSubjectMatchingBranch(subject: Subject, branch?: string | null): boolean {
+  if (!branch || !branch.trim()) return true;
+  
+  const normalize = (str: string) =>
+    str
+      .trim()
+      .toLowerCase()
+      .replace(/ı/g, 'i')
+      .replace(/ğ/g, 'g')
+      .replace(/ü/g, 'u')
+      .replace(/ş/g, 's')
+      .replace(/ö/g, 'o')
+      .replace(/ç/g, 'c');
+
+  const b = normalize(branch);
+  const sTitle = normalize(subject.title || '');
+  const sCode = normalize(subject.code || '');
+  const sId = normalize(subject.id || '');
+
+  // Math branch aliases
+  if (b.includes('matematik') || b.includes('geometri')) {
+    return sTitle.includes('matematik') || sCode.includes('mat') || sId.includes('mat');
+  }
+  // Science branch aliases
+  if (b.includes('fen') || b.includes('fizik') || b.includes('kimya') || b.includes('biyoloji')) {
+    return sTitle.includes('fen') || sCode.includes('fen') || sId.includes('sci');
+  }
+  // Turkish
+  if (b.includes('turkce') || b.includes('edebiyat')) {
+    return sTitle.includes('turkce') || sCode.includes('turk') || sCode.includes('tr');
+  }
+  // Social studies
+  if (b.includes('sosyal') || b.includes('tarih') || b.includes('cografya')) {
+    return sTitle.includes('sosyal') || sCode.includes('sos');
+  }
+  // English
+  if (b.includes('ingilizce') || b.includes('yabanci dil')) {
+    return sTitle.includes('ingilizce') || sCode.includes('ing');
+  }
+  // Religion
+  if (b.includes('din') || b.includes('ahlak')) {
+    return sTitle.includes('din') || sCode.includes('din');
+  }
+  // IT
+  if (b.includes('bilisim') || b.includes('yazilim') || b.includes('kodlama')) {
+    return sTitle.includes('bilisim') || sCode.includes('bil');
+  }
+
+  return sTitle.includes(b) || b.includes(sTitle);
+}
+
+export function isGradeMatchingStudent(
+  grade: Grade,
+  student?: { gradeLevel?: number; classSection?: string } | null
+): boolean {
+  if (!student) return true;
+  if (student.gradeLevel && grade.level === student.gradeLevel) return true;
+  if (student.classSection) {
+    const num = parseInt(student.classSection.replace(/\D/g, ''), 10);
+    if (!isNaN(num) && grade.level === num) return true;
+  }
+  return false;
+}
+
+export function getFilteredCurriculum(user?: {
+  role?: string;
+  branch?: string;
+  gradeLevel?: number;
+  classSection?: string;
+} | null): Grade[] {
+  if (!user || user.role === 'admin') {
+    return CURRICULUM_DATA;
+  }
+
+  if (user.role === 'student') {
+    const matched = CURRICULUM_DATA.filter((g) => isGradeMatchingStudent(g, user));
+    return matched.length > 0 ? matched : CURRICULUM_DATA;
+  }
+
+  if (user.role === 'teacher') {
+    const teacherBranch = user.branch || '';
+    const filteredGrades = CURRICULUM_DATA.map((grade) => {
+      const matchingSubjects = grade.subjects.filter((s) => isSubjectMatchingBranch(s, teacherBranch));
+      return {
+        ...grade,
+        subjects: matchingSubjects
+      };
+    }).filter((g) => g.subjects.length > 0);
+
+    return filteredGrades.length > 0 ? filteredGrades : CURRICULUM_DATA;
+  }
+
+  return CURRICULUM_DATA;
+}
+
 export function getOutcomeById(id: string): Outcome | undefined {
   const all = getAllOutcomes();
   return all.find((o) => o.id.toLowerCase() === id.toLowerCase() || o.code.toLowerCase() === id.toLowerCase());
@@ -2935,3 +3030,4 @@ export function getBreadcrumbPath(outcomeId: string) {
   }
   return null;
 }
+
