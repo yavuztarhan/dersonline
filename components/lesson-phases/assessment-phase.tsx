@@ -5,6 +5,8 @@ import { AssessmentPhaseData, AssessmentQuestion } from '@/types';
 import { useApp } from '@/lib/store';
 import confetti from 'canvas-confetti';
 import { generateTestVariant } from '@/lib/question-variation-engine';
+import { saveJournalEntry } from '@/lib/journal-store';
+import { useAuth } from '@/lib/auth-store';
 import { SelfAssessmentRubricComponent } from '@/components/lesson-phases/self-assessment-rubric';
 import { ActivitySheetView } from '@/components/lesson-phases/activity-sheet-view';
 import {
@@ -47,6 +49,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
     addPoints,
     selectedOutcome
   } = useApp();
+  const { currentUser } = useAuth();
 
   const [activeAssessmentTab, setActiveAssessmentTab] = useState<'test' | 'worksheet' | 'rubric' | 'journal'>('test');
   const [questions, setQuestions] = useState<AssessmentQuestion[]>(data.questions);
@@ -56,6 +59,10 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
   const [isTestFinished, setIsTestFinished] = useState(false);
   const [isDynamicTest, setIsDynamicTest] = useState(false);
 
+  // Learning Journal state
+  const [journalText, setJournalText] = useState('');
+  const [journalSaved, setJournalSaved] = useState(false);
+
   // Sync questions when data changes
   useEffect(() => {
     setQuestions(data.questions);
@@ -64,9 +71,34 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
     setIsTestFinished(false);
     setCurrentQuestionIndex(0);
     setIsDynamicTest(false);
+    setJournalSaved(false);
   }, [data.questions]);
 
   const currentQuestion = questions[currentQuestionIndex] || questions[0];
+
+  const handleSaveJournal = () => {
+    if (!journalText.trim()) return;
+    playSound('success');
+    unlockBadge('maarif-genius');
+    addPoints(30);
+    saveJournalEntry({
+      studentId: currentUser?.id || 'stu-curr',
+      studentName: currentUser?.name || 'Öğrenci',
+      studentNumber: (currentUser as any)?.studentNumber || '101',
+      gradeLevel: selectedOutcome?.gradeId === 'grade-6' ? 6 : 5,
+      classSection: (currentUser as any)?.classSection || '5-A',
+      school: (currentUser as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+      outcomeId: selectedOutcome?.id || data.title,
+      outcomeCode: selectedOutcome?.code || 'MAT',
+      outcomeTitle: selectedOutcome?.title || data.title,
+      prompt: data.reflectionPrompt || 'Bugün öğrendiğim en şaşırtıcı özellik ve çıkarım şuydu:',
+      studentReflection: journalText.trim()
+    });
+    setJournalSaved(true);
+    try {
+      confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+    } catch (e) {}
+  };
 
   const handleResetCurrentTest = () => {
     playSound('clear');
@@ -332,30 +364,32 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
 
           <div className="bg-teal-50/70 p-5 rounded-2xl border border-teal-200 space-y-3">
             <p className="text-xs sm:text-sm font-bold text-slate-800">
-              "{data.reflectionPrompt || 'Bugün öğrendiğim en şaşırtıcı geometrik özellik ve çıkarım şuydu:'}"
+              "{data.reflectionPrompt || 'Bugün öğrendiğim en şaşırtıcı özellik ve çıkarım şuydu:'}"
             </p>
             <textarea
+              value={journalText}
+              onChange={(e) => setJournalText(e.target.value)}
               placeholder="Örnek: Açının kollarının uzatılmasının açıyı kesinlikle büyütmediğini ve iletkiyi doğru yönden okumanın önemini keşfettim..."
               rows={4}
               className="w-full p-4 rounded-2xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none text-xs sm:text-sm text-slate-800 bg-white shadow-xs resize-none"
             />
+            {journalSaved && (
+              <div className="p-3 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in">
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                <span>Öğrenme Günlüğünüz başarıyla kaydedildi ve öğretmeninizin paneline iletildi! (+30 XP)</span>
+              </div>
+            )}
             <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
               <span className="text-[11px] text-slate-500 font-medium">
-                💡 Bu cümle öğrenci gelişim panosuna kaydedilecektir.
+                💡 Bu cümle öğrenci gelişim panosuna kaydedilir ve öğretmeniniz tarafından incelenir.
               </span>
               <button
-                onClick={() => {
-                  playSound('success');
-                  unlockBadge('maarif-genius');
-                  addPoints(30);
-                  try {
-                    confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
-                  } catch (e) {}
-                }}
-                className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                onClick={handleSaveJournal}
+                disabled={!journalText.trim()}
+                className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
               >
                 <Award className="w-4 h-4" />
-                <span>Günlüğü Kaydet (+30 XP)</span>
+                <span>{journalSaved ? 'Güncellendi ✓' : 'Günlüğü Kaydet (+30 XP)'}</span>
               </button>
             </div>
           </div>
@@ -580,28 +614,31 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
 
             <div className="space-y-3">
               <textarea
+                value={journalText}
+                onChange={(e) => setJournalText(e.target.value)}
                 placeholder="Örnek: Doğru parçasının iki ucunun kapalı olması sayesinde boyunun ölçülebildiğini, fener ışığının ise tek yönde sonsuza uzayan bir ışın olduğunu keşfettim..."
                 rows={3}
                 className="w-full p-4 rounded-2xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none text-xs sm:text-sm text-slate-800 bg-white shadow-xs resize-none"
               />
 
+              {journalSaved && (
+                <div className="p-3 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                  <span>Öğrenme Günlüğünüz başarıyla kaydedildi ve öğretmeninizin paneline iletildi! (+30 XP)</span>
+                </div>
+              )}
+
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="text-[11px] text-slate-500 font-medium">
-                  💡 Bu cümle sınıfın öğrenme panosuna ve öğrenci karnesine yansıtılacaktır.
+                  💡 Bu cümle sınıfın öğrenme panosuna ve öğretmeninizin değerlendirme paneline yansıtılacaktır.
                 </span>
                 <button
-                  onClick={() => {
-                    playSound('success');
-                    unlockBadge('maarif-genius');
-                    addPoints(30);
-                    try {
-                      confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
-                    } catch (e) {}
-                  }}
-                  className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95"
+                  onClick={handleSaveJournal}
+                  disabled={!journalText.trim()}
+                  className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
                 >
                   <Award className="w-4 h-4" />
-                  <span>Günlüğü Kaydet (+30 XP)</span>
+                  <span>{journalSaved ? 'Güncellendi ✓' : 'Günlüğü Kaydet (+30 XP)'}</span>
                 </button>
               </div>
             </div>
