@@ -21,8 +21,6 @@ import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentOutcomeDetailModal } from '@/components/gamification/student-outcome-detail-modal';
-import { MascotCharacter } from '@/components/mascot';
-import { MASCOT_CONFIG } from '@/lib/mascot-config';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -225,55 +223,30 @@ export function TeacherDashboard() {
           </div>
         </div>
 
-        {/* Mascot Companion & Action Buttons */}
-        <div className="flex items-center gap-4 shrink-0 w-full lg:w-auto justify-between lg:justify-end flex-wrap sm:flex-nowrap">
-          
-          {/* Selim Teacher Companion */}
-          <div className="flex items-center gap-3.5 bg-white/10 border border-white/20 backdrop-blur-md p-3.5 rounded-2xl shadow-md hover:bg-white/15 transition-all">
-            <div className="relative shrink-0 flex items-center justify-center">
-              <MascotCharacter
-                pose="measuring"
-                size="lg"
-                showBadge
-                badgeText="Selim"
-              />
-            </div>
-            <div className="max-w-[190px] space-y-0.5">
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] uppercase font-black text-amber-300 tracking-wider">
-                  Öğrenme Yoldaşı
-                </span>
-              </div>
-              <div className="text-xs text-slate-100 font-semibold leading-tight">
-                "Öğretmenim, sınıfın rubrik ve öğrenme günlüğü verileri hazır!"
-              </div>
-            </div>
-          </div>
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <FeedbackButton
+            contextTitle="Öğretmen Paneli"
+            tooltip="Öğretmen Paneli Hakkında Görüş & Geri Bildirim İlet"
+            className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-sm transition-all cursor-pointer flex items-center justify-center active:scale-95"
+            iconClassName="w-4 h-4 text-teal-300"
+          />
 
-          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-            <FeedbackButton
-              contextTitle="Öğretmen Paneli"
-              tooltip="Öğretmen Paneli Hakkında Görüş & Geri Bildirim İlet"
-              className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-sm transition-all cursor-pointer flex items-center justify-center active:scale-95"
-              iconClassName="w-4 h-4 text-teal-300"
-            />
+          <Link
+            href="/profile"
+            className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
+            title="Kişisel Bilgileri ve Okulu Düzenle"
+          >
+            <span>⚙️ Profilimi Düzenle</span>
+          </Link>
 
-            <Link
-              href="/profile"
-              className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5"
-              title="Kişisel Bilgileri ve Okulu Düzenle"
-            >
-              <span>⚙️ Profilimi Düzenle</span>
-            </Link>
-
-            <Link
-              href="/lesson/MAT.5.3.1"
-              className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center gap-2 active:scale-95 shrink-0"
-            >
-              <MonitorPlay className="w-4 h-4" />
-              <span>Akıllı Tahtada Dersi Başlat</span>
-            </Link>
-          </div>
+          <Link
+            href="/lesson/MAT.5.3.1"
+            className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center gap-2 active:scale-95 shrink-0"
+          >
+            <MonitorPlay className="w-4 h-4" />
+            <span>Akıllı Tahtada Dersi Başlat</span>
+          </Link>
         </div>
       </div>
 

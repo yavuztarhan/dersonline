@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import {
@@ -52,6 +53,11 @@ export function FeedbackModal({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [remainingQuota, setRemainingQuota] = useState(DAILY_MESSAGE_LIMIT);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Target Admin (First admin in system or default fallback)
   const targetAdmin = admins && admins.length > 0 ? admins[0] : {
@@ -90,7 +96,7 @@ export function FeedbackModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,8 +155,8 @@ export function FeedbackModal({
     onSuccess?.();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
       
       {/* Backdrop */}
       <div
@@ -340,6 +346,7 @@ export function FeedbackModal({
 
       </div>
 
-    </div>
+    </div>,
+    document.body
   );
 }
