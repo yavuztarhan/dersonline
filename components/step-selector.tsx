@@ -74,7 +74,6 @@ export function StepSelector() {
   const teacherUser = isTeacher ? (currentUser as any) : null;
   const teacherBranch = teacherUser?.branch || 'Matematik';
   const studentUser = isStudent ? (currentUser as any) : null;
-  const studentGradeLevel = studentUser?.gradeLevel || parseInt(studentUser?.classSection?.charAt(0), 10) || 5;
 
   // 1. Available Grades based on user profile and role
   const availableGrades = useMemo(() => {
@@ -181,13 +180,6 @@ export function StepSelector() {
     router.push(`/lesson/${selectedOutcome.id}`);
   };
 
-  // Check if highlight box matches user scope
-  const showHighlightBox = useMemo(() => {
-    if (isAdmin || !currentUser) return true;
-    if (isStudent) return studentGradeLevel === 5;
-    if (isTeacher) return isSubjectMatchingBranch({ id: 'mat-5', title: 'Matematik', code: 'MAT-5' } as Subject, teacherBranch);
-    return true;
-  }, [isAdmin, currentUser, isStudent, studentGradeLevel, isTeacher, teacherBranch]);
 
   return (
     <div className="w-full space-y-6">
@@ -347,47 +339,7 @@ export function StepSelector() {
             })}
           </div>
 
-          {/* Quick Highlight Box (Only shown if relevant to current user) */}
-          {showHighlightBox && (
-            <div className="mt-8 bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-700 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider">
-                    Öne Çıkan İnteraktif Ders
-                  </span>
-                  <span className="text-xs text-teal-100">MAT.5.3.1</span>
-                </div>
-                <h4 className="text-lg font-bold">
-                  5. Sınıf Matematik: Doğru, Doğru Parçası ve Işın Çizim Atölyesi
-                </h4>
-                <p className="text-xs text-teal-100">
-                  4 aşamalı Maarif akıllı tahta ders odasını tek tıkla doğrudan başlatabilirsiniz.
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  const g5 = CURRICULUM_DATA.find((g) => g.id === 'grade-5');
-                  const m5 = g5?.subjects.find((s) => s.id === 'mat-5');
-                  const uGeo = m5?.units.find((u) => u.id === 'unit-5-geo');
-                  const tGeo1 = uGeo?.topics.find((t) => t.id === 'topic-5-geo-1');
-                  const out1 = tGeo1?.outcomes.find((o) => o.id === 'MAT.5.3.1');
-                  if (g5 && m5 && uGeo && tGeo1 && out1) {
-                    setSelectedGrade(g5);
-                    setSelectedSubject(m5);
-                    setSelectedUnit(uGeo);
-                    setSelectedTopic(tGeo1);
-                    setSelectedOutcome(out1);
-                    playSound('success');
-                    router.push('/lesson/MAT.5.3.1');
-                  }
-                }}
-                className="whitespace-nowrap px-6 py-3 rounded-xl bg-white text-teal-800 font-extrabold text-sm shadow-md hover:bg-teal-50 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
-              >
-                <Play className="w-4 h-4 fill-teal-800" />
-                <span>Dersi Doğrudan Başlat</span>
-              </button>
-            </div>
-          )}
+
         </div>
       )}
 
