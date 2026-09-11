@@ -172,12 +172,17 @@ export function TeacherPinEntryModal({ isOpen, onClose }: TeacherPinEntryModalPr
                     key={idx}
                     ref={inputRefs[idx]}
                     type="text"
+                    inputMode="text"
+                    autoCapitalize="characters"
+                    autoCorrect="off"
+                    autoComplete="off"
+                    spellCheck={false}
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleDigitChange(idx, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
                     onPaste={handlePaste}
-                    className="w-12 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus:border-indigo-500 text-center font-mono text-2xl font-black uppercase text-slate-900 dark:text-white outline-none transition-all shadow-inner"
+                    className="w-11 h-13 sm:w-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus:border-indigo-500 text-center font-mono text-xl sm:text-2xl font-black uppercase text-slate-900 dark:text-white outline-none transition-all shadow-inner select-all"
                   />
                 ))}
               </div>

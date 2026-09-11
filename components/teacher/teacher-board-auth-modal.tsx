@@ -77,29 +77,48 @@ export function TeacherBoardAuthModal({
     setIsProcessingCamera(false);
 
     try {
-      if (!navigator?.mediaDevices?.getUserMedia) {
-        setCameraError('Cihazınızın tarayıcısında kamera erişimi desteklenmiyor. Lütfen PIN ile giriş yapınız.');
+      const isSecure = typeof window !== 'undefined' && (window.isSecureContext || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (!isSecure) {
+        setCameraError('Mobil tarayıcılarda kamera için HTTPS gereklidir (yerel IP bağlantılarında tarayıcı güvenlik amacıyla kamerayı engeller). Lütfen aşağıdaki 4 haneli PIN kodunu kullanınız.');
         setHasCameraPermission(false);
         setMode('pin');
         return;
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 640 },
-          height: { ideal: 640 }
-        },
-        audio: false
-      });
+      if (!navigator?.mediaDevices?.getUserMedia) {
+        setCameraError('Cihazınızın tarayıcısında kamera erişimi desteklenmiyor. Lütfen 4 Haneli PIN ile giriş yapınız.');
+        setHasCameraPermission(false);
+        setMode('pin');
+        return;
+      }
+
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false
+        });
+      } catch (e1) {
+        // Fallback constraint
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+      }
 
       streamRef.current = stream;
       setHasCameraPermission(true);
 
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
         videoRef.current.setAttribute('playsinline', 'true');
-        await videoRef.current.play();
+        videoRef.current.setAttribute('muted', 'true');
+        videoRef.current.muted = true;
+        videoRef.current.srcObject = stream;
+        try {
+          await videoRef.current.play();
+        } catch (playErr) {
+          console.warn('Video play note:', playErr);
+        }
         scanFrame();
       }
     } catch (err: any) {
@@ -110,6 +129,7 @@ export function TeacherBoardAuthModal({
         setCameraError('Kamera başlatılamadı. Lütfen 4 Haneli PIN kodunu kullanınız.');
       }
       setHasCameraPermission(false);
+      setMode('pin');
     }
   };
 
@@ -420,31 +440,36 @@ export function TeacherBoardAuthModal({
               )}
             </div>
           ) : (
-            /* PIN MODE */
+            /* PIN MODE - Mobile Responsive */
             <div className="space-y-4">
-              <p className="text-center text-xs text-slate-600">
-                Akıllı tahtanın sağında gösterilen <strong>4 haneli PIN kodunu</strong> giriniz:
+              <p className="text-center text-xs text-slate-600 font-medium">
+                Akıllı tahtanın sağında gösterilen <strong className="text-indigo-950 font-bold">4 haneli PIN kodunu</strong> giriniz:
               </p>
 
               {/* 4 Digit Boxes */}
-              <div className="flex items-center justify-center gap-2.5">
+              <div className="flex items-center justify-center gap-2 sm:gap-3 my-1">
                 {pinDigits.map((digit, idx) => (
                   <input
                     key={idx}
                     ref={inputRefs[idx]}
                     type="text"
+                    inputMode="text"
+                    autoCapitalize="characters"
+                    autoCorrect="off"
+                    autoComplete="off"
+                    spellCheck={false}
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleDigitChange(idx, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
                     onPaste={handlePaste}
-                    className="w-13 h-14 sm:w-14 sm:h-16 text-center font-mono text-2xl sm:text-3xl font-black bg-slate-50 border-2 border-slate-300 focus:border-indigo-600 focus:bg-white rounded-2xl outline-none transition-all shadow-xs uppercase select-all"
+                    className="w-12 h-13 sm:w-14 sm:h-16 text-center font-mono text-xl sm:text-2xl font-black bg-slate-50 border-2 border-slate-300 focus:border-indigo-600 focus:bg-white rounded-xl sm:rounded-2xl outline-none transition-all shadow-xs uppercase select-all"
                   />
                 ))}
               </div>
 
               {pinError && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-rose-900 text-xs text-center font-bold flex items-center justify-center gap-1.5">
+                <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-900 text-xs text-center font-bold flex items-center justify-center gap-1.5">
                   <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                   <span>{pinError}</span>
                 </div>
@@ -454,7 +479,7 @@ export function TeacherBoardAuthModal({
                 type="button"
                 disabled={pinDigits.join('').length !== 4 || isSubmittingPin}
                 onClick={() => submitPin(pinDigits.join(''))}
-                className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs font-black transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                className="w-full py-3 rounded-xl sm:rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-98"
               >
                 {isSubmittingPin ? (
                   <>

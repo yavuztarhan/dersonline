@@ -286,7 +286,11 @@ export function validateUserSession(
     return { isValid: true };
   }
 
-  if (currentCategorySession.sessionId !== sessionId) {
+  // CRITICAL RULE:
+  // ONLY Smart Boards ('smartboard') enforce single-session concurrency,
+  // so when a teacher logs into a new classroom board, the old classroom board terminates.
+  // Personal phones ('mobile') and personal computers ('windows', 'desktop') NEVER terminate each other!
+  if (deviceCategory === 'smartboard' && currentCategorySession.sessionId !== sessionId) {
     return {
       isValid: false,
       reason: 'replaced_by_newer_device'

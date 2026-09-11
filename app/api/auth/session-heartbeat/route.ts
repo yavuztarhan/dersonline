@@ -10,17 +10,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ active: true });
     }
 
+    // Only Smart Boards can be terminated by a newer classroom board
+    if (deviceCategory !== 'smartboard') {
+      return NextResponse.json({ active: true });
+    }
+
     const check = validateUserSession(userId, sessionId, deviceCategory as DeviceCategory);
 
     if (!check.isValid) {
       let message = 'Oturumunuz sonlandırıldı.';
       if (check.reason === 'replaced_by_newer_device') {
-        message =
-          deviceCategory === 'smartboard'
-            ? 'Hesabınız başka bir akıllı tahtada açıldığı için bu tahtadaki oturum güvenlik amacıyla kapatıldı.'
-            : 'Hesabınız başka bir cihazda açıldığı için bu oturum sonlandırıldı.';
+        message = 'Hesabınız başka bir akıllı tahtada açıldığı için bu tahtadaki oturum güvenlik amacıyla kapatıldı.';
       } else if (check.reason === 'expired') {
-        message = 'Oturum süreniz doldu. Lütfen tekrar giriş yapınız.';
+        message = 'Akıllı tahta oturum süreniz (2 saat) doldu. Lütfen tekrar giriş yapınız.';
       }
 
       return NextResponse.json({

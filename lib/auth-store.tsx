@@ -733,20 +733,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const checkHeartbeat = async () => {
       try {
-        const token = localStorage.getItem('maarif_session_token');
-        const category = localStorage.getItem('maarif_device_category') || 'smartboard';
-        const expiresStr = localStorage.getItem('maarif_session_expires');
+        const category = localStorage.getItem('maarif_device_category');
+        // CRITICAL RULE:
+        // Sadece akıllı tahtalarda ('smartboard') oturum değişimi denetlenir.
+        // Cep telefonları ve kişisel bilgisayarlar (macOS, Windows) ASLA başka cihaz tarafından kapatılamaz!
+        if (category !== 'smartboard') return;
 
+        const token = localStorage.getItem('maarif_session_token');
+        if (!token) return;
+
+        const expiresStr = localStorage.getItem('maarif_session_expires');
         if (expiresStr) {
           const exp = parseInt(expiresStr, 10);
           if (exp && Date.now() > exp) {
-            alert('Oturum süreniz doldu. Güvenliğiniz için oturum sonlandırıldı.');
+            alert('Akıllı tahta oturum süreniz (2 saat) doldu. Güvenliğiniz için tahta oturumu kapatıldı.');
             logout();
             return;
           }
         }
-
-        if (!token) return;
 
         const res = await fetch('/api/auth/session-heartbeat', {
           method: 'POST',
@@ -754,13 +758,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           body: JSON.stringify({
             userId: currentUser.id,
             sessionId: token,
-            deviceCategory: category
+            deviceCategory: 'smartboard'
           })
         });
 
         const data = await res.json();
         if (data && data.active === false) {
-          const msg = data.message || 'Oturumunuz başka bir cihazda açıldığı için bu tahtadaki oturum güvenlik amacıyla kapatıldı.';
+          const msg = data.message || 'Hesabınız başka bir akıllı tahtada açıldığı için bu tahtadaki oturum güvenlik amacıyla kapatıldı.';
           alert(msg);
           logout();
         }
