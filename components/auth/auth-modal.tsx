@@ -367,7 +367,7 @@ export function AuthModal({
             <div className="pt-2 border-t border-slate-100">
               <form onSubmit={handleIdentifierLogin} className="space-y-3">
                 <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-left">
-                  veya E-Posta / Okul No / Telefon ile Giriş
+                  E-POSTA İLE GİRİŞ
                 </div>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -375,7 +375,7 @@ export function AuthModal({
                     type="text"
                     value={identifierInput}
                     onChange={(e) => setIdentifierInput(e.target.value)}
-                    placeholder="E-posta, Okul No (örn: 142) veya Telefon"
+                    placeholder="E-posta Adresiniz"
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium"
                   />
                 </div>
