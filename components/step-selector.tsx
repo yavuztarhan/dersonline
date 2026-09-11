@@ -192,8 +192,8 @@ export function StepSelector() {
   return (
     <div className="w-full space-y-6">
       
-      {/* Dynamic Breadcrumb Navigation */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+      {/* Dynamic Breadcrumb Navigation (Hidden on mobile) */}
+      <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <button
             onClick={() => {
