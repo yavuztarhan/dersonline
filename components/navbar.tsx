@@ -170,18 +170,18 @@ export function Navbar() {
                   <ChevronRight className="w-3.5 h-3.5 text-teal-600" />
                 </Link>
 
-                {/* Oyunlar Butonu */}
+                {/* Oyunlar Butonu (Mobilde sadece logo/ikon, masaüstünde metinli) */}
                 <Link
                   href="/games"
-                  className={`hidden md:flex px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-black transition-all items-center gap-1.5 shadow-xs cursor-pointer shrink-0 ${
+                  className={`flex p-2 sm:px-3.5 sm:py-2 rounded-xl text-xs font-black transition-all items-center gap-1.5 shadow-xs cursor-pointer shrink-0 active:scale-95 ${
                     pathname === '/games'
                       ? 'bg-indigo-600 text-white shadow-indigo-600/20 scale-102'
                       : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200/80 hover:border-indigo-300'
                   }`}
                   title="Eğitici Zeka ve Mantık Oyunları"
                 >
-                  <Gamepad2 className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Oyunlar</span>
+                  <Gamepad2 className={`w-4 h-4 shrink-0 ${pathname === '/games' ? 'text-white' : 'text-indigo-600'}`} />
+                  <span className="hidden md:inline">Oyunlar</span>
                 </Link>
 
                 {/* Teacher Smart Board Fast Authorization Button (Single Compact Action) */}
