@@ -1396,13 +1396,21 @@ export function getAnnualPlanByWeek(
   haftaNo: number,
   gradeLevel: number = 5
 ): AnnualPlanItem | undefined {
-  const plans = gradeLevel === 6 ? ANNUAL_PLAN_6TH_GRADE : ANNUAL_PLAN_5TH_GRADE;
-  return plans.find((item) => item.haftaNo === haftaNo);
+  if (gradeLevel === 5) {
+    return ANNUAL_PLAN_5TH_GRADE.find((item) => item.haftaNo === haftaNo);
+  }
+  if (gradeLevel === 6) {
+    return ANNUAL_PLAN_6TH_GRADE.find((item) => item.haftaNo === haftaNo);
+  }
+  // 7 ve 8. sınıf verileri sisteme girildiğinde buraya bağlanacak, henüz yoksa undefined döner
+  return undefined;
 }
 
 /**
  * Sınıf seviyesine göre tüm yıllık plan listesini döndürür.
  */
 export function getAnnualPlanForGrade(gradeLevel: number): AnnualPlanItem[] {
-  return gradeLevel === 6 ? ANNUAL_PLAN_6TH_GRADE : ANNUAL_PLAN_5TH_GRADE;
+  if (gradeLevel === 5) return ANNUAL_PLAN_5TH_GRADE;
+  if (gradeLevel === 6) return ANNUAL_PLAN_6TH_GRADE;
+  return [];
 }
