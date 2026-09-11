@@ -83,6 +83,7 @@ model StudentProfile {
   progresses       OutcomeProgress[]
   selfAssessments  SelfAssessmentSubmission[]
   learningJournals LearningJournal[]
+  boardParticipations BoardParticipation[]
 
   @@map("student_profiles")
 }
@@ -218,5 +219,30 @@ model PeerEvaluationSubmission {
   @@index([targetStudentId])
   @@index([evaluatorStudentId])
   @@map("peer_evaluation_submissions")
+}
+
+model BoardParticipation {
+  id            String   @id @default(cuid())
+  studentId     String?
+  studentName   String
+  studentNumber String?
+  classSection  String   // 5-A, 5-B
+  school        String?
+  teacherId     String?
+  teacherName   String?
+  activityType  String   // 'game' | 'test' | 'rubric' | 'journal'
+  activityTitle String
+  outcomeCode   String?
+  score         Int?
+  maxScore      Int?
+  xpEarned      Int      @default(0)
+  timestamp     DateTime @default(now())
+
+  student       StudentProfile? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@index([classSection])
+  @@index([studentNumber])
+  @@index([studentId])
+  @@map("board_participations")
 }
 

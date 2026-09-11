@@ -9,6 +9,7 @@ import {
   setStoredActiveBoardStudent
 } from '@/lib/board-participation-store';
 import { StudentUser } from '@/types/auth';
+import { TeacherStudentBoardHistoryModal } from '@/components/teacher/teacher-student-board-history-modal';
 import confetti from 'canvas-confetti';
 import {
   Sparkles,
@@ -33,7 +34,10 @@ import {
   RotateCcw,
   Check,
   Activity,
-  Layers
+  Layers,
+  TrendingUp,
+  LineChart,
+  Eye
 } from 'lucide-react';
 
 export function TeacherBoardParticipationReport() {
@@ -48,6 +52,9 @@ export function TeacherBoardParticipationReport() {
   const [activeTab, setActiveTab] = useState<'ranking' | 'timeline'>('ranking');
   const [pickedStudent, setPickedStudent] = useState<StudentUser | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
+
+  // Selected student for history modal & graph
+  const [selectedStudentForHistory, setSelectedStudentForHistory] = useState<StudentUser | null>(null);
 
   // Read live stored board records
   const [boardRecords, setBoardRecords] = useState<BoardParticipationRecord[]>(() =>
@@ -88,7 +95,7 @@ export function TeacherBoardParticipationReport() {
 
       // Last participation date
       const lastRecord = recordsForStudent.length > 0
-        ? recordsForStudent.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
+        ? [...recordsForStudent].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
         : null;
 
       let participationLevel: 'high' | 'medium' | 'none' = 'none';
@@ -155,6 +162,16 @@ export function TeacherBoardParticipationReport() {
     });
   }, [boardRecords, selectedClass, searchTerm]);
 
+  // Get records for the modal-selected student
+  const selectedStudentRecords = useMemo(() => {
+    if (!selectedStudentForHistory) return [];
+    return boardRecords.filter(
+      (r) =>
+        r.studentNumber === selectedStudentForHistory.studentNumber ||
+        r.studentId === selectedStudentForHistory.id
+    );
+  }, [boardRecords, selectedStudentForHistory]);
+
   // Random Student Smart Picker (Prioritizes low-participation students)
   const handlePickRandomStudent = () => {
     if (classStudents.length === 0) return;
@@ -162,7 +179,7 @@ export function TeacherBoardParticipationReport() {
     setPickedStudent(null);
     playSound('select');
 
-    // Pool weighted: students with 0 participation get 4x chance, with 1 get 2x chance
+    // Pool weighted: students with 0 participation get 5x chance, with 1 get 2x chance
     const pool: StudentUser[] = [];
     studentStats.forEach((st) => {
       const weight = st.count === 0 ? 5 : st.count === 1 ? 2 : 1;
@@ -195,6 +212,11 @@ export function TeacherBoardParticipationReport() {
     playSound('success');
   };
 
+  const handleOpenStudentHistory = (stu: StudentUser) => {
+    setSelectedStudentForHistory(stu);
+    playSound('select');
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -215,11 +237,11 @@ export function TeacherBoardParticipationReport() {
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
               <span>Tahtaya Kalkma & Aktiflik Analizi</span>
               <span className="text-xs px-2.5 py-1 rounded-xl bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-400/30">
-                NumPad Veri Tabanı
+                Veri Tabanı Entegre
               </span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl font-medium">
-              Öğrencilerin akıllı tahtada NumPad tuşlayarak çözdüğü oyunlar, kazanım testleri, öz değerlendirme ve günlük etkinliklerinin gerçek zamanlı katılım dökümü.
+              Öğrencilerin akıllı tahtada NumPad tuşlayarak çözdüğü oyunlar, kazanım testleri, öz değerlendirme ve günlük etkinliklerinin gerçek zamanlı katılım dökümü. Öğrenci isimlerine tıklayarak bireysel artış/azalış grafiklerini ve geçmişini inceleyebilirsiniz.
             </p>
           </div>
 
@@ -271,6 +293,13 @@ export function TeacherBoardParticipationReport() {
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>Tahtada Oturumu Başlat</span>
+            </button>
+            <button
+              onClick={() => handleOpenStudentHistory(pickedStudent)}
+              className="px-3 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs flex items-center gap-1 cursor-pointer"
+            >
+              <LineChart className="w-3.5 h-3.5" />
+              <span>Geçmiş & Grafik</span>
             </button>
             <button
               onClick={() => setPickedStudent(null)}
@@ -431,6 +460,13 @@ export function TeacherBoardParticipationReport() {
       {/* TAB 1: RANKING TABLE */}
       {activeTab === 'ranking' && (
         <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-slate-500 font-bold flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-teal-600" />
+              <span>İpucu: Öğrencinin geçmişini ve artış/azalış grafiğini görmek için ismine veya satırına tıklayın.</span>
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -441,21 +477,26 @@ export function TeacherBoardParticipationReport() {
                   <th className="py-3 px-4 text-center">Etkinlik Türleri</th>
                   <th className="py-3 px-4 text-center">Kazanılan XP</th>
                   <th className="py-3 px-4 text-center">Durum</th>
-                  <th className="py-3 px-4 text-right rounded-r-2xl">Son Katılım</th>
+                  <th className="py-3 px-4 text-center">Son Katılım</th>
+                  <th className="py-3 px-4 text-right rounded-r-2xl">Grafik & Geçmiş</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
                 {filteredStats.map((item, index) => (
-                  <tr key={item.student.id} className="hover:bg-slate-50/80 transition-colors font-medium">
+                  <tr
+                    key={item.student.id}
+                    onClick={() => handleOpenStudentHistory(item.student)}
+                    className="hover:bg-teal-50/50 transition-colors font-medium cursor-pointer group"
+                  >
                     <td className="py-3.5 px-4 font-black text-slate-900 flex items-center gap-2.5">
-                      <span className="w-6 text-center text-slate-400 font-bold text-xs">
+                      <span className="w-6 text-center text-slate-400 font-bold text-xs group-hover:text-teal-700">
                         #{index + 1}
                       </span>
-                      <div className="w-7 h-7 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="w-7 h-7 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-teal-600 group-hover:text-white transition-colors">
                         🎓
                       </div>
                       <div>
-                        <div>{item.student.name}</div>
+                        <div className="group-hover:text-teal-900 group-hover:underline">{item.student.name}</div>
                         <div className="text-[10px] text-slate-400 font-mono font-bold">
                           No: #{item.student.studentNumber}
                         </div>
@@ -522,12 +563,25 @@ export function TeacherBoardParticipationReport() {
                       )}
                     </td>
 
-                    <td className="py-3.5 px-4 text-right text-slate-500 font-bold text-[11px]">
+                    <td className="py-3.5 px-4 text-center text-slate-500 font-bold text-[11px]">
                       {item.lastDate ? (
                         <span>{new Date(item.lastDate).toLocaleDateString('tr-TR')} {new Date(item.lastDate).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
                       ) : (
                         <span className="text-slate-300">-</span>
                       )}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenStudentHistory(item.student);
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-600 text-teal-700 hover:text-white font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <LineChart className="w-3.5 h-3.5" />
+                        <span>Grafik & Geçmiş</span>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -546,55 +600,84 @@ export function TeacherBoardParticipationReport() {
                 Kayıtlı tahta aktivitesi bulunamadı.
               </div>
             ) : (
-              filteredTimelineRecords.map((record) => (
-                <div key={record.id} className="py-4 flex items-center justify-between gap-4 hover:bg-slate-50/80 px-2 rounded-2xl transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-black text-base shrink-0">
-                      {record.activityType === 'game'
-                        ? '🎮'
-                        : record.activityType === 'test'
-                        ? '📝'
-                        : record.activityType === 'rubric'
-                        ? '📋'
-                        : '📖'}
-                    </div>
+              filteredTimelineRecords.map((record) => {
+                const stuObj = students.find((s) => s.studentNumber === record.studentNumber || s.id === record.studentId);
 
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-black text-slate-900 text-xs sm:text-sm">
-                          {record.studentName}
-                        </span>
-                        <span className="font-mono text-[11px] text-indigo-600 font-black">
-                          #{record.studentNumber}
-                        </span>
-                        <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded font-extrabold text-slate-600">
-                          {record.classSection}
-                        </span>
+                return (
+                  <div
+                    key={record.id}
+                    onClick={() => {
+                      if (stuObj) handleOpenStudentHistory(stuObj);
+                    }}
+                    className="py-4 flex items-center justify-between gap-4 hover:bg-teal-50/40 px-3 rounded-2xl transition-colors cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-black text-base shrink-0 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                        {record.activityType === 'game'
+                          ? '🎮'
+                          : record.activityType === 'test'
+                          ? '📝'
+                          : record.activityType === 'rubric'
+                          ? '📋'
+                          : '📖'}
                       </div>
-                      <div className="text-xs text-slate-500 font-medium flex items-center gap-2 mt-0.5">
-                        <span>{record.activityTitle}</span>
-                        {record.outcomeCode && (
-                          <span className="text-[10px] font-mono text-teal-700 bg-teal-50 px-1.5 py-0.2 rounded font-bold">
-                            {record.outcomeCode}
+
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-slate-900 text-xs sm:text-sm group-hover:text-teal-900 group-hover:underline">
+                            {record.studentName}
                           </span>
-                        )}
+                          <span className="font-mono text-[11px] text-indigo-600 font-black">
+                            #{record.studentNumber}
+                          </span>
+                          <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded font-extrabold text-slate-600">
+                            {record.classSection}
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 font-medium flex items-center gap-2 mt-0.5">
+                          <span>{record.activityTitle}</span>
+                          {record.outcomeCode && (
+                            <span className="text-[10px] font-mono text-teal-700 bg-teal-50 px-1.5 py-0.2 rounded font-bold">
+                              {record.outcomeCode}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <div className="text-right">
+                        <div className="font-black text-amber-600 text-xs sm:text-sm">
+                          +{record.xpEarned} XP
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-bold mt-0.5">
+                          {new Date(record.timestamp).toLocaleDateString('tr-TR')} • {new Date(record.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+
+                      <div className="p-2 rounded-xl bg-slate-100 text-slate-400 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                        <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
                   </div>
-
-                  <div className="text-right shrink-0">
-                    <div className="font-black text-amber-600 text-xs sm:text-sm">
-                      +{record.xpEarned} XP
-                    </div>
-                    <div className="text-[10px] text-slate-400 font-bold mt-0.5">
-                      {new Date(record.timestamp).toLocaleDateString('tr-TR')} • {new Date(record.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
+      )}
+
+      {/* 5. Student Board History Modal & Progress Chart */}
+      {selectedStudentForHistory && (
+        <TeacherStudentBoardHistoryModal
+          student={selectedStudentForHistory}
+          records={selectedStudentRecords}
+          onClose={() => setSelectedStudentForHistory(null)}
+          onActivateForBoard={(stu) => {
+            handleActivatePickedStudent(stu);
+            setSelectedStudentForHistory(null);
+          }}
+        />
       )}
 
     </div>
