@@ -12,6 +12,7 @@ import {
   fetchDistrictsApi,
   fetchSchoolsApi
 } from '@/lib/turkey-locations';
+import { validatePassword } from '@/lib/password-validator';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   User,
@@ -247,8 +248,9 @@ export default function ProfilePage() {
       setPasswordMsg({ text: 'Lütfen bir şifre giriniz.', type: 'error' });
       return;
     }
-    if (password.length < 6) {
-      setPasswordMsg({ text: 'Şifreniz en az 6 karakter olmalıdır.', type: 'error' });
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      setPasswordMsg({ text: validation.errorMessage || 'Şifre kurallara uymuyor.', type: 'error' });
       return;
     }
     if (password !== passwordConfirm) {
@@ -290,8 +292,9 @@ export default function ProfilePage() {
     }
 
     if (password) {
-      if (password.length < 6) {
-        setErrorMsg('Şifreniz en az 6 karakter olmalıdır.');
+      const validation = validatePassword(password);
+      if (!validation.isValid) {
+        setErrorMsg(validation.errorMessage || 'Şifre kurallara uymuyor.');
         return;
       }
       if (password !== passwordConfirm) {
@@ -328,7 +331,7 @@ export default function ProfilePage() {
         isProfileComplete: true
       });
 
-      if (password && password.length >= 6 && password === passwordConfirm) {
+      if (password && validatePassword(password).isValid && password === passwordConfirm) {
         setUserPassword(currentUser.id, password);
       }
     }
@@ -620,7 +623,7 @@ export default function ProfilePage() {
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="En az 6 karakter"
+                    placeholder="En az 6 karakter (Büyük, küçük harf ve rakam)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-900 outline-none focus:border-indigo-500"
@@ -628,7 +631,7 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -646,6 +649,35 @@ export default function ProfilePage() {
                 />
               </div>
             </div>
+
+            {/* Live Password Criteria Badges */}
+            {password.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px] font-bold select-none animate-in fade-in">
+                {(() => {
+                  const passVal = validatePassword(password);
+                  return (
+                    <>
+                      <div className={`p-1.5 rounded-lg flex items-center gap-1.5 ${passVal.hasMinLength ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                        <span>{passVal.hasMinLength ? '✓' : '○'}</span>
+                        <span>En az 6 karakter</span>
+                      </div>
+                      <div className={`p-1.5 rounded-lg flex items-center gap-1.5 ${passVal.hasUpperCase ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                        <span>{passVal.hasUpperCase ? '✓' : '○'}</span>
+                        <span>1 Büyük Harf</span>
+                      </div>
+                      <div className={`p-1.5 rounded-lg flex items-center gap-1.5 ${passVal.hasLowerCase ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                        <span>{passVal.hasLowerCase ? '✓' : '○'}</span>
+                        <span>1 Küçük Harf</span>
+                      </div>
+                      <div className={`p-1.5 rounded-lg flex items-center gap-1.5 ${passVal.hasNumber ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                        <span>{passVal.hasNumber ? '✓' : '○'}</span>
+                        <span>1 Rakam (0-9)</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
 
             <div className="flex justify-end pt-1">
               <button

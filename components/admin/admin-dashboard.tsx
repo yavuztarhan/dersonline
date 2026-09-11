@@ -29,11 +29,13 @@ import {
   Check,
   BarChart3,
   TrendingUp,
-  FileText
+  FileText,
+  UserPlus
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { AdminAnalyticsReports } from '@/components/admin/admin-analytics-reports';
+import { AdminCreateUserModal } from '@/components/admin/admin-create-user-modal';
 import {
   KVKK_AGREEMENT_TITLE,
   KVKK_AGREEMENT_TEXT,
@@ -61,6 +63,7 @@ export function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCityFilter, setSelectedCityFilter] = useState('Tümü');
   const [notificationMsg, setNotificationMsg] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
+  const [createUserModalOpen, setCreateUserModalOpen] = useState(false);
 
   const pendingTeachers = teachers.filter((t) => t.status === 'pending_admin_approval');
   const approvedTeachers = teachers.filter((t) => t.status === 'approved');
@@ -179,11 +182,19 @@ export function AdminDashboard() {
           />
 
           <button
-            onClick={handleCreateMockPendingTeacher}
-            className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
+            onClick={() => setCreateUserModalOpen(true)}
+            className="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 shrink-0 active:scale-95 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>+ Test Başvurusu Ekle</span>
+            <UserPlus className="w-4 h-4" />
+            <span>+ Yeni Kullanıcı Ekle (Manuel)</span>
+          </button>
+
+          <button
+            onClick={handleCreateMockPendingTeacher}
+            className="px-3.5 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-indigo-200 hover:text-white font-bold text-xs border border-white/15 shadow-sm transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Test Başvurusu</span>
           </button>
         </div>
       </div>
@@ -946,6 +957,15 @@ export function AdminDashboard() {
 
         </div>
       )}
+
+      {/* Admin Manual User Creation Modal */}
+      <AdminCreateUserModal
+        isOpen={createUserModalOpen}
+        onClose={() => setCreateUserModalOpen(false)}
+        onUserCreated={() => {
+          showNotification('Yeni kullanıcı başarıyla oluşturuldu ve anında onaylandı!', 'success');
+        }}
+      />
 
     </div>
   );

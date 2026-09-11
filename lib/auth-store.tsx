@@ -11,6 +11,22 @@ import {
   TeacherRegistrationPayload,
   StudentRegistrationPayload
 } from '@/types/auth';
+import { validatePassword } from '@/lib/password-validator';
+
+export interface AdminCreateUserPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: 'admin' | 'teacher';
+  phone?: string;
+  city?: string;
+  district?: string;
+  school?: string;
+  branch?: string;
+  principalName?: string;
+  assignedClasses?: string[];
+}
 
 interface AuthContextType {
   currentUser: AuthUser | null;
@@ -39,6 +55,7 @@ interface AuthContextType {
   registerStudent: (data: StudentRegistrationPayload) => StudentUser;
   
   // Admin Operations
+  adminCreateUser: (payload: AdminCreateUserPayload) => { success: boolean; error?: string; user?: AuthUser };
   approveTeacher: (teacherId: string) => void;
   rejectTeacher: (teacherId: string, reason?: string) => void;
   deleteTeacher: (teacherId: string) => void;
@@ -616,12 +633,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginWithEmail = (identifier: string, pass?: string): boolean => {
     const trimmed = (identifier || '').trim().toLowerCase();
     const cleanIdNoSpaces = trimmed.replace(/\s+/g, '');
-    if (!trimmed) return false;
+    const cleanPass = (pass || '').trim();
+    if (!trimmed || !cleanPass) return false;
 
     // 1. Check if user exists among Admins (email or phone)
     if (checkIsAdmin(trimmed)) {
       const adminUser = admins.find((a) => a.email.toLowerCase() === trimmed) || getAdminUser(trimmed);
-      if (pass && adminUser.password && adminUser.password !== pass && pass !== 'admin' && pass !== '123456') {
+      const validPass = adminUser.password || 'admin';
+      if (cleanPass !== validPass && cleanPass !== 'admin' && cleanPass !== '123456') {
         return false;
       }
       setCurrentUser(adminUser);
@@ -629,7 +648,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const adminByPhone = admins.find(a => a.phone && a.phone.replace(/\s+/g, '') === cleanIdNoSpaces);
     if (adminByPhone) {
-      if (pass && adminByPhone.password && adminByPhone.password !== pass && pass !== 'admin' && pass !== '123456') {
+      const validPass = adminByPhone.password || 'admin';
+      if (cleanPass !== validPass && cleanPass !== 'admin' && cleanPass !== '123456') {
         return false;
       }
       setCurrentUser(adminByPhone);
@@ -642,7 +662,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (t.phone && t.phone.replace(/\s+/g, '') === cleanIdNoSpaces)
     );
     if (teacher) {
-      if (pass && teacher.password && teacher.password !== pass && pass !== 'admin' && pass !== '123456') {
+      const validPass = teacher.password || '123456';
+      if (cleanPass !== validPass && cleanPass !== 'admin' && cleanPass !== '123456') {
         return false;
       }
       setCurrentUser(teacher);
@@ -655,7 +676,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (s.studentNumber && s.studentNumber.trim().toLowerCase() === trimmed)
     );
     if (student) {
-      if (pass && student.password && student.password !== pass && pass !== 'admin' && pass !== '123456') {
+      const validPass = student.password || '123456';
+      if (cleanPass !== validPass && cleanPass !== 'admin' && cleanPass !== '123456') {
         return false;
       }
       setCurrentUser(student);
@@ -1458,6 +1480,141 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return [];
   };
 
+  const adminCreateUser = (payload: AdminCreateUserPayload): { success: boolean; error?: string; user?: AuthUser } => {
+    const cleanEmail = (payload.email || '').trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      return { success: false, error: 'Lütfen geçerli bir e-posta adresi giriniz.' };
+    }
+
+    if (!payload.firstName.trim()) {
+      return { success: false, error: 'Lütfen kullanıcının adını giriniz.' };
+    }
+
+    if (!payload.lastName.trim()) {
+      return { success: false, error: 'Lütfen kullanıcının soyadını giriniz.' };
+    }
+
+    const passCheck = validatePassword(payload.password);
+    if (!passCheck.isValid) {
+      return { success: false, error: passCheck.errorMessage };
+    }
+
+    // Check if email already exists
+    const emailExistsInAdmins = admins.some(a => a.email.toLowerCase() === cleanEmail);
+    const emailExistsInTeachers = teachers.some(t => t.email.toLowerCase() === cleanEmail);
+    const emailExistsInStudents = students.some(s => s.email.toLowerCase() === cleanEmail);
+
+    if (emailExistsInAdmins || emailExistsInTeachers || emailExistsInStudents) {
+      return { success: false, error: 'Bu e-posta adresi ile kayıtlı bir kullanıcı zaten mevcut.' };
+    }
+
+    const fullName = formatFullName(payload.firstName.trim(), payload.lastName.trim());
+
+    if (payload.role === 'admin') {
+      const newAdmin: AdminUser = {
+        id: `usr-admin-${Date.now()}`,
+        firstName: payload.firstName.trim(),
+        lastName: payload.lastName.trim(),
+        name: fullName,
+        email: cleanEmail,
+        password: payload.password,
+        role: 'admin',
+        avatar: '👑',
+        permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports'],
+        phone: payload.phone || '',
+        city: payload.city || 'Edirne',
+        district: payload.district || 'Merkez',
+        school: payload.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+        branch: payload.branch || 'Matematik',
+        principalName: payload.principalName || 'Mehmet GÜNGÖR',
+        assignedClasses: payload.assignedClasses || ['5-A', '5-B'],
+        isProfileComplete: true,
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+
+      const updatedAdmins = [...admins, newAdmin];
+      setAdmins(updatedAdmins);
+      try {
+        localStorage.setItem('maarif_admins', JSON.stringify(updatedAdmins));
+      } catch (e) {}
+
+      // Server DB Sync
+      try {
+        fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: cleanEmail,
+            firstName: newAdmin.firstName,
+            lastName: newAdmin.lastName,
+            name: newAdmin.name,
+            phone: newAdmin.phone,
+            branch: newAdmin.branch,
+            city: newAdmin.city,
+            district: newAdmin.district,
+            school: newAdmin.school,
+            principalName: newAdmin.principalName,
+            assignedClasses: newAdmin.assignedClasses
+          })
+        }).catch(() => {});
+      } catch (e) {}
+
+      return { success: true, user: newAdmin };
+    } else {
+      const newTeacher: TeacherUser = {
+        id: `tch-${Date.now()}`,
+        firstName: payload.firstName.trim(),
+        lastName: payload.lastName.trim(),
+        name: fullName,
+        email: cleanEmail,
+        password: payload.password,
+        role: 'teacher',
+        avatar: '👨‍🏫',
+        phone: payload.phone || '',
+        city: payload.city || 'Edirne',
+        district: payload.district || 'Merkez',
+        school: payload.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+        branch: payload.branch || 'Matematik',
+        principalName: payload.principalName || 'Mehmet GÜNGÖR',
+        assignedClasses: payload.assignedClasses || ['5-A', '5-B'],
+        status: 'approved',
+        isProfileComplete: true,
+        createdAt: new Date().toISOString().split('T')[0],
+        verifiedAt: new Date().toISOString().split('T')[0],
+        approvedAt: new Date().toISOString().split('T')[0]
+      };
+
+      const updatedTeachers = [...teachers, newTeacher];
+      setTeachers(updatedTeachers);
+      try {
+        localStorage.setItem('maarif_teachers', JSON.stringify(updatedTeachers));
+      } catch (e) {}
+
+      // Server DB Sync
+      try {
+        fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: cleanEmail,
+            firstName: newTeacher.firstName,
+            lastName: newTeacher.lastName,
+            name: newTeacher.name,
+            phone: newTeacher.phone,
+            branch: newTeacher.branch,
+            city: newTeacher.city,
+            district: newTeacher.district,
+            school: newTeacher.school,
+            principalName: newTeacher.principalName,
+            assignedClasses: newTeacher.assignedClasses
+          })
+        }).catch(() => {});
+      } catch (e) {}
+
+      return { success: true, user: newTeacher };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -1479,6 +1636,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateTeacherProfile,
         addClassToTeacher,
         registerStudent,
+        adminCreateUser,
         approveTeacher,
         rejectTeacher,
         deleteTeacher,
