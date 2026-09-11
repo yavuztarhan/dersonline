@@ -775,12 +775,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // 3. Update Admins list
     setAdmins((prev) => {
-      const nextAdmins = prev.map((a) => {
-        if (a.id === userId || (targetEmail && a.email.toLowerCase() === targetEmail)) {
-          return { ...a, ...formatNameIfPresent(a, updates) } as AdminUser;
-        }
-        return a;
-      });
+      const existsIndex = prev.findIndex((a) => a.id === userId || (targetEmail && a.email.toLowerCase() === targetEmail));
+      let nextAdmins: AdminUser[];
+      if (existsIndex >= 0) {
+        nextAdmins = prev.map((a, idx) => {
+          if (idx === existsIndex) {
+            return {
+              ...a,
+              ...formatNameIfPresent(a, updates),
+              phone: (updates as any).phone !== undefined ? (updates as any).phone : a.phone,
+              city: (updates as any).city !== undefined ? (updates as any).city : a.city,
+              district: (updates as any).district !== undefined ? (updates as any).district : a.district,
+              school: (updates as any).school !== undefined ? (updates as any).school : a.school,
+              branch: (updates as any).branch !== undefined ? (updates as any).branch : a.branch,
+              principalName: (updates as any).principalName !== undefined ? (updates as any).principalName : a.principalName,
+              assignedClasses: (updates as any).assignedClasses !== undefined ? (updates as any).assignedClasses : a.assignedClasses,
+              isProfileComplete: true
+            } as AdminUser;
+          }
+          return a;
+        });
+      } else if (currentUser?.role === 'admin' || updatedCurrentUser?.role === 'admin') {
+        const base = updatedCurrentUser || currentUser;
+        const newAdmin: AdminUser = {
+          id: userId || base?.id || `usr-admin-${targetEmail.replace(/[^a-z0-9]/g, '_')}`,
+          firstName: updates.firstName || base?.firstName || 'Sistem',
+          lastName: updates.lastName || base?.lastName || 'Yöneticisi',
+          name: formatFullName(updates.firstName || base?.firstName, updates.lastName || base?.lastName, 'Sistem Yöneticisi'),
+          email: updates.email || base?.email || targetEmail,
+          password: 'admin',
+          role: 'admin',
+          avatar: base?.avatar || '👑',
+          permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports'],
+          phone: (updates as any).phone || (base as any)?.phone || '',
+          city: (updates as any).city || (base as any)?.city || 'Edirne',
+          district: (updates as any).district || (base as any)?.district || 'Merkez',
+          school: (updates as any).school || (base as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+          branch: (updates as any).branch || (base as any)?.branch || 'Matematik',
+          principalName: (updates as any).principalName || (base as any)?.principalName || 'Mehmet GÜNGÖR',
+          assignedClasses: (updates as any).assignedClasses || (base as any)?.assignedClasses || ['5-A', '5-B'],
+          isProfileComplete: true,
+          createdAt: base?.createdAt || new Date().toISOString().split('T')[0]
+        };
+        nextAdmins = [...prev, newAdmin];
+      } else {
+        nextAdmins = prev;
+      }
       try {
         localStorage.setItem('maarif_admins', JSON.stringify(nextAdmins));
       } catch (e) {}

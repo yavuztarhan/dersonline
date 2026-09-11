@@ -53,6 +53,8 @@ export interface AdminUser extends BaseUser {
   school?: string;
   branch?: string;
   principalName?: string;
+  assignedClasses?: string[];
+  isProfileComplete?: boolean;
 }
 
 export type AuthUser = TeacherUser | StudentUser | AdminUser;
