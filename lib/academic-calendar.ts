@@ -448,3 +448,95 @@ export function getAllAcademicWeeks(): AcademicWeek[] {
 export function getActiveAcademicYear(): string {
   return ACADEMIC_CALENDAR_CONFIG.academicYear;
 }
+
+/**
+ * 2026-2027 MEB Çalışma Takvimi 36 Haftalık Başlangıç Tarihleri (Pazartesi günleri)
+ */
+export const WEEK_START_DATES: Record<number, string> = {
+  1: '2026-09-14',
+  2: '2026-09-21',
+  3: '2026-09-28',
+  4: '2026-10-05',
+  5: '2026-10-12',
+  6: '2026-10-19',
+  7: '2026-10-26',
+  8: '2026-11-02',
+  9: '2026-11-09',
+  10: '2026-11-23',
+  11: '2026-11-30',
+  12: '2026-12-07',
+  13: '2026-12-14',
+  14: '2026-12-21',
+  15: '2026-12-28',
+  16: '2027-01-04',
+  17: '2027-01-11',
+  18: '2027-01-18',
+  19: '2027-02-08',
+  20: '2027-02-15',
+  21: '2027-02-22',
+  22: '2027-03-01',
+  23: '2027-03-15',
+  24: '2027-03-22',
+  25: '2027-03-29',
+  26: '2027-04-05',
+  27: '2027-04-12',
+  28: '2027-04-19',
+  29: '2027-04-26',
+  30: '2027-05-03',
+  31: '2027-05-10',
+  32: '2027-05-17',
+  33: '2027-05-24',
+  34: '2027-05-31',
+  35: '2027-06-07',
+  36: '2027-06-14',
+};
+
+/**
+ * Sunucu/kullanıcı tarihine göre eşleşen akademik haftayı,
+ * eğer tarih tatil veya başlangıç öncesiyse bir sonraki aktif haftayı döndürür.
+ */
+export function getCurrentOrNextAcademicWeek(currentDate: Date = new Date()): {
+  week: AcademicWeek;
+  isUpcoming: boolean;
+  matchedExact: boolean;
+} {
+  const currentMs = currentDate.getTime();
+
+  // 1. Mevcut tarih aktif bir akademik haftanın içinde mi? (Pazartesi 00:00 - Pazar 23:59:59)
+  for (const week of ACADEMIC_WEEKS_DATA) {
+    const startStr = WEEK_START_DATES[week.weekNo];
+    if (!startStr) continue;
+    const startDate = new Date(`${startStr}T00:00:00`);
+    const endDate = new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000 - 1);
+
+    if (currentMs >= startDate.getTime() && currentMs <= endDate.getTime()) {
+      return {
+        week,
+        isUpcoming: false,
+        matchedExact: true,
+      };
+    }
+  }
+
+  // 2. Eşleşmiyorsa (örn: okul başlamadan önce veya ara tatilde), ilk gelecek haftayı bul
+  for (const week of ACADEMIC_WEEKS_DATA) {
+    const startStr = WEEK_START_DATES[week.weekNo];
+    if (!startStr) continue;
+    const startDate = new Date(`${startStr}T00:00:00`);
+
+    if (startDate.getTime() > currentMs) {
+      return {
+        week,
+        isUpcoming: true,
+        matchedExact: false,
+      };
+    }
+  }
+
+  // 3. Yıl sonu / yaz tatili sonrası için 1. Hafta varsayılan döner
+  return {
+    week: ACADEMIC_WEEKS_DATA[0],
+    isUpcoming: true,
+    matchedExact: false,
+  };
+}

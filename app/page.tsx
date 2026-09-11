@@ -8,6 +8,7 @@ import { StepSelector } from '@/components/step-selector';
 import { StudentBadgePanel } from '@/components/student-badge-panel';
 import { LandingPage } from '@/components/landing/landing-page';
 import { AuthModal } from '@/components/auth/auth-modal';
+import { DirectLaunchSection } from '@/components/home/direct-launch-section';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   GraduationCap,
@@ -168,6 +169,9 @@ export default function HomePage() {
 
       {/* Step-by-Step Cascading Selection Wizard */}
       <StepSelector />
+
+      {/* Dersi Doğrudan Başlat: Takvime Dayalı Hızlı Başlatma Kartları (Mobilde Gizli) */}
+      <DirectLaunchSection />
 
     </div>
   );
