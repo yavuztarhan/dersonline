@@ -4,47 +4,38 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { useAuth } from '@/lib/auth-store';
-import { useApp } from '@/lib/store';
 import { TeacherRegisterWizard } from './teacher-register-wizard';
-import { StudentRegisterWizard } from './student-register-wizard';
-import { GoogleSignInModal } from './google-sign-in-modal';
 import {
   X,
   LogIn,
-  UserPlus,
   Mail,
   Lock,
-  ArrowRight,
   Sparkles,
-  School,
-  GraduationCap
+  Loader2
 } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTab?: 'login' | 'register';
-  defaultRegisterRole?: 'teacher' | 'student';
 }
 
 export function AuthModal({
   isOpen,
   onClose,
-  defaultTab = 'login',
-  defaultRegisterRole = 'teacher'
+  defaultTab = 'login'
 }: AuthModalProps) {
   const router = useRouter();
-  const { loginWithEmail, loginWithGoogle } = useAuth();
-  const { setRole } = useApp();
+  const { loginWithEmail } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'login' | 'register'>(defaultTab);
-  const [registerRole, setRegisterRole] = useState<'teacher' | 'student'>(defaultRegisterRole);
   const [identifierInput, setIdentifierInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -53,25 +44,17 @@ export function AuthModal({
 
   useEffect(() => {
     setActiveTab(defaultTab);
-    if (defaultRegisterRole) {
-      setRegisterRole(defaultRegisterRole);
-    }
-  }, [defaultTab, defaultRegisterRole]);
+  }, [defaultTab]);
 
   if (!isOpen || !mounted) return null;
 
-  const handleGoogleAccountSelect = (profile: { name: string; email: string; avatar?: string }) => {
-    const result = loginWithGoogle(profile);
-    if (result.user.role === 'student') {
-      setRole('student');
-    } else {
-      setRole('teacher');
-    }
-    setShowGoogleModal(false);
-    onClose();
-
-    if (result.isNewUser || (result.user.role === 'teacher' && !(result.user as any).isProfileComplete && !(result.user as any).school)) {
-      router.push('/profile');
+  const handleLiveGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    try {
+      await signIn('google', { callbackUrl: '/' });
+    } catch (e) {
+      console.error('Google Sign In Error:', e);
+      setGoogleLoading(false);
     }
   };
 
@@ -98,57 +81,18 @@ export function AuthModal({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-slate-800 text-white hover:bg-slate-700 flex items-center justify-center shadow-lg transition-all"
+          className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-slate-800 text-white hover:bg-slate-700 flex items-center justify-center shadow-lg transition-all cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {activeTab === 'register' ? (
-          <div className="space-y-4">
-            {/* Register Role Sub-Selector */}
-            <div className="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-md grid grid-cols-2 gap-1.5">
-              <button
-                type="button"
-                onClick={() => setRegisterRole('teacher')}
-                className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                  registerRole === 'teacher'
-                    ? 'bg-teal-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <span>👨‍🏫</span>
-                <span>Öğretmen Kaydı</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setRegisterRole('student')}
-                className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                  registerRole === 'student'
-                    ? 'bg-amber-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <span>🎓</span>
-                <span>Öğrenci Kaydı</span>
-              </button>
-            </div>
-
-            {registerRole === 'teacher' ? (
-              <TeacherRegisterWizard
-                onComplete={() => {
-                  onClose();
-                }}
-                onSwitchToLogin={() => setActiveTab('login')}
-              />
-            ) : (
-              <StudentRegisterWizard
-                onComplete={() => {
-                  onClose();
-                }}
-                onSwitchToLogin={() => setActiveTab('login')}
-              />
-            )}
-          </div>
+          <TeacherRegisterWizard
+            onComplete={() => {
+              onClose();
+            }}
+            onSwitchToLogin={() => setActiveTab('login')}
+          />
         ) : (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6">
             
@@ -192,7 +136,7 @@ export function AuthModal({
                   onClick={() => setActiveTab('register')}
                   className="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-900"
                 >
-                  Yeni Kayıt Ol
+                  Öğretmen Kaydı
                 </button>
               </div>
             </div>
@@ -201,16 +145,26 @@ export function AuthModal({
             <div>
               <button
                 type="button"
-                onClick={() => setShowGoogleModal(true)}
-                className="w-full py-3 px-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-3 cursor-pointer active:scale-98"
+                onClick={handleLiveGoogleSignIn}
+                disabled={googleLoading}
+                className="w-full py-3 px-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-3 cursor-pointer active:scale-98 disabled:opacity-50"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
-                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.43 7.34 24 12 24z"/>
-                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.98 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/>
-                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.57 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                </svg>
-                <span>Google ile Oturum Aç</span>
+                {googleLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                    <span>Google'a Yönlendiriliyor...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
+                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.43 7.34 24 12 24z"/>
+                      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.98 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.57 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    <span>Google ile Oturum Aç</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -265,44 +219,20 @@ export function AuthModal({
               </form>
             </div>
 
-            {/* Quick Registration Helper Links */}
+            {/* Quick Registration Helper Link */}
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span>Henüz hesabınız yok mu?</span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab('register');
-                    setRegisterRole('teacher');
-                  }}
-                  className="text-teal-600 hover:text-teal-700 font-bold hover:underline"
-                >
-                  Öğretmen Kaydı
-                </button>
-                <span>•</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab('register');
-                    setRegisterRole('student');
-                  }}
-                  className="text-amber-600 hover:text-amber-700 font-bold hover:underline"
-                >
-                  Öğrenci Kaydı
-                </button>
-              </div>
+              <span>Henüz öğretmen hesabınız yok mu?</span>
+              <button
+                type="button"
+                onClick={() => setActiveTab('register')}
+                className="text-teal-600 hover:text-teal-700 font-bold hover:underline"
+              >
+                Öğretmen Kaydı Yapın
+              </button>
             </div>
 
           </div>
         )}
-
-        {/* Google Sign In Account Chooser Modal */}
-        <GoogleSignInModal
-          isOpen={showGoogleModal}
-          onClose={() => setShowGoogleModal(false)}
-          onSelectAccount={handleGoogleAccountSelect}
-          mode="login"
-        />
 
       </div>
     </div>,

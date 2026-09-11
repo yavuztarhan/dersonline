@@ -74,25 +74,12 @@ export function formatFullName(firstName?: string, lastName?: string, fallback =
 }
 
 export const ADMIN_EMAILS = [
-  'admin@maarif.gov.tr',
   'powerose@gmail.com',
   'maarifakademi.com.tr@gmail.com',
   'viziteci325@gmail.com'
 ];
 
 export const SEED_ADMINS: AdminUser[] = [
-  {
-    id: 'usr-admin-1',
-    firstName: 'Maarif Sistem',
-    lastName: 'Yöneticisi',
-    name: 'Maarif Sistem Yöneticisi',
-    email: 'admin@maarif.gov.tr',
-    password: 'admin',
-    role: 'admin',
-    avatar: '🛡️',
-    createdAt: '2026-09-01',
-    permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports']
-  },
   {
     id: 'usr-admin-powerose',
     firstName: 'Sistem Yöneticisi',

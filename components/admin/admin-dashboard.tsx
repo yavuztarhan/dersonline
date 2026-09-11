@@ -537,7 +537,7 @@ export function AdminDashboard() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredAdmins.map((adm) => {
-                  const isSuperAdmin = adm.email.toLowerCase() === 'admin@maarif.gov.tr' || adm.email.toLowerCase() === 'powerose@gmail.com';
+                  const isSuperAdmin = adm.email.toLowerCase() === 'powerose@gmail.com' || adm.email.toLowerCase() === 'maarifakademi.com.tr@gmail.com';
                   return (
                     <tr key={adm.id} className="hover:bg-purple-50/30 transition-colors">
                       <td className="py-3.5 px-4 font-bold text-slate-900">

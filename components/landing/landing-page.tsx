@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { signIn } from 'next-auth/react';
 import { AuthModal } from '@/components/auth/auth-modal';
-import { GoogleSignInModal } from '@/components/auth/google-sign-in-modal';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { useRouter } from 'next/navigation';
@@ -42,7 +42,6 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
   const { setRole, playSound } = useApp();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
-  const [googleModalOpen, setGoogleModalOpen] = useState(false);
 
   const handleOpenLogin = () => {
     playSound('click');
@@ -56,17 +55,12 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
     setAuthModalOpen(true);
   };
 
-  const handleGoogleAccountSelect = (profile: { name: string; email: string; avatar?: string }) => {
-    const result = loginWithGoogle(profile);
-    if (result.user.role === 'student') {
-      setRole('student');
-    } else {
-      setRole('teacher');
-    }
-    setGoogleModalOpen(false);
-
-    if (result.isNewUser || (result.user.role === 'teacher' && !(result.user as any).isProfileComplete && !(result.user as any).school)) {
-      router.push('/profile');
+  const handleGoogleSignIn = async () => {
+    playSound('click');
+    try {
+      await signIn('google', { callbackUrl: '/' });
+    } catch (e) {
+      console.error('Google Sign In Error:', e);
     }
   };
 
@@ -126,7 +120,7 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
               </button>
 
               <button
-                onClick={() => setGoogleModalOpen(true)}
+                onClick={handleGoogleSignIn}
                 className="px-4 py-3 rounded-2xl bg-white hover:bg-slate-100 text-slate-800 font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -594,13 +588,6 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         defaultTab={authModalTab}
-      />
-
-      <GoogleSignInModal
-        isOpen={googleModalOpen}
-        onClose={() => setGoogleModalOpen(false)}
-        onSelectAccount={handleGoogleAccountSelect}
-        mode="login"
       />
 
     </div>

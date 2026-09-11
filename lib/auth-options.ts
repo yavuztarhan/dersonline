@@ -3,7 +3,6 @@ import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from './prisma';
 
 export const ADMIN_EMAILS = [
-  'admin@maarif.gov.tr',
   'powerose@gmail.com',
   'maarifakademi.com.tr@gmail.com',
   'viziteci325@gmail.com',

@@ -28,7 +28,7 @@ import {
   Search,
   Loader2
 } from 'lucide-react';
-import { GoogleSignInModal } from './google-sign-in-modal';
+import { signIn } from 'next-auth/react';
 import confetti from 'canvas-confetti';
 
 interface TeacherRegisterWizardProps {
@@ -380,7 +380,7 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
           <div>
             <button
               type="button"
-              onClick={() => setShowGoogleModal(true)}
+              onClick={() => signIn('google', { callbackUrl: '/' })}
               className="w-full py-3 px-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-teal-500 hover:bg-teal-50/50 text-slate-800 font-extrabold text-xs transition-all flex items-center justify-center gap-2.5 shadow-xs group cursor-pointer"
             >
               <svg className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
@@ -824,14 +824,6 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
           </div>
         </div>
       )}
-
-      {/* Google Quick Register Modal */}
-      <GoogleSignInModal
-        isOpen={showGoogleModal}
-        onClose={() => setShowGoogleModal(false)}
-        onSelectAccount={handleGoogleQuickRegister}
-        mode="register"
-      />
 
     </div>
   );

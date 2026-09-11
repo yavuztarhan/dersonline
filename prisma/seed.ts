@@ -12,7 +12,6 @@ async function main() {
 
   // 1. Admin Kullanıcılar
   const adminUsers = [
-    { email: 'admin@maarif.gov.tr', firstName: 'Maarif Sistem', lastName: 'Yöneticisi', name: 'Maarif Sistem Yöneticisi', avatar: '🛡️' },
     { email: 'powerose@gmail.com', firstName: 'Sistem Yöneticisi', lastName: 'Powerose', name: 'Sistem Yöneticisi (Powerose)', avatar: '🛡️' },
     { email: 'maarifakademi.com.tr@gmail.com', firstName: 'Maarif Akademi', lastName: 'Yönetim', name: 'Maarif Akademi Yönetim', avatar: '🛡️' },
     { email: 'viziteci325@gmail.com', firstName: 'Sistem Yöneticisi', lastName: 'Viziteci', name: 'Sistem Yöneticisi', avatar: '🛡️' },
