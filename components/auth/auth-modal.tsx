@@ -39,8 +39,30 @@ export function AuthModal({
   const [googleLoading, setGoogleLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Direct Google Email input state
+  const [directGoogleEmail, setDirectGoogleEmail] = useState('');
+  const [directGoogleName, setDirectGoogleName] = useState('');
+  const [showDirectGoogleInput, setShowDirectGoogleInput] = useState(false);
+  const [oauthErrorNotice, setOauthErrorNotice] = useState<string | null>(null);
+
   useEffect(() => {
     setMounted(true);
+    // Check if URL has NextAuth OAuth error parameter
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const err = params.get('error');
+      if (err) {
+        if (err === 'OAuthSignin' || err === 'OAuthCallback' || err === 'OAuthCreateAccount') {
+          setOauthErrorNotice('Canlı Google OAuth yönlendirmesinde bir uyumsuzluk algılandı. Aşağıdaki alandan Google e-postanız ile doğrudan giriş yapabilir veya kaydolabilirsiniz.');
+          setShowDirectGoogleInput(true);
+        } else if (err === 'AccessDenied') {
+          setOauthErrorNotice('Google oturum açma işlemi iptal edildi veya yetki verilmedi.');
+        } else {
+          setOauthErrorNotice(`Giriş uyarısı: ${err}. Google e-postanızla doğrudan devam edebilirsiniz.`);
+          setShowDirectGoogleInput(true);
+        }
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -49,13 +71,44 @@ export function AuthModal({
 
   if (!isOpen || !mounted) return null;
 
+  const { loginWithGoogle } = useAuth();
+
   const handleLiveGoogleSignIn = async () => {
     setGoogleLoading(true);
+    setLoginError('');
     try {
-      await signIn('google', { callbackUrl: '/' });
+      const res = await signIn('google', { callbackUrl: '/', redirect: true });
+      if (res?.error) {
+        setOauthErrorNotice('Google OAuth bağlantısı kurulamadı. Lütfen Google e-postanız ile doğrudan giriş yapınız.');
+        setShowDirectGoogleInput(true);
+        setGoogleLoading(false);
+      }
     } catch (e) {
       console.error('Google Sign In Error:', e);
+      setOauthErrorNotice('Google ile bağlantı kurulamadı. Aşağıdaki alandan Google e-postanız ile doğrudan işlem yapabilirsiniz.');
+      setShowDirectGoogleInput(true);
       setGoogleLoading(false);
+    }
+  };
+
+  const handleDirectGoogleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    const email = directGoogleEmail.trim().toLowerCase();
+    if (!email || !email.includes('@')) {
+      setLoginError('Lütfen geçerli bir Google / E-posta adresi giriniz.');
+      return;
+    }
+
+    const { user, isNewUser } = loginWithGoogle({
+      name: directGoogleName.trim() || email.split('@')[0],
+      email: email,
+      avatar: '👨‍🏫'
+    });
+
+    onClose();
+    if (isNewUser) {
+      router.push('/profile');
     }
   };
 
@@ -133,6 +186,17 @@ export function AuthModal({
               </div>
             </div>
 
+            {/* OAuth Notice if present */}
+            {oauthErrorNotice && (
+              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5 text-left">
+                <span className="text-base">⚠️</span>
+                <div className="space-y-1">
+                  <div className="font-bold text-amber-950">OAuth Bildirimi</div>
+                  <div>{oauthErrorNotice}</div>
+                </div>
+              </div>
+            )}
+
             {/* Google Registration Action Card */}
             <div className="p-6 rounded-2xl bg-gradient-to-b from-teal-50/80 to-teal-50/40 border border-teal-200 space-y-4 text-center">
               <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center mx-auto shadow-md">
@@ -143,6 +207,7 @@ export function AuthModal({
                 Öğretmen kaydı <strong>Google kimlik doğrulaması</strong> ile yapılmaktadır. Google ile giriş yaptıktan sonra <strong>KVKK & Öğretmen Taahhütnamesi'ni</strong> onaylayarak okul ve branş bilgilerinizi tamamlayabilirsiniz.
               </div>
 
+              {/* 1. Live Google OAuth Button */}
               <button
                 type="button"
                 onClick={handleLiveGoogleSignIn}
@@ -169,6 +234,57 @@ export function AuthModal({
                   </>
                 )}
               </button>
+
+              {/* 2. Direct Google Email Input Option / Fallback */}
+              <div className="pt-2">
+                {!showDirectGoogleInput ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowDirectGoogleInput(true)}
+                    className="text-[11px] text-teal-700 hover:text-teal-900 underline font-semibold cursor-pointer"
+                  >
+                    Google E-Postası ile Doğrudan Kayıt Ol ➔
+                  </button>
+                ) : (
+                  <form onSubmit={handleDirectGoogleSubmit} className="pt-3 border-t border-teal-200 space-y-2.5 text-left animate-in fade-in">
+                    <div className="text-[11px] font-bold text-teal-900">
+                      Doğrudan Google / Gmail E-Postası ile Kayıt:
+                    </div>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="email"
+                        required
+                        value={directGoogleEmail}
+                        onChange={(e) => setDirectGoogleEmail(e.target.value)}
+                        placeholder="ad.soyad@gmail.com veya @meb.k12.tr"
+                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-teal-300 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
+                      />
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={directGoogleName}
+                        onChange={(e) => setDirectGoogleName(e.target.value)}
+                        placeholder="Adınız Soyadınız (İsteğe bağlı)"
+                        className="w-full px-4 py-2.5 bg-white border border-teal-300 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
+                      />
+                    </div>
+                    {loginError && (
+                      <div className="text-xs text-rose-600 font-bold bg-rose-50 p-2 rounded-xl border border-rose-200">
+                        {loginError}
+                      </div>
+                    )}
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-black text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                    >
+                      <span>Google E-Postası İle Devam Et (KVKK Onayına Geç)</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
 
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
@@ -207,7 +323,7 @@ export function AuthModal({
                   Maarif Akademi Girişi
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  E-posta, telefon veya okul numaranız ile hesabınıza erişin.
+                  Google hesabınız, e-posta veya okul numaranız ile sisteme erişin.
                 </p>
               </div>
 
@@ -230,8 +346,19 @@ export function AuthModal({
               </div>
             </div>
 
+            {/* OAuth Notice if present */}
+            {oauthErrorNotice && (
+              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5 text-left">
+                <span className="text-base">⚠️</span>
+                <div className="space-y-1">
+                  <div className="font-bold text-amber-950">OAuth Bildirimi</div>
+                  <div>{oauthErrorNotice}</div>
+                </div>
+              </div>
+            )}
+
             {/* Google OAuth Login Button */}
-            <div>
+            <div className="space-y-2">
               <button
                 type="button"
                 onClick={handleLiveGoogleSignIn}
@@ -328,3 +455,4 @@ export function AuthModal({
     document.body
   );
 }
+

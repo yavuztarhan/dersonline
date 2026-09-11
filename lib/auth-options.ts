@@ -49,6 +49,7 @@ export const authOptions: NextAuthOptions = {
             },
           });
         } catch (e) {
+          // Non-fatal: local auth store and session will still proceed
           console.warn('NextAuth Prisma upsert note:', e);
         }
       }
@@ -71,6 +72,12 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/',
+    error: '/',
+  },
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET || 'maarif_super_secret_jwt_key_2026',
+  debug: process.env.NODE_ENV === 'development',
 };

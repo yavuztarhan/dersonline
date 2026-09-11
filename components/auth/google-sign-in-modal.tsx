@@ -15,10 +15,14 @@ interface GoogleSignInModalProps {
 export function GoogleSignInModal({
   isOpen,
   onClose,
+  onSelectAccount,
   mode = 'login'
 }: GoogleSignInModalProps) {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [directEmail, setDirectEmail] = useState('');
+  const [showDirect, setShowDirect] = useState(false);
+  const [errorNotice, setErrorNotice] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -28,12 +32,33 @@ export function GoogleSignInModal({
 
   const handleLiveOAuth = async () => {
     setLoading(true);
+    setErrorNotice(null);
     try {
-      await signIn('google', { callbackUrl: '/' });
+      const res = await signIn('google', { callbackUrl: '/', redirect: true });
+      if (res?.error) {
+        setErrorNotice('Google OAuth bağlantısı kurulamadı. Aşağıdaki alandan Google e-postanız ile doğrudan giriş yapabilirsiniz.');
+        setShowDirect(true);
+        setLoading(false);
+      }
     } catch (e) {
       console.error('NextAuth Google Error:', e);
+      setErrorNotice('Google bağlantı hatası oluştu. Google e-postanız ile doğrudan devam edebilirsiniz.');
+      setShowDirect(true);
       setLoading(false);
     }
+  };
+
+  const handleDirectSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!directEmail || !directEmail.includes('@')) return;
+    if (onSelectAccount) {
+      onSelectAccount({
+        name: directEmail.split('@')[0],
+        email: directEmail.trim().toLowerCase(),
+        avatar: '👨‍🏫'
+      });
+    }
+    onClose();
   };
 
   return createPortal(
@@ -43,7 +68,7 @@ export function GoogleSignInModal({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"
+          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
@@ -65,6 +90,12 @@ export function GoogleSignInModal({
             Maarif Akademi platformuna resmi Google hesabınızla doğrudan bağlanın.
           </p>
         </div>
+
+        {errorNotice && (
+          <div className="mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 text-left">
+            {errorNotice}
+          </div>
+        )}
 
         {/* Content */}
         <div className="p-6 space-y-4 text-center">
@@ -97,6 +128,34 @@ export function GoogleSignInModal({
               </>
             )}
           </button>
+
+          {!showDirect ? (
+            <button
+              type="button"
+              onClick={() => setShowDirect(true)}
+              className="text-[11px] text-teal-700 hover:text-teal-900 underline font-medium cursor-pointer"
+            >
+              Google E-Postası ile Hızlı Başlat ➔
+            </button>
+          ) : (
+            <form onSubmit={handleDirectSubmit} className="pt-3 border-t border-slate-100 space-y-2 text-left">
+              <div className="text-[11px] font-bold text-slate-700">Google / MEB E-Postanız:</div>
+              <input
+                type="email"
+                required
+                value={directEmail}
+                onChange={(e) => setDirectEmail(e.target.value)}
+                placeholder="ornek@gmail.com"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                Devam Et
+              </button>
+            </form>
+          )}
         </div>
 
         {/* Security Footer */}
