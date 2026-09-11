@@ -14,6 +14,7 @@ import { getPendingPeerEvaluationsForStudent } from '@/lib/peer-evaluation-store
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentGroupsCard } from '@/components/student/student-groups-card';
 import { StudentPeerEvaluationCard } from '@/components/student/student-peer-evaluation-card';
+import { StudentBoardHistoryCard } from '@/components/student/student-board-history-card';
 import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer-modal';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { MascotCharacter } from '@/components/mascot';
@@ -36,14 +37,15 @@ import {
   FileText,
   Star,
   Flame,
-  LayoutDashboard
+  LayoutDashboard,
+  Target
 } from 'lucide-react';
 
 export function StudentDashboard() {
   const { currentUser } = useAuth();
   const { studentPoints, studentBadges, playSound } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'peer_eval' | 'groups' | 'leaderboard' | 'files'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'board_history' | 'peer_eval' | 'groups' | 'leaderboard' | 'files'>('overview');
   const [files, setFiles] = useState<ClassroomFileRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [fileTypeFilter, setFileTypeFilter] = useState<'all' | 'whiteboard_note' | 'activity_sheet'>('all');
@@ -178,8 +180,8 @@ export function StudentDashboard() {
         </div>
       </div>
 
-      {/* 2. EXECUTIVE TABBED MODULE SWITCHER (5 Primary Sections) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
+      {/* 2. EXECUTIVE TABBED MODULE SWITCHER (6 Primary Sections) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
         
         {/* Tab 1: Genel Bakış & Rozetler */}
         <button
@@ -215,6 +217,44 @@ export function StudentDashboard() {
             </div>
           </div>
           {activeTab === 'overview' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-teal-600 rounded-full" />
+          )}
+        </button>
+
+        {/* Tab 2: Tahtaya Kalkma & Başarım */}
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
+            setActiveTab('board_history');
+          }}
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
+            activeTab === 'board_history'
+              ? 'bg-white shadow-md border-teal-500 ring-2 ring-teal-500/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeTab === 'board_history' ? 'bg-teal-600 text-white shadow-sm' : 'bg-teal-50 text-teal-700'
+              }`}
+            >
+              <Target className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black border border-teal-200">
+              Karnem
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeTab === 'board_history' ? 'text-teal-950' : 'text-slate-800'}`}>
+              Tahtaya Kalkma
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Başarım & Rapor
+            </div>
+          </div>
+          {activeTab === 'board_history' && (
             <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-teal-600 rounded-full" />
           )}
         </button>
@@ -460,6 +500,30 @@ export function StudentDashboard() {
               </div>
             </Link>
 
+            {/* Board Participation Quick Access Card */}
+            <div
+              onClick={() => {
+                playSound('select');
+                setActiveTab('board_history');
+              }}
+              className="p-5 rounded-3xl bg-gradient-to-br from-teal-500 to-emerald-700 text-white shadow-md flex items-center justify-between gap-3 group transition-all cursor-pointer hover:scale-[1.01]"
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div className="w-10 h-10 rounded-2xl bg-white/20 text-white flex items-center justify-center text-lg shrink-0">
+                  🎯
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-black truncate">
+                    Tahtaya Kalkma & Gelişim Grafiğim
+                  </div>
+                  <div className="text-[11px] text-teal-100 truncate">
+                    Başarı yüzdelerini ve PDF karneni incele
+                  </div>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform shrink-0" />
+            </div>
+
             {/* Home Page Lessons Discovery Link */}
             <Link
               href="/"
@@ -486,7 +550,14 @@ export function StudentDashboard() {
         </div>
       )}
 
-      {/* TAB 2: PEER EVALUATION */}
+      {/* TAB 2: BOARD PARTICIPATION HISTORY */}
+      {activeTab === 'board_history' && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <StudentBoardHistoryCard />
+        </div>
+      )}
+
+      {/* TAB 3: PEER EVALUATION */}
       {activeTab === 'peer_eval' && (
         <div className="space-y-6 animate-in fade-in duration-300">
           <StudentPeerEvaluationCard />
