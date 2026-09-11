@@ -304,23 +304,6 @@ export function StepSelector() {
       {/* STEP 1: GRADE SELECTION */}
       {currentStep === 1 && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2">
-                <span>1. Adım:</span> Sınıf Seviyesini Seçiniz
-              </h2>
-              <p className="text-sm text-slate-500">
-                {isStudent
-                  ? `${studentGradeLevel}. Sınıf seviyeniz için hazırlanmış Maarif Modeli dersleri`
-                  : isTeacher
-                  ? `${teacherBranch} branşınıza ait sınıf kademeleri`
-                  : 'Türkiye Yüzyılı Maarif Modeli kapsamında hazırlanmış kademe sınıfları'}
-              </p>
-            </div>
-            <span className="text-xs font-semibold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full border border-teal-300">
-              Adım 1 / 4
-            </span>
-          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {availableGrades.map((grade) => {
@@ -411,32 +394,18 @@ export function StepSelector() {
       {/* STEP 2: SUBJECT SELECTION (Shown for multiple subjects / admins) */}
       {currentStep === 2 && selectedGrade && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  playSound('click');
-                  resetSelection();
-                }}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
-                title="Geri"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h2 className="text-2xl font-black text-slate-800">
-                  <span>2. Adım:</span> {selectedGrade.title} İçin Ders Seçiniz
-                </h2>
-                <p className="text-sm text-slate-500">
-                  {isTeacher
-                    ? `${teacherBranch} branşınıza uygun aktif dersler`
-                    : 'Müfredattaki aktif ders içerikleri'}
-                </p>
-              </div>
-            </div>
-            <span className="text-xs font-semibold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full border border-teal-300">
-              Adım 2 / 4
-            </span>
+          <div className="flex items-center">
+            <button
+              onClick={() => {
+                playSound('click');
+                resetSelection();
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-semibold cursor-pointer"
+              title="Geri"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Geri Dön</span>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -473,42 +442,30 @@ export function StepSelector() {
       {/* STEP 3: UNIT SELECTION */}
       {currentStep === 3 && selectedGrade && selectedSubject && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  playSound('click');
-                  if (isTeacher || availableSubjectsForGrade.length <= 1) {
-                    // Single subject -> go back to grade selection
-                    setSelectedGrade(null);
-                    setSelectedSubject(null);
-                    setSelectedUnit(null);
-                    setSelectedTopic(null);
-                    setSelectedOutcome(null);
-                  } else {
-                    setSelectedSubject(null);
-                    setSelectedUnit(null);
-                    setSelectedTopic(null);
-                    setSelectedOutcome(null);
-                  }
-                }}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
-                title="Geri"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h2 className="text-2xl font-black text-slate-800">
-                  <span>3. Adım:</span> {selectedSubject.title} Ünitesi Seçiniz
-                </h2>
-                <p className="text-sm text-slate-500">
-                  {selectedGrade.title} {selectedSubject.title} müfredatındaki öğrenme alanları ve üniteler
-                </p>
-              </div>
-            </div>
-            <span className="text-xs font-semibold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full border border-teal-300">
-              Adım 3 / 4
-            </span>
+          <div className="flex items-center">
+            <button
+              onClick={() => {
+                playSound('click');
+                if (isTeacher || availableSubjectsForGrade.length <= 1) {
+                  // Single subject -> go back to grade selection
+                  setSelectedGrade(null);
+                  setSelectedSubject(null);
+                  setSelectedUnit(null);
+                  setSelectedTopic(null);
+                  setSelectedOutcome(null);
+                } else {
+                  setSelectedSubject(null);
+                  setSelectedUnit(null);
+                  setSelectedTopic(null);
+                  setSelectedOutcome(null);
+                }
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-semibold cursor-pointer"
+              title="Geri"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Geri Dön</span>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -552,29 +509,19 @@ export function StepSelector() {
       {/* STEP 4 & 5: TOPIC, OUTCOME AND LAUNCH */}
       {currentStep >= 4 && selectedGrade && selectedSubject && selectedUnit && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  playSound('click');
-                  setSelectedUnit(null);
-                  setSelectedOutcome(null);
-                }}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                title="Geri"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h2 className="text-2xl font-black text-slate-800">
-                  <span>4. Adım:</span> Konu ve Öğrenme Çıktısı (Kazanım) Seçimi
-                </h2>
-                <p className="text-sm text-slate-500">{selectedUnit.title}</p>
-              </div>
-            </div>
-            <span className="text-xs font-semibold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full border border-teal-300">
-              Adım 4 / 4
-            </span>
+          <div className="flex items-center">
+            <button
+              onClick={() => {
+                playSound('click');
+                setSelectedUnit(null);
+                setSelectedOutcome(null);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-semibold cursor-pointer"
+              title="Geri"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Geri Dön</span>
+            </button>
           </div>
 
           <div className="space-y-6">

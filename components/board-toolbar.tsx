@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
 import { LessonPhaseId, Outcome } from '@/types';
 import { getOutcomeById } from '@/lib/curriculum-data';
@@ -78,6 +78,13 @@ export function BoardToolbar({
   const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
   const [colorMenuOpen, setColorMenuOpen] = useState(false);
   const [whiteboardOpen, setWhiteboardOpen] = useState(false);
+
+  // Küçük ekranlarda veya mobil cihazlarda kalem aracını başlangıçta saklı konuma al
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setToolbarCollapsed(true);
+    }
+  }, []);
 
   const handleToolSelect = (tool: 'pen' | 'highlighter' | 'eraser') => {
     playSound('click');
@@ -176,7 +183,7 @@ export function BoardToolbar({
       {/* Floating Smart Board Pen & Teaching Tools (Left Side) */}
       <div
         className={`fixed left-4 bottom-6 z-50 transition-all duration-300 ${
-          toolbarCollapsed ? '-translate-x-full' : 'translate-x-0'
+          toolbarCollapsed ? '-translate-x-[calc(100%+1.25rem)]' : 'translate-x-0'
         }`}
       >
         <div className="relative bg-slate-900/95 backdrop-blur-md text-white p-2.5 rounded-3xl shadow-2xl border border-slate-700/80 flex flex-col items-center gap-2.5">
@@ -184,7 +191,7 @@ export function BoardToolbar({
           {/* Collapse/Expand Toggle Tab */}
           <button
             onClick={() => setToolbarCollapsed(!toolbarCollapsed)}
-            className="absolute -right-7 top-1/2 -translate-y-1/2 bg-slate-900 text-white p-1 rounded-r-xl border border-l-0 border-slate-700 shadow-lg hover:bg-slate-800"
+            className="absolute -right-7 top-1/2 -translate-y-1/2 bg-slate-900 text-white p-1.5 rounded-r-xl border border-l-0 border-slate-700 shadow-lg hover:bg-slate-800 cursor-pointer flex items-center justify-center"
             title={toolbarCollapsed ? 'Araç Çubuğunu Göster' : 'Araç Çubuğunu Gizle'}
           >
             {toolbarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
