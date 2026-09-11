@@ -85,3 +85,18 @@ export interface TeacherRegistrationPayload {
   school: string;
   branch: string;
 }
+
+export interface StudentRegistrationPayload {
+  firstName: string;
+  lastName: string;
+  name?: string;
+  studentNumber: string;
+  gradeLevel: number;
+  classSection: string;
+  city: string;
+  district: string;
+  school: string;
+  email?: string;
+  password?: string;
+}
+

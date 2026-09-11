@@ -3,67 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { signIn } from 'next-auth/react';
-import { X, Check, Globe, Sparkles, User, Mail, ArrowRight } from 'lucide-react';
-
-interface GoogleAccount {
-  name: string;
-  email: string;
-  avatar: string;
-  desc: string;
-  badge: string;
-}
-
-const PRESET_ACCOUNTS: GoogleAccount[] = [
-  {
-    name: 'Sistem Yöneticisi (Powerose)',
-    email: 'powerose@gmail.com',
-    avatar: '🛡️',
-    desc: 'Tam Yetkili Sistem Yöneticisi (Admin)',
-    badge: 'Yönetici'
-  },
-  {
-    name: 'Maarif Akademi Yönetim',
-    email: 'maarifakademi.com.tr@gmail.com',
-    avatar: '🛡️',
-    desc: 'Tam Yetkili Sistem Yöneticisi (Admin)',
-    badge: 'Yönetici'
-  },
-  {
-    name: 'Sistem Yöneticisi',
-    email: 'viziteci325@gmail.com',
-    avatar: '🛡️',
-    desc: 'Tam Yetkili Sistem Yöneticisi (Admin)',
-    badge: 'Yönetici'
-  },
-  {
-    name: 'Ahmet Öğretmen',
-    email: 'ahmet.ogretmen@meb.k12.tr',
-    avatar: '👨‍🏫',
-    desc: 'Edirne Selimiye İHO Matematik',
-    badge: 'Onaylı Öğretmen'
-  },
-  {
-    name: 'Zeynep Kaya',
-    email: 'zeynep.kaya@meb.k12.tr',
-    avatar: '👩‍🏫',
-    desc: 'Kadıköy Melahat Şefizade OO',
-    badge: 'Onay Bekliyor'
-  },
-  {
-    name: 'Çırak Hasan',
-    email: 'hasan.ogrenci@meb.k12.tr',
-    avatar: '🎓',
-    desc: '5-A Sınıfı Öğrencisi (450 XP)',
-    badge: 'Öğrenci'
-  },
-  {
-    name: 'Mustafa Kemal Erdem',
-    email: 'mustafa.erdem.ogretmen@gmail.com',
-    avatar: '✨',
-    desc: 'Yeni Öğretmen Kaydı (E-Posta Doğrulanmış)',
-    badge: 'Yeni Google Kaydı'
-  }
-];
+import { X, User, Mail, ArrowRight, Sparkles } from 'lucide-react';
 
 interface GoogleSignInModalProps {
   isOpen: boolean;
@@ -78,11 +18,10 @@ export function GoogleSignInModal({
   onSelectAccount,
   mode = 'login'
 }: GoogleSignInModalProps) {
-  const [customMode, setCustomMode] = useState(false);
-  const [customFirstName, setCustomFirstName] = useState('');
-  const [customLastName, setCustomLastName] = useState('');
-  const [customEmail, setCustomEmail] = useState('');
-  const [customError, setCustomError] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -91,28 +30,28 @@ export function GoogleSignInModal({
 
   if (!isOpen || !mounted) return null;
 
-  const handleCustomSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setCustomError('');
+    setError('');
 
-    if (!customFirstName.trim()) {
-      setCustomError('Lütfen adınızı giriniz.');
+    if (!firstName.trim()) {
+      setError('Lütfen adınızı giriniz.');
       return;
     }
-    if (!customLastName.trim()) {
-      setCustomError('Lütfen soyadınızı giriniz.');
+    if (!lastName.trim()) {
+      setError('Lütfen soyadınızı giriniz.');
       return;
     }
-    if (!customEmail.trim() || !customEmail.includes('@')) {
-      setCustomError('Lütfen geçerli bir Google e-posta adresi giriniz.');
+    if (!email.trim() || !email.includes('@')) {
+      setError('Lütfen geçerli bir Google e-posta adresi giriniz.');
       return;
     }
 
-    const fullName = `${customFirstName.trim()} ${customLastName.trim()}`;
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
     onSelectAccount({
       name: fullName,
-      email: customEmail.trim().toLowerCase(),
+      email: email.trim().toLowerCase(),
       avatar: '🌟'
     });
   };
@@ -148,15 +87,15 @@ export function GoogleSignInModal({
             </svg>
           </div>
           <h3 className="text-lg font-black text-slate-900">
-            {mode === 'register' ? 'Google ile Hızlı Kayıt' : 'Google ile Oturum Açın'}
+            {mode === 'register' ? 'Google ile Kayıt Ol' : 'Google ile Oturum Açın'}
           </h3>
           <p className="text-xs text-slate-500">
-            Maarif Akademi uygulamasına bağlanmak için bir Google hesabı seçin
+            Maarif Akademi platformuna Google hesabınızla güvenle bağlanın.
           </p>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className="p-6 space-y-4">
           
           {/* Primary Live Google OAuth Button */}
           <button
@@ -178,129 +117,81 @@ export function GoogleSignInModal({
             </span>
           </button>
 
-          <div className="relative border-t border-slate-200 my-2">
+          <div className="relative border-t border-slate-200 my-3">
             <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              veya test / demo hesap seçin
+              veya Google E-Postanız ile Doğrudan Giriş
             </span>
           </div>
 
-          {!customMode ? (
-            <div className="space-y-2">
-              <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2">
-                Hızlı Rol / Test Hesapları:
+          <form onSubmit={handleSubmit} className="space-y-3">
+            {error && (
+              <div className="p-2.5 rounded-xl bg-rose-50 text-rose-800 text-xs font-bold border border-rose-200">
+                {error}
               </div>
+            )}
 
-              {PRESET_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.email}
-                  onClick={() => onSelectAccount(acc)}
-                  className="w-full p-3 rounded-2xl border border-slate-200 hover:border-teal-500 hover:bg-teal-50/50 transition-all text-left flex items-center gap-3 group"
-                >
-                  <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
-                    {acc.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="font-extrabold text-xs text-slate-900 truncate">
-                        {acc.name}
-                      </span>
-                      <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-teal-100 group-hover:text-teal-800 shrink-0">
-                        {acc.badge}
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-slate-500 truncate">{acc.email}</div>
-                    <div className="text-[10px] text-teal-600 font-medium truncate">{acc.desc}</div>
-                  </div>
-                </button>
-              ))}
-
-              {/* Enter Another Account */}
-              <button
-                onClick={() => setCustomMode(true)}
-                className="w-full p-3 rounded-2xl border border-dashed border-slate-300 hover:border-slate-500 text-slate-600 hover:text-slate-900 transition-all text-xs font-bold flex items-center justify-center gap-2 mt-3"
-              >
-                <User className="w-4 h-4 text-slate-400" />
-                <span>Başka bir Google Hesabı Kullan</span>
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleCustomSubmit} className="space-y-3">
-              <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                Google Hesap Bilgileri:
-              </div>
-
-              {customError && (
-                <div className="p-2.5 rounded-xl bg-rose-50 text-rose-800 text-xs font-bold border border-rose-200">
-                  {customError}
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Ad
-                  </label>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Adınız
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     required
-                    placeholder="Örn: Melis"
-                    value={customFirstName}
-                    onChange={(e) => setCustomFirstName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs outline-none focus:border-teal-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Soyad
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Örn: Yıldız"
-                    value={customLastName}
-                    onChange={(e) => setCustomLastName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs outline-none focus:border-teal-500"
+                    placeholder="Adınız"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Gmail veya Kurumsal E-Posta
+                  Soyadınız
                 </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Soyadınız"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Gmail veya Google E-Posta
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   required
-                  placeholder="melis.yildiz@gmail.com"
-                  value={customEmail}
-                  onChange={(e) => setCustomEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs outline-none focus:border-teal-500"
+                  placeholder="ornek@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                 />
               </div>
+            </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setCustomMode(false)}
-                  className="w-1/3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
-                >
-                  Geri
-                </button>
-                <button
-                  type="submit"
-                  className="w-2/3 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-                >
-                  <span>{mode === 'register' ? 'Kayıt Ol' : 'Giriş Yap'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </form>
-          )}
+            <button
+              type="submit"
+              className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-98 mt-2"
+            >
+              <span>{mode === 'register' ? 'Google ile Kayıt Ol' : 'Devam Et'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
         </div>
 
         {/* Security Footer */}
-        <div className="p-3.5 bg-slate-50 border-t border-slate-100 text-center">
+        <div className="p-3 bg-slate-50 border-t border-slate-100 text-center">
           <p className="text-[10px] text-slate-400">
             🔒 Google OAuth 2.0 & Maarif Güvenlik Protokolü ile korunmaktadır.
           </p>

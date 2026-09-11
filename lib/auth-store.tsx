@@ -8,7 +8,8 @@ import {
   StudentUser,
   AdminUser,
   UserRole,
-  TeacherRegistrationPayload
+  TeacherRegistrationPayload,
+  StudentRegistrationPayload
 } from '@/types/auth';
 
 interface AuthContextType {
@@ -20,7 +21,7 @@ interface AuthContextType {
   
   // Auth Operations
   loginAsRole: (role: UserRole) => void;
-  loginWithEmail: (email: string, pass?: string) => boolean;
+  loginWithEmail: (emailOrIdentifier: string, pass?: string) => boolean;
   loginWithGoogle: (profile: { name: string; email: string; avatar?: string }) => { isNewUser: boolean; user: AuthUser };
   logout: () => void;
   setUserPassword: (userId: string, newPassword: string) => boolean;
@@ -32,6 +33,9 @@ interface AuthContextType {
   resendVerificationCode: (email: string) => string | null;
   updateTeacherProfile: (teacherId: string, updates: Partial<TeacherUser>) => void;
   addClassToTeacher: (teacherId: string, className: string) => void;
+
+  // Student Registration Flow
+  registerStudent: (data: StudentRegistrationPayload) => StudentUser;
   
   // Admin Operations
   approveTeacher: (teacherId: string) => void;
@@ -621,10 +625,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginWithEmail = (email: string, pass?: string): boolean => {
-    const trimmed = email.trim().toLowerCase();
+  const loginWithEmail = (identifier: string, pass?: string): boolean => {
+    const trimmed = (identifier || '').trim().toLowerCase();
+    const cleanIdNoSpaces = trimmed.replace(/\s+/g, '');
+    if (!trimmed) return false;
 
-    // Check if user exists among Admins
+    // 1. Check if user exists among Admins (email or phone)
     if (checkIsAdmin(trimmed)) {
       const adminUser = admins.find((a) => a.email.toLowerCase() === trimmed) || getAdminUser(trimmed);
       if (pass && adminUser.password && adminUser.password !== pass && pass !== 'admin' && pass !== '123456') {
@@ -633,9 +639,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setCurrentUser(adminUser);
       return true;
     }
+    const adminByPhone = admins.find(a => a.phone && a.phone.replace(/\s+/g, '') === cleanIdNoSpaces);
+    if (adminByPhone) {
+      if (pass && adminByPhone.password && adminByPhone.password !== pass && pass !== 'admin' && pass !== '123456') {
+        return false;
+      }
+      setCurrentUser(adminByPhone);
+      return true;
+    }
 
-    // Check if user exists among Teachers
-    const teacher = teachers.find((t) => t.email.toLowerCase() === trimmed);
+    // 2. Check if user exists among Teachers (email or phone)
+    const teacher = teachers.find((t) => 
+      t.email.toLowerCase() === trimmed || 
+      (t.phone && t.phone.replace(/\s+/g, '') === cleanIdNoSpaces)
+    );
     if (teacher) {
       if (pass && teacher.password && teacher.password !== pass && pass !== 'admin' && pass !== '123456') {
         return false;
@@ -644,8 +661,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return true;
     }
 
-    // Check if user exists among Students
-    const student = students.find((s) => s.email.toLowerCase() === trimmed);
+    // 3. Check if user exists among Students (email or studentNumber)
+    const student = students.find((s) => 
+      s.email.toLowerCase() === trimmed || 
+      (s.studentNumber && s.studentNumber.trim().toLowerCase() === trimmed)
+    );
     if (student) {
       if (pass && student.password && student.password !== pass && pass !== 'admin' && pass !== '123456') {
         return false;
@@ -888,6 +908,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return randomCode;
+  };
+
+  const registerStudent = (data: StudentRegistrationPayload): StudentUser => {
+    const fName = (data.firstName || '').trim();
+    const lName = (data.lastName || '').trim();
+    const fullName = formatFullName(fName, lName, `${fName} ${lName}`.trim() || 'Öğrenci');
+    const num = (data.studentNumber || '').trim();
+    const email = data.email?.trim() || `${fName.toLowerCase().replace(/[^a-z0-9]/g, '')}.${num || 'stu'}@meb.k12.tr`;
+
+    // Find matching teacher in that school if any
+    const matchedTeacher = teachers.find((t) => 
+      t.school && data.school && t.school.toLowerCase().trim() === data.school.toLowerCase().trim() &&
+      t.assignedClasses?.includes(data.classSection.toUpperCase().trim())
+    );
+
+    const newStudent: StudentUser = {
+      id: `stu-${Date.now()}`,
+      firstName: fName,
+      lastName: lName,
+      name: fullName,
+      email: email,
+      password: data.password || '123456',
+      role: 'student',
+      avatar: '🎓',
+      studentNumber: num,
+      gradeLevel: data.gradeLevel || 5,
+      classSection: (data.classSection || '5-A').trim().toUpperCase(),
+      city: data.city || 'Edirne',
+      district: data.district || 'Merkez',
+      school: data.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+      teacherId: matchedTeacher ? matchedTeacher.id : undefined,
+      points: 100,
+      unlockedBadges: ['first-step'],
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+
+    setStudents((prev) => [newStudent, ...prev.filter(s => s.studentNumber !== newStudent.studentNumber || s.school !== newStudent.school)]);
+    setCurrentUser(newStudent);
+    try {
+      localStorage.setItem('maarif_current_user', JSON.stringify(newStudent));
+    } catch (e) {}
+
+    return newStudent;
   };
 
   const approveTeacher = (teacherId: string) => {
@@ -1287,6 +1350,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         resendVerificationCode,
         updateTeacherProfile,
         addClassToTeacher,
+        registerStudent,
         approveTeacher,
         rejectTeacher,
         deleteTeacher,

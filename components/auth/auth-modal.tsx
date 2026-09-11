@@ -7,33 +7,40 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { TeacherRegisterWizard } from './teacher-register-wizard';
+import { StudentRegisterWizard } from './student-register-wizard';
 import { GoogleSignInModal } from './google-sign-in-modal';
 import {
   X,
-  ShieldCheck,
-  UserCheck,
-  GraduationCap,
   LogIn,
   UserPlus,
   Mail,
   Lock,
   ArrowRight,
   Sparkles,
-  School
+  School,
+  GraduationCap
 } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTab?: 'login' | 'register';
+  defaultRegisterRole?: 'teacher' | 'student';
 }
 
-export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalProps) {
-  const { loginAsRole, loginWithEmail, loginWithGoogle, currentUser, logout } = useAuth();
+export function AuthModal({
+  isOpen,
+  onClose,
+  defaultTab = 'login',
+  defaultRegisterRole = 'teacher'
+}: AuthModalProps) {
+  const router = useRouter();
+  const { loginWithEmail, loginWithGoogle } = useAuth();
   const { setRole } = useApp();
 
   const [activeTab, setActiveTab] = useState<'login' | 'register'>(defaultTab);
-  const [emailInput, setEmailInput] = useState('');
+  const [registerRole, setRegisterRole] = useState<'teacher' | 'student'>(defaultRegisterRole);
+  const [identifierInput, setIdentifierInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
@@ -44,15 +51,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    setActiveTab(defaultTab);
+    if (defaultRegisterRole) {
+      setRegisterRole(defaultRegisterRole);
+    }
+  }, [defaultTab, defaultRegisterRole]);
+
   if (!isOpen || !mounted) return null;
-
-  const handleQuickLogin = (role: 'admin' | 'teacher' | 'student') => {
-    loginAsRole(role);
-    setRole(role === 'student' ? 'student' : 'teacher');
-    onClose();
-  };
-
-  const router = useRouter();
 
   const handleGoogleAccountSelect = (profile: { name: string; email: string; avatar?: string }) => {
     const result = loginWithGoogle(profile);
@@ -69,19 +75,19 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     }
   };
 
-  const handleEmailLogin = (e: React.FormEvent) => {
+  const handleIdentifierLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-    if (!emailInput.trim()) {
-      setLoginError('Lütfen e-posta adresinizi giriniz.');
+    if (!identifierInput.trim()) {
+      setLoginError('Lütfen e-posta adresinizi veya okul numaranızı giriniz.');
       return;
     }
 
-    const success = loginWithEmail(emailInput, passwordInput || undefined);
+    const success = loginWithEmail(identifierInput, passwordInput || undefined);
     if (success) {
       onClose();
     } else {
-      setLoginError('E-posta adresi veya şifre hatalı. Lütfen kontrol ediniz.');
+      setLoginError('Kullanıcı bilgileri veya şifre hatalı. Lütfen kontrol ediniz.');
     }
   };
 
@@ -98,12 +104,51 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
         </button>
 
         {activeTab === 'register' ? (
-          <TeacherRegisterWizard
-            onComplete={() => {
-              onClose();
-            }}
-            onSwitchToLogin={() => setActiveTab('login')}
-          />
+          <div className="space-y-4">
+            {/* Register Role Sub-Selector */}
+            <div className="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-md grid grid-cols-2 gap-1.5">
+              <button
+                type="button"
+                onClick={() => setRegisterRole('teacher')}
+                className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  registerRole === 'teacher'
+                    ? 'bg-teal-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                <span>👨‍🏫</span>
+                <span>Öğretmen Kaydı</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRegisterRole('student')}
+                className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  registerRole === 'student'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                <span>🎓</span>
+                <span>Öğrenci Kaydı</span>
+              </button>
+            </div>
+
+            {registerRole === 'teacher' ? (
+              <TeacherRegisterWizard
+                onComplete={() => {
+                  onClose();
+                }}
+                onSwitchToLogin={() => setActiveTab('login')}
+              />
+            ) : (
+              <StudentRegisterWizard
+                onComplete={() => {
+                  onClose();
+                }}
+                onSwitchToLogin={() => setActiveTab('login')}
+              />
+            )}
+          </div>
         ) : (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6">
             
@@ -129,7 +174,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                   Maarif Akademi Girişi
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  Rolünüzü seçerek veya şifresiz test hesaplarıyla anında bağlanın.
+                  E-posta, telefon veya okul numaranız ile hesabınıza erişin.
                 </p>
               </div>
 
@@ -138,72 +183,22 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 <button
                   type="button"
                   onClick={() => setActiveTab('login')}
-                  className="py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-xs"
+                  className="py-2.5 text-xs font-extrabold rounded-xl transition-all bg-white text-slate-900 shadow-xs"
                 >
                   Oturum Aç
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab('register')}
-                  className="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-900"
+                  className="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-900"
                 >
-                  Öğretmen Kaydı
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Demo Logins Section */}
-            <div className="space-y-2">
-              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-left">
-                Hızlı Test Girişi (Şifresiz Rol Seçimi)
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('student')}
-                  className="p-3 rounded-2xl bg-amber-50/60 hover:bg-amber-100/80 border border-amber-200/80 text-left transition-all group cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">🎓</span>
-                    <div>
-                      <div className="text-xs font-black text-amber-950 group-hover:text-amber-900">Öğrenci</div>
-                      <div className="text-[10px] text-amber-700">5-A Sınıfı</div>
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('teacher')}
-                  className="p-3 rounded-2xl bg-teal-50/60 hover:bg-teal-100/80 border border-teal-200/80 text-left transition-all group cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">👨‍🏫</span>
-                    <div>
-                      <div className="text-xs font-black text-teal-950 group-hover:text-teal-900">Öğretmen</div>
-                      <div className="text-[10px] text-teal-700">Edirne Selimiye</div>
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('admin')}
-                  className="p-3 rounded-2xl bg-indigo-50/60 hover:bg-indigo-100/80 border border-indigo-200/80 text-left transition-all group cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">🛡️</span>
-                    <div>
-                      <div className="text-xs font-black text-indigo-950 group-hover:text-indigo-900">Admin</div>
-                      <div className="text-[10px] text-indigo-700">Sistem Yönetimi</div>
-                    </div>
-                  </div>
+                  Yeni Kayıt Ol
                 </button>
               </div>
             </div>
 
             {/* Google OAuth Login Button */}
-            <div className="pt-2">
+            <div>
               <button
                 type="button"
                 onClick={() => setShowGoogleModal(true)}
@@ -219,19 +214,19 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
               </button>
             </div>
 
-            {/* Email & Password Login Form */}
+            {/* Email / Student Number & Password Login Form */}
             <div className="pt-2 border-t border-slate-100">
-              <form onSubmit={handleEmailLogin} className="space-y-3">
+              <form onSubmit={handleIdentifierLogin} className="space-y-3">
                 <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-left">
-                  veya Kayıtlı E-Posta ve Şifre ile Giriş
+                  veya E-Posta / Okul No / Telefon ile Giriş
                 </div>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
-                    type="email"
-                    value={emailInput}
-                    onChange={(e) => setEmailInput(e.target.value)}
-                    placeholder="ornek@meb.k12.tr veya gmail"
+                    type="text"
+                    value={identifierInput}
+                    onChange={(e) => setIdentifierInput(e.target.value)}
+                    placeholder="E-posta, Okul No (örn: 142) veya Telefon"
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium"
                   />
                 </div>
@@ -268,6 +263,34 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                   <span>Sisteme Giriş Yap</span>
                 </button>
               </form>
+            </div>
+
+            {/* Quick Registration Helper Links */}
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>Henüz hesabınız yok mu?</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('register');
+                    setRegisterRole('teacher');
+                  }}
+                  className="text-teal-600 hover:text-teal-700 font-bold hover:underline"
+                >
+                  Öğretmen Kaydı
+                </button>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('register');
+                    setRegisterRole('student');
+                  }}
+                  className="text-amber-600 hover:text-amber-700 font-bold hover:underline"
+                >
+                  Öğrenci Kaydı
+                </button>
+              </div>
             </div>
 
           </div>
