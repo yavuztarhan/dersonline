@@ -21,9 +21,7 @@ import {
   ShieldCheck,
   ChevronRight,
   School,
-  LayoutDashboard,
-  Tv,
-  Gamepad2
+  Tv
 } from 'lucide-react';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG } from '@/lib/mascot-config';
@@ -58,20 +56,6 @@ export default function HomePage() {
   const isTeacherProfileComplete = isTeacher
     ? Boolean(teacherUser?.isProfileComplete || (teacherUser?.school && teacherUser?.city && teacherUser?.district && teacherUser?.branch))
     : true;
-
-  const dashboardHref =
-    currentUser.role === 'admin'
-      ? '/admin'
-      : currentUser.role === 'teacher'
-      ? '/teacher'
-      : '/student';
-
-  const dashboardLabel =
-    currentUser.role === 'admin'
-      ? 'Yönetici Paneli'
-      : currentUser.role === 'teacher'
-      ? 'Öğretmen Paneli'
-      : 'Öğrenci Paneli';
 
   // 2. Authenticated User Experience
   return (
@@ -138,39 +122,6 @@ export default function HomePage() {
                 <Compass className="w-3.5 h-3.5 text-emerald-400" />
                 <span>SDB Becerileri & Süreç Odaklı Rubrik</span>
               </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="pt-2 flex items-center gap-3 flex-wrap sm:flex-nowrap">
-              <Link
-                href={dashboardHref}
-                className="flex-1 sm:flex-initial px-6 py-3.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span>{dashboardLabel}</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-
-              <Link
-                href="/games"
-                className="px-5 py-3.5 rounded-2xl bg-indigo-600/90 hover:bg-indigo-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-indigo-600/20 border border-indigo-400/30 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
-                title="Bağımsız Zeka & Eğitici Oyunlar"
-              >
-                <Gamepad2 className="w-4 h-4 text-amber-300" />
-                <span>Oyunlar</span>
-                <span className="text-[10px] bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded-full font-black">
-                  Yeni
-                </span>
-              </Link>
-
-              <Link
-                href="/profile"
-                className="px-5 py-3.5 rounded-2xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 hover:text-white font-bold text-xs sm:text-sm border border-slate-700 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                title="Profilimi Düzenle"
-              >
-                <User className="w-4 h-4 text-teal-400" />
-                <span>Profilim</span>
-              </Link>
             </div>
           </div>
 

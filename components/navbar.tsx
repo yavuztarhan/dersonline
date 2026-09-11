@@ -14,6 +14,7 @@ import { getUnreadMessageCount } from '@/lib/message-store';
 import { TeacherBoardAuthModal } from '@/components/teacher/teacher-board-auth-modal';
 import {
   Award,
+  Gamepad2,
   RotateCcw,
   User,
   LogIn,
@@ -169,6 +170,20 @@ export function Navbar() {
                   <ChevronRight className="w-3.5 h-3.5 text-teal-600" />
                 </Link>
 
+                {/* Oyunlar Butonu */}
+                <Link
+                  href="/games"
+                  className={`hidden md:flex px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-black transition-all items-center gap-1.5 shadow-xs cursor-pointer shrink-0 ${
+                    pathname === '/games'
+                      ? 'bg-indigo-600 text-white shadow-indigo-600/20 scale-102'
+                      : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200/80 hover:border-indigo-300'
+                  }`}
+                  title="Eğitici Zeka ve Mantık Oyunları"
+                >
+                  <Gamepad2 className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Oyunlar</span>
+                </Link>
+
                 {/* Teacher Smart Board Fast Authorization Button (Single Compact Action) */}
                 {(currentUser.role === 'teacher' || currentUser.role === 'admin') && (
                   <button
@@ -215,14 +230,6 @@ export function Navbar() {
                   >
                     <User className="w-3.5 h-3.5" />
                   </Link>
-
-                  <button
-                    onClick={handleOpenLogin}
-                    className="p-1.5 rounded-xl hover:bg-white text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-                    title="Hesap Değiştir / Hızlı Giriş"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                  </button>
                 </div>
 
                 {/* Messages Button with Unread Badge */}
@@ -242,14 +249,14 @@ export function Navbar() {
                   )}
                 </button>
 
-                {/* Logout Button */}
+                {/* Logout Button (Masaüstünde görünür, mobilde sol çekmece menüsünden erişilir) */}
                 <button
                   onClick={() => {
                     playSound('click');
                     logout();
                     router.push('/');
                   }}
-                  className="p-2 sm:px-3 sm:py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+                  className="hidden md:flex p-2 sm:px-3 sm:py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition-all items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
                   title="Oturumu Kapat"
                 >
                   <LogOut className="w-3.5 h-3.5 text-rose-600" />
