@@ -207,39 +207,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoaded(true);
     }
-
-    // Cross-device sync: Fetch global server users to make sure phone & PC share same registered accounts
-    fetch('/api/auth/users-sync')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.success) {
-          if (Array.isArray(data.admins) && data.admins.length > 0) {
-            setAdmins((prev) => {
-              const map = new Map<string, AdminUser>();
-              for (const a of prev) map.set(a.email.toLowerCase(), a);
-              for (const a of data.admins) map.set(a.email.toLowerCase(), a);
-              return Array.from(map.values());
-            });
-          }
-          if (Array.isArray(data.teachers) && data.teachers.length > 0) {
-            setTeachers((prev) => {
-              const map = new Map<string, TeacherUser>();
-              for (const t of prev) map.set(t.email.toLowerCase(), t);
-              for (const t of data.teachers) map.set(t.email.toLowerCase(), t);
-              return Array.from(map.values());
-            });
-          }
-          if (Array.isArray(data.students) && data.students.length > 0) {
-            setStudents((prev) => {
-              const map = new Map<string, StudentUser>();
-              for (const s of prev) map.set(s.id || s.email.toLowerCase(), s);
-              for (const s of data.students) map.set(s.id || s.email.toLowerCase(), s);
-              return Array.from(map.values());
-            });
-          }
-        }
-      })
-      .catch(() => {});
   }, []);
 
   // Save changes to localStorage only after initial load completed
@@ -264,17 +231,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {}
   }, [students, isLoaded]);
 
-  // Sync users to global server so all devices (phone, smartboard, desktop) share newly registered users
-  useEffect(() => {
-    if (!isLoaded) return;
-    try {
-      fetch('/api/auth/users-sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ admins, teachers, students })
-      }).catch(() => {});
-    } catch (e) {}
-  }, [admins, teachers, students, isLoaded]);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -435,7 +391,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const cleanPass = (pass || '').trim();
     if (!trimmed || !cleanPass) return false;
 
-    // 1. Check if user exists among Admins (email or phone)
+    // 1. Primary Authentication: Directly against PostgreSQL Database via Prisma
+    try {
+      const res = await fetch('/api/auth/login-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: trimmed, password: cleanPass })
+      });
+      const data = await res.json();
+      if (data?.success && data?.user) {
+        const verifiedUser: AuthUser = data.user;
+        setCurrentUser(verifiedUser);
+        if (data.sessionId) {
+          try {
+            localStorage.setItem('maarif_session_token', data.sessionId);
+            localStorage.setItem('maarif_session_expires', String(data.expiresAt));
+            localStorage.setItem('maarif_device_category', data.deviceCategory);
+            localStorage.setItem('maarif_current_user', JSON.stringify(verifiedUser));
+          } catch (e) {}
+        }
+        return true;
+      }
+    } catch (e) {
+      console.warn('[loginWithEmail] Database login error, falling back to local cache:', e);
+    }
+
+    // 2. Offline / Local Seed Fallback
     if (checkIsAdmin(trimmed)) {
       const adminUser = admins.find((a) => a.email.toLowerCase() === trimmed) || getAdminUser(trimmed);
       const isPowerose = trimmed === 'powerose@gmail.com';
@@ -467,7 +448,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // 2. Check if user exists among Teachers (email or phone)
+    // 3. Fallback check for Teachers
     const teacher = teachers.find((t) => 
       t.email.toLowerCase() === trimmed || 
       (t.phone && t.phone.replace(/\s+/g, '') === cleanIdNoSpaces)
@@ -486,7 +467,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // 3. Check if user exists among Students (email or studentNumber)
+    // 4. Fallback check for Students
     const student = students.find((s) => 
       s.email.toLowerCase() === trimmed || 
       (s.studentNumber && s.studentNumber.trim().toLowerCase() === trimmed)
@@ -503,40 +484,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         registerDeviceSession(student);
         return true;
       }
-    }
-
-    // 4. Cross-Device Server Verification
-    // If the user registered or updated their account on their PC, the phone validates with the server API!
-    try {
-      const res = await fetch('/api/auth/login-verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: trimmed, password: cleanPass })
-      });
-      const data = await res.json();
-      if (data?.success && data?.user) {
-        const verifiedUser: AuthUser = data.user;
-        setCurrentUser(verifiedUser);
-        if (data.sessionId) {
-          try {
-            localStorage.setItem('maarif_session_token', data.sessionId);
-            localStorage.setItem('maarif_session_expires', String(data.expiresAt));
-            localStorage.setItem('maarif_device_category', data.deviceCategory);
-            localStorage.setItem('maarif_current_user', JSON.stringify(verifiedUser));
-          } catch (e) {}
-        }
-        // Merge into local list
-        if (verifiedUser.role === 'admin') {
-          setAdmins(prev => [verifiedUser as AdminUser, ...prev.filter(a => a.email.toLowerCase() !== verifiedUser.email.toLowerCase())]);
-        } else if (verifiedUser.role === 'teacher') {
-          setTeachers(prev => [verifiedUser as TeacherUser, ...prev.filter(t => t.email.toLowerCase() !== verifiedUser.email.toLowerCase())]);
-        } else if (verifiedUser.role === 'student') {
-          setStudents(prev => [verifiedUser as StudentUser, ...prev.filter(s => s.email.toLowerCase() !== verifiedUser.email.toLowerCase())]);
-        }
-        return true;
-      }
-    } catch (e) {
-      console.warn('[loginWithEmail] Server login-verify fallback error:', e);
     }
 
     return false;
