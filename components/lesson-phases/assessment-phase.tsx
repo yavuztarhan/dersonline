@@ -216,45 +216,47 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Teacher Show Answers Toggle */}
-          {role === 'teacher' && (
+        {activeAssessmentTab === 'test' && (
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Teacher Show Answers Toggle */}
+            {role === 'teacher' && (
+              <button
+                onClick={() => {
+                  setShowAnswers(!showAnswers);
+                  playSound('click');
+                }}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
+                  showAnswers
+                    ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-xs'
+                    : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                }`}
+              >
+                {showAnswers ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <span>{showAnswers ? 'Cevapları Gizle' : 'Cevap Anahtarı'}</span>
+              </button>
+            )}
+
+            {/* YENİLE: Oklu çember butonu - Mevcut testi aynı sorularla baştan başlatır */}
             <button
-              onClick={() => {
-                setShowAnswers(!showAnswers);
-                playSound('click');
-              }}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
-                showAnswers
-                  ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-xs'
-                  : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-              }`}
+              onClick={handleResetCurrentTest}
+              className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+              title="Testi Aynı Sorularla Baştan Başlat"
             >
-              {showAnswers ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              <span>{showAnswers ? 'Cevapları Gizle' : 'Cevap Anahtarı'}</span>
+              <RotateCcw className="w-4 h-4 text-slate-600" />
+              <span>Yenile</span>
             </button>
-          )}
 
-          {/* YENİLE: Oklu çember butonu - Mevcut testi aynı sorularla baştan başlatır */}
-          <button
-            onClick={handleResetCurrentTest}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-            title="Testi Aynı Sorularla Baştan Başlat"
-          >
-            <RotateCcw className="w-4 h-4 text-slate-600" />
-            <span>Yenile</span>
-          </button>
-
-          {/* YENİ TEST: Çember içinde + butonu - Aynı testi yeni sayılarla dinamik üretir */}
-          <button
-            onClick={handleGenerateNewTestVariant}
-            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-xs font-black shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-            title="Aynı Kazanımda Yeni Sayılarla Yeni Bir Test Oluştur"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Yeni Test</span>
-          </button>
-        </div>
+            {/* YENİ TEST: Çember içinde + butonu - Aynı testi yeni sayılarla dinamik üretir */}
+            <button
+              onClick={handleGenerateNewTestVariant}
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-xs font-black shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+              title="Aynı Kazanımda Yeni Sayılarla Yeni Bir Test Oluştur"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Yeni Test</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Mode Navigation Tabs */}
