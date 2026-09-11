@@ -9,6 +9,7 @@ export interface BaseUser {
   lastName: string; // Soyad
   email: string;
   password?: string; // Profilde belirlenebilen giriş şifresi
+  gender?: 'Kız' | 'Erkek' | 'Belirtmek İstemiyorum' | string; // İsteğe bağlı cinsiyet
   role: UserRole;
   avatar?: string;
   createdAt: string;
@@ -99,6 +100,7 @@ export interface StudentRegistrationPayload {
   city: string;
   district: string;
   school: string;
+  gender?: string;
   email?: string;
   password?: string;
 }

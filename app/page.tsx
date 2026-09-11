@@ -33,6 +33,15 @@ export default function HomePage() {
   const { currentUser } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('error')) {
+        setAuthModalOpen(true);
+      }
+    }
+  }, []);
+
   // 1. If not authenticated -> Render rich Landing Page
   if (!currentUser) {
     return (

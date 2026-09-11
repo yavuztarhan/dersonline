@@ -35,7 +35,8 @@ import {
   Compass,
   FileText,
   Flame,
-  Plus
+  Plus,
+  Tv
 } from 'lucide-react';
 
 interface AppDrawerProps {
@@ -43,13 +44,15 @@ interface AppDrawerProps {
   onClose: () => void;
   onOpenAuthModal?: (tab: 'login' | 'register') => void;
   onOpenMessageModal?: () => void;
+  onOpenBoardAuthModal?: () => void;
 }
 
 export function AppDrawer({
   isOpen,
   onClose,
   onOpenAuthModal,
-  onOpenMessageModal
+  onOpenMessageModal,
+  onOpenBoardAuthModal
 }: AppDrawerProps) {
   const { currentUser, logout } = useAuth();
   const {
@@ -222,6 +225,22 @@ export function AppDrawer({
                   <div className="text-[10px] text-slate-500 font-semibold">
                     Branş: {teacherUser?.branch || 'Matematik'} • Şubeler: {teacherUser?.assignedClasses?.join(', ') || '5-A, 5-B'}
                   </div>
+
+                  {/* Smart Board Fast Action Button inside Drawer */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenBoardAuthModal?.();
+                    }}
+                    className="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-xs flex items-center justify-between transition-all cursor-pointer active:scale-98"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Tv className="w-3.5 h-3.5 text-emerald-100" />
+                      <span>Akıllı Tahta Girişi (QR / PIN)</span>
+                    </div>
+                    <span className="text-[9px] bg-white/20 px-2 py-0.5 rounded-full font-bold">Şifresiz</span>
+                  </button>
                 </div>
               )}
             </div>

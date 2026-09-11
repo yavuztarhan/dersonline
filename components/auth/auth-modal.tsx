@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useAuth } from '@/lib/auth-store';
+import { BoardQrLogin } from '@/components/auth/board-qr-login';
 import {
   X,
   LogIn,
@@ -14,13 +15,15 @@ import {
   Sparkles,
   Loader2,
   ShieldCheck,
-  ArrowRight
+  ArrowRight,
+  Tv,
+  QrCode
 } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultTab?: 'login' | 'register';
+  defaultTab?: 'login' | 'register' | 'board';
 }
 
 export function AuthModal({
@@ -31,18 +34,13 @@ export function AuthModal({
   const router = useRouter();
   const { loginWithEmail } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>(defaultTab);
+  const [activeTab, setActiveTab] = useState<'login' | 'register' | 'board'>(defaultTab);
   const [identifierInput, setIdentifierInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  // Direct Google Email input state
-  const [directGoogleEmail, setDirectGoogleEmail] = useState('');
-  const [directGoogleName, setDirectGoogleName] = useState('');
-  const [showDirectGoogleInput, setShowDirectGoogleInput] = useState(false);
   const [oauthErrorNotice, setOauthErrorNotice] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,14 +50,10 @@ export function AuthModal({
       const params = new URLSearchParams(window.location.search);
       const err = params.get('error');
       if (err) {
-        if (err === 'OAuthSignin' || err === 'OAuthCallback' || err === 'OAuthCreateAccount') {
-          setOauthErrorNotice('Canlı Google OAuth yönlendirmesinde bir uyumsuzluk algılandı. Aşağıdaki alandan Google e-postanız ile doğrudan giriş yapabilir veya kaydolabilirsiniz.');
-          setShowDirectGoogleInput(true);
-        } else if (err === 'AccessDenied') {
+        if (err === 'AccessDenied') {
           setOauthErrorNotice('Google oturum açma işlemi iptal edildi veya yetki verilmedi.');
         } else {
-          setOauthErrorNotice(`Giriş uyarısı: ${err}. Google e-postanızla doğrudan devam edebilirsiniz.`);
-          setShowDirectGoogleInput(true);
+          setOauthErrorNotice(`Giriş uyarısı: ${err}.`);
         }
       }
     }
@@ -71,44 +65,19 @@ export function AuthModal({
 
   if (!isOpen || !mounted) return null;
 
-  const { loginWithGoogle } = useAuth();
-
   const handleLiveGoogleSignIn = async () => {
     setGoogleLoading(true);
     setLoginError('');
     try {
       const res = await signIn('google', { callbackUrl: '/', redirect: true });
       if (res?.error) {
-        setOauthErrorNotice('Google OAuth bağlantısı kurulamadı. Lütfen Google e-postanız ile doğrudan giriş yapınız.');
-        setShowDirectGoogleInput(true);
+        setOauthErrorNotice('Google OAuth bağlantısı kurulamadı.');
         setGoogleLoading(false);
       }
     } catch (e) {
       console.error('Google Sign In Error:', e);
-      setOauthErrorNotice('Google ile bağlantı kurulamadı. Aşağıdaki alandan Google e-postanız ile doğrudan işlem yapabilirsiniz.');
-      setShowDirectGoogleInput(true);
+      setOauthErrorNotice('Google ile bağlantı kurulamadı.');
       setGoogleLoading(false);
-    }
-  };
-
-  const handleDirectGoogleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoginError('');
-    const email = directGoogleEmail.trim().toLowerCase();
-    if (!email || !email.includes('@')) {
-      setLoginError('Lütfen geçerli bir Google / E-posta adresi giriniz.');
-      return;
-    }
-
-    const { user, isNewUser } = loginWithGoogle({
-      name: directGoogleName.trim() || email.split('@')[0],
-      email: email,
-      avatar: '👨‍🏫'
-    });
-
-    onClose();
-    if (isNewUser) {
-      router.push('/profile');
     }
   };
 
@@ -172,18 +141,26 @@ export function AuthModal({
               </div>
 
               {/* Tab Selector */}
-              <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-2xl">
+              <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-2xl">
                 <button
                   type="button"
                   onClick={() => setActiveTab('login')}
-                  className="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-900 cursor-pointer"
+                  className="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-900 cursor-pointer"
                 >
                   Oturum Aç
                 </button>
                 <button
                   type="button"
+                  onClick={() => setActiveTab('board')}
+                  className="py-2 text-xs font-bold rounded-xl transition-all text-teal-700 hover:text-teal-900 flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <Tv className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Akıllı Tahta</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setActiveTab('register')}
-                  className="py-2.5 text-xs font-extrabold rounded-xl transition-all bg-white text-slate-900 shadow-xs cursor-pointer"
+                  className="py-2 text-xs font-extrabold rounded-xl transition-all bg-white text-slate-900 shadow-xs cursor-pointer"
                 >
                   Öğretmen Kaydı
                 </button>
@@ -238,57 +215,6 @@ export function AuthModal({
                   </>
                 )}
               </button>
-
-              {/* 2. Direct Google Email Input Option / Fallback */}
-              <div className="pt-2">
-                {!showDirectGoogleInput ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowDirectGoogleInput(true)}
-                    className="text-[11px] text-teal-700 hover:text-teal-900 underline font-semibold cursor-pointer"
-                  >
-                    Google E-Postası ile Doğrudan Kayıt Ol ➔
-                  </button>
-                ) : (
-                  <form onSubmit={handleDirectGoogleSubmit} className="pt-3 border-t border-teal-200 space-y-2.5 text-left animate-in fade-in">
-                    <div className="text-[11px] font-bold text-teal-900">
-                      Doğrudan Google / Gmail E-Postası ile Kayıt:
-                    </div>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="email"
-                        required
-                        value={directGoogleEmail}
-                        onChange={(e) => setDirectGoogleEmail(e.target.value)}
-                        placeholder="ad.soyad@gmail.com veya @meb.k12.tr"
-                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-teal-300 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
-                      />
-                    </div>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={directGoogleName}
-                        onChange={(e) => setDirectGoogleName(e.target.value)}
-                        placeholder="Adınız Soyadınız (İsteğe bağlı)"
-                        className="w-full px-4 py-2.5 bg-white border border-teal-300 rounded-2xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
-                      />
-                    </div>
-                    {loginError && (
-                      <div className="text-xs text-rose-600 font-bold bg-rose-50 p-2 rounded-xl border border-rose-200">
-                        {loginError}
-                      </div>
-                    )}
-                    <button
-                      type="submit"
-                      className="w-full py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-black text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-                    >
-                      <span>Google E-Postası İle Devam Et (KVKK Onayına Geç)</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </form>
-                )}
-              </div>
             </div>
 
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
@@ -332,34 +258,83 @@ export function AuthModal({
               </div>
 
               {/* Tab Selector */}
-              <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-2xl">
+              <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-2xl">
                 <button
                   type="button"
                   onClick={() => setActiveTab('login')}
-                  className="py-2.5 text-xs font-extrabold rounded-xl transition-all bg-white text-slate-900 shadow-xs cursor-pointer"
+                  className={`py-2 text-xs transition-all rounded-xl cursor-pointer ${
+                    activeTab === 'login'
+                      ? 'font-extrabold bg-white text-slate-900 shadow-xs'
+                      : 'font-bold text-slate-500 hover:text-slate-900'
+                  }`}
                 >
                   Oturum Aç
                 </button>
                 <button
                   type="button"
+                  onClick={() => setActiveTab('board')}
+                  className={`py-2 text-xs transition-all rounded-xl cursor-pointer flex items-center justify-center gap-1.5 ${
+                    activeTab === 'board'
+                      ? 'font-extrabold bg-white text-teal-800 shadow-xs'
+                      : 'font-bold text-teal-700 hover:text-teal-900'
+                  }`}
+                >
+                  <Tv className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Akıllı Tahta</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setActiveTab('register')}
-                  className="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-900 cursor-pointer"
+                  className={`py-2 text-xs transition-all rounded-xl cursor-pointer ${
+                    (activeTab as string) === 'register'
+                      ? 'font-extrabold bg-white text-slate-900 shadow-xs'
+                      : 'font-bold text-slate-500 hover:text-slate-900'
+                  }`}
                 >
                   Öğretmen Kaydı
                 </button>
               </div>
             </div>
 
-            {/* OAuth Notice if present */}
-            {oauthErrorNotice && (
-              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5 text-left">
-                <span className="text-base">⚠️</span>
-                <div className="space-y-1">
-                  <div className="font-bold text-amber-950">OAuth Bildirimi</div>
-                  <div>{oauthErrorNotice}</div>
+            {/* Board QR & PIN View */}
+            {activeTab === 'board' ? (
+              <BoardQrLogin onSuccess={onClose} />
+            ) : (
+              <>
+                {/* Akıllı Tahta Hızlı Geçiş Öneri Kartı */}
+                <div
+                  onClick={() => setActiveTab('board')}
+                  className="p-3.5 rounded-2xl bg-gradient-to-r from-teal-500/10 to-emerald-500/10 border border-teal-200 hover:border-teal-400 hover:bg-teal-50/70 transition-all cursor-pointer flex items-center justify-between gap-3 text-left group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform shrink-0">
+                      <QrCode className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                        <span>Akıllı Tahtada mısınız?</span>
+                        <span className="text-[10px] font-extrabold bg-teal-200 text-teal-900 px-1.5 py-0.2 rounded-full">
+                          Şifresiz
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Öğrencilerin yanında şifre girmeden QR veya PIN ile anında giriş yapın.
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-teal-600 group-hover:translate-x-1 transition-transform shrink-0" />
                 </div>
-              </div>
-            )}
+
+                {/* OAuth Notice if present */}
+                {oauthErrorNotice && (
+                  <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5 text-left">
+                    <span className="text-base">⚠️</span>
+                    <div className="space-y-1">
+                      <div className="font-bold text-amber-950">OAuth Bildirimi</div>
+                      <div>{oauthErrorNotice}</div>
+                    </div>
+                  </div>
+                )}
 
             {/* Google OAuth Login Button */}
             <div className="space-y-2">
@@ -440,19 +415,21 @@ export function AuthModal({
               </form>
             </div>
 
-            {/* Quick Registration Helper Link */}
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span>Henüz öğretmen hesabınız yok mu?</span>
-              <button
-                type="button"
-                onClick={() => setActiveTab('register')}
-                className="text-teal-600 hover:text-teal-700 font-bold hover:underline cursor-pointer"
-              >
-                Öğretmen Kaydı Yapın
-              </button>
-            </div>
+              {/* Quick Registration Helper Link */}
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Henüz öğretmen hesabınız yok mu?</span>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('register')}
+                  className="text-teal-600 hover:text-teal-700 font-bold hover:underline cursor-pointer"
+                >
+                  Öğretmen Kaydı Yapın
+                </button>
+              </div>
+            </>
+          )}
 
-          </div>
+        </div>
         )}
 
       </div>

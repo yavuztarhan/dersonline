@@ -35,7 +35,8 @@ import {
   Loader2,
   RefreshCw,
   Eye,
-  EyeOff
+  EyeOff,
+  UserCheck
 } from 'lucide-react';
 
 const BRANCH_OPTIONS = [
@@ -72,11 +73,12 @@ export default function ProfilePage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [gender, setGender] = useState('');
   const [branch, setBranch] = useState('Matematik');
   const [city, setCity] = useState('Edirne');
   const [district, setDistrict] = useState('Merkez');
-  const [school, setSchool] = useState('Edirne Selimiye İmam Hatip Ortaokulu');
-  const [principalName, setPrincipalName] = useState('Mehmet GÜNGÖR');
+  const [school, setSchool] = useState('');
+  const [principalName, setPrincipalName] = useState('');
   const [isCustomSchool, setIsCustomSchool] = useState(false);
   const [customSchoolName, setCustomSchoolName] = useState('');
   const [assignedClasses, setAssignedClasses] = useState<string[]>(['5-A', '5-B']);
@@ -104,11 +106,14 @@ export default function ProfilePage() {
 
   // All 81 Turkish Provinces
   const allProvinces = getAllProvinces();
-  const [hasLoadedInitialUser, setHasLoadedInitialUser] = useState(false);
+  const hasLoadedInitialUser = React.useRef(false);
+  const cityFetchSeq = React.useRef(0);
+  const schoolFetchSeq = React.useRef(0);
 
   // Initialize form with currentUser data (for Admin, Teacher, Student)
   useEffect(() => {
-    if (currentUser && !hasLoadedInitialUser) {
+    if (currentUser && !hasLoadedInitialUser.current) {
+      hasLoadedInitialUser.current = true;
       const parts = splitFullName(currentUser.name || '');
       setFirstName(currentUser.firstName || parts.firstName || '');
       setLastName(currentUser.lastName || parts.lastName || '');
@@ -118,17 +123,28 @@ export default function ProfilePage() {
       const rawPhone = (userObj.phone || '').replace(/\D/g, '');
       const cleanInitialPhone = rawPhone.startsWith('90') ? rawPhone.slice(2) : rawPhone.startsWith('0') ? rawPhone.slice(1) : rawPhone;
       setPhone(cleanInitialPhone.slice(0, 10));
+      setGender(userObj.gender || '');
       setBranch(userObj.branch || 'Matematik');
-      setPrincipalName(userObj.principalName || 'Mehmet GÜNGÖR');
-      setCity(userObj.city || 'Edirne');
-      setDistrict(userObj.district || 'Merkez');
-      setSchool(userObj.school || 'Edirne Selimiye İmam Hatip Ortaokulu');
+      setPrincipalName(userObj.principalName || '');
+
+      const userCity = userObj.city || 'Edirne';
+      const userDistrict = userObj.district || 'Merkez';
+      const userSchool = userObj.school || '';
+
+      setCity(userCity);
+      setDistrict(userDistrict);
+      setSchool(userSchool);
+      if (userSchool) {
+        setCustomSchoolName(userSchool);
+      }
+
       if (userObj.assignedClasses && Array.isArray(userObj.assignedClasses) && userObj.assignedClasses.length > 0) {
         setAssignedClasses(userObj.assignedClasses);
+      } else {
+        setAssignedClasses(['5-A', '5-B']);
       }
-      setHasLoadedInitialUser(true);
     }
-  }, [currentUser, hasLoadedInitialUser]);
+  }, [currentUser]);
 
   const handlePhoneChange = (val: string) => {
     let digits = val.replace(/\D/g, '');
@@ -143,70 +159,65 @@ export default function ProfilePage() {
 
   // Load districts when city changes
   useEffect(() => {
-    let isMounted = true;
-    async function loadDistricts() {
-      setLoadingDistricts(true);
-      try {
-        const districts = await fetchDistrictsApi(city);
-        if (isMounted) {
+    if (!city) return;
+    const currentSeq = ++cityFetchSeq.current;
+    setLoadingDistricts(true);
+
+    const fallback = getDistrictsByProvince(city);
+    setDistrictsList(fallback);
+
+    fetchDistrictsApi(city)
+      .then((districts) => {
+        if (currentSeq === cityFetchSeq.current && districts && districts.length > 0) {
           setDistrictsList(districts);
-          if (!districts.includes(district)) {
-            setDistrict(districts[0] || 'Merkez');
-          }
         }
-      } catch (err) {
-        console.warn('Districts load error:', err);
-        if (isMounted) {
-          const fallback = getDistrictsByProvince(city);
-          setDistrictsList(fallback);
+      })
+      .catch((err) => {
+        console.warn('Districts load note:', err);
+      })
+      .finally(() => {
+        if (currentSeq === cityFetchSeq.current) {
+          setLoadingDistricts(false);
         }
-      } finally {
-        if (isMounted) setLoadingDistricts(false);
-      }
-    }
-    loadDistricts();
-    return () => {
-      isMounted = false;
-    };
+      });
   }, [city]);
 
   // Load schools when city or district changes
   useEffect(() => {
-    let isMounted = true;
-    async function loadSchools() {
-      if (!district) return;
-      setLoadingSchools(true);
-      try {
-        const schools = await fetchSchoolsApi(city, district);
-        if (isMounted) {
+    if (!city || !district) return;
+    const currentSeq = ++schoolFetchSeq.current;
+    setLoadingSchools(true);
+
+    const fallback = getSchoolsByDistrict(city, district);
+    setSchoolsList(fallback);
+
+    fetchSchoolsApi(city, district)
+      .then((schools) => {
+        if (currentSeq === schoolFetchSeq.current && schools && schools.length > 0) {
           setSchoolsList(schools);
-          // Only pick first school if school is currently empty
-          if (schools.length > 0 && !isCustomSchool && !school) {
-            setSchool(schools[0].name);
-          }
         }
-      } catch (err) {
-        console.warn('Schools load error:', err);
-        if (isMounted) {
-          const fallback = getSchoolsByDistrict(city, district);
-          setSchoolsList(fallback);
-          if (fallback.length > 0 && !isCustomSchool && !school) {
-            setSchool(fallback[0].name);
-          }
+      })
+      .catch((err) => {
+        console.warn('Schools load note:', err);
+      })
+      .finally(() => {
+        if (currentSeq === schoolFetchSeq.current) {
+          setLoadingSchools(false);
         }
-      } finally {
-        if (isMounted) setLoadingSchools(false);
-      }
-    }
-    loadSchools();
-    return () => {
-      isMounted = false;
-    };
+      });
   }, [city, district]);
 
   // Handle City Change
   const handleCityChange = (newCity: string) => {
     setCity(newCity);
+    const districts = getDistrictsByProvince(newCity);
+    setDistrictsList(districts);
+    const firstDist = districts[0] || 'Merkez';
+    setDistrict(firstDist);
+
+    const schools = getSchoolsByDistrict(newCity, firstDist);
+    setSchoolsList(schools);
+    setSchool(schools[0]?.name || '');
     setIsCustomSchool(false);
     setCustomSchoolName('');
     setSchoolSearchQuery('');
@@ -215,6 +226,9 @@ export default function ProfilePage() {
   // Handle District Change
   const handleDistrictChange = (newDist: string) => {
     setDistrict(newDist);
+    const schools = getSchoolsByDistrict(city, newDist);
+    setSchoolsList(schools);
+    setSchool(schools[0]?.name || '');
     setIsCustomSchool(false);
     setCustomSchoolName('');
     setSchoolSearchQuery('');
@@ -319,23 +333,25 @@ export default function ProfilePage() {
 
     if (currentUser) {
       const formatted = formatFullName(firstName, lastName, `${firstName.trim()} ${lastName.trim()}`);
+      const validPassToSave = password && validatePassword(password).isValid && password === passwordConfirm
+        ? password
+        : undefined;
+
       updateUserProfile(currentUser.id, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         name: formatted,
         phone: phone.trim(),
+        gender: gender || undefined,
         branch,
         city,
         district,
         school: finalSchoolName,
         principalName: principalName.trim(),
         assignedClasses,
-        isProfileComplete: true
+        isProfileComplete: true,
+        ...(validPassToSave ? { password: validPassToSave } : {})
       });
-
-      if (password && validatePassword(password).isValid && password === passwordConfirm) {
-        setUserPassword(currentUser.id, password);
-      }
     }
 
     setSavedSuccess(true);
@@ -564,8 +580,31 @@ export default function ProfilePage() {
               </div>
             </div>
 
+            {/* Cinsiyet (İsteğe Bağlı) */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Cinsiyet</span>
+                </span>
+                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                  İsteğe Bağlı
+                </span>
+              </label>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer"
+              >
+                <option value="">Belirtilmedi (İsteğe Bağlı)</option>
+                <option value="Kız">Kadın / Kız</option>
+                <option value="Erkek">Erkek</option>
+                <option value="Belirtmek İstemiyorum">Belirtmek İstemiyorum</option>
+              </select>
+            </div>
+
             {/* Branş */}
-            <div className="space-y-1.5 md:col-span-2">
+            <div className="space-y-1.5">
               <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5 text-teal-600" />
                 <span>Öğretmenlik Branşı</span>
@@ -755,7 +794,17 @@ export default function ProfilePage() {
                   </span>
                   <button
                     type="button"
-                    onClick={() => setIsCustomSchool(!isCustomSchool)}
+                    onClick={() => {
+                      if (!isCustomSchool) {
+                        setCustomSchoolName(school || customSchoolName || '');
+                        setIsCustomSchool(true);
+                      } else {
+                        if (customSchoolName.trim()) {
+                          setSchool(customSchoolName.trim());
+                        }
+                        setIsCustomSchool(false);
+                      }
+                    }}
                     className="text-[10px] font-bold text-teal-600 hover:underline cursor-pointer"
                   >
                     {isCustomSchool ? 'Listeden Seç' : '+ Farklı Okul Yaz'}
@@ -782,6 +831,7 @@ export default function ProfilePage() {
                       value={school}
                       onChange={(e) => {
                         if (e.target.value === 'CUSTOM_NEW') {
+                          setCustomSchoolName(school || '');
                           setIsCustomSchool(true);
                         } else {
                           setSchool(e.target.value);
@@ -789,6 +839,12 @@ export default function ProfilePage() {
                       }}
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
                     >
+                      {/* Make sure currently selected/saved school is always an option */}
+                      {school && !filteredSchools.some((s) => s.name === school) && (
+                        <option value={school}>
+                          {school} (Kayıtlı Okulunuz)
+                        </option>
+                      )}
                       {filteredSchools.map((s) => (
                         <option key={s.id} value={s.name}>
                           {s.name} ({s.type})

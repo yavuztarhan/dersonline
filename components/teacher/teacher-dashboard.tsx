@@ -23,9 +23,11 @@ import { WhiteboardViewerModal } from '@/components/whiteboard/whiteboard-viewer
 import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentOutcomeDetailModal } from '@/components/gamification/student-outcome-detail-modal';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
+import { ExcelStudentImportModal } from '@/components/teacher/excel-student-import-modal';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
+  FileSpreadsheet,
   School,
   MapPin,
   Users,
@@ -88,7 +90,9 @@ export function TeacherDashboard() {
   const [newStudentName, setNewStudentName] = useState('');
   const [newStudentNumber, setNewStudentNumber] = useState('');
   const [newStudentClass, setNewStudentClass] = useState(selectedClass);
+  const [newStudentGender, setNewStudentGender] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showExcelImportModal, setShowExcelImportModal] = useState(false);
 
   // Sınıf Ekleme Modalı State
   const [showAddClassModal, setShowAddClassModal] = useState(false);
@@ -111,6 +115,7 @@ export function TeacherDashboard() {
 
     const targetClass = newStudentClass || selectedClass;
     const { firstName, lastName } = splitFullName(newStudentName.trim());
+    const avatar = newStudentGender === 'Kız' ? '👩‍🎓' : newStudentGender === 'Erkek' ? '👨‍🎓' : '🎓';
 
     const newStudent = {
       id: `stu-${Date.now()}`,
@@ -119,8 +124,9 @@ export function TeacherDashboard() {
       name: newStudentName.trim(),
       email: `${newStudentNumber.trim()}@okul.meb.k12.tr`,
       role: 'student' as const,
-      avatar: '🎓',
+      avatar,
       studentNumber: newStudentNumber.trim(),
+      gender: newStudentGender || undefined,
       gradeLevel: parseInt(targetClass.charAt(0)) || 5,
       classSection: targetClass,
       city: teacher?.city || 'Edirne',
@@ -136,6 +142,7 @@ export function TeacherDashboard() {
     playSound('success');
     setNewStudentName('');
     setNewStudentNumber('');
+    setNewStudentGender('');
     setShowAddModal(false);
     setSelectedClass(targetClass);
   };
@@ -682,16 +689,29 @@ export function TeacherDashboard() {
                     </button>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      setNewStudentClass(selectedClass);
-                      setShowAddModal(true);
-                    }}
-                    className="px-3.5 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold border border-teal-200 transition-colors flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Öğrenci Ekle</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowExcelImportModal(true)}
+                      className="px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      title="e-Okul Excel dosyasından sınıf listesini otomatik yükle"
+                    >
+                      <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Excel&apos;den Yükle (e-Okul)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewStudentClass(selectedClass);
+                        setShowAddModal(true);
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold border border-teal-200 transition-colors flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Öğrenci Ekle</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -712,14 +732,37 @@ export function TeacherDashboard() {
                     {classStudents.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="py-8 text-center text-slate-400">
-                          <div className="space-y-2">
-                            <div className="text-2xl">🎓</div>
-                            <p className="font-bold text-xs text-slate-600">
-                              {selectedClass} şubesinde henüz kayıtlı öğrenci bulunmuyor.
-                            </p>
-                            <p className="text-[11px] text-slate-400">
-                              Yukarıdaki &quot;Öğrenci Ekle&quot; butonuna basarak sınıfınıza öğrenci tanımlayabilirsiniz.
-                            </p>
+                          <div className="space-y-3">
+                            <div className="text-3xl">🎓</div>
+                            <div className="space-y-1">
+                              <p className="font-bold text-xs text-slate-700">
+                                {selectedClass} şubesinde henüz kayıtlı öğrenci bulunmuyor.
+                              </p>
+                              <p className="text-[11px] text-slate-400 max-w-sm mx-auto">
+                                e-Okul&apos;dan indirdiğiniz sınıf listesi Excel dosyasını tek tıkla yükleyebilir veya manuel öğrenci ekleyebilirsiniz.
+                              </p>
+                            </div>
+                            <div className="pt-2 flex items-center justify-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setShowExcelImportModal(true)}
+                                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                              >
+                                <FileSpreadsheet className="w-4 h-4" />
+                                <span>e-Okul Excel ile Sınıf Yükle</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setNewStudentClass(selectedClass);
+                                  setShowAddModal(true);
+                                }}
+                                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                              >
+                                <Plus className="w-4 h-4" />
+                                <span>Manuel Ekle</span>
+                              </button>
+                            </div>
                           </div>
                         </td>
                       </tr>
@@ -736,8 +779,22 @@ export function TeacherDashboard() {
                         >
                           <td className="py-3 px-3 font-mono font-black text-slate-900">#{stu.studentNumber}</td>
                           <td className="py-3 px-3">
-                            <div className="font-bold text-slate-900 group-hover:text-teal-800 transition-colors flex items-center gap-1.5">
+                            <div className="font-bold text-slate-900 group-hover:text-teal-800 transition-colors flex items-center gap-1.5 flex-wrap">
                               <span>{stu.name}</span>
+                              {stu.gender && (
+                                <span
+                                  className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-md ${
+                                    stu.gender === 'Kız'
+                                      ? 'bg-pink-100 text-pink-700'
+                                      : stu.gender === 'Erkek'
+                                      ? 'bg-blue-100 text-blue-700'
+                                      : 'bg-slate-100 text-slate-600'
+                                  }`}
+                                  title={`Cinsiyet: ${stu.gender}`}
+                                >
+                                  {stu.gender}
+                                </span>
+                              )}
                               <BarChart2 className="w-3 h-3 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
                             <div className="text-[10px] text-slate-400">{stu.classSection} Şubesi</div>
@@ -837,7 +894,7 @@ export function TeacherDashboard() {
                   </button>
                 </div>
 
-                <form onSubmit={handleAddStudent} className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <form onSubmit={handleAddStudent} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                   <input
                     type="text"
                     required
@@ -855,6 +912,15 @@ export function TeacherDashboard() {
                     className="sm:col-span-2 p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
                   />
                   <select
+                    value={newStudentGender}
+                    onChange={(e) => setNewStudentGender(e.target.value)}
+                    className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400 cursor-pointer"
+                  >
+                    <option value="">Cinsiyet (İsteğe Bağlı)</option>
+                    <option value="Kız">Kız</option>
+                    <option value="Erkek">Erkek</option>
+                  </select>
+                  <select
                     value={newStudentClass}
                     onChange={(e) => setNewStudentClass(e.target.value)}
                     className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
@@ -866,7 +932,7 @@ export function TeacherDashboard() {
                     ))}
                   </select>
 
-                  <div className="sm:col-span-4 flex items-center justify-end gap-2 pt-1">
+                  <div className="sm:col-span-5 flex items-center justify-end gap-2 pt-1">
                     <button
                       type="button"
                       onClick={() => setShowAddModal(false)}
@@ -1399,6 +1465,17 @@ export function TeacherDashboard() {
           isTeacher={true}
         />
       )}
+
+      {/* e-Okul Excel Sınıf İçe Aktarma Modalı */}
+      <ExcelStudentImportModal
+        isOpen={showExcelImportModal}
+        onClose={() => setShowExcelImportModal(false)}
+        defaultClass={selectedClass}
+        onImportSuccess={(targetClass) => {
+          setSelectedClass(targetClass);
+          setShowExcelImportModal(false);
+        }}
+      />
 
     </div>
   );

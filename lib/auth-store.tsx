@@ -39,6 +39,7 @@ interface AuthContextType {
   loginAsRole: (role: UserRole) => void;
   loginWithEmail: (emailOrIdentifier: string, pass?: string) => boolean;
   loginWithGoogle: (profile: { name: string; email: string; avatar?: string }) => { isNewUser: boolean; user: AuthUser };
+  loginWithBoardSession: (user: AuthUser, sessionToken: string, expiresAt: number, deviceCategory: string) => void;
   logout: () => void;
   setUserPassword: (userId: string, newPassword: string) => boolean;
   updateUserProfile: (userId: string, updates: Partial<AuthUser>) => void;
@@ -64,6 +65,7 @@ interface AuthContextType {
   
   // Student Operations & Visibility
   addStudent: (student: StudentUser) => void;
+  addStudentsBulk: (students: StudentUser[]) => { addedCount: number; updatedCount: number };
   updateStudent: (student: StudentUser) => void;
   deleteStudent: (studentId: string) => void;
   awardPointsToStudent: (studentId: string, pts: number) => void;
@@ -538,7 +540,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Merge seed admins so core admins are always available
           const merged = parsed.map(enrichUser).map((adm: AdminUser) => {
             if (adm.email?.toLowerCase() === 'powerose@gmail.com') {
-              return { ...adm, password: 'Admin1234' };
+              return { ...adm, password: adm.password || 'Admin1234' };
             }
             return adm;
           });
@@ -571,9 +573,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (savedUser) {
         const parsedUser = enrichUser(JSON.parse(savedUser));
         if (parsedUser.email?.toLowerCase() === 'powerose@gmail.com') {
-          parsedUser.password = 'Admin1234';
+          parsedUser.password = parsedUser.password || 'Admin1234';
         }
         setCurrentUser(parsedUser);
+
+        // Background server sync: fetch updated profile from DB if available
+        if (parsedUser.email) {
+          fetch(`/api/user/profile?email=${encodeURIComponent(parsedUser.email)}`)
+            .then((res) => res.json())
+            .then((data) => {
+              if (data?.success && data?.user) {
+                const dbUser = data.user;
+                setCurrentUser((prev) => {
+                  if (!prev || prev.email?.toLowerCase() !== parsedUser.email?.toLowerCase()) return prev;
+                  const synced = {
+                    ...prev,
+                    firstName: dbUser.firstName || prev.firstName,
+                    lastName: dbUser.lastName || prev.lastName,
+                    name: dbUser.name || prev.name,
+                    phone: dbUser.phone || (prev as any).phone,
+                    city: dbUser.city || (prev as any).city,
+                    district: dbUser.district || (prev as any).district,
+                    school: dbUser.school || (prev as any).school,
+                    branch: dbUser.branch || (prev as any).branch,
+                    principalName: dbUser.principalName || (prev as any).principalName,
+                    assignedClasses: (dbUser.assignedClasses && dbUser.assignedClasses.length > 0)
+                      ? dbUser.assignedClasses
+                      : (prev as any).assignedClasses,
+                  };
+                  try {
+                    localStorage.setItem('maarif_current_user', JSON.stringify(synced));
+                  } catch (e) {}
+                  return synced;
+                });
+              }
+            })
+            .catch(() => {});
+        }
       }
     } catch (e) {
       console.warn('LocalStorage error:', e);
@@ -636,6 +672,112 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return isUserAdmin(email, admins);
   };
 
+  const registerDeviceSession = (u: AuthUser, clientHint?: string) => {
+    if (!u || !u.id || !u.email) return;
+    fetch('/api/auth/session-register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: u.id,
+        userEmail: u.email,
+        clientHint
+      })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data?.sessionId) {
+          try {
+            localStorage.setItem('maarif_session_token', data.sessionId);
+            localStorage.setItem('maarif_session_expires', String(data.expiresAt));
+            localStorage.setItem('maarif_device_category', data.deviceCategory);
+          } catch (e) {}
+        }
+      })
+      .catch(() => {});
+  };
+
+  const loginWithBoardSession = (
+    user: AuthUser,
+    sessionToken: string,
+    expiresAt: number,
+    deviceCategory: string
+  ) => {
+    const enrichUser = (u: any) => {
+      if (!u) return u;
+      if (!u.firstName || !u.lastName) {
+        const parts = splitFullName(u.name || '');
+        u.firstName = u.firstName || parts.firstName || 'Öğretmen';
+        u.lastName = u.lastName || parts.lastName || '';
+      }
+      if (!u.name) {
+        u.name = formatFullName(u.firstName, u.lastName, 'Öğretmen');
+      }
+      return u;
+    };
+
+    const enriched = enrichUser(user);
+    setCurrentUser(enriched);
+
+    try {
+      localStorage.setItem('maarif_current_user', JSON.stringify(enriched));
+      if (sessionToken) localStorage.setItem('maarif_session_token', sessionToken);
+      if (expiresAt) localStorage.setItem('maarif_session_expires', String(expiresAt));
+      if (deviceCategory) localStorage.setItem('maarif_device_category', deviceCategory);
+    } catch (e) {}
+  };
+
+  // Concurrent session heartbeat validator:
+  // Terminates older smartboard sessions if the teacher logs into another smartboard!
+  useEffect(() => {
+    if (!currentUser || !isLoaded) return;
+
+    const checkHeartbeat = async () => {
+      try {
+        const token = localStorage.getItem('maarif_session_token');
+        const category = localStorage.getItem('maarif_device_category') || 'smartboard';
+        const expiresStr = localStorage.getItem('maarif_session_expires');
+
+        if (expiresStr) {
+          const exp = parseInt(expiresStr, 10);
+          if (exp && Date.now() > exp) {
+            alert('Oturum süreniz doldu. Güvenliğiniz için oturum sonlandırıldı.');
+            logout();
+            return;
+          }
+        }
+
+        if (!token) return;
+
+        const res = await fetch('/api/auth/session-heartbeat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            sessionId: token,
+            deviceCategory: category
+          })
+        });
+
+        const data = await res.json();
+        if (data && data.active === false) {
+          const msg = data.message || 'Oturumunuz başka bir cihazda açıldığı için bu tahtadaki oturum güvenlik amacıyla kapatıldı.';
+          alert(msg);
+          logout();
+        }
+      } catch (e) {
+        // Silently ignore network blips
+      }
+    };
+
+    const initialTimer = setTimeout(checkHeartbeat, 4000);
+    const interval = setInterval(checkHeartbeat, 20000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [currentUser, isLoaded]);
+
   const loginAsRole = (role: UserRole) => {
     if (role === 'admin') {
       setCurrentUser(admins[0] || SEED_ADMINS[0]);
@@ -661,6 +803,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
       setCurrentUser(adminUser);
+      registerDeviceSession(adminUser);
       return true;
     }
     const adminByPhone = admins.find(a => a.phone && a.phone.replace(/\s+/g, '') === cleanIdNoSpaces);
@@ -670,6 +813,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
       setCurrentUser(adminByPhone);
+      registerDeviceSession(adminByPhone);
       return true;
     }
 
@@ -684,6 +828,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
       setCurrentUser(teacher);
+      registerDeviceSession(teacher);
       return true;
     }
 
@@ -698,6 +843,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
       setCurrentUser(student);
+      registerDeviceSession(student);
       return true;
     }
 
@@ -707,6 +853,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setCurrentUser(null);
     try {
+      localStorage.removeItem('maarif_current_user');
+      localStorage.removeItem('maarif_session_token');
+      localStorage.removeItem('maarif_session_expires');
+      localStorage.removeItem('maarif_device_category');
       signOut({ redirect: false });
     } catch (e) {}
   };
@@ -739,11 +889,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return next;
     });
 
-    if (currentUser && (currentUser.id === userId || (targetEmail && currentUser.email?.toLowerCase() === targetEmail))) {
-      const updated = { ...currentUser, password: newPassword };
-      setCurrentUser(updated);
+    setCurrentUser((prev) => {
+      if (!prev) return prev;
+      if (prev.id === userId || (targetEmail && prev.email?.toLowerCase() === targetEmail)) {
+        const updated = { ...prev, password: newPassword };
+        try {
+          localStorage.setItem('maarif_current_user', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      }
+      return prev;
+    });
+
+    if (targetEmail) {
       try {
-        localStorage.setItem('maarif_current_user', JSON.stringify(updated));
+        fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: targetEmail, password: newPassword }),
+        }).catch(() => {});
       } catch (e) {}
     }
 
@@ -757,6 +921,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const fName = updates.firstName !== undefined ? updates.firstName : existing.firstName;
       const lName = updates.lastName !== undefined ? updates.lastName : existing.lastName;
       const full = updates.name || formatFullName(fName, lName, existing.name);
+      const pass = (updates as any).password !== undefined ? (updates as any).password : (existing as any).password;
 
       return {
         ...existing,
@@ -765,25 +930,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         lastName: lName,
         name: full,
         phone: (updates as any).phone !== undefined ? (updates as any).phone : (existing as any).phone,
+        gender: (updates as any).gender !== undefined ? (updates as any).gender : (existing as any).gender,
         city: (updates as any).city !== undefined ? (updates as any).city : (existing as any).city,
         district: (updates as any).district !== undefined ? (updates as any).district : (existing as any).district,
         school: (updates as any).school !== undefined ? (updates as any).school : (existing as any).school,
         branch: (updates as any).branch !== undefined ? (updates as any).branch : (existing as any).branch,
         principalName: (updates as any).principalName !== undefined ? (updates as any).principalName : (existing as any).principalName,
         assignedClasses: (updates as any).assignedClasses !== undefined ? (updates as any).assignedClasses : (existing as any).assignedClasses,
+        password: pass,
         isProfileComplete: true
       };
     };
 
     // 1. Update Current User State & Storage
     let updatedCurrentUser: AuthUser | null = null;
-    if (currentUser && (currentUser.id === userId || (targetEmail && currentUser.email?.toLowerCase() === targetEmail))) {
-      updatedCurrentUser = applyUpdates(currentUser);
-      setCurrentUser(updatedCurrentUser);
-      try {
-        localStorage.setItem('maarif_current_user', JSON.stringify(updatedCurrentUser));
-      } catch (e) {}
-    }
+    setCurrentUser((prev) => {
+      if (prev && (prev.id === userId || (targetEmail && prev.email?.toLowerCase() === targetEmail))) {
+        updatedCurrentUser = applyUpdates(prev);
+        try {
+          localStorage.setItem('maarif_current_user', JSON.stringify(updatedCurrentUser));
+        } catch (e) {}
+        return updatedCurrentUser;
+      }
+      return prev;
+    });
 
     // 2. Update Teachers list & Storage
     setTeachers((prev) => {
@@ -799,6 +969,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           lastName: updates.lastName || base?.lastName || '',
           name: formatFullName(updates.firstName || base?.firstName, updates.lastName || base?.lastName),
           email: updates.email || base?.email || targetEmail,
+          password: (updates as any).password || (base as any)?.password || '',
           phone: (updates as any).phone || (base as any)?.phone || '',
           city: (updates as any).city || (base as any)?.city || 'Edirne',
           district: (updates as any).district || (base as any)?.district || 'Merkez',
@@ -836,7 +1007,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           lastName: updates.lastName || base?.lastName || 'Yöneticisi',
           name: formatFullName(updates.firstName || base?.firstName, updates.lastName || base?.lastName, 'Sistem Yöneticisi'),
           email: updates.email || base?.email || targetEmail,
-          password: (base as any)?.password || (targetEmail === 'powerose@gmail.com' ? 'Admin1234' : 'admin'),
+          password: (updates as any).password || (base as any)?.password || (targetEmail === 'powerose@gmail.com' ? 'Admin1234' : 'admin'),
           role: 'admin',
           avatar: base?.avatar || '👑',
           permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports'],
@@ -892,6 +1063,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             school: (updates as any).school,
             principalName: (updates as any).principalName,
             assignedClasses: (updates as any).assignedClasses,
+            password: (updates as any).password,
           }),
         }).catch((err) => console.warn('Server profile sync note:', err));
       } catch (e) {}
@@ -926,8 +1098,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // 1. Check if admin
     if (checkIsAdmin(trimmed)) {
-      const adminUser = admins.find((a) => a.email.toLowerCase() === trimmed) || getAdminUser(trimmed, profile.name, profile.avatar);
+      const foundAdmin = admins.find((a) => a.email.toLowerCase() === trimmed);
+      let existingStorageUser: any = null;
+      try {
+        const savedUserRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_current_user') : null;
+        if (savedUserRaw) {
+          const parsed = JSON.parse(savedUserRaw);
+          if (parsed.email?.toLowerCase() === trimmed) {
+            existingStorageUser = parsed;
+          }
+        }
+      } catch (e) {}
+
+      const adminUser: AdminUser = {
+        ...(foundAdmin || getAdminUser(trimmed, profile.name, profile.avatar)),
+        ...(existingStorageUser || {}),
+        role: 'admin',
+        avatar: profile.avatar || existingStorageUser?.avatar || foundAdmin?.avatar || '👑',
+      };
       setCurrentUser(adminUser);
+      registerDeviceSession(adminUser);
       return { isNewUser: false, user: adminUser };
     }
 
@@ -935,14 +1125,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const existingStudent = students.find((s) => s.email.toLowerCase() === trimmed);
     if (existingStudent) {
       setCurrentUser(existingStudent);
+      registerDeviceSession(existingStudent);
       return { isNewUser: false, user: existingStudent };
     }
 
     // 3. Check if teacher exists
     const existingTeacher = teachers.find((t) => t.email.toLowerCase() === trimmed);
     if (existingTeacher) {
-      setCurrentUser(existingTeacher);
-      return { isNewUser: false, user: existingTeacher };
+      let existingStorageUser: any = null;
+      try {
+        const savedUserRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_current_user') : null;
+        if (savedUserRaw) {
+          const parsed = JSON.parse(savedUserRaw);
+          if (parsed.email?.toLowerCase() === trimmed) {
+            existingStorageUser = parsed;
+          }
+        }
+      } catch (e) {}
+
+      const mergedTeacher: TeacherUser = {
+        ...existingTeacher,
+        ...(existingStorageUser || {}),
+        role: 'teacher',
+        avatar: profile.avatar || existingStorageUser?.avatar || existingTeacher.avatar || '👨‍🏫',
+      };
+      setCurrentUser(mergedTeacher);
+      registerDeviceSession(mergedTeacher);
+      return { isNewUser: false, user: mergedTeacher };
     }
 
     // 4. If new teacher user, create profile with pre-verified email (since Google validates email ownership)
@@ -970,6 +1179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const updated = [...teachers, newTeacher];
     setTeachers(updated);
     setCurrentUser(newTeacher);
+    registerDeviceSession(newTeacher);
 
     return { isNewUser: true, user: newTeacher };
   };
@@ -1091,7 +1301,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email: email,
       password: data.password || '123456',
       role: 'student',
-      avatar: '🎓',
+      avatar: data.gender === 'Kız' ? '👩‍🎓' : data.gender === 'Erkek' ? '👨‍🎓' : '🎓',
+      gender: data.gender || undefined,
       studentNumber: num,
       gradeLevel: data.gradeLevel || 5,
       classSection: (data.classSection || '5-A').trim().toUpperCase(),
@@ -1383,7 +1594,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...student,
       firstName: fName,
       lastName: lName,
-      name: fullName
+      name: fullName,
+      gender: student.gender || undefined
     };
 
     setStudents((prev) => {
@@ -1393,6 +1605,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       return [normalized, ...prev];
     });
+  };
+
+  const addStudentsBulk = (newStudentsList: StudentUser[]): { addedCount: number; updatedCount: number } => {
+    let added = 0;
+    let updated = 0;
+
+    const normalizedList = newStudentsList.map((student) => {
+      const fName = student.firstName || splitFullName(student.name || '').firstName || 'Öğrenci';
+      const lName = student.lastName || splitFullName(student.name || '').lastName || '';
+      const fullName = formatFullName(fName, lName, student.name || 'Öğrenci');
+      return {
+        ...student,
+        firstName: fName,
+        lastName: lName,
+        name: fullName,
+        gender: student.gender || undefined
+      };
+    });
+
+    setStudents((prev) => {
+      const next = [...prev];
+      for (const norm of normalizedList) {
+        // Find existing match by id or by studentNumber in the same school and classSection
+        const existingIdx = next.findIndex(
+          (s) =>
+            s.id === norm.id ||
+            (s.studentNumber === norm.studentNumber &&
+              s.classSection === norm.classSection &&
+              (s.school === norm.school || !norm.school || !s.school))
+        );
+        if (existingIdx >= 0) {
+          next[existingIdx] = {
+            ...next[existingIdx],
+            ...norm,
+            gender: norm.gender || next[existingIdx].gender,
+            id: next[existingIdx].id
+          };
+          updated++;
+        } else {
+          next.unshift(norm);
+          added++;
+        }
+      }
+      return next;
+    });
+
+    return { addedCount: added, updatedCount: updated };
   };
 
   const updateStudent = (student: StudentUser) => {
@@ -1637,6 +1896,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginAsRole,
         loginWithEmail,
         loginWithGoogle,
+        loginWithBoardSession,
         logout,
         setUserPassword,
         updateUserProfile,
@@ -1654,6 +1914,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         deleteAdmin,
         changeUserRole,
         addStudent,
+        addStudentsBulk,
         updateStudent,
         deleteStudent,
         awardPointsToStudent,

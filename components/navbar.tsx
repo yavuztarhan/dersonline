@@ -10,11 +10,9 @@ import { AuthModal } from '@/components/auth/auth-modal';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { MessageInboxModal } from '@/components/messages/message-inbox-modal';
 import { AppDrawer } from '@/components/navigation/app-drawer';
-import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { getUnreadMessageCount } from '@/lib/message-store';
+import { TeacherBoardAuthModal } from '@/components/teacher/teacher-board-auth-modal';
 import {
-  Volume2,
-  VolumeX,
   Award,
   RotateCcw,
   User,
@@ -23,16 +21,15 @@ import {
   ChevronRight,
   Sparkles,
   LayoutDashboard,
-  Gamepad2,
   Mail,
-  Menu
+  Menu,
+  Tv,
+  QrCode
 } from 'lucide-react';
 
 export function Navbar() {
   const {
     role,
-    soundEnabled,
-    setSoundEnabled,
     playSound,
     studentPoints,
     resetSelection,
@@ -41,8 +38,9 @@ export function Navbar() {
   const { currentUser, logout } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalDefaultTab, setAuthModalDefaultTab] = useState<'login' | 'register'>('login');
+  const [authModalDefaultTab, setAuthModalDefaultTab] = useState<'login' | 'register' | 'board'>('login');
   const [messageModalOpen, setMessageModalOpen] = useState(false);
+  const [teacherBoardAuthOpen, setTeacherBoardAuthOpen] = useState(false);
 
   const unreadMessageCount = currentUser ? getUnreadMessageCount(currentUser.id) : 0;
 
@@ -139,46 +137,14 @@ export function Navbar() {
                 </p>
               </div>
             </button>
-
-            {/* Standalone Games Navigation Link */}
-            <Link
-              href="/games"
-              onClick={() => playSound('click')}
-              className={`hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black transition-all border shadow-xs cursor-pointer ${
-                pathname?.startsWith('/games') || pathname?.startsWith('/oyunlar')
-                  ? 'bg-indigo-600 text-white border-indigo-700 shadow-indigo-600/20 scale-102'
-                  : 'bg-indigo-50/80 hover:bg-indigo-100/80 text-indigo-900 border-indigo-200/80 hover:border-indigo-300'
-              }`}
-              title="Bağımsız Zeka & Eğitici Oyunlar Salonu"
-            >
-              <Gamepad2 className={`w-4 h-4 ${pathname?.startsWith('/games') || pathname?.startsWith('/oyunlar') ? 'text-white' : 'text-indigo-600'}`} />
-              <span>Oyunlar</span>
-              <span className="text-[10px] px-1.5 py-0.2 bg-amber-400 text-slate-950 rounded-full font-black">
-                Yeni
-              </span>
-            </Link>
           </div>
 
           {/* 2. Right Side: Context-Aware Single Dashboard Button & User Controls */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            
-            {/* Mobile Oyunlar Button */}
-            <Link
-              href="/games"
-              onClick={() => playSound('click')}
-              className={`sm:hidden p-2 rounded-xl border transition-all flex items-center justify-center cursor-pointer ${
-                pathname?.startsWith('/games') || pathname?.startsWith('/oyunlar')
-                  ? 'bg-indigo-600 text-white border-indigo-700'
-                  : 'bg-indigo-50 text-indigo-800 border-indigo-200'
-              }`}
-              title="Oyunlar"
-            >
-              <Gamepad2 className="w-4 h-4" />
-            </Link>
+          <div className="flex items-center gap-1.5 sm:gap-2.5 flex-nowrap shrink-0">
             
             {/* Student Points Badge if student */}
             {currentUser?.role === 'student' && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-xs">
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-xs shrink-0">
                 <Award className="w-4 h-4 text-amber-500 fill-amber-400" />
                 <span>{studentPoints} XP</span>
               </div>
@@ -186,12 +152,12 @@ export function Navbar() {
 
             {/* Authenticated State: Single Dynamic Role Panel Button + Profile Controls */}
             {currentUser ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-nowrap shrink-0">
                 
-                {/* Single Context-Aware Role Panel Button */}
+                {/* Single Context-Aware Role Panel Button (Masaüstünde görünür, mobilde sol çekmece menüsünden erişilir) */}
                 <Link
                   href={userDashboardHref}
-                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 shadow-xs cursor-pointer ${
+                  className={`hidden md:flex px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-black transition-all items-center gap-1.5 shadow-xs cursor-pointer shrink-0 ${
                     isCurrentDashboardActive
                       ? 'bg-teal-700 text-white shadow-teal-700/20 scale-102'
                       : 'bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200/80 hover:border-teal-300'
@@ -199,19 +165,36 @@ export function Navbar() {
                   title={`${userDashboardLabel}ne Git`}
                 >
                   <span className="text-sm">{userDashboardIcon}</span>
-                  <span className="hidden sm:inline">{userDashboardLabel}</span>
+                  <span>{userDashboardLabel}</span>
                   <ChevronRight className="w-3.5 h-3.5 text-teal-600" />
                 </Link>
 
-                {/* User Pill with Avatar & Name */}
-                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 p-1 rounded-2xl">
+                {/* Teacher Smart Board Fast Authorization Button (Single Compact Action) */}
+                {(currentUser.role === 'teacher' || currentUser.role === 'admin') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playSound('click');
+                      setTeacherBoardAuthOpen(true);
+                    }}
+                    className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0 active:scale-95"
+                    title="Akıllı Tahta Girişi (QR Kod & 4 Haneli PIN)"
+                  >
+                    <Tv className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-100 shrink-0" />
+                    <span className="hidden md:inline">Tahta Girişi</span>
+                    <span className="md:hidden text-[11px]">Tahta</span>
+                  </button>
+                )}
+
+                {/* User Pill with Avatar & Name (Masaüstünde görünür, mobilde sol çekmece menüsünden erişilir) */}
+                <div className="hidden md:flex items-center gap-1 bg-slate-50 border border-slate-200 p-1 rounded-2xl shrink-0">
                   <Link
                     href="/profile"
-                    className="flex items-center gap-2 px-2.5 py-1 rounded-xl hover:bg-white transition-all text-xs group"
+                    className="flex items-center gap-2 px-1.5 sm:px-2.5 py-1 rounded-xl hover:bg-white transition-all text-xs group"
                     title="Profilimi ve Okul Bilgilerimi Düzenle"
                   >
                     <UserAvatar avatar={currentUser.avatar} name={currentUser.name} size="sm" />
-                    <div className="text-left hidden md:block max-w-[130px] truncate">
+                    <div className="text-left hidden lg:block max-w-[120px] truncate">
                       <div className="font-extrabold text-slate-900 leading-tight truncate">
                         {currentUser.name}
                       </div>
@@ -248,7 +231,7 @@ export function Navbar() {
                     playSound('click');
                     setMessageModalOpen(true);
                   }}
-                  className="relative p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 transition-all cursor-pointer"
+                  className="relative p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 transition-all cursor-pointer shrink-0"
                   title="Mesaj Merkezi & Gelen Kutusu"
                 >
                   <Mail className="w-4 h-4 text-slate-600" />
@@ -259,28 +242,6 @@ export function Navbar() {
                   )}
                 </button>
 
-                {/* Görüş Bildir Quick Action (Sadece İkon) */}
-                <FeedbackButton
-                  contextTitle={
-                    isLessonPage
-                      ? 'Ders Akışı'
-                      : pathname === '/teacher'
-                      ? 'Öğretmen Paneli'
-                      : pathname === '/student'
-                      ? 'Öğrenci Paneli'
-                      : pathname === '/admin'
-                      ? 'Yönetici Paneli'
-                      : pathname === '/games'
-                      ? 'Oyunlar Sayfası'
-                      : pathname === '/profile'
-                      ? 'Profil Sayfası'
-                      : 'Genel Platform'
-                  }
-                  tooltip="Görüş & Geri Bildirim Bildir"
-                  className="p-2 rounded-xl bg-slate-50 hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 hover:border-teal-300 transition-all cursor-pointer flex items-center justify-center active:scale-95"
-                  iconClassName="w-4 h-4 text-teal-600"
-                />
-
                 {/* Logout Button */}
                 <button
                   onClick={() => {
@@ -288,7 +249,7 @@ export function Navbar() {
                     logout();
                     router.push('/');
                   }}
-                  className="p-2 sm:px-3 sm:py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                  className="p-2 sm:px-3 sm:py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
                   title="Oturumu Kapat"
                 >
                   <LogOut className="w-3.5 h-3.5 text-rose-600" />
@@ -296,7 +257,7 @@ export function Navbar() {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-nowrap shrink-0">
                 <button
                   onClick={handleOpenLogin}
                   className="px-3.5 py-2 rounded-xl text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors flex items-center gap-1.5 border border-slate-200 cursor-pointer"
@@ -312,22 +273,6 @@ export function Navbar() {
                 </button>
               </div>
             )}
-
-            {/* Sound Effects Toggle */}
-            <button
-              onClick={() => {
-                setSoundEnabled(!soundEnabled);
-                if (!soundEnabled) playSound('click');
-              }}
-              title={soundEnabled ? 'Ses Efektlerini Kapat' : 'Ses Efektlerini Aç'}
-              className={`p-2 rounded-xl border transition-all cursor-pointer ${
-                soundEnabled
-                  ? 'bg-slate-50 border-slate-200 text-teal-700 hover:bg-slate-100'
-                  : 'bg-slate-100 border-slate-200 text-slate-400'
-              }`}
-            >
-              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            </button>
 
             {/* Return to Home button when in Lesson Room */}
             {isLessonPage && (
@@ -366,6 +311,13 @@ export function Navbar() {
           setAuthModalOpen(true);
         }}
         onOpenMessageModal={() => setMessageModalOpen(true)}
+        onOpenBoardAuthModal={() => setTeacherBoardAuthOpen(true)}
+      />
+
+      {/* Teacher Smart Board Unified Auth Modal (QR Camera + PIN) */}
+      <TeacherBoardAuthModal
+        isOpen={teacherBoardAuthOpen}
+        onClose={() => setTeacherBoardAuthOpen(false)}
       />
     </>
   );

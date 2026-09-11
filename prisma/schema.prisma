@@ -28,6 +28,7 @@ model User {
   lastName  String   @default("")
   name      String
   password  String?  // Giriş şifresi (Google veya e-posta ile giriş yapanlar için)
+  gender    String?  // İsteğe bağlı cinsiyet
   role      Role     @default(STUDENT)
   avatar    String?
   createdAt DateTime @default(now())
