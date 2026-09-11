@@ -16,6 +16,7 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Maximize2,
   Minimize2,
   CheckCircle2,
@@ -38,7 +39,7 @@ interface BoardToolbarProps {
 const PHASES: Array<{ id: LessonPhaseId; number: number; label: string; icon: string }> = [
   { id: 'story', number: 1, label: 'Hikâye & Bağlam', icon: '📖' },
   { id: 'lab', number: 2, label: 'Atölye', icon: '📐' },
-  { id: 'puzzle', number: 3, label: 'Kavram Bulmacası', icon: '🧩' },
+  { id: 'puzzle', number: 3, label: 'Oyun Zamanı', icon: '🧩' },
   { id: 'assessment', number: 4, label: 'Değerlendirme', icon: '📝' },
 ];
 
@@ -78,6 +79,7 @@ export function BoardToolbar({
   const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
   const [colorMenuOpen, setColorMenuOpen] = useState(false);
   const [whiteboardOpen, setWhiteboardOpen] = useState(false);
+  const [phaseMenuOpen, setPhaseMenuOpen] = useState(false);
 
   // Küçük ekranlarda veya mobil cihazlarda kalem aracını başlangıçta saklı konuma al
   useEffect(() => {
@@ -117,7 +119,25 @@ export function BoardToolbar({
           {/* Right Actions: 4 Phases Stepper & Lesson Plan PDF Button */}
           <div className="flex items-center gap-2 flex-wrap">
             {/* 4 Phases Stepper Buttons */}
-            <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto max-w-full">
+            <div className="relative flex items-center gap-1 bg-slate-100 p-1 sm:p-1.5 rounded-2xl border border-slate-200">
+              {/* Mobile Previous Phase Arrow */}
+              <button
+                type="button"
+                onClick={() => {
+                  const currentIndex = PHASES.findIndex((p) => p.id === currentPhase);
+                  if (currentIndex > 0) {
+                    playSound('select');
+                    onSelectPhase(PHASES[currentIndex - 1].id);
+                  }
+                }}
+                disabled={PHASES.findIndex((p) => p.id === currentPhase) === 0}
+                className="md:hidden p-1.5 rounded-xl text-slate-500 hover:text-slate-800 disabled:opacity-25 disabled:pointer-events-none transition-colors"
+                title="Önceki Aşama"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              {/* Phase Buttons: Only active shown on mobile (<md), all shown on desktop (>=md) */}
               {PHASES.map((phase) => {
                 const isActive = currentPhase === phase.id;
                 return (
@@ -125,21 +145,89 @@ export function BoardToolbar({
                     key={phase.id}
                     onClick={() => {
                       playSound('select');
-                      onSelectPhase(phase.id);
+                      if (isActive) {
+                        setPhaseMenuOpen((prev) => !prev);
+                      } else {
+                        onSelectPhase(phase.id);
+                        setPhaseMenuOpen(false);
+                      }
                     }}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer ${
+                    className={`items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer ${
                       isActive
-                        ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20 scale-102'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                        ? 'flex bg-teal-600 text-white shadow-md shadow-teal-600/20 scale-102'
+                        : 'hidden md:flex text-slate-600 hover:text-slate-900 hover:bg-white/60'
                     }`}
                   >
                     <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">
                       {phase.number}
                     </span>
                     <span>{phase.label}</span>
+                    {isActive && (
+                      <ChevronDown className="w-3.5 h-3.5 ml-0.5 opacity-80 md:hidden" />
+                    )}
                   </button>
                 );
               })}
+
+              {/* Mobile Next Phase Arrow */}
+              <button
+                type="button"
+                onClick={() => {
+                  const currentIndex = PHASES.findIndex((p) => p.id === currentPhase);
+                  if (currentIndex < PHASES.length - 1) {
+                    playSound('select');
+                    onSelectPhase(PHASES[currentIndex + 1].id);
+                  }
+                }}
+                disabled={PHASES.findIndex((p) => p.id === currentPhase) === PHASES.length - 1}
+                className="md:hidden p-1.5 rounded-xl text-slate-500 hover:text-slate-800 disabled:opacity-25 disabled:pointer-events-none transition-colors"
+                title="Sonraki Aşama"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              {/* Mobile Dropdown Menu for fast phase jumping */}
+              {phaseMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40 md:hidden"
+                    onClick={() => setPhaseMenuOpen(false)}
+                  />
+                  <div className="absolute top-full mt-2 left-0 right-0 min-w-[200px] bg-white rounded-2xl shadow-xl border border-slate-200 p-1.5 z-50 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150 md:hidden">
+                    <div className="px-2.5 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                      Ders Aşamaları
+                    </div>
+                    {PHASES.map((phase) => {
+                      const isCurr = currentPhase === phase.id;
+                      return (
+                        <button
+                          key={phase.id}
+                          onClick={() => {
+                            playSound('select');
+                            onSelectPhase(phase.id);
+                            setPhaseMenuOpen(false);
+                          }}
+                          className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all text-left ${
+                            isCurr
+                              ? 'bg-teal-50 text-teal-800 border border-teal-200 shadow-2xs'
+                              : 'text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${
+                              isCurr ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-700'
+                            }`}>
+                              {phase.number}
+                            </span>
+                            <span>{phase.label}</span>
+                          </div>
+                          {isCurr && <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Fullscreen (Tam Ekran) Button for Smart Board */}

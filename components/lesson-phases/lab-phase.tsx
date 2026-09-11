@@ -1088,7 +1088,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         {/* Jump to Phase 3 */}
         <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
           <div className="text-xs text-slate-500 font-bold">
-            3 Deneyi de tamamlayıp çıkarım kartlarını açtıktan sonra kavram bulmacasına geçebilirsiniz.
+            3 Deneyi de tamamlayıp çıkarım kartlarını açtıktan sonra Oyun Zamanı aşamasına geçebilirsiniz.
           </div>
           <button
             onClick={() => {
@@ -1097,7 +1097,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             }}
             className="px-6 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 active:scale-95"
           >
-            <span>3. Aşamaya Geç: Bulmaca & Oyunlar</span>
+            <span>3. Aşamaya Geç: Oyun Zamanı</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -1130,7 +1130,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         {/* Jump to Phase 3 */}
         <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
           <div className="text-xs text-slate-500 font-bold">
-            3 Deneyi de tamamladıktan sonra kavram bulmacasına geçebilirsiniz.
+            3 Deneyi de tamamladıktan sonra Oyun Zamanı aşamasına geçebilirsiniz.
           </div>
           <button
             onClick={() => {
@@ -1139,7 +1139,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             }}
             className="px-6 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 active:scale-95"
           >
-            <span>3. Aşamaya Geç: Bulmaca & Oyunlar</span>
+            <span>3. Aşamaya Geç: Oyun Zamanı</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -1640,7 +1640,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   }}
                   className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 active:scale-95"
                 >
-                  <span>3. Aşamaya Geç: Bulmaca & Oyunlar</span>
+                  <span>3. Aşamaya Geç: Oyun Zamanı</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -2154,7 +2154,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 }}
                 className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 active:scale-95 shrink-0"
               >
-                <span>3. Aşamaya Geç: Bulmaca & Oyunlar</span>
+                <span>3. Aşamaya Geç: Oyun Zamanı</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
