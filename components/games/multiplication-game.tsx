@@ -182,6 +182,7 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
 
       const activeBoardStu = getStoredActiveBoardStudent();
       if (activeBoardStu) {
+        const accuracyPct = totalQuestions > 0 ? Math.min(100, Math.max(0, Math.round((correctCount / totalQuestions) * 100))) : 100;
         awardPointsToStudent(activeBoardStu.id, xpEarned);
         saveBoardParticipation({
           studentId: activeBoardStu.id,
@@ -194,8 +195,8 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
           activityType: 'game',
           activityTitle: 'Çarpım Tablosu Çarpışması',
           outcomeCode: 'MAT.5.1.1',
-          score,
-          maxScore: Math.max(score, totalQuestions * 15),
+          score: accuracyPct,
+          maxScore: 100,
           xpEarned
         });
         clearActiveBoardStudent();

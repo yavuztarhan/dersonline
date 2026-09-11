@@ -35,6 +35,19 @@ interface TeacherStudentBoardHistoryModalProps {
   onActivateForBoard?: (student: StudentUser) => void;
 }
 
+/**
+ * Normalizes any score/maxScore pair or raw score into a valid 0-100 percentage.
+ * Prevents technical impossibilities like >100% score rates.
+ */
+export function getNormalizedPercent(score?: number, maxScore?: number): number {
+  if (score === undefined || score === null) return 80;
+  if (maxScore && maxScore > 0) {
+    const calculated = Math.round((score / maxScore) * 100);
+    return Math.min(100, Math.max(0, calculated));
+  }
+  return Math.min(100, Math.max(0, Math.round(score)));
+}
+
 export function TeacherStudentBoardHistoryModal({
   student,
   records,
@@ -66,8 +79,11 @@ export function TeacherStudentBoardHistoryModal({
   const totalCount = records.length;
   const totalXp = records.reduce((sum, r) => sum + (r.xpEarned || 0), 0);
   const scoredRecords = records.filter((r) => r.score !== undefined && r.score !== null);
+  
   const averageScore = scoredRecords.length > 0
-    ? Math.round(scoredRecords.reduce((sum, r) => sum + (r.score || 0), 0) / scoredRecords.length)
+    ? Math.min(100, Math.max(0, Math.round(
+        scoredRecords.reduce((sum, r) => sum + getNormalizedPercent(r.score, r.maxScore), 0) / scoredRecords.length
+      )))
     : 0;
 
   // Trend detection (comparing second half with first half if multiple records exist)
@@ -79,14 +95,14 @@ export function TeacherStudentBoardHistoryModal({
     const firstHalf = chronologicalRecords.slice(0, mid);
     const secondHalf = chronologicalRecords.slice(mid);
 
-    const avg1 = firstHalf.reduce((s, r) => s + (r.score || 70), 0) / firstHalf.length;
-    const avg2 = secondHalf.reduce((s, r) => s + (r.score || 70), 0) / secondHalf.length;
-    const diff = Math.round(avg2 - avg1);
+    const avg1 = Math.min(100, Math.max(0, firstHalf.reduce((s, r) => s + getNormalizedPercent(r.score, r.maxScore), 0) / firstHalf.length));
+    const avg2 = Math.min(100, Math.max(0, secondHalf.reduce((s, r) => s + getNormalizedPercent(r.score, r.maxScore), 0) / secondHalf.length));
+    const diff = Math.min(100, Math.max(-100, Math.round(avg2 - avg1)));
 
     if (diff > 0) {
-      return { direction: 'up', label: `%${diff} Başarı & Katılım Artışı`, diff };
+      return { direction: 'up', label: `+${diff}% Başarı Artışı`, diff };
     } else if (diff < 0) {
-      return { direction: 'down', label: `%${Math.abs(diff)} Değişim`, diff };
+      return { direction: 'down', label: `-${Math.abs(diff)}% Başarı Değişimi`, diff };
     } else {
       return { direction: 'steady', label: 'Dengeli & İstikrarlı Performans', diff: 0 };
     }
@@ -129,7 +145,7 @@ export function TeacherStudentBoardHistoryModal({
     if (chronologicalRecords.length === 0) return [];
     if (chronologicalRecords.length === 1) {
       const r = chronologicalRecords[0];
-      const val = r.score ?? 80;
+      const val = getNormalizedPercent(r.score, r.maxScore);
       return [
         {
           x: chartWidth / 2,
@@ -147,7 +163,7 @@ export function TeacherStudentBoardHistoryModal({
     const stepX = (chartWidth - paddingX * 2) / (count - 1);
 
     return chronologicalRecords.map((r, i) => {
-      const val = r.score !== undefined && r.score !== null ? r.score : 75;
+      const val = getNormalizedPercent(r.score, r.maxScore);
       const x = paddingX + i * stepX;
       // y maps score 0..100 to chartHeight - paddingY .. paddingY
       const normalizedScore = Math.max(0, Math.min(100, val));
@@ -278,7 +294,7 @@ export function TeacherStudentBoardHistoryModal({
               <div className="text-2xl font-black text-indigo-700 mt-1">
                 {scoredRecords.length > 0 ? `%${averageScore}` : '-'}
               </div>
-              <div className="text-[10px] font-bold text-slate-400 mt-0.5">Test & Oyun Skoru</div>
+              <div className="text-[10px] font-bold text-slate-400 mt-0.5">Maks. %100 Ortalama</div>
             </div>
 
             <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80">
@@ -315,7 +331,7 @@ export function TeacherStudentBoardHistoryModal({
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-slate-900">
-                    Zamana Göre Tahtaya Kalkma & Başarı İlerleme Grafiği
+                    Zamana Göre Tahtaya Kalkma & Başarı İlerleme Grafiği (Maks. %100)
                   </h3>
                   <p className="text-[11px] text-slate-500 font-medium">
                     Öğrencinin tahtadaki etkinlik skorları ve katılım sıklığının artış/azalış eğrisi
@@ -326,7 +342,7 @@ export function TeacherStudentBoardHistoryModal({
               <div className="flex items-center gap-3 text-xs font-black">
                 <span className="flex items-center gap-1.5 text-teal-700">
                   <span className="w-2.5 h-2.5 rounded-full bg-teal-600 inline-block" />
-                  Skor / Başarı Eğrisi
+                  Başarı Oranı (%0 - %100)
                 </span>
                 <span className="flex items-center gap-1.5 text-amber-700">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
@@ -571,66 +587,70 @@ export function TeacherStudentBoardHistoryModal({
                   Seçilen filtrede kayıtlı tahta aktivitesi bulunamadı.
                 </div>
               ) : (
-                displayRecords.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg shrink-0">
-                        {item.activityType === 'game'
-                          ? '🎮'
-                          : item.activityType === 'test'
-                          ? '📝'
-                          : item.activityType === 'rubric'
-                          ? '📋'
-                          : '📖'}
-                      </div>
-                      <div>
-                        <div className="font-black text-slate-900 text-xs sm:text-sm flex items-center gap-2">
-                          <span>{item.activityTitle}</span>
-                          {item.outcomeCode && (
-                            <span className="text-[10px] font-mono font-bold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">
-                              {item.outcomeCode}
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-[11px] text-slate-400 font-medium flex items-center gap-2 mt-0.5">
-                          <Calendar className="w-3.5 h-3.5" />
-                          <span>
-                            {new Date(item.timestamp).toLocaleDateString('tr-TR', {
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric'
-                            })}{' '}
-                            •{' '}
-                            {new Date(item.timestamp).toLocaleTimeString('tr-TR', {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                displayRecords.map((item) => {
+                  const normalizedPct = getNormalizedPercent(item.score, item.maxScore);
 
-                    <div className="flex items-center gap-4 self-end sm:self-center">
-                      {item.score !== undefined && item.score !== null && (
-                        <div className="text-right">
-                          <div className="text-xs font-black text-slate-800">
-                            %{item.score} Başarı
+                  return (
+                    <div
+                      key={item.id}
+                      className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg shrink-0">
+                          {item.activityType === 'game'
+                            ? '🎮'
+                            : item.activityType === 'test'
+                            ? '📝'
+                            : item.activityType === 'rubric'
+                            ? '📋'
+                            : '📖'}
+                        </div>
+                        <div>
+                          <div className="font-black text-slate-900 text-xs sm:text-sm flex items-center gap-2">
+                            <span>{item.activityTitle}</span>
+                            {item.outcomeCode && (
+                              <span className="text-[10px] font-mono font-bold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">
+                                {item.outcomeCode}
+                              </span>
+                            )}
                           </div>
-                          <div className="text-[10px] text-slate-400 font-medium">Skor</div>
+                          <div className="text-[11px] text-slate-400 font-medium flex items-center gap-2 mt-0.5">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span>
+                              {new Date(item.timestamp).toLocaleDateString('tr-TR', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                              })}{' '}
+                              •{' '}
+                              {new Date(item.timestamp).toLocaleTimeString('tr-TR', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </div>
                         </div>
-                      )}
-                      <div className="text-right">
-                        <div className="text-xs sm:text-sm font-black text-amber-600">
-                          +{item.xpEarned} XP
+                      </div>
+
+                      <div className="flex items-center gap-4 self-end sm:self-center">
+                        {item.score !== undefined && item.score !== null && (
+                          <div className="text-right">
+                            <div className="text-xs font-black text-slate-800">
+                              %{normalizedPct} Başarı
+                            </div>
+                            <div className="text-[10px] text-slate-400 font-medium">Başarı Oranı</div>
+                          </div>
+                        )}
+                        <div className="text-right">
+                          <div className="text-xs sm:text-sm font-black text-amber-600">
+                            +{item.xpEarned} XP
+                          </div>
+                          <div className="text-[10px] font-bold text-teal-600">Kazanıldı</div>
                         </div>
-                        <div className="text-[10px] font-bold text-teal-600">Kazanıldı</div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 

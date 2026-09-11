@@ -260,6 +260,7 @@ export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
 
       const activeBoardStu = getStoredActiveBoardStudent();
       if (activeBoardStu) {
+        const accuracyPct = totalQuestions > 0 ? Math.min(100, Math.max(0, Math.round((correctCount / totalQuestions) * 100))) : 100;
         awardPointsToStudent(activeBoardStu.id, xpEarned);
         saveBoardParticipation({
           studentId: activeBoardStu.id,
@@ -272,8 +273,8 @@ export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
           activityType: 'game',
           activityTitle: 'Matematik Çarkı & Hızlı İşlem',
           outcomeCode: 'MAT.5.1.1',
-          score,
-          maxScore: Math.max(score, totalQuestions * 20),
+          score: accuracyPct,
+          maxScore: 100,
           xpEarned
         });
         clearActiveBoardStudent();
