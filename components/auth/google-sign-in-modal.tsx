@@ -171,7 +171,11 @@ export function GoogleSignInModal({
                 <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.57 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
               </svg>
             </div>
-            <span>Canlı Google Hesabı ile Giriş Yap (OAuth 2.0)</span>
+            <span>
+              {mode === 'register'
+                ? 'Google Hesabı İle Kayıt Ol'
+                : 'Google Hesabı İle Giriş Yap'}
+            </span>
           </button>
 
           <div className="relative border-t border-slate-200 my-2">
@@ -287,7 +291,7 @@ export function GoogleSignInModal({
                   type="submit"
                   className="w-2/3 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                 >
-                  <span>Giriş Yap</span>
+                  <span>{mode === 'register' ? 'Kayıt Ol' : 'Giriş Yap'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
