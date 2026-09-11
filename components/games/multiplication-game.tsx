@@ -5,6 +5,12 @@ import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { recordStudentGameScore } from '@/lib/student-performance-store';
 import { MascotCharacter } from '@/components/mascot';
+import { BoardStudentWidget } from '@/components/board/board-student-widget';
+import {
+  getStoredActiveBoardStudent,
+  clearActiveBoardStudent,
+  saveBoardParticipation
+} from '@/lib/board-participation-store';
 import {
   Gamepad2,
   Clock,
@@ -37,7 +43,7 @@ interface MultiplicationGameProps {
 }
 
 export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
-  const { currentUser } = useAuth();
+  const { currentUser, awardPointsToStudent } = useAuth();
   const { studentPoints, addPoints, playSound, soundEnabled } = useApp();
 
   // Game Lifecycle: 'intro' | 'playing' | 'gameover'
@@ -174,6 +180,27 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
       const studentNumber = (currentUser as any)?.studentNumber || '104';
       const classSection = (currentUser as any)?.classSection || '5-A';
 
+      const activeBoardStu = getStoredActiveBoardStudent();
+      if (activeBoardStu) {
+        awardPointsToStudent(activeBoardStu.id, xpEarned);
+        saveBoardParticipation({
+          studentId: activeBoardStu.id,
+          studentName: activeBoardStu.name,
+          studentNumber: activeBoardStu.studentNumber,
+          classSection: activeBoardStu.classSection,
+          school: activeBoardStu.school,
+          teacherId: currentUser?.id,
+          teacherName: currentUser?.name,
+          activityType: 'game',
+          activityTitle: 'Çarpım Tablosu Çarpışması',
+          outcomeCode: 'MAT.5.1.1',
+          score,
+          maxScore: Math.max(score, totalQuestions * 15),
+          xpEarned
+        });
+        clearActiveBoardStudent();
+      }
+
       recordStudentGameScore({
         studentId,
         studentName,
@@ -188,7 +215,7 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
         xpEarned,
       });
     }
-  }, [timeLeft, gameState, correctCount, wrongCount, score, maxStreak, currentUser, addPoints, playSound]);
+  }, [timeLeft, gameState, correctCount, wrongCount, score, maxStreak, currentUser, addPoints, playSound, awardPointsToStudent]);
 
   // Answer Evaluation
   const handleSelectOption = (optionValue: number) => {
@@ -290,6 +317,9 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
           <span>XP Puanın: {studentPoints}</span>
         </div>
       </div>
+
+      {/* Teacher Smart Board Student Delegation Widget */}
+      <BoardStudentWidget activityTitle="Çarpım Tablosu Çarpışması" />
 
       {/* ========================================================================= */}
       {/* VIEW 1: INTRO / START SCREEN */}

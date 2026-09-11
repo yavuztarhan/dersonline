@@ -9,6 +9,12 @@ import { saveJournalEntry } from '@/lib/journal-store';
 import { useAuth } from '@/lib/auth-store';
 import { SelfAssessmentRubricComponent } from '@/components/lesson-phases/self-assessment-rubric';
 import { ActivitySheetView } from '@/components/lesson-phases/activity-sheet-view';
+import { BoardStudentWidget } from '@/components/board/board-student-widget';
+import {
+  getStoredActiveBoardStudent,
+  clearActiveBoardStudent,
+  saveBoardParticipation
+} from '@/lib/board-participation-store';
 import {
   FileCheck2,
   Sparkles,
@@ -49,7 +55,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
     addPoints,
     selectedOutcome
   } = useApp();
-  const { currentUser } = useAuth();
+  const { currentUser, awardPointsToStudent } = useAuth();
 
   const [activeAssessmentTab, setActiveAssessmentTab] = useState<'test' | 'worksheet' | 'rubric' | 'journal'>('test');
   const [questions, setQuestions] = useState<AssessmentQuestion[]>(data.questions);
@@ -81,6 +87,26 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
     playSound('success');
     unlockBadge('maarif-genius');
     addPoints(30);
+
+    const activeBoardStu = getStoredActiveBoardStudent();
+    if (activeBoardStu) {
+      awardPointsToStudent(activeBoardStu.id, 30);
+      saveBoardParticipation({
+        studentId: activeBoardStu.id,
+        studentName: activeBoardStu.name,
+        studentNumber: activeBoardStu.studentNumber,
+        classSection: activeBoardStu.classSection,
+        school: activeBoardStu.school,
+        teacherId: currentUser?.id,
+        teacherName: currentUser?.name,
+        activityType: 'journal',
+        activityTitle: 'Öğrenme Günlüğü & Yansıtma',
+        outcomeCode: selectedOutcome?.code || 'MAT',
+        xpEarned: 30
+      });
+      clearActiveBoardStudent();
+    }
+
     saveJournalEntry({
       studentId: currentUser?.id || 'stu-curr',
       studentName: currentUser?.name || 'Öğrenci',
@@ -168,6 +194,29 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
     const correctCount = questions.filter(
       (q) => selectedAnswers[q.id] === q.correctOptionIndex
     ).length;
+    const scorePct = Math.round((correctCount / questions.length) * 100);
+
+    const activeBoardStu = getStoredActiveBoardStudent();
+    if (activeBoardStu) {
+      const earnedPoints = Math.max(30, Math.round((scorePct / 100) * 100));
+      awardPointsToStudent(activeBoardStu.id, earnedPoints);
+      saveBoardParticipation({
+        studentId: activeBoardStu.id,
+        studentName: activeBoardStu.name,
+        studentNumber: activeBoardStu.studentNumber,
+        classSection: activeBoardStu.classSection,
+        school: activeBoardStu.school,
+        teacherId: currentUser?.id,
+        teacherName: currentUser?.name,
+        activityType: 'test',
+        activityTitle: 'Kazanım Değerlendirme Testi',
+        outcomeCode: selectedOutcome?.code || 'MAT',
+        score: scorePct,
+        maxScore: 100,
+        xpEarned: earnedPoints
+      });
+      clearActiveBoardStudent();
+    }
 
     if (correctCount >= Math.ceil(questions.length * 0.7)) {
       unlockBadge('maarif-genius');
@@ -258,6 +307,9 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
           </div>
         )}
       </div>
+
+      {/* Teacher Smart Board Student Delegation Widget */}
+      <BoardStudentWidget activityTitle="Kazanım Değerlendirmesi" />
 
       {/* Mode Navigation Tabs */}
       <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex flex-wrap items-center gap-1.5">

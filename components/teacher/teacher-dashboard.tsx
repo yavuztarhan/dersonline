@@ -10,6 +10,7 @@ import { LessonPlanModal } from '@/components/lesson-plan-modal';
 import { TeacherRubricAnalytics } from '@/components/teacher/teacher-rubric-analytics';
 import { TeacherFormsAnalyticsReport } from '@/components/teacher/teacher-forms-analytics-report';
 import { TeacherGroupsPanel } from '@/components/teacher/teacher-groups-panel';
+import { TeacherBoardParticipationReport } from '@/components/teacher/teacher-board-participation-report';
 import {
   ClassroomFileRecord,
   getStoredClassroomFiles,
@@ -51,14 +52,15 @@ import {
   Search,
   Filter,
   Eye,
-  Trophy
+  Trophy,
+  Flame
 } from 'lucide-react';
 
 export function TeacherDashboard() {
   const { currentUser, students, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher, awardPointsToStudent } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
   const [activePlanOutcome, setActivePlanOutcome] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState<'analytics' | 'forms' | 'students' | 'groups' | 'leaderboard' | 'plans' | 'files'>('analytics');
+  const [activeSection, setActiveSection] = useState<'analytics' | 'forms' | 'students' | 'groups' | 'leaderboard' | 'plans' | 'files' | 'board'>('board');
   const [selectedStudentForDetail, setSelectedStudentForDetail] = useState<any | null>(null);
 
   // Classroom Files State
@@ -276,8 +278,46 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* Executive Module Switcher (7 Primary Sections) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
+      {/* Executive Module Switcher (8 Primary Sections) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
+        {/* 0. Tahtaya Kalkma & Derse Katılım Raporu (NumPad) */}
+        <button
+          type="button"
+          onClick={() => {
+            playSound('select');
+            setActiveSection('board');
+          }}
+          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
+            activeSection === 'board'
+              ? 'bg-white shadow-md border-amber-500 ring-2 ring-amber-500/10'
+              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                activeSection === 'board' ? 'bg-amber-500 text-white shadow-sm' : 'bg-amber-50 text-amber-700'
+              }`}
+            >
+              <Flame className="w-5 h-5" />
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black uppercase tracking-wider border border-amber-200">
+              NumPad
+            </span>
+          </div>
+          <div>
+            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'board' ? 'text-amber-950' : 'text-slate-800'}`}>
+              Tahtaya Kalkma
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              Katılım & Analiz
+            </div>
+          </div>
+          {activeSection === 'board' && (
+            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-amber-500 rounded-full" />
+          )}
+        </button>
+
         {/* 1. Öz & Akran Değerlendirme Korelasyon Raporları */}
         <button
           type="button"
@@ -545,6 +585,11 @@ export function TeacherDashboard() {
           )}
         </button>
       </div>
+
+      {/* SECTION: SMART BOARD PARTICIPATION & NUMPAD ANALYTICS */}
+      {activeSection === 'board' && (
+        <TeacherBoardParticipationReport />
+      )}
 
       {/* SECTION: CLASS LEADERBOARD & XP RANKINGS */}
       {activeSection === 'leaderboard' && (

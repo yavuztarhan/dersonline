@@ -5,6 +5,12 @@ import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { recordStudentGameScore } from '@/lib/student-performance-store';
 import { MascotCharacter } from '@/components/mascot';
+import { BoardStudentWidget } from '@/components/board/board-student-widget';
+import {
+  getStoredActiveBoardStudent,
+  clearActiveBoardStudent,
+  saveBoardParticipation
+} from '@/lib/board-participation-store';
 import {
   Gamepad2,
   Clock,
@@ -65,8 +71,8 @@ interface MathWheelGameProps {
 }
 
 export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
-  const { currentUser } = useAuth();
-  const { studentPoints, addPoints, playSound } = useApp();
+  const { currentUser, awardPointsToStudent } = useAuth();
+  const { studentPoints, addPoints, playSound, soundEnabled } = useApp();
 
   // Lifecycle: 'intro' | 'spinning' | 'answering' | 'gameover'
   const [gameState, setGameState] = useState<'intro' | 'spinning' | 'answering' | 'gameover'>('intro');
@@ -252,6 +258,27 @@ export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
       const studentNumber = (currentUser as any)?.studentNumber || '104';
       const classSection = (currentUser as any)?.classSection || '5-A';
 
+      const activeBoardStu = getStoredActiveBoardStudent();
+      if (activeBoardStu) {
+        awardPointsToStudent(activeBoardStu.id, xpEarned);
+        saveBoardParticipation({
+          studentId: activeBoardStu.id,
+          studentName: activeBoardStu.name,
+          studentNumber: activeBoardStu.studentNumber,
+          classSection: activeBoardStu.classSection,
+          school: activeBoardStu.school,
+          teacherId: currentUser?.id,
+          teacherName: currentUser?.name,
+          activityType: 'game',
+          activityTitle: 'Matematik Çarkı & Hızlı İşlem',
+          outcomeCode: 'MAT.5.1.1',
+          score,
+          maxScore: Math.max(score, totalQuestions * 20),
+          xpEarned
+        });
+        clearActiveBoardStudent();
+      }
+
       recordStudentGameScore({
         studentId,
         studentName,
@@ -266,7 +293,7 @@ export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
         xpEarned,
       });
     }
-  }, [timeLeft, gameState, correctCount, wrongCount, score, maxStreak, currentUser, addPoints, playSound]);
+  }, [timeLeft, gameState, correctCount, wrongCount, score, maxStreak, currentUser, addPoints, playSound, awardPointsToStudent]);
 
   // Option Selection
   const handleSelectOption = (optionValue: number) => {
@@ -368,6 +395,9 @@ export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
           <span>XP Puanın: {studentPoints}</span>
         </div>
       </div>
+
+      {/* Teacher Smart Board Student Delegation Widget */}
+      <BoardStudentWidget activityTitle="Matematik Çarkı & Hızlı İşlem" />
 
       {/* ========================================================================= */}
       {/* VIEW 1: INTRO / START SCREEN */}

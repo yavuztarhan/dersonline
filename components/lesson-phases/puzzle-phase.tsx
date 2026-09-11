@@ -13,6 +13,13 @@ import { MemoryCardsGame } from '@/components/lesson-phases/memory-cards-game';
 import { KolilemeFactoryGame } from '@/components/lesson-phases/kolileme-factory-game';
 import { FrogJumpGame } from '@/components/lesson-phases/frog-jump-game';
 import { RainbowVaultGame } from '@/components/lesson-phases/rainbow-vault-game';
+import { BoardStudentWidget } from '@/components/board/board-student-widget';
+import { useAuth } from '@/lib/auth-store';
+import {
+  getStoredActiveBoardStudent,
+  clearActiveBoardStudent,
+  saveBoardParticipation
+} from '@/lib/board-participation-store';
 import {
   Puzzle,
   Sparkles,
@@ -62,6 +69,7 @@ export type PuzzleGameId =
 
 export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   const { playSound, unlockBadge, addPoints, role, selectedOutcome } = useApp();
+  const { currentUser, awardPointsToStudent } = useAuth();
 
   // null means showing the cards menu only
   const [selectedGameId, setSelectedGameId] = useState<PuzzleGameId | null>(null);
@@ -152,6 +160,28 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         setIsMatchingCompleted(true);
         unlockBadge('puzzle-pro');
         addPoints(50);
+
+        const activeBoardStu = getStoredActiveBoardStudent();
+        if (activeBoardStu) {
+          awardPointsToStudent(activeBoardStu.id, 65);
+          saveBoardParticipation({
+            studentId: activeBoardStu.id,
+            studentName: activeBoardStu.name,
+            studentNumber: activeBoardStu.studentNumber,
+            classSection: activeBoardStu.classSection,
+            school: activeBoardStu.school,
+            teacherId: currentUser?.id,
+            teacherName: currentUser?.name,
+            activityType: 'game',
+            activityTitle: 'Kavram Eşleştirme Bulmacası',
+            outcomeCode: selectedOutcome?.code || 'MAT',
+            score: 100,
+            maxScore: 100,
+            xpEarned: 65
+          });
+          clearActiveBoardStudent();
+        }
+
         try {
           confetti({
             particleCount: 80,
@@ -567,6 +597,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
             </button>
           </div>
 
+          {/* Teacher Smart Board Student Delegation Widget */}
+          <BoardStudentWidget activityTitle="Kavram Oyunları & Bulmacalar" />
+
           {/* GAME CARDS GRID */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {GAMES_LIST.map((game) => (
@@ -663,6 +696,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+
+          {/* Teacher Smart Board Student Delegation Widget */}
+          <BoardStudentWidget activityTitle={currentGameInfo?.title || 'Aktif Oyun'} />
 
           {/* FEATURED GAME: KOLİLEME FABRİKASI (ÇARPAN EŞLEME ARCADE) */}
           {selectedGameId === 'kolilemefactory' && (

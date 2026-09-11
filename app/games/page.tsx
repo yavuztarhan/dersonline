@@ -9,6 +9,7 @@ import { STANDALONE_GAMES, StandaloneGame } from '@/lib/standalone-games-data';
 import { MultiplicationGame } from '@/components/games/multiplication-game';
 import { MathWheelGame } from '@/components/games/math-wheel-game';
 import { FeedbackModal } from '@/components/feedback/feedback-modal';
+import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import {
   Gamepad2,
   Sparkles,
@@ -95,6 +96,9 @@ export default function GamesPage() {
           </div>
         )}
       </div>
+
+      {/* Teacher Smart Board Student Delegation Widget */}
+      <BoardStudentWidget activityTitle="Maarif Oyun Salonu" />
 
       {/* 2. Hero Banner: Maarif Oyun Salonu */}
       <div className="relative overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-teal-950 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl border border-indigo-900/50">

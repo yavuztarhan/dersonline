@@ -5,6 +5,12 @@ import { useApp } from '@/lib/store';
 import { useAuth } from '@/lib/auth-store';
 import { getRubricForOutcome } from '@/lib/rubric-data';
 import { saveRubricSubmission } from '@/lib/rubric-store';
+import { BoardStudentWidget } from '@/components/board/board-student-widget';
+import {
+  getStoredActiveBoardStudent,
+  clearActiveBoardStudent,
+  saveBoardParticipation
+} from '@/lib/board-participation-store';
 import confetti from 'canvas-confetti';
 import {
   ClipboardCheck,
@@ -106,7 +112,7 @@ export function SelfAssessmentRubricComponent({
   const totalScore = Object.values(ratings).reduce((a, b) => a + b, 0);
   const scorePercentage = Math.round((totalScore / maxPossibleScore) * 100);
 
-  const { currentUser } = useAuth();
+  const { currentUser, awardPointsToStudent } = useAuth();
   const student = currentUser && currentUser.role === 'student' ? (currentUser as any) : null;
 
   const handleSelectLevel = (criterionId: string, level: number) => {
@@ -148,6 +154,28 @@ export function SelfAssessmentRubricComponent({
 
     // Save in local persistent store
     saveRubricSubmission(submissionData);
+
+    // Save board student participation if active
+    const activeBoardStu = getStoredActiveBoardStudent();
+    if (activeBoardStu) {
+      awardPointsToStudent(activeBoardStu.id, 50);
+      saveBoardParticipation({
+        studentId: activeBoardStu.id,
+        studentName: activeBoardStu.name,
+        studentNumber: activeBoardStu.studentNumber,
+        classSection: activeBoardStu.classSection,
+        school: activeBoardStu.school,
+        teacherId: currentUser?.id,
+        teacherName: currentUser?.name,
+        activityType: 'rubric',
+        activityTitle: 'Öz Değerlendirme Formu (Rubrik)',
+        outcomeCode: outcomeCode || 'MAT',
+        score: scorePercentage,
+        maxScore: 100,
+        xpEarned: 50
+      });
+      clearActiveBoardStudent();
+    }
 
     // Save via API in background if possible
     try {
@@ -263,6 +291,9 @@ export function SelfAssessmentRubricComponent({
           </div>
         </div>
       </div>
+
+      {/* Teacher Smart Board Student Delegation Widget */}
+      <BoardStudentWidget activityTitle="Öz Değerlendirme Formu (Rubrik)" />
 
       {/* 2. Criteria Rubric Cards */}
       <div className="space-y-6">
