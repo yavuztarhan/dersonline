@@ -40,6 +40,7 @@ export function AuthModal({
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [oauthErrorNotice, setOauthErrorNotice] = useState<string | null>(null);
 
@@ -67,11 +68,11 @@ export function AuthModal({
 
   const handleLiveGoogleSignIn = async () => {
     setGoogleLoading(true);
-    setLoginError('');
+    setOauthErrorNotice(null);
     try {
-      const res = await signIn('google', { callbackUrl: '/', redirect: true });
+      const res = await signIn('google', { redirect: false, callbackUrl: '/' });
       if (res?.error) {
-        setOauthErrorNotice('Google OAuth bağlantısı kurulamadı.');
+        setOauthErrorNotice('Google ile oturum açılamadı. Lütfen tekrar deneyiniz.');
         setGoogleLoading(false);
       }
     } catch (e) {
@@ -81,11 +82,11 @@ export function AuthModal({
     }
   };
 
-  const handleIdentifierLogin = (e: React.FormEvent) => {
+  const handleIdentifierLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
     if (!identifierInput.trim()) {
-      setLoginError('Lütfen e-posta adresinizi veya okul numaranızı giriniz.');
+      setLoginError('Lütfen e-posta adresinizi giriniz.');
       return;
     }
     if (!passwordInput.trim()) {
@@ -93,11 +94,18 @@ export function AuthModal({
       return;
     }
 
-    const success = loginWithEmail(identifierInput, passwordInput);
-    if (success) {
-      onClose();
-    } else {
-      setLoginError('Kullanıcı bilgileri veya şifre hatalı. Lütfen bilgilerinizi kontrol ediniz.');
+    setIsSubmitting(true);
+    try {
+      const success = await loginWithEmail(identifierInput, passwordInput);
+      if (success) {
+        onClose();
+      } else {
+        setLoginError('Kullanıcı bilgileri veya şifre hatalı. Lütfen bilgilerinizi kontrol ediniz.');
+      }
+    } catch (err) {
+      setLoginError('Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyiniz.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -373,6 +381,10 @@ export function AuthModal({
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
+                    inputMode="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     value={identifierInput}
                     onChange={(e) => setIdentifierInput(e.target.value)}
                     placeholder="E-posta Adresiniz"
@@ -385,6 +397,9 @@ export function AuthModal({
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
                     placeholder="Giriş Şifreniz"
@@ -407,10 +422,20 @@ export function AuthModal({
 
                 <button
                   type="submit"
-                  className="w-full py-3 px-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                  disabled={isSubmitting}
+                  className="w-full py-3 px-4 rounded-2xl bg-teal-600 hover:bg-teal-700 disabled:opacity-60 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                 >
-                  <LogIn className="w-4 h-4" />
-                  <span>Sisteme Giriş Yap</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Kontrol Ediliyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-4 h-4" />
+                      <span>Sisteme Giriş Yap</span>
+                    </>
+                  )}
                 </button>
               </form>
             </div>
