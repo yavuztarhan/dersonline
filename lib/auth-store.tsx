@@ -508,6 +508,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [admins, setAdmins] = useState<AdminUser[]>(SEED_ADMINS);
   const [teachers, setTeachers] = useState<TeacherUser[]>(SEED_TEACHERS);
   const [students, setStudents] = useState<StudentUser[]>(SEED_STUDENTS);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [activeVerificationCode, setActiveVerificationCode] = useState<{
     email: string;
     code: string;
@@ -576,29 +577,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (e) {
       console.warn('LocalStorage error:', e);
+    } finally {
+      setIsLoaded(true);
     }
   }, []);
 
-  // Save changes to localStorage
+  // Save changes to localStorage only after initial load completed
   useEffect(() => {
+    if (!isLoaded) return;
     try {
       localStorage.setItem('maarif_admins', JSON.stringify(admins));
     } catch (e) {}
-  }, [admins]);
+  }, [admins, isLoaded]);
 
   useEffect(() => {
+    if (!isLoaded) return;
     try {
       localStorage.setItem('maarif_teachers', JSON.stringify(teachers));
     } catch (e) {}
-  }, [teachers]);
+  }, [teachers, isLoaded]);
 
   useEffect(() => {
+    if (!isLoaded) return;
     try {
       localStorage.setItem('maarif_students', JSON.stringify(students));
     } catch (e) {}
-  }, [students]);
+  }, [students, isLoaded]);
 
   useEffect(() => {
+    if (!isLoaded) return;
     try {
       if (currentUser) {
         localStorage.setItem('maarif_current_user', JSON.stringify(currentUser));
@@ -606,12 +613,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('maarif_current_user');
       }
     } catch (e) {}
-  }, [currentUser]);
+  }, [currentUser, isLoaded]);
 
   const { data: session } = useSession();
 
   // Sync live NextAuth OAuth session
   useEffect(() => {
+    if (!isLoaded) return;
     if (session?.user?.email) {
       const email = session.user.email;
       if (!currentUser || currentUser.email.toLowerCase() !== email.toLowerCase()) {
@@ -622,7 +630,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
       }
     }
-  }, [session]);
+  }, [session, isLoaded]);
 
   const checkIsAdmin = (email?: string | null): boolean => {
     return isUserAdmin(email, admins);
@@ -705,20 +713,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setUserPassword = (userId: string, newPassword: string): boolean => {
     if (!userId || !newPassword) return false;
+    const targetEmail = currentUser?.email?.toLowerCase();
 
-    setAdmins((prev) =>
-      prev.map((a) => (a.id === userId ? { ...a, password: newPassword } : a))
-    );
+    setAdmins((prev) => {
+      const next = prev.map((a) => (a.id === userId || (targetEmail && a.email?.toLowerCase() === targetEmail) ? { ...a, password: newPassword } : a));
+      try {
+        localStorage.setItem('maarif_admins', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
 
-    setTeachers((prev) =>
-      prev.map((t) => (t.id === userId ? { ...t, password: newPassword } : t))
-    );
+    setTeachers((prev) => {
+      const next = prev.map((t) => (t.id === userId || (targetEmail && t.email?.toLowerCase() === targetEmail) ? { ...t, password: newPassword } : t));
+      try {
+        localStorage.setItem('maarif_teachers', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
 
-    setStudents((prev) =>
-      prev.map((s) => (s.id === userId ? { ...s, password: newPassword } : s))
-    );
+    setStudents((prev) => {
+      const next = prev.map((s) => (s.id === userId || (targetEmail && s.email?.toLowerCase() === targetEmail) ? { ...s, password: newPassword } : s));
+      try {
+        localStorage.setItem('maarif_students', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
 
-    if (currentUser && currentUser.id === userId) {
+    if (currentUser && (currentUser.id === userId || (targetEmail && currentUser.email?.toLowerCase() === targetEmail))) {
       const updated = { ...currentUser, password: newPassword };
       setCurrentUser(updated);
       try {
@@ -730,28 +751,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateUserProfile = (userId: string, updates: Partial<AuthUser>) => {
-    const formatNameIfPresent = (existing: AuthUser, up: Partial<AuthUser>) => {
-      const fName = up.firstName !== undefined ? up.firstName : existing.firstName;
-      const lName = up.lastName !== undefined ? up.lastName : existing.lastName;
-      const full = formatFullName(fName, lName, up.name || existing.name);
+    const targetEmail = (updates.email || currentUser?.email || '').trim().toLowerCase();
+
+    const applyUpdates = <T extends AuthUser>(existing: T): T => {
+      const fName = updates.firstName !== undefined ? updates.firstName : existing.firstName;
+      const lName = updates.lastName !== undefined ? updates.lastName : existing.lastName;
+      const full = updates.name || formatFullName(fName, lName, existing.name);
+
       return {
-        ...up,
+        ...existing,
+        ...updates,
         firstName: fName,
         lastName: lName,
-        name: full
+        name: full,
+        phone: (updates as any).phone !== undefined ? (updates as any).phone : (existing as any).phone,
+        city: (updates as any).city !== undefined ? (updates as any).city : (existing as any).city,
+        district: (updates as any).district !== undefined ? (updates as any).district : (existing as any).district,
+        school: (updates as any).school !== undefined ? (updates as any).school : (existing as any).school,
+        branch: (updates as any).branch !== undefined ? (updates as any).branch : (existing as any).branch,
+        principalName: (updates as any).principalName !== undefined ? (updates as any).principalName : (existing as any).principalName,
+        assignedClasses: (updates as any).assignedClasses !== undefined ? (updates as any).assignedClasses : (existing as any).assignedClasses,
+        isProfileComplete: true
       };
     };
-
-    const targetEmail = (updates.email || currentUser?.email || '').trim().toLowerCase();
 
     // 1. Update Current User State & Storage
     let updatedCurrentUser: AuthUser | null = null;
     if (currentUser && (currentUser.id === userId || (targetEmail && currentUser.email?.toLowerCase() === targetEmail))) {
-      updatedCurrentUser = {
-        ...currentUser,
-        ...formatNameIfPresent(currentUser, updates),
-        isProfileComplete: true
-      } as AuthUser;
+      updatedCurrentUser = applyUpdates(currentUser);
       setCurrentUser(updatedCurrentUser);
       try {
         localStorage.setItem('maarif_current_user', JSON.stringify(updatedCurrentUser));
@@ -763,16 +790,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const existsIndex = prev.findIndex((t) => t.id === userId || (targetEmail && t.email.toLowerCase() === targetEmail));
       let nextTeachers: TeacherUser[];
       if (existsIndex >= 0) {
-        nextTeachers = prev.map((t, idx) => {
-          if (idx === existsIndex) {
-            return {
-              ...t,
-              ...formatNameIfPresent(t, updates),
-              isProfileComplete: true
-            } as TeacherUser;
-          }
-          return t;
-        });
+        nextTeachers = prev.map((t, idx) => (idx === existsIndex ? applyUpdates(t) as TeacherUser : t));
       } else if (currentUser?.role === 'teacher' || updatedCurrentUser?.role === 'teacher') {
         const base = updatedCurrentUser || currentUser;
         const newTeacher: TeacherUser = {
@@ -780,7 +798,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           firstName: updates.firstName || base?.firstName || 'Öğretmen',
           lastName: updates.lastName || base?.lastName || '',
           name: formatFullName(updates.firstName || base?.firstName, updates.lastName || base?.lastName),
-          email: updates.email || base?.email || '',
+          email: updates.email || base?.email || targetEmail,
           phone: (updates as any).phone || (base as any)?.phone || '',
           city: (updates as any).city || (base as any)?.city || 'Edirne',
           district: (updates as any).district || (base as any)?.district || 'Merkez',
@@ -809,23 +827,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const existsIndex = prev.findIndex((a) => a.id === userId || (targetEmail && a.email.toLowerCase() === targetEmail));
       let nextAdmins: AdminUser[];
       if (existsIndex >= 0) {
-        nextAdmins = prev.map((a, idx) => {
-          if (idx === existsIndex) {
-            return {
-              ...a,
-              ...formatNameIfPresent(a, updates),
-              phone: (updates as any).phone !== undefined ? (updates as any).phone : a.phone,
-              city: (updates as any).city !== undefined ? (updates as any).city : a.city,
-              district: (updates as any).district !== undefined ? (updates as any).district : a.district,
-              school: (updates as any).school !== undefined ? (updates as any).school : a.school,
-              branch: (updates as any).branch !== undefined ? (updates as any).branch : a.branch,
-              principalName: (updates as any).principalName !== undefined ? (updates as any).principalName : a.principalName,
-              assignedClasses: (updates as any).assignedClasses !== undefined ? (updates as any).assignedClasses : a.assignedClasses,
-              isProfileComplete: true
-            } as AdminUser;
-          }
-          return a;
-        });
+        nextAdmins = prev.map((a, idx) => (idx === existsIndex ? applyUpdates(a) as AdminUser : a));
       } else if (currentUser?.role === 'admin' || updatedCurrentUser?.role === 'admin') {
         const base = updatedCurrentUser || currentUser;
         const newAdmin: AdminUser = {
@@ -834,7 +836,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           lastName: updates.lastName || base?.lastName || 'Yöneticisi',
           name: formatFullName(updates.firstName || base?.firstName, updates.lastName || base?.lastName, 'Sistem Yöneticisi'),
           email: updates.email || base?.email || targetEmail,
-          password: 'admin',
+          password: (base as any)?.password || (targetEmail === 'powerose@gmail.com' ? 'Admin1234' : 'admin'),
           role: 'admin',
           avatar: base?.avatar || '👑',
           permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports'],
@@ -862,7 +864,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStudents((prev) => {
       const nextStudents = prev.map((s) => {
         if (s.id === userId || (targetEmail && s.email.toLowerCase() === targetEmail)) {
-          return { ...s, ...formatNameIfPresent(s, updates) } as StudentUser;
+          return applyUpdates(s) as StudentUser;
         }
         return s;
       });

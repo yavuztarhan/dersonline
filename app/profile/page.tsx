@@ -104,10 +104,11 @@ export default function ProfilePage() {
 
   // All 81 Turkish Provinces
   const allProvinces = getAllProvinces();
+  const [hasLoadedInitialUser, setHasLoadedInitialUser] = useState(false);
 
   // Initialize form with currentUser data (for Admin, Teacher, Student)
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && !hasLoadedInitialUser) {
       const parts = splitFullName(currentUser.name || '');
       setFirstName(currentUser.firstName || parts.firstName || '');
       setLastName(currentUser.lastName || parts.lastName || '');
@@ -125,8 +126,9 @@ export default function ProfilePage() {
       if (userObj.assignedClasses && Array.isArray(userObj.assignedClasses) && userObj.assignedClasses.length > 0) {
         setAssignedClasses(userObj.assignedClasses);
       }
+      setHasLoadedInitialUser(true);
     }
-  }, [currentUser]);
+  }, [currentUser, hasLoadedInitialUser]);
 
   const handlePhoneChange = (val: string) => {
     let digits = val.replace(/\D/g, '');
