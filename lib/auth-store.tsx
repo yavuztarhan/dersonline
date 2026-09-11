@@ -104,7 +104,7 @@ export const SEED_ADMINS: AdminUser[] = [
     lastName: 'Powerose',
     name: 'Sistem Yöneticisi Powerose',
     email: 'powerose@gmail.com',
-    password: 'admin',
+    password: 'Admin1234',
     role: 'admin',
     avatar: '👑',
     createdAt: '2026-09-08',
@@ -535,7 +535,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(savedAdmins);
         if (Array.isArray(parsed) && parsed.length > 0) {
           // Merge seed admins so core admins are always available
-          const merged = parsed.map(enrichUser);
+          const merged = parsed.map(enrichUser).map((adm: AdminUser) => {
+            if (adm.email?.toLowerCase() === 'powerose@gmail.com') {
+              return { ...adm, password: 'Admin1234' };
+            }
+            return adm;
+          });
           for (const s of SEED_ADMINS) {
             if (!merged.some((a: AdminUser) => a.email.toLowerCase() === s.email.toLowerCase())) {
               merged.push(s);
@@ -563,7 +568,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const savedUser = localStorage.getItem('maarif_current_user');
       if (savedUser) {
-        setCurrentUser(enrichUser(JSON.parse(savedUser)));
+        const parsedUser = enrichUser(JSON.parse(savedUser));
+        if (parsedUser.email?.toLowerCase() === 'powerose@gmail.com') {
+          parsedUser.password = 'Admin1234';
+        }
+        setCurrentUser(parsedUser);
       }
     } catch (e) {
       console.warn('LocalStorage error:', e);
@@ -639,8 +648,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 1. Check if user exists among Admins (email or phone)
     if (checkIsAdmin(trimmed)) {
       const adminUser = admins.find((a) => a.email.toLowerCase() === trimmed) || getAdminUser(trimmed);
-      const validPass = adminUser.password || 'admin';
-      if (cleanPass !== validPass && cleanPass !== 'admin' && cleanPass !== '123456') {
+      const validPass = trimmed === 'powerose@gmail.com' ? (adminUser.password || 'Admin1234') : (adminUser.password || 'admin');
+      if (cleanPass !== validPass) {
         return false;
       }
       setCurrentUser(adminUser);
@@ -648,8 +657,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const adminByPhone = admins.find(a => a.phone && a.phone.replace(/\s+/g, '') === cleanIdNoSpaces);
     if (adminByPhone) {
-      const validPass = adminByPhone.password || 'admin';
-      if (cleanPass !== validPass && cleanPass !== 'admin' && cleanPass !== '123456') {
+      const validPass = adminByPhone.password || (adminByPhone.email?.toLowerCase() === 'powerose@gmail.com' ? 'Admin1234' : 'admin');
+      if (cleanPass !== validPass) {
         return false;
       }
       setCurrentUser(adminByPhone);
