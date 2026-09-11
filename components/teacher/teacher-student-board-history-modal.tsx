@@ -4,6 +4,8 @@ import React, { useState, useMemo } from 'react';
 import { BoardParticipationRecord, setStoredActiveBoardStudent } from '@/lib/board-participation-store';
 import { StudentUser } from '@/types/auth';
 import { useApp } from '@/lib/store';
+import { useAuth } from '@/lib/auth-store';
+import { downloadStudentBoardReportPDF } from '@/lib/board-pdf-generator';
 import {
   X,
   TrendingUp,
@@ -20,7 +22,8 @@ import {
   FileCheck2,
   BookOpen,
   ClipboardCheck,
-  Printer,
+  Download,
+  Loader2,
   ChevronRight,
   Activity,
   Layers,
@@ -108,14 +111,31 @@ export function TeacherStudentBoardHistoryModal({
     }
   }, [chronologicalRecords]);
 
+  const { currentUser } = useAuth();
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
   // Count by activity type
   const gameCount = records.filter((r) => r.activityType === 'game').length;
   const testCount = records.filter((r) => r.activityType === 'test').length;
   const rubricCount = records.filter((r) => r.activityType === 'rubric').length;
   const journalCount = records.filter((r) => r.activityType === 'journal').length;
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownloadPDF = async () => {
+    try {
+      setIsDownloadingPdf(true);
+      playSound('select');
+      await downloadStudentBoardReportPDF(student, records, {
+        schoolName: student.school || (currentUser as any)?.school,
+        teacherName: currentUser?.name || 'Ahmet Yılmaz',
+        teacherBranch: (currentUser as any)?.branch || 'Matematik'
+      });
+      playSound('success');
+    } catch (err) {
+      console.error('PDF download error:', err);
+      alert('PDF oluşturulurken bir hata oluştu.');
+    } finally {
+      setIsDownloadingPdf(false);
+    }
   };
 
   const handleStartBoardSession = () => {
@@ -237,11 +257,17 @@ export function TeacherStudentBoardHistoryModal({
 
             <div className="flex items-center gap-2">
               <button
-                onClick={handlePrint}
-                className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                title="Raporu Yazdır"
+                onClick={handleDownloadPDF}
+                disabled={isDownloadingPdf}
+                className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                title="PDF Olarak İndir"
               >
-                <Printer className="w-4 h-4 text-teal-300" />
+                {isDownloadingPdf ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 text-teal-200" />
+                )}
+                <span>{isDownloadingPdf ? 'İndiriliyor...' : 'PDF İndir'}</span>
               </button>
               <button
                 onClick={onClose}
@@ -663,12 +689,26 @@ export function TeacherStudentBoardHistoryModal({
           <div className="text-xs text-slate-500 font-medium">
             Öğrenci: <strong className="text-slate-800 font-black">{student.name} (#{student.studentNumber})</strong>
           </div>
-          <button
-            onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-black text-xs transition-all cursor-pointer"
-          >
-            Kapat
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isDownloadingPdf}
+              className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {isDownloadingPdf ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              <span>{isDownloadingPdf ? 'İndiriliyor...' : 'PDF İndir'}</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-black text-xs transition-all cursor-pointer"
+            >
+              Kapat
+            </button>
+          </div>
         </div>
 
       </div>

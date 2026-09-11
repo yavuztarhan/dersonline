@@ -10,6 +10,7 @@ import {
 } from '@/lib/board-participation-store';
 import { StudentUser } from '@/types/auth';
 import { TeacherStudentBoardHistoryModal } from '@/components/teacher/teacher-student-board-history-modal';
+import { downloadClassBoardReportPDF } from '@/lib/board-pdf-generator';
 import confetti from 'canvas-confetti';
 import {
   Sparkles,
@@ -28,7 +29,8 @@ import {
   FileCheck2,
   BookOpen,
   ClipboardCheck,
-  Printer,
+  Download,
+  Loader2,
   Zap,
   Dices,
   RotateCcw,
@@ -52,6 +54,7 @@ export function TeacherBoardParticipationReport() {
   const [activeTab, setActiveTab] = useState<'ranking' | 'timeline'>('ranking');
   const [pickedStudent, setPickedStudent] = useState<StudentUser | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [isDownloadingClassPdf, setIsDownloadingClassPdf] = useState(false);
 
   // Selected student for history modal & graph
   const [selectedStudentForHistory, setSelectedStudentForHistory] = useState<StudentUser | null>(null);
@@ -217,8 +220,32 @@ export function TeacherBoardParticipationReport() {
     playSound('select');
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownloadClassPDF = async () => {
+    try {
+      setIsDownloadingClassPdf(true);
+      playSound('select');
+      await downloadClassBoardReportPDF(
+        selectedClass,
+        studentStats,
+        {
+          totalParticipations: totalBoardParticipations,
+          participationRate,
+          totalXp: totalBoardXp,
+          neverParticipatedCount: neverParticipatedList.length
+        },
+        {
+          schoolName: teacher?.school,
+          teacherName: teacher?.name || currentUser?.name,
+          teacherBranch: teacher?.branch || 'Matematik'
+        }
+      );
+      playSound('success');
+    } catch (err) {
+      console.error('Class PDF download error:', err);
+      alert('Sınıf raporu PDF oluşturulurken bir hata oluştu.');
+    } finally {
+      setIsDownloadingClassPdf(false);
+    }
   };
 
   return (
@@ -256,11 +283,16 @@ export function TeacherBoardParticipationReport() {
             </button>
 
             <button
-              onClick={handlePrint}
-              className="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-black transition-all flex items-center gap-2 cursor-pointer"
+              onClick={handleDownloadClassPDF}
+              disabled={isDownloadingClassPdf}
+              className="px-4 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              <Printer className="w-4 h-4 text-teal-300" />
-              <span>Raporu Yazdır</span>
+              {isDownloadingClassPdf ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4 text-teal-200" />
+              )}
+              <span>{isDownloadingClassPdf ? 'Hazırlanıyor...' : 'PDF İndir'}</span>
             </button>
           </div>
         </div>
