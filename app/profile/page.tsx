@@ -169,12 +169,9 @@ export default function ProfilePage() {
         const schools = await fetchSchoolsApi(city, district);
         if (isMounted) {
           setSchoolsList(schools);
-          // If current school is not in list and not custom, set to first school
-          if (schools.length > 0 && !isCustomSchool) {
-            const exists = schools.some((s) => s.name.toLocaleLowerCase('tr') === school.toLocaleLowerCase('tr'));
-            if (!exists) {
-              setSchool(schools[0].name);
-            }
+          // Only pick first school if school is currently empty
+          if (schools.length > 0 && !isCustomSchool && !school) {
+            setSchool(schools[0].name);
           }
         }
       } catch (err) {
@@ -182,6 +179,9 @@ export default function ProfilePage() {
         if (isMounted) {
           const fallback = getSchoolsByDistrict(city, district);
           setSchoolsList(fallback);
+          if (fallback.length > 0 && !isCustomSchool && !school) {
+            setSchool(fallback[0].name);
+          }
         }
       } finally {
         if (isMounted) setLoadingSchools(false);
@@ -296,9 +296,9 @@ export default function ProfilePage() {
 
     const finalSchoolName = isCustomSchool && customSchoolName.trim()
       ? customSchoolName.trim()
-      : school;
+      : (school || '').trim();
 
-    if (currentUser?.role === 'teacher' && !finalSchoolName.trim()) {
+    if (currentUser?.role === 'teacher' && !finalSchoolName) {
       setErrorMsg('Lütfen okulunuzu seçiniz veya adını yazınız.');
       return;
     }
@@ -307,7 +307,7 @@ export default function ProfilePage() {
     playSound('success');
 
     if (currentUser) {
-      const formatted = formatFullName(firstName, lastName);
+      const formatted = formatFullName(firstName, lastName, `${firstName.trim()} ${lastName.trim()}`);
       updateUserProfile(currentUser.id, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
@@ -322,7 +322,7 @@ export default function ProfilePage() {
         isProfileComplete: true
       });
 
-      if (password) {
+      if (password && password.length >= 6 && password === passwordConfirm) {
         setUserPassword(currentUser.id, password);
       }
     }
@@ -543,7 +543,7 @@ export default function ProfilePage() {
                 </span>
                 <input
                   type="tel"
-                  required
+                  required={currentUser.role === 'teacher'}
                   maxLength={10}
                   value={phone}
                   onChange={(e) => handlePhoneChange(e.target.value)}
@@ -760,7 +760,7 @@ export default function ProfilePage() {
                 ) : (
                   <input
                     type="text"
-                    required
+                    required={isCustomSchool}
                     placeholder="Okulunuzun tam adını yazınız..."
                     value={customSchoolName}
                     onChange={(e) => setCustomSchoolName(e.target.value)}
@@ -862,11 +862,27 @@ export default function ProfilePage() {
 
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-lg hover:shadow-xl active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              disabled={isSubmitting || savedSuccess}
+              className={`w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-black text-xs transition-all shadow-lg hover:shadow-xl active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 ${
+                savedSuccess ? 'bg-emerald-600 hover:bg-emerald-600' : 'bg-teal-600 hover:bg-teal-700'
+              }`}
             >
-              <Save className="w-4 h-4" />
-              <span>{isSubmitting ? 'Kaydediliyor...' : 'Bilgileri Kaydet ve Ana Sayfaya Dön'}</span>
+              {savedSuccess ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Başarıyla Kaydedildi! ✓</span>
+                </>
+              ) : isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Kaydediliyor...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  <span>Bilgileri Kaydet ve Ana Sayfaya Dön</span>
+                </>
+              )}
             </button>
           </div>
 

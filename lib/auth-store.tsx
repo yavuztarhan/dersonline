@@ -711,38 +711,116 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
     };
 
-    setAdmins((prev) =>
-      prev.map((a) => {
-        if (a.id === userId) {
+    const targetEmail = (updates.email || currentUser?.email || '').trim().toLowerCase();
+
+    // 1. Update Current User State & Storage
+    let updatedCurrentUser: AuthUser | null = null;
+    if (currentUser && (currentUser.id === userId || (targetEmail && currentUser.email?.toLowerCase() === targetEmail))) {
+      updatedCurrentUser = {
+        ...currentUser,
+        ...formatNameIfPresent(currentUser, updates),
+        isProfileComplete: true
+      } as AuthUser;
+      setCurrentUser(updatedCurrentUser);
+      try {
+        localStorage.setItem('maarif_current_user', JSON.stringify(updatedCurrentUser));
+      } catch (e) {}
+    }
+
+    // 2. Update Teachers list & Storage
+    setTeachers((prev) => {
+      const existsIndex = prev.findIndex((t) => t.id === userId || (targetEmail && t.email.toLowerCase() === targetEmail));
+      let nextTeachers: TeacherUser[];
+      if (existsIndex >= 0) {
+        nextTeachers = prev.map((t, idx) => {
+          if (idx === existsIndex) {
+            return {
+              ...t,
+              ...formatNameIfPresent(t, updates),
+              isProfileComplete: true
+            } as TeacherUser;
+          }
+          return t;
+        });
+      } else if (currentUser?.role === 'teacher' || updatedCurrentUser?.role === 'teacher') {
+        const base = updatedCurrentUser || currentUser;
+        const newTeacher: TeacherUser = {
+          id: userId || base?.id || `tch-${Date.now()}`,
+          firstName: updates.firstName || base?.firstName || 'Öğretmen',
+          lastName: updates.lastName || base?.lastName || '',
+          name: formatFullName(updates.firstName || base?.firstName, updates.lastName || base?.lastName),
+          email: updates.email || base?.email || '',
+          phone: (updates as any).phone || (base as any)?.phone || '',
+          city: (updates as any).city || (base as any)?.city || 'Edirne',
+          district: (updates as any).district || (base as any)?.district || 'Merkez',
+          school: (updates as any).school || (base as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+          branch: (updates as any).branch || (base as any)?.branch || 'Matematik',
+          principalName: (updates as any).principalName || (base as any)?.principalName || 'Mehmet GÜNGÖR',
+          assignedClasses: (updates as any).assignedClasses || (base as any)?.assignedClasses || ['5-A', '5-B'],
+          role: 'teacher',
+          status: 'approved',
+          isProfileComplete: true,
+          createdAt: base?.createdAt || new Date().toISOString().split('T')[0],
+          verifiedAt: new Date().toISOString().split('T')[0]
+        };
+        nextTeachers = [...prev, newTeacher];
+      } else {
+        nextTeachers = prev;
+      }
+      try {
+        localStorage.setItem('maarif_teachers', JSON.stringify(nextTeachers));
+      } catch (e) {}
+      return nextTeachers;
+    });
+
+    // 3. Update Admins list
+    setAdmins((prev) => {
+      const nextAdmins = prev.map((a) => {
+        if (a.id === userId || (targetEmail && a.email.toLowerCase() === targetEmail)) {
           return { ...a, ...formatNameIfPresent(a, updates) } as AdminUser;
         }
         return a;
-      })
-    );
+      });
+      try {
+        localStorage.setItem('maarif_admins', JSON.stringify(nextAdmins));
+      } catch (e) {}
+      return nextAdmins;
+    });
 
-    setTeachers((prev) =>
-      prev.map((t) => {
-        if (t.id === userId) {
-          return { ...t, ...formatNameIfPresent(t, updates), isProfileComplete: true } as TeacherUser;
-        }
-        return t;
-      })
-    );
-
-    setStudents((prev) =>
-      prev.map((s) => {
-        if (s.id === userId) {
+    // 4. Update Students list
+    setStudents((prev) => {
+      const nextStudents = prev.map((s) => {
+        if (s.id === userId || (targetEmail && s.email.toLowerCase() === targetEmail)) {
           return { ...s, ...formatNameIfPresent(s, updates) } as StudentUser;
         }
         return s;
-      })
-    );
-
-    if (currentUser && currentUser.id === userId) {
-      const formatted = { ...currentUser, ...formatNameIfPresent(currentUser, updates) } as AuthUser;
-      setCurrentUser(formatted);
+      });
       try {
-        localStorage.setItem('maarif_current_user', JSON.stringify(formatted));
+        localStorage.setItem('maarif_students', JSON.stringify(nextStudents));
+      } catch (e) {}
+      return nextStudents;
+    });
+
+    // 5. Asynchronous server sync
+    if (targetEmail) {
+      try {
+        fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: targetEmail,
+            firstName: updates.firstName,
+            lastName: updates.lastName,
+            name: updates.name,
+            phone: (updates as any).phone,
+            branch: (updates as any).branch,
+            city: (updates as any).city,
+            district: (updates as any).district,
+            school: (updates as any).school,
+            principalName: (updates as any).principalName,
+            assignedClasses: (updates as any).assignedClasses,
+          }),
+        }).catch((err) => console.warn('Server profile sync note:', err));
       } catch (e) {}
     }
   };
