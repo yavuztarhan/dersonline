@@ -28,11 +28,18 @@ import {
   UserCog,
   Check,
   BarChart3,
-  TrendingUp
+  TrendingUp,
+  FileText
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { AdminAnalyticsReports } from '@/components/admin/admin-analytics-reports';
+import {
+  KVKK_AGREEMENT_TITLE,
+  KVKK_AGREEMENT_TEXT,
+  KVKK_AGREEMENT_VERSION,
+  KVKK_LAST_UPDATED
+} from '@/lib/kvkk-agreement';
 import confetti from 'canvas-confetti';
 
 export function AdminDashboard() {
@@ -50,7 +57,7 @@ export function AdminDashboard() {
     startTeacherRegistration
   } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'pending' | 'admins' | 'teachers' | 'students' | 'reports'>('pending');
+  const [activeTab, setActiveTab] = useState<'pending' | 'admins' | 'teachers' | 'students' | 'reports' | 'kvkk'>('reports');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCityFilter, setSelectedCityFilter] = useState('Tümü');
   const [notificationMsg, setNotificationMsg] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
@@ -377,6 +384,18 @@ export function AdminDashboard() {
         >
           <GraduationCap className="w-4 h-4" />
           <span>Öğrenci Veritabanı ({students.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('kvkk')}
+          className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
+            activeTab === 'kvkk'
+              ? 'bg-rose-600 text-white shadow-md'
+              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+          }`}
+        >
+          <FileText className="w-4 h-4" />
+          <span>📜 KVKK & Hukuki Taahhütnameler</span>
         </button>
       </div>
 
@@ -808,6 +827,124 @@ export function AdminDashboard() {
       {/* TAB 5: ANALYTICS & REGIONAL REPORTS */}
       {activeTab === 'reports' && (
         <AdminAnalyticsReports />
+      )}
+
+      {/* TAB 6: KVKK & HUKUKİ TAAHHÜTNAMELER */}
+      {activeTab === 'kvkk' && (
+        <div className="space-y-6">
+          
+          {/* KVKK Metrics Banner */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-sm">
+              <div className="text-xs font-bold text-slate-500 uppercase">KVKK Metin Sürümü</div>
+              <div className="text-xl font-black text-slate-900 mt-1">{KVKK_AGREEMENT_VERSION}</div>
+              <div className="text-[11px] text-teal-600 font-medium mt-0.5">Son Güncelleme: {KVKK_LAST_UPDATED}</div>
+            </div>
+
+            <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-sm">
+              <div className="text-xs font-bold text-slate-500 uppercase">Onaylayan Öğretmenler</div>
+              <div className="text-xl font-black text-slate-900 mt-1">
+                {teachers.filter((t) => t.kvkkAcceptedAt).length} / {teachers.length}
+              </div>
+              <div className="text-[11px] text-emerald-600 font-bold mt-0.5">
+                %{teachers.length > 0 ? Math.round((teachers.filter((t) => t.kvkkAcceptedAt).length / teachers.length) * 100) : 100} Onay Oranı
+              </div>
+            </div>
+
+            <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-sm">
+              <div className="text-xs font-bold text-slate-500 uppercase">Yasal Dayanak</div>
+              <div className="text-sm font-black text-slate-900 mt-1">6698 Sayılı Kanun</div>
+              <div className="text-[11px] text-indigo-600 font-bold mt-0.5">Veli İzin Taahhüdü Zorunlu</div>
+            </div>
+          </div>
+
+          {/* Legal Text Viewer Card */}
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+            <div className="p-5 bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-rose-500/20 border border-rose-400/30 flex items-center justify-center text-rose-300">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white">
+                    {KVKK_AGREEMENT_TITLE}
+                  </h3>
+                  <p className="text-xs text-rose-200">
+                    Öğretmenlerin kayıt olurken kabul ettiği resmi taahhüt ve veri işleme metni
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 max-h-[500px] overflow-y-auto bg-slate-50/50 text-xs text-slate-700 leading-relaxed font-normal select-text whitespace-pre-line border-b border-slate-200">
+              {KVKK_AGREEMENT_TEXT}
+            </div>
+          </div>
+
+          {/* Teacher Acceptance Logs Table */}
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-black text-slate-900">
+                  Öğretmen KVKK & Veli İzin Taahhüt Onay Kayıtları
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Hangi öğretmenin sözleşmeyi ne zaman onayladığının resmi kayıtları
+                </p>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-700 border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-400 uppercase font-black tracking-wider text-[10px] border-b border-slate-200">
+                    <th className="py-3 px-4">Öğretmen Adı</th>
+                    <th className="py-3 px-4">E-Posta & Telefon</th>
+                    <th className="py-3 px-4">Görev Yaptığı Okul</th>
+                    <th className="py-3 px-4">Branş</th>
+                    <th className="py-3 px-4">KVKK Taahhüt Durumu</th>
+                    <th className="py-3 px-4">Onay Tarihi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {teachers.map((tch) => (
+                    <tr key={tch.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-900">
+                        <div className="flex items-center gap-2">
+                          <span>👨‍🏫</span>
+                          <span>{tch.name}</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 font-medium text-slate-600">
+                        <div>{tch.email}</div>
+                        <div className="text-[10px] text-slate-400">{tch.phone || 'Belirtilmedi'}</div>
+                      </td>
+                      <td className="py-3.5 px-4 text-slate-700 font-medium">{tch.school || 'Okul Belirtilmedi'}</td>
+                      <td className="py-3.5 px-4 font-extrabold text-teal-700">{tch.branch || 'Matematik'}</td>
+                      <td className="py-3.5 px-4">
+                        {tch.kvkkAcceptedAt ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>ONAYLANDI</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black">
+                            <Clock className="w-3.5 h-3.5 text-amber-600" />
+                            <span>ONAY BEKLİYOR</span>
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-500">
+                        {tch.kvkkAcceptedAt ? new Date(tch.kvkkAcceptedAt).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
       )}
 
     </div>

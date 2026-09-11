@@ -5,6 +5,7 @@ import { AuthProvider } from '@/lib/auth-store';
 import { SessionProvider } from '@/components/providers/session-provider';
 import { Navbar } from '@/components/navbar';
 import { RandomStudentPickerModal } from '@/components/random-student-picker';
+import { EnforceProfileGuard } from '@/components/auth/enforce-profile-guard';
 
 export const metadata: Metadata = {
   title: 'Maarif Akademi – Kademeli Akıllı Tahta ve İnteraktif Dersler Platformu',
@@ -37,6 +38,7 @@ export default function RootLayout({
           <AuthProvider>
             <AppProvider>
               <Navbar />
+              <EnforceProfileGuard />
               <main className="flex-1 w-full">
                 {children}
               </main>

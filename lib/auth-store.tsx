@@ -26,6 +26,7 @@ interface AuthContextType {
   logout: () => void;
   setUserPassword: (userId: string, newPassword: string) => boolean;
   updateUserProfile: (userId: string, updates: Partial<AuthUser>) => void;
+  acceptKvkk: (userId: string) => void;
   
   // Teacher Registration & Profile Flow
   startTeacherRegistration: (data: TeacherRegistrationPayload) => { code: string; success: boolean };
@@ -746,6 +747,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const acceptKvkk = (userId: string) => {
+    const timestamp = new Date().toISOString();
+    setTeachers((prev) =>
+      prev.map((t) => (t.id === userId ? { ...t, kvkkAcceptedAt: timestamp } : t))
+    );
+    setAdmins((prev) =>
+      prev.map((a) => (a.id === userId ? { ...a, kvkkAcceptedAt: timestamp } : a))
+    );
+    setStudents((prev) =>
+      prev.map((s) => (s.id === userId ? { ...s, kvkkAcceptedAt: timestamp } : s))
+    );
+
+    if (currentUser && currentUser.id === userId) {
+      const updated = { ...currentUser, kvkkAcceptedAt: timestamp };
+      setCurrentUser(updated);
+      try {
+        localStorage.setItem('maarif_current_user', JSON.stringify(updated));
+      } catch (e) {}
+    }
+  };
+
   const loginWithGoogle = (profile: { name: string; email: string; avatar?: string }): { isNewUser: boolean; user: AuthUser } => {
     const trimmed = profile.email.trim().toLowerCase();
     const { firstName, lastName } = splitFullName(profile.name || 'Google Kullanıcısı');
@@ -1332,6 +1354,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         setUserPassword,
         updateUserProfile,
+        acceptKvkk,
         startTeacherRegistration,
         verifyTeacherEmail,
         resendVerificationCode,

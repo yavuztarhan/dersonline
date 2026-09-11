@@ -17,8 +17,16 @@ export const isUserAdmin = (email?: string | null): boolean => {
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || 'demo_google_client_id',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'demo_google_client_secret',
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code'
+        }
+      }
     }),
   ],
   callbacks: {

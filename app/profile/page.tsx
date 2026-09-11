@@ -104,7 +104,9 @@ export default function ProfilePage() {
 
       if (currentUser.role === 'teacher') {
         const tch = currentUser as any;
-        setPhone(tch.phone || '');
+        const rawPhone = (tch.phone || '').replace(/\D/g, '');
+        const cleanInitialPhone = rawPhone.startsWith('90') ? rawPhone.slice(2) : rawPhone.startsWith('0') ? rawPhone.slice(1) : rawPhone;
+        setPhone(cleanInitialPhone.slice(0, 10));
         setBranch(tch.branch || 'Matematik');
         setPrincipalName(tch.principalName || 'Mehmet GÜNGÖR');
         const initialCity = tch.city || 'Edirne';
@@ -116,6 +118,17 @@ export default function ProfilePage() {
       }
     }
   }, [currentUser]);
+
+  const handlePhoneChange = (val: string) => {
+    let digits = val.replace(/\D/g, '');
+    if (digits.startsWith('0')) {
+      digits = digits.slice(1);
+    }
+    if (digits.startsWith('90') && digits.length > 10) {
+      digits = digits.slice(2);
+    }
+    setPhone(digits.slice(0, 10));
+  };
 
   // Load districts when city changes
   useEffect(() => {
@@ -264,6 +277,12 @@ export default function ProfilePage() {
       return;
     }
 
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (currentUser?.role === 'teacher' && (!cleanPhone || cleanPhone.length !== 10)) {
+      setErrorMsg('Lütfen 10 haneli geçerli bir cep telefonu numarası giriniz (Örn: 5051234567).');
+      return;
+    }
+
     if (password) {
       if (password.length < 6) {
         setErrorMsg('Şifreniz en az 6 karakter olmalıdır.');
@@ -397,6 +416,19 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {/* Mandatory Incomplete Profile Warning Banner */}
+      {currentUser.role === 'teacher' && !(currentUser as any).isProfileComplete && (
+        <div className="p-5 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 flex items-start gap-3 shadow-md">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="text-xs space-y-1">
+            <div className="font-black text-amber-900 text-sm">Zorunlu Profil Bilgilerini Tamamlayınız</div>
+            <div className="text-amber-800 leading-relaxed font-medium">
+              Maarif platformunun akıllı tahta derslerini, öğrenci kayıtlarını ve materyallerini kullanabilmek için lütfen ad, soyad, telefon ve okul bilgilerinizi eksiksiz doldurup aşağıdaki <strong>"Değişiklikleri Kaydet"</strong> butonuna basınız.
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Form Card */}
       <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
         
@@ -497,19 +529,28 @@ export default function ProfilePage() {
 
             {/* Telefon Numarası */}
             <div className="space-y-1.5">
-              <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-teal-600" />
-                <span>İletişim Telefon No</span>
-                <span className="text-rose-500">*</span>
+              <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-teal-600" />
+                  <span>İletişim Cep Telefonu</span>
+                  <span className="text-rose-500">*</span>
+                </span>
+                <span className="text-[10px] font-bold text-slate-400">10 Hane (5XX...)</span>
               </label>
-              <input
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Örn: 0555 123 45 67"
-                className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
-              />
+              <div className="flex rounded-2xl border border-slate-200 overflow-hidden focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/10 transition-all bg-white">
+                <span className="inline-flex items-center px-4 py-3 bg-slate-100 border-r border-slate-200 text-slate-700 font-black text-xs select-none">
+                  🇹🇷 +90
+                </span>
+                <input
+                  type="tel"
+                  required
+                  maxLength={10}
+                  value={phone}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
+                  placeholder="5051234567"
+                  className="w-full px-4 py-3 text-xs font-bold text-slate-900 outline-none bg-transparent"
+                />
+              </div>
             </div>
 
             {/* Branş */}

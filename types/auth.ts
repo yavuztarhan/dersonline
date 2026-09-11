@@ -12,6 +12,7 @@ export interface BaseUser {
   role: UserRole;
   avatar?: string;
   createdAt: string;
+  kvkkAcceptedAt?: string; // KVKK & Öğretmen Taahhütnamesi Onay Zamanı
 }
 
 export interface TeacherUser extends BaseUser {
