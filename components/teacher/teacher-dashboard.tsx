@@ -183,11 +183,11 @@ export function TeacherDashboard() {
   const [deleteSecurityCode, setDeleteSecurityCode] = useState('');
   const [inputDeleteSecurityCode, setInputDeleteSecurityCode] = useState('');
 
-  // Veritabanından okulun tüm sınıflarını canlı sorgula
+  // Veritabanından il, ilçe ve okul ile eşleşen tüm sınıfları canlı sorgula
   useEffect(() => {
     if (showAddClassModal && teacher?.school) {
       setIsLoadingSchoolClasses(true);
-      fetch(`/api/classrooms?school=${encodeURIComponent(teacher.school)}&email=${encodeURIComponent(currentUser?.email || '')}`)
+      fetch(`/api/classrooms?school=${encodeURIComponent(teacher.school)}&city=${encodeURIComponent(teacher.city || '')}&district=${encodeURIComponent(teacher.district || '')}&email=${encodeURIComponent(currentUser?.email || '')}`)
         .then((res) => res.json())
         .then((data) => {
           if (data?.success && Array.isArray(data.schoolClasses)) {
@@ -197,7 +197,7 @@ export function TeacherDashboard() {
         .catch(() => {})
         .finally(() => setIsLoadingSchoolClasses(false));
     }
-  }, [showAddClassModal, teacher?.school, currentUser?.email]);
+  }, [showAddClassModal, teacher?.school, teacher?.city, teacher?.district, currentUser?.email]);
 
   // Okulun tüm kayıtlı sınıfları (Ortak Havuz - Veritabanı ve Yerel Kayıtlar Birleştirilmiş)
   const schoolPoolClasses: string[] = useMemo(() => {
@@ -1260,7 +1260,9 @@ export function TeacherDashboard() {
                       </div>
                       <div>
                         <h3 className="text-base font-black text-white">Sınıf / Şube Ekle</h3>
-                        <p className="text-xs text-teal-300/80">{teacher?.school || 'Okulunuz'} • Sınıf Yönetimi</p>
+                        <p className="text-xs text-teal-300/80">
+                          {teacher?.city ? `${teacher.city} / ${teacher.district} • ` : ''}{teacher?.school || 'Okulunuz'} • Sınıf Yönetimi
+                        </p>
                       </div>
                     </div>
                     <button

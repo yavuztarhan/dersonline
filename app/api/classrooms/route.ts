@@ -10,10 +10,14 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const school = searchParams.get('school');
+    const city = searchParams.get('city');
+    const district = searchParams.get('district');
     const teacherId = searchParams.get('teacherId');
     const email = searchParams.get('email');
 
     const cleanSchool = school ? decodeURIComponent(school).trim() : null;
+    const cleanCity = city ? decodeURIComponent(city).trim() : null;
+    const cleanDistrict = district ? decodeURIComponent(district).trim() : null;
     const cleanEmail = email ? decodeURIComponent(email).trim().toLowerCase() : null;
 
     try {
@@ -31,16 +35,24 @@ export async function GET(req: NextRequest) {
         });
       }
 
-      const targetSchool = cleanSchool || currentTeacherProfile?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
+      const targetSchool = cleanSchool || currentTeacherProfile?.school || null;
+      const targetCity = cleanCity || currentTeacherProfile?.city || null;
+      const targetDistrict = cleanDistrict || currentTeacherProfile?.district || null;
 
-      // 2. Okula ait tüm sınıfları veritabanından çek (Classroom tablosu)
+      // 2. İl, İlçe ve Okula ait tüm sınıfları veritabanından çek (Classroom tablosu)
+      const classroomWhere: any = {};
+      if (targetSchool) {
+        classroomWhere.school = { equals: targetSchool, mode: 'insensitive' as const };
+      }
+      if (targetCity) {
+        classroomWhere.city = { equals: targetCity, mode: 'insensitive' as const };
+      }
+      if (targetDistrict) {
+        classroomWhere.district = { equals: targetDistrict, mode: 'insensitive' as const };
+      }
+
       const dbClassrooms = await prisma.classroom.findMany({
-        where: {
-          OR: [
-            { school: { equals: targetSchool, mode: 'insensitive' as const } },
-            { teacher: { school: { equals: targetSchool, mode: 'insensitive' as const } } }
-          ]
-        },
+        where: Object.keys(classroomWhere).length > 0 ? classroomWhere : undefined,
         include: {
           teacher: {
             include: {
@@ -54,10 +66,19 @@ export async function GET(req: NextRequest) {
       });
 
       // 3. Okula ait öğrencilerin kayıtlı olduğu şubeleri çek (StudentProfile tablosu)
+      const studentWhere: any = {};
+      if (targetSchool) {
+        studentWhere.school = { equals: targetSchool, mode: 'insensitive' as const };
+      }
+      if (targetCity) {
+        studentWhere.city = { equals: targetCity, mode: 'insensitive' as const };
+      }
+      if (targetDistrict) {
+        studentWhere.district = { equals: targetDistrict, mode: 'insensitive' as const };
+      }
+
       const studentSections = await prisma.studentProfile.findMany({
-        where: {
-          school: { equals: targetSchool, mode: 'insensitive' as const }
-        },
+        where: Object.keys(studentWhere).length > 0 ? studentWhere : undefined,
         select: { classSection: true },
         distinct: ['classSection']
       });
@@ -80,13 +101,17 @@ export async function GET(req: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        school: targetSchool,
+        school: targetSchool || '',
+        city: targetCity || '',
+        district: targetDistrict || '',
         schoolClasses: sortedClasses,
         classrooms: dbClassrooms.map((c) => ({
           id: c.id,
           name: c.name,
           code: c.code,
           gradeLevel: c.gradeLevel,
+          city: c.city,
+          district: c.district,
           school: c.school,
           teacherId: c.teacherId,
           teacherName: c.teacher?.user?.name || undefined
@@ -116,7 +141,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { teacherId, email, school, classNames, className, code, gradeLevel } = body;
+    const { teacherId, email, school, city, district, classNames, className, code, gradeLevel } = body;
 
     const cleanEmail = email ? String(email).trim().toLowerCase() : null;
     const listToAdd = Array.isArray(classNames)
@@ -144,6 +169,8 @@ export async function POST(req: NextRequest) {
       }
 
       const targetSchool = school || tProf?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
+      const targetCity = city || tProf?.city || 'Edirne';
+      const targetDistrict = district || tProf?.district || 'Merkez';
 
       // 2. Her sınıfı veritabanına ekle / ilişkilendir
       const createdClassrooms = [];
@@ -169,6 +196,8 @@ export async function POST(req: NextRequest) {
                 name: cleanName,
                 code: generatedCode,
                 gradeLevel: grade,
+                city: targetCity,
+                district: targetDistrict,
                 school: targetSchool,
                 teacherId: tProf.id
               }

@@ -105,11 +105,14 @@ model Classroom {
   name       String   // 5-A
   code       String?  @unique // 6 haneli benzersiz sınıf kodu (örn: MRF5A1)
   gradeLevel Int      @default(5)
-  school     String
+  city       String?  // İl
+  district   String?  // İlçe
+  school     String   // Okul Adı
   teacherId  String
   teacher    TeacherProfile @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 
+  @@index([city, district, school])
   @@map("classrooms")
 }
 

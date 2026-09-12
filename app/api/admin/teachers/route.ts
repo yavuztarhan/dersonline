@@ -197,13 +197,12 @@ export async function DELETE(req: NextRequest) {
     const cleanEmail = (email || (teacherId && teacherId.includes('@') ? teacherId : '')).trim().toLowerCase();
 
     // 1. Find user & teacher profile
-    const user = await prisma.user.findFirst({
+    let user = await prisma.user.findFirst({
       where: {
         OR: [
-          teacherId ? { id: teacherId } : undefined,
-          teacherId ? { teacherProfile: { is: { id: teacherId } } } : undefined,
-          cleanEmail ? { email: cleanEmail } : undefined,
-        ].filter(Boolean) as any,
+          ...(teacherId ? [{ id: teacherId }, { teacherProfile: { id: teacherId } }] : []),
+          ...(cleanEmail ? [{ email: { equals: cleanEmail, mode: 'insensitive' as const } }] : []),
+        ],
       },
       include: {
         teacherProfile: {
@@ -213,6 +212,21 @@ export async function DELETE(req: NextRequest) {
         },
       },
     });
+
+    if (!user && cleanEmail) {
+      user = await prisma.user.findFirst({
+        where: {
+          email: { equals: cleanEmail, mode: 'insensitive' as const },
+        },
+        include: {
+          teacherProfile: {
+            include: {
+              classrooms: true,
+            },
+          },
+        },
+      });
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -235,8 +249,8 @@ export async function DELETE(req: NextRequest) {
         where: {
           OR: [
             { teacherId: profile.id },
-            classNames.length > 0 ? { classSection: { in: classNames } } : undefined,
-          ].filter(Boolean) as any,
+            ...(classNames.length > 0 ? [{ classSection: { in: classNames } }] : []),
+          ],
         },
         select: { id: true, userId: true },
       });
@@ -249,15 +263,15 @@ export async function DELETE(req: NextRequest) {
         // Delete related student activities
         await prisma.selfAssessmentSubmission.deleteMany({
           where: { studentId: { in: studentProfileIds } },
-        });
+        }).catch(() => {});
 
         await prisma.learningJournal.deleteMany({
           where: { studentId: { in: studentProfileIds } },
-        });
+        }).catch(() => {});
 
         await prisma.boardParticipation.deleteMany({
           where: { studentId: { in: studentProfileIds } },
-        });
+        }).catch(() => {});
 
         await prisma.peerEvaluationSubmission.deleteMany({
           where: {
@@ -266,46 +280,57 @@ export async function DELETE(req: NextRequest) {
               { targetStudentId: { in: studentProfileIds } },
             ],
           },
-        });
+        }).catch(() => {});
 
         await prisma.outcomeProgress.deleteMany({
           where: { studentId: { in: studentProfileIds } },
-        });
+        }).catch(() => {});
 
         await prisma.studentBadge.deleteMany({
           where: { studentId: { in: studentProfileIds } },
-        });
+        }).catch(() => {});
 
         // Delete student profiles
         await prisma.studentProfile.deleteMany({
           where: { id: { in: studentProfileIds } },
-        });
+        }).catch(() => {});
 
         // Delete student user accounts
         await prisma.user.deleteMany({
           where: { id: { in: studentUserIds } },
-        });
+        }).catch(() => {});
       }
 
       // Delete classrooms
       await prisma.classroom.deleteMany({
         where: { teacherId: profile.id },
-      });
+      }).catch(() => {});
 
       // Delete teacher profile
       await prisma.teacherProfile.delete({
         where: { id: profile.id },
-      });
+      }).catch(() => {});
     }
+
+    // Delete teacher messages
+    await prisma.message.deleteMany({
+      where: {
+        OR: [
+          { senderId: user.id },
+          { receiverId: user.id },
+          ...(profile ? [{ senderId: profile.id }, { receiverId: profile.id }] : [])
+        ]
+      }
+    }).catch(() => {});
 
     // Delete teacher user and their login logs
     await prisma.loginLog.deleteMany({
       where: { userId: user.id },
-    });
+    }).catch(() => {});
 
     await prisma.user.delete({
       where: { id: user.id },
-    });
+    }).catch(() => {});
 
     return NextResponse.json({
       success: true,

@@ -138,6 +138,19 @@ export function generateRandomStudentPassword(length = 6): string {
   return password.split('').sort(() => Math.random() - 0.5).join('');
 }
 
+export function enrichUser(u: any): any {
+  if (!u) return u;
+  if (!u.firstName || !u.lastName) {
+    const parts = splitFullName(u.name || '');
+    u.firstName = u.firstName || parts.firstName || 'Kullanıcı';
+    u.lastName = u.lastName || parts.lastName || '';
+  }
+  if (!u.name) {
+    u.name = formatFullName(u.firstName, u.lastName, 'Kullanıcı');
+  }
+  return u;
+}
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -156,18 +169,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Load from localStorage on mount
   useEffect(() => {
     try {
-      const enrichUser = (u: any) => {
-        if (!u) return u;
-        if (!u.firstName || !u.lastName) {
-          const parts = splitFullName(u.name || '');
-          u.firstName = u.firstName || parts.firstName || 'Kullanıcı';
-          u.lastName = u.lastName || parts.lastName || '';
-        }
-        if (!u.name) {
-          u.name = formatFullName(u.firstName, u.lastName, 'Kullanıcı');
-        }
-        return u;
-      };
 
       const savedAdmins = localStorage.getItem('maarif_admins');
       if (savedAdmins) {
@@ -186,55 +187,74 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const savedTeachers = localStorage.getItem('maarif_teachers');
       if (savedTeachers) {
-        const parsed = JSON.parse(savedTeachers);
-        if (Array.isArray(parsed)) {
-          setTeachers(parsed.map(enrichUser));
-        }
+        try {
+          const parsed = JSON.parse(savedTeachers);
+          if (Array.isArray(parsed)) {
+            setTeachers(parsed.map(enrichUser));
+          }
+        } catch (e) {}
       }
 
-      // Live DB synchronization for teachers
+      // Live DB synchronization for teachers (DB is single source of truth)
       fetch('/api/admin/teachers')
         .then((res) => res.json())
         .then((data) => {
-          if (data?.success && Array.isArray(data.teachers) && data.teachers.length > 0) {
-            setTeachers((prev) => {
-              const dbEmails = new Set(data.teachers.map((dt: any) => dt.email.toLowerCase()));
-              const merged = [...data.teachers.map(enrichUser)];
-              prev.forEach((t) => {
-                if (!dbEmails.has(t.email.toLowerCase())) {
-                  merged.push(t);
-                }
-              });
-              try {
-                localStorage.setItem('maarif_teachers', JSON.stringify(merged));
-              } catch (e) {}
-              return merged;
-            });
+          if (data?.success && Array.isArray(data.teachers)) {
+            const enriched = data.teachers.map(enrichUser);
+            setTeachers(enriched);
+            try {
+              localStorage.setItem('maarif_teachers', JSON.stringify(enriched));
+            } catch (e) {}
           }
         })
         .catch(() => {});
 
       const savedStudents = localStorage.getItem('maarif_students');
       if (savedStudents) {
-        const parsed = JSON.parse(savedStudents);
-        if (Array.isArray(parsed)) {
-          setStudents(parsed.map(enrichUser));
-        }
+        try {
+          const parsed = JSON.parse(savedStudents);
+          if (Array.isArray(parsed)) {
+            setStudents(parsed.map(enrichUser));
+          }
+        } catch (e) {}
       }
+
+      // Live DB synchronization for students (DB is single source of truth)
+      fetch('/api/students')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && Array.isArray(data.students)) {
+            const enriched = data.students.map(enrichUser);
+            setStudents(enriched);
+            try {
+              localStorage.setItem('maarif_students', JSON.stringify(enriched));
+            } catch (e) {}
+          }
+        })
+        .catch(() => {});
 
       const savedClassrooms = localStorage.getItem('maarif_classrooms');
       if (savedClassrooms) {
-        const parsed = JSON.parse(savedClassrooms);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const merged = [...parsed];
-          for (const sc of SEED_CLASSROOMS) {
-            if (!merged.some((c: ClassroomInfo) => c.code === sc.code || (c.name === sc.name && c.teacherId === sc.teacherId))) {
-              merged.push(sc);
-            }
+        try {
+          const parsed = JSON.parse(savedClassrooms);
+          if (Array.isArray(parsed)) {
+            setClassrooms(parsed);
           }
-          setClassrooms(merged);
-        }
+        } catch (e) {}
       }
+
+      // Live DB synchronization for classrooms
+      fetch('/api/classrooms')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && Array.isArray(data.classrooms)) {
+            setClassrooms(data.classrooms);
+            try {
+              localStorage.setItem('maarif_classrooms', JSON.stringify(data.classrooms));
+            } catch (e) {}
+          }
+        })
+        .catch(() => {});
 
       const savedUser = localStorage.getItem('maarif_current_user');
       if (savedUser) {
@@ -437,19 +457,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     expiresAt: number,
     deviceCategory: string
   ) => {
-    const enrichUser = (u: any) => {
-      if (!u) return u;
-      if (!u.firstName || !u.lastName) {
-        const parts = splitFullName(u.name || '');
-        u.firstName = u.firstName || parts.firstName || 'Öğretmen';
-        u.lastName = u.lastName || parts.lastName || '';
-      }
-      if (!u.name) {
-        u.name = formatFullName(u.firstName, u.lastName, 'Öğretmen');
-      }
-      return u;
-    };
-
     const enriched = enrichUser(user);
     setCurrentUser(enriched);
 
@@ -1376,10 +1383,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteTeacher = (teacherId: string) => {
-    setTeachers((prev) => prev.filter((t) => t.id !== teacherId));
-    if (currentUser && currentUser.id === teacherId) {
+    const target = teachers.find((t) => t.id === teacherId);
+    setTeachers((prev) => {
+      const updated = prev.filter((t) => t.id !== teacherId && t.email?.toLowerCase() !== target?.email?.toLowerCase());
+      try {
+        localStorage.setItem('maarif_teachers', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    if (currentUser && (currentUser.id === teacherId || currentUser.email?.toLowerCase() === target?.email?.toLowerCase())) {
       setCurrentUser(null);
+      try {
+        localStorage.removeItem('maarif_current_user');
+      } catch (e) {}
     }
+
+    fetch('/api/admin/teachers', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        teacherId,
+        email: target?.email,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) {
+          fetch('/api/admin/teachers')
+            .then((r) => r.json())
+            .then((d) => {
+              if (d?.success && Array.isArray(d.teachers)) {
+                setTeachers(d.teachers.map(enrichUser));
+              }
+            }).catch(() => {});
+          fetch('/api/students')
+            .then((r) => r.json())
+            .then((d) => {
+              if (d?.success && Array.isArray(d.students)) {
+                setStudents(d.students.map(enrichUser));
+              }
+            }).catch(() => {});
+        }
+      })
+      .catch((err) => console.error('Delete teacher DB error:', err));
   };
 
   const deleteAdmin = (adminId: string) => {
@@ -1724,6 +1771,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           teacherId,
           email: syncEmail,
           school: teacherSchool,
+          city: teacherObj?.city || (currentUser as any)?.city,
+          district: teacherObj?.district || (currentUser as any)?.district,
           classNames: cleanList
         })
       }).catch((err) => console.warn('[addClassesToTeacher] /api/classrooms sync note:', err));
