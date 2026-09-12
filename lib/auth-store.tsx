@@ -666,18 +666,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // 2. Offline / Local Fallback
-    const matchedClassroom = classrooms.find((c) => c.code?.toUpperCase() === cleanCode);
+    const allClassrooms = [...classrooms, ...SEED_CLASSROOMS];
+    const matchedClassroom = allClassrooms.find((c) => c.code?.toUpperCase() === cleanCode);
+    const cleanCodeNormalized = cleanCode.replace(/[^A-Z0-9]/g, '');
+
     const student = students.find((s) => {
+      const stuCode = (s.classCode || '').trim().toUpperCase();
+      const stuSection = (s.classSection || '').trim().toUpperCase();
+      const stuSectionNormalized = stuSection.replace(/[^A-Z0-9]/g, '');
+
       const matchesCode =
-        (s.classCode && s.classCode.toUpperCase() === cleanCode) ||
-        (matchedClassroom && s.classSection && s.classSection.toUpperCase() === matchedClassroom.name.toUpperCase());
+        (stuCode && stuCode === cleanCode) ||
+        (stuSection && (stuSection === cleanCode || stuSectionNormalized === cleanCodeNormalized)) ||
+        (matchedClassroom && stuSection === matchedClassroom.name.toUpperCase());
+
       const matchesNumber = s.studentNumber && s.studentNumber.trim().toLowerCase() === cleanNumber.toLowerCase();
       return matchesCode && matchesNumber;
     });
 
     if (student) {
       const validPass = student.password || 'admin';
-      const matches = cleanPass === validPass;
+      let matches = cleanPass === validPass;
+
+      // Handle bcrypt hashed password in local cache
+      if (!matches && (validPass.startsWith('$2a$') || validPass.startsWith('$2b$') || validPass.startsWith('$2y$'))) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          const bcrypt = require('bcryptjs');
+          matches = bcrypt.compareSync(cleanPass, validPass);
+        } catch (e) {}
+      }
+
+      // If password has not been changed by student, also accept default 'admin' fallback
+      if (!matches && !student.isPasswordChangedByStudent && cleanPass === 'admin') {
+        matches = true;
+      }
 
       if (matches) {
         setCurrentUser(student);

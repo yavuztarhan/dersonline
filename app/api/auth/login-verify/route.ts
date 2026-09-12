@@ -39,6 +39,23 @@ export async function POST(req: NextRequest) {
     if (isStudentLogin) {
       const cleanStudentNo = (studentNumber || '').trim();
       const cleanClassCode = (classCode || '').trim().toUpperCase();
+
+      // Check if there is a classroom matching the entered code or name
+      let matchedSection = cleanClassCode;
+      try {
+        const matchingClassroom = await prisma.classroom.findFirst({
+          where: {
+            OR: [
+              { code: { equals: cleanClassCode, mode: 'insensitive' } },
+              { name: { equals: cleanClassCode, mode: 'insensitive' } }
+            ]
+          }
+        });
+        if (matchingClassroom?.name) {
+          matchedSection = matchingClassroom.name;
+        }
+      } catch (e) {}
+
       dbUser = await prisma.user.findFirst({
         where: {
           role: 'STUDENT',
@@ -46,11 +63,16 @@ export async function POST(req: NextRequest) {
             studentNumber: { equals: cleanStudentNo },
             OR: [
               { classCode: { equals: cleanClassCode, mode: 'insensitive' } },
+              { classSection: { equals: cleanClassCode, mode: 'insensitive' } },
+              { classSection: { equals: matchedSection, mode: 'insensitive' } },
               {
                 teacher: {
                   classrooms: {
                     some: {
-                      code: { equals: cleanClassCode, mode: 'insensitive' }
+                      OR: [
+                        { code: { equals: cleanClassCode, mode: 'insensitive' } },
+                        { name: { equals: cleanClassCode, mode: 'insensitive' } }
+                      ]
                     }
                   }
                 }

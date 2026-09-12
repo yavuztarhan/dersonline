@@ -131,13 +131,14 @@ export function AuthModal({
     const cleanPass = studentPasswordInput.trim();
 
     if (!cleanCode) {
-      setStudentLoginError('Lütfen 6 haneli sınıf kodunuzu giriniz.');
+      setStudentLoginError('Lütfen sınıf kodunuzu veya şubenizi giriniz.');
       return;
     }
-    if (cleanCode.length !== 6) {
-      setStudentLoginError('Sınıf kodu 6 haneli olmalıdır (Örn: MRF5A1).');
+    if (cleanCode.length < 2 || cleanCode.length > 12) {
+      setStudentLoginError('Lütfen geçerli bir sınıf kodu veya şube giriniz (Örn: MRF5A1 veya 5-A).');
       return;
     }
+
     if (!cleanNo) {
       setStudentLoginError('Lütfen okul numaranızı giriniz.');
       return;
