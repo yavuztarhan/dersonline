@@ -57,7 +57,8 @@ export function MessageInboxModal({
   prefilledRecipientId,
   lockedRecipientId
 }: MessageInboxModalProps) {
-  const { currentUser, teachers, students, admins, getVisibleStudents } = useAuth();
+  const { currentUser, teachers, students, admins, getVisibleStudents, classrooms } = useAuth();
+
   const { playSound } = useApp();
 
   const [activeTab, setActiveTab] = useState<'inbox' | 'sent' | 'compose'>(defaultTab);
@@ -158,22 +159,55 @@ export function MessageInboxModal({
       });
     }
 
-    // 3. If Student: Can message Teachers only (Admins hidden from recipient list)
+    // 3. If Student: Only message teachers who have added/can see this student
     if (userRole === 'student') {
+      const stu = currentUser as any;
+      const stuClassCode = (stu?.classCode || '').trim().toUpperCase();
+      const stuClassSection = (stu?.classSection || '').trim().toUpperCase();
+      const stuSchool = (stu?.school || '').trim().toLowerCase();
+      const stuTeacherId = stu?.teacherId || '';
+
       teachers.forEach((t) => {
-        list.push({
-          id: t.id,
-          name: t.name,
-          role: 'teacher',
-          roleLabel: 'Öğretmen',
-          avatar: t.avatar || '👨‍🏫',
-          extraInfo: `${t.school || 'Okul'} (${t.branch || 'Matematik'})`
-        });
+        let isMyTeacher = false;
+
+        // 1. Öğrencinin teacherId'si doğrudan bu öğretmeni gösteriyorsa
+        if (stuTeacherId && t.id === stuTeacherId) {
+          isMyTeacher = true;
+        }
+
+        // 2. Bu öğretmenin classrooms'unda öğrencinin classCode'u varsa
+        if (!isMyTeacher && stuClassCode) {
+          const match = classrooms.find(
+            (c) => c.teacherId === t.id && c.code && c.code.trim().toUpperCase() === stuClassCode
+          );
+          if (match) isMyTeacher = true;
+        }
+
+        // 3. Aynı okuldaki öğretmen, assignedClasses içinde öğrencinin sınıfını (classSection) barındırıyorsa
+        if (!isMyTeacher && stuSchool && stuClassSection) {
+          const sameSchool = (t.school || '').trim().toLowerCase() === stuSchool;
+          const teacherHasClass = (t as any).assignedClasses?.some(
+            (c: string) => c.trim().toUpperCase() === stuClassSection
+          );
+          if (sameSchool && teacherHasClass) isMyTeacher = true;
+        }
+
+        if (isMyTeacher) {
+          list.push({
+            id: t.id,
+            name: t.name,
+            role: 'teacher',
+            roleLabel: 'Öğretmen',
+            avatar: t.avatar || '👨‍🏫',
+            extraInfo: `${t.school || 'Okul'} (${t.branch || 'Matematik'})`
+          });
+        }
       });
     }
 
     return list;
-  }, [currentUser, userRole, teachers, getVisibleStudents]);
+  }, [currentUser, userRole, teachers, getVisibleStudents, classrooms]);
+
 
   // Unique class sections for filter dropdown (teacher only)
   const classSectionOptions = React.useMemo(() => {
