@@ -230,10 +230,11 @@ function createPageHTML(
       <div style="text-align: right;">
         <div style="
           display: inline-block;
-          background: #0f172a;
-          color: #ffffff;
+          background: #ffffff;
+          color: #000000;
+          border: 1.5px solid #000000;
           padding: 4px 10px;
-          border-radius: 8px;
+          border-radius: 6px;
           font-weight: 900;
           font-size: 11px;
           letter-spacing: 0.5px;
