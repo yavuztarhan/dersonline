@@ -22,54 +22,7 @@ export interface MessageRecord {
 const STORAGE_MESSAGES_KEY = 'maarif_messages_v1';
 
 // Seed Messages
-const SEED_MESSAGES: MessageRecord[] = [
-  // Admin to Teacher
-  {
-    id: 'msg-seed-1',
-    senderId: 'usr-admin-1',
-    senderName: 'Maarif Sistem Yöneticisi',
-    senderRole: 'admin',
-    senderAvatar: '🛡️',
-    receiverId: 'tch-101',
-    receiverName: 'Ayşe Yılmaz',
-    receiverRole: 'teacher',
-    title: 'Yeni Dönem Müfredat ve Rubrik Güncellemeleri',
-    content: 'Değerli Öğretmenimiz, Türkiye Yüzyılı Maarif Modeli 5. ve 6. sınıf geometri kazanımları ve süreç odaklı rubrik formları sisteme başarıyla yüklenmiştir. İyi çalışmalar dileriz.',
-    read: false,
-    createdAt: '2026-09-09T09:30:00Z'
-  },
-  // Teacher to Student
-  {
-    id: 'msg-seed-2',
-    senderId: 'tch-101',
-    senderName: 'Ayşe Yılmaz (Matematik Öğretmeni)',
-    senderRole: 'teacher',
-    senderAvatar: '👩‍🏫',
-    receiverId: 'stu-201',
-    receiverName: 'Çırak Hasan',
-    receiverRole: 'student',
-    receiverClassSection: '5-A',
-    title: 'Harika Oyun Performansı ve Tebrik',
-    content: 'Sevgili Hasan, Doğruların Durumu ve Çarpım Tablosu oyunundaki yüksek skorunu ve kombo başarını gördüm. Seni tebrik ederim, grup arkadaşlarına da liderlik etmeni bekliyorum!',
-    read: false,
-    createdAt: '2026-09-10T10:15:00Z'
-  },
-  // Student to Teacher
-  {
-    id: 'msg-seed-3',
-    senderId: 'stu-101',
-    senderName: 'Ahmet Yılmaz',
-    senderRole: 'student',
-    senderAvatar: '👦',
-    receiverId: 'tch-101',
-    receiverName: 'Ayşe Yılmaz',
-    receiverRole: 'teacher',
-    title: 'İletki Kullanımı ve Açı Sorusu',
-    content: 'Öğretmenim, açı dedektifi oyunundaki 135 derecelik geniş açıyı iletki simülasyonuyla ölçerken başlangıç çizgisini doğru yerleştirdim. Yarınki derste pergel inşa çizimini de yapacak mıyız?',
-    read: true,
-    createdAt: '2026-09-08T14:20:00Z'
-  }
-];
+const SEED_MESSAGES: MessageRecord[] = [];
 
 export const MESSAGE_RETENTION_DAYS = 90;
 

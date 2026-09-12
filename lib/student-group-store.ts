@@ -69,78 +69,10 @@ const GROUP_GRADIENTS = [
 ];
 
 // Seed Groups
-const SEED_GROUPS: StudentGroup[] = [
-  {
-    id: 'grp-seed-1',
-    name: 'Pisagor Kaşifleri',
-    classSection: '5-A',
-    teacherId: 'tch-101',
-    teacherName: 'Ayşe Yılmaz',
-    colorGradient: 'from-teal-600 to-emerald-600',
-    peerEvaluationEnabled: true,
-    peerEvaluationOutcomeCode: 'MAT.5.3.3',
-    peerEvaluationOutcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
-    createdAt: '2026-09-08T10:00:00Z',
-    members: [
-      { id: 'stu-201', name: 'Çırak Hasan', studentNumber: '104', avatar: '👦', classSection: '5-A' },
-      { id: 'stu-101', name: 'Ahmet Yılmaz', studentNumber: '101', avatar: '👦', classSection: '5-A' },
-      { id: 'stu-102', name: 'Zeynep Kaya', studentNumber: '102', avatar: '👧', classSection: '5-A' }
-    ]
-  },
-  {
-    id: 'grp-seed-2',
-    name: 'Harezmi Ekibi',
-    classSection: '5-A',
-    teacherId: 'tch-101',
-    teacherName: 'Ayşe Yılmaz',
-    colorGradient: 'from-indigo-600 to-purple-600',
-    peerEvaluationEnabled: true,
-    peerEvaluationOutcomeCode: 'MAT.5.3.3',
-    peerEvaluationOutcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
-    createdAt: '2026-09-08T10:00:00Z',
-    members: [
-      { id: 'stu-103', name: 'Mustafa Demir', studentNumber: '103', avatar: '👦', classSection: '5-A' },
-      { id: 'stu-104', name: 'Elif Çelik', studentNumber: '105', avatar: '👧', classSection: '5-A' },
-      { id: 'stu-105', name: 'Mehmet Şahin', studentNumber: '106', avatar: '👦', classSection: '5-A' }
-    ]
-  }
-];
+const SEED_GROUPS: StudentGroup[] = [];
 
 // Seed Group Tasks
-const SEED_GROUP_TASKS: GroupTask[] = [
-  {
-    id: 'gtask-seed-1',
-    groupId: 'grp-seed-1',
-    groupName: 'Pisagor Kaşifleri',
-    classSection: '5-A',
-    teacherId: 'tch-101',
-    teacherName: 'Ayşe Yılmaz',
-    title: 'Düzlemde Doğruların Durumları Maketi & Sunumu',
-    description: 'Grup olarak pipetler, ipler veya karton kullanarak paralel, kesişen, dik ve çakışık doğruları modelleyen bir sınıf panosu hazırlayın ve açı özelliklerini listeleyin.',
-    outcomeCode: 'MAT.5.3.4',
-    outcomeTitle: 'Düzlemde İki ve Üç Doğrunun Durumları ve Açı Çıkarımları',
-    dueDate: '2026-09-18',
-    xpReward: 150,
-    status: 'in_progress',
-    createdAt: '2026-09-09T11:00:00Z'
-  },
-  {
-    id: 'gtask-seed-2',
-    groupId: 'grp-seed-2',
-    groupName: 'Harezmi Ekibi',
-    classSection: '5-A',
-    teacherId: 'tch-101',
-    teacherName: 'Ayşe Yılmaz',
-    title: 'Okul Bahçesinde Açı & Gönye Haritası',
-    description: 'Bahçedeki basketbol sahası, merdiven korkulukları ve bina köşelerindeki açıları iletki ve gönye ile ölçüp fotoğraflayarak ortak bir mini rapor hazırlayınız.',
-    outcomeCode: 'MAT.5.3.3',
-    outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
-    dueDate: '2026-09-20',
-    xpReward: 150,
-    status: 'pending',
-    createdAt: '2026-09-09T11:00:00Z'
-  }
-];
+const SEED_GROUP_TASKS: GroupTask[] = [];
 
 export function getStoredGroups(): StudentGroup[] {
   if (typeof window === 'undefined') return SEED_GROUPS;
