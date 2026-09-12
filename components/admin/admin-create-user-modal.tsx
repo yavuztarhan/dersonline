@@ -7,6 +7,7 @@ import { validatePassword } from '@/lib/password-validator';
 import {
   X,
   UserPlus,
+  User,
   Mail,
   Lock,
   Eye,
@@ -26,6 +27,8 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
   const { adminCreateUser, refreshData } = useAuth();
 
   const [role, setRole] = useState<'teacher' | 'admin'>('teacher');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,6 +43,8 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
 
   useEffect(() => {
     if (isOpen) {
+      setFirstName('');
+      setLastName('');
       setEmail('');
       setPassword('');
       setErrorMsg('');
@@ -54,7 +59,15 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
     e.preventDefault();
     setErrorMsg('');
 
+    const cleanFirstName = firstName.trim();
+    const cleanLastName = lastName.trim();
     const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanFirstName || !cleanLastName) {
+      setErrorMsg('Lütfen ad ve soyad alanlarını doldurunuz.');
+      return;
+    }
+
     if (!cleanEmail || !cleanEmail.includes('@')) {
       setErrorMsg('Lütfen geçerli bir e-posta adresi giriniz.');
       return;
@@ -76,9 +89,9 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
           email: cleanEmail,
           password: password,
           role: role,
-          firstName: '',
-          lastName: '',
-          name: cleanEmail.split('@')[0],
+          firstName: cleanFirstName,
+          lastName: cleanLastName,
+          name: `${cleanFirstName} ${cleanLastName}`.trim(),
           school: '',
           city: '',
           district: '',
@@ -97,7 +110,9 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
       const res = adminCreateUser({
         email: cleanEmail,
         password: password,
-        role: role
+        role: role,
+        firstName: cleanFirstName,
+        lastName: cleanLastName
       });
 
       if (!res.success) {
@@ -145,7 +160,7 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
           </div>
           <h2 className="text-xl font-black">Yeni Kullanıcı Ekle</h2>
           <p className="text-xs text-slate-300">
-            Sadece e-posta ve şifre belirleyerek yeni bir öğretmen veya yönetici hesabı oluşturun.
+            Ad, soyad, e-posta ve şifre belirleyerek yeni bir öğretmen veya yönetici hesabı oluşturun.
           </p>
         </div>
 
@@ -181,6 +196,39 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
               >
                 <span>👑 Yönetici (Admin)</span>
               </button>
+            </div>
+          </div>
+
+          {/* Ad & Soyad */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-slate-400" />
+                <span>Adı *</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Örn: Ahmet"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-slate-400" />
+                <span>Soyadı *</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Örn: Yılmaz"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              />
             </div>
           </div>
 
@@ -232,7 +280,7 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
           <div className="p-3.5 rounded-2xl bg-teal-50 border border-teal-200/80 text-teal-900 text-xs flex items-start gap-2.5">
             <Info className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed text-[11px] font-medium">
-              Kullanıcı ilk kez giriş yaptığında ad, soyad, telefon, il, ilçe, okul ve branş bilgilerini profil tamamlama ekranından kendisi girecektir.
+              Kullanıcı ilk kez giriş yaptığında telefon, il, ilçe, okul ve branş gibi ek bilgileri profil tamamlama ekranından güncelleyebilir.
             </p>
           </div>
 
@@ -247,7 +295,7 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || !email.trim() || !password.trim()}
+              disabled={isSubmitting || !firstName.trim() || !lastName.trim() || !email.trim() || !password.trim()}
               className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-black shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
             >
               {isSubmitting ? (
