@@ -84,35 +84,95 @@ function createPageHTML(
           </div>
 
           <!-- Student Name -->
-          <div style="font-size: 12.5px; font-weight: 900; color: #0f172a; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div style="
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-left: 4px solid #0284c7;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 13px;
+            font-weight: 900;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            min-height: 26px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          ">
             ${stuName}
           </div>
 
           <!-- Key Credentials Badges (4 parameters) -->
           <div style="
             display: grid;
-            grid-template-columns: 1fr 1fr 1.25fr 1.25fr;
-            gap: 4px;
-            margin: 3px 0;
+            grid-template-columns: 1fr 1fr 1.2fr 1.2fr;
+            gap: 5px;
+            margin: 4px 0;
           ">
-            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 2.5px 3px; text-align: center;">
-              <div style="font-size: 7px; color: #64748b; font-weight: 700; text-transform: uppercase;">Şube</div>
-              <div style="font-size: 10px; font-weight: 900; color: #0f172a;">${classSection}</div>
+            <div style="
+              background: #ffffff;
+              border: 1px solid #cbd5e1;
+              border-radius: 6px;
+              padding: 4px 2px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              min-height: 38px;
+              box-sizing: border-box;
+            ">
+              <div style="font-size: 7.5px; color: #64748b; font-weight: 800; text-transform: uppercase; line-height: 1.1; margin-bottom: 2px;">Şube</div>
+              <div style="font-size: 11px; font-weight: 900; color: #0f172a; line-height: 1.1;">${classSection}</div>
             </div>
 
-            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 2.5px 3px; text-align: center;">
-              <div style="font-size: 7px; color: #64748b; font-weight: 700; text-transform: uppercase;">Okul No</div>
-              <div style="font-size: 10px; font-weight: 900; color: #0f172a;">#${stuNumber}</div>
+            <div style="
+              background: #ffffff;
+              border: 1px solid #cbd5e1;
+              border-radius: 6px;
+              padding: 4px 2px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              min-height: 38px;
+              box-sizing: border-box;
+            ">
+              <div style="font-size: 7.5px; color: #64748b; font-weight: 800; text-transform: uppercase; line-height: 1.1; margin-bottom: 2px;">Okul No</div>
+              <div style="font-size: 11px; font-weight: 900; color: #0f172a; line-height: 1.1;">#${stuNumber}</div>
             </div>
 
-            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px; padding: 2.5px 3px; text-align: center;">
-              <div style="font-size: 7px; color: #1e40af; font-weight: 700; text-transform: uppercase;">Sınıf Kodu</div>
-              <div style="font-size: 10.5px; font-weight: 900; font-family: monospace; color: #1e3a8a;">${classCode}</div>
+            <div style="
+              background: #eff6ff;
+              border: 1px solid #bfdbfe;
+              border-radius: 6px;
+              padding: 4px 2px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              min-height: 38px;
+              box-sizing: border-box;
+            ">
+              <div style="font-size: 7.5px; color: #1e40af; font-weight: 800; text-transform: uppercase; line-height: 1.1; margin-bottom: 2px;">Sınıf Kodu</div>
+              <div style="font-size: 11.5px; font-weight: 900; font-family: monospace; color: #1e3a8a; line-height: 1.1;">${classCode}</div>
             </div>
 
-            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 5px; padding: 2.5px 3px; text-align: center;">
-              <div style="font-size: 7px; color: #065f46; font-weight: 700; text-transform: uppercase;">Şifre</div>
-              <div style="font-size: 10.5px; font-weight: 900; font-family: monospace; color: #047857;">${password}</div>
+            <div style="
+              background: #ecfdf5;
+              border: 1px solid #a7f3d0;
+              border-radius: 6px;
+              padding: 4px 2px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              min-height: 38px;
+              box-sizing: border-box;
+            ">
+              <div style="font-size: 7.5px; color: #065f46; font-weight: 800; text-transform: uppercase; line-height: 1.1; margin-bottom: 2px;">Şifre</div>
+              <div style="font-size: 11.5px; font-weight: 900; font-family: monospace; color: #047857; line-height: 1.1;">${password}</div>
             </div>
           </div>
 
@@ -120,21 +180,22 @@ function createPageHTML(
           <div style="
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            padding: 4px 6px;
-            font-size: 7.5px;
-            line-height: 1.3;
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 9px;
+            line-height: 1.4;
             color: #334155;
             margin-top: 2px;
+            box-sizing: border-box;
           ">
-            <div style="font-weight: 800; color: #0f172a; margin-bottom: 1.5px;">
+            <div style="font-weight: 800; color: #0f172a; font-size: 9.5px; margin-bottom: 2px;">
               Giriş Yönergesi:
             </div>
             <div>
               <strong>1.</strong> Tarayıcınızdan <strong style="color: #0284c7;">maarifakademi.com.tr</strong> adresine girin.
             </div>
             <div>
-              <strong>2.</strong> <strong>Öğrenci Girişi</strong> ekranında <strong>Sınıf Kodu</strong> (${classCode}), <strong>Okul No</strong> (#${stuNumber}) ve <strong>Şifreniz</strong> ile giriş yapın.
+              <strong>2.</strong> <strong>Öğrenci Girişi</strong> ekranında <strong>Sınıf Kodu</strong> (${classCode}), <strong>Okul No</strong> (#${stuNumber}) ve <strong>Şifreniz</strong> ile sisteme giriş yapın.
             </div>
           </div>
         </div>
