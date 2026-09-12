@@ -71,11 +71,6 @@ export async function GET(req: NextRequest) {
         if (s.classSection) classSet.add(s.classSection.trim().toUpperCase());
       });
 
-      // Varsayılan minimum sınıflar yoksa ekle
-      if (classSet.size === 0) {
-        ['5-A', '5-B'].forEach((cls) => classSet.add(cls));
-      }
-
       const sortedClasses = Array.from(classSet).sort((a, b) =>
         a.localeCompare(b, 'tr-TR', { numeric: true })
       );
@@ -102,7 +97,7 @@ export async function GET(req: NextRequest) {
       console.warn('[Classrooms API GET] Database note (falling back):', dbError);
       return NextResponse.json({
         success: true,
-        schoolClasses: ['5-A', '5-B', '5-C', '6-A', '6-B'],
+        schoolClasses: [],
         classrooms: [],
         teacherClasses: [],
         localOnly: true

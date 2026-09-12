@@ -194,7 +194,7 @@ export async function POST(req: NextRequest) {
       school: dbUser.teacherProfile?.school || dbUser.studentProfile?.school || '',
       branch: dbUser.teacherProfile?.branch || 'Matematik',
       principalName: dbUser.teacherProfile?.principalName || '',
-      assignedClasses: dbUser.teacherProfile?.classrooms?.map((c: any) => c.name) || (userRole === 'teacher' ? ['5-A'] : []),
+      assignedClasses: dbUser.teacherProfile?.classrooms?.map((c: any) => c.name) || [],
       accountStatus: dbUser.accountStatus || (dbUser.teacherProfile?.status === 'SUSPENDED' ? 'beklemede' : 'aktif'),
       status: dbUser.accountStatus === 'beklemede' || dbUser.teacherProfile?.status === 'SUSPENDED'
         ? 'suspended'

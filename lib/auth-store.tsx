@@ -329,7 +329,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     phone: (parsedUser as any).phone,
                     school: (parsedUser as any).school,
                     branch: (parsedUser as any).branch,
-                    assignedClasses: (parsedUser as any).assignedClasses || ['5-A'],
+                    assignedClasses: (parsedUser as any).assignedClasses || [],
                     password: parsedUser.password,
                   }),
                 }).catch(() => {});
@@ -878,7 +878,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           school: (updates as any).school || (base as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
           branch: (updates as any).branch || (base as any)?.branch || 'Matematik',
           principalName: (updates as any).principalName || (base as any)?.principalName || 'Mehmet GÜNGÖR',
-          assignedClasses: (updates as any).assignedClasses || (base as any)?.assignedClasses || ['5-A', '5-B'],
+          assignedClasses: (updates as any).assignedClasses || (base as any)?.assignedClasses || [],
           role: 'teacher',
           status: 'approved',
           isProfileComplete: true,
@@ -919,7 +919,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           school: (updates as any).school || (base as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
           branch: (updates as any).branch || (base as any)?.branch || 'Matematik',
           principalName: (updates as any).principalName || (base as any)?.principalName || 'Mehmet GÜNGÖR',
-          assignedClasses: (updates as any).assignedClasses || (base as any)?.assignedClasses || ['5-A', '5-B'],
+          assignedClasses: (updates as any).assignedClasses || (base as any)?.assignedClasses || [],
           isProfileComplete: true,
           createdAt: base?.createdAt || new Date().toISOString().split('T')[0]
         };
@@ -1088,7 +1088,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       status: 'pending_admin_approval',
       verifiedAt: new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString().split('T')[0],
-      assignedClasses: ['5-A'],
+      assignedClasses: [],
       isProfileComplete: false
     };
 
@@ -1108,7 +1108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name: fullName,
         school: 'Edirne Selimiye İmam Hatip Ortaokulu',
         branch: 'Matematik',
-        assignedClasses: ['5-A'],
+        assignedClasses: [],
       }),
     }).catch((e) => console.warn('Google teacher sync note:', e));
 
@@ -1146,7 +1146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       branch: data.branch,
       status: 'pending_email',
       createdAt: new Date().toISOString().split('T')[0],
-      assignedClasses: ['5-A']
+      assignedClasses: []
     };
 
     if (existingIndex >= 0) {
@@ -1418,7 +1418,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           status: 'approved',
           approvedAt: new Date().toISOString().split('T')[0],
           createdAt: adminUser.createdAt || new Date().toISOString().split('T')[0],
-          assignedClasses: ['5-A'],
+          assignedClasses: [],
           isProfileComplete: true
         };
         setTeachers((prev) => [newTeacher, ...prev.filter((t) => t.email.toLowerCase() !== adminUser.email.toLowerCase())]);
@@ -1608,7 +1608,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const getSchoolClasses = (schoolName?: string): string[] => {
     const teacherUser = teachers.find((t) => t.id === currentUser?.id);
     const targetSchool = (schoolName || teacherUser?.school || (currentUser as any)?.school || '').trim().toLowerCase();
-    if (!targetSchool) return ['5-A', '5-B'];
+    if (!targetSchool) return [];
 
     const classSet = new Set<string>();
 
@@ -1638,9 +1638,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     const list = Array.from(classSet);
-    return list.length > 0
-      ? list.sort((a, b) => a.localeCompare(b, 'tr-TR', { numeric: true }))
-      : ['5-A', '5-B'];
+    return list.sort((a, b) => a.localeCompare(b, 'tr-TR', { numeric: true }));
   };
 
   const addClassToTeacher = (teacherId: string, className: string) => {
@@ -2291,7 +2289,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         school: payload.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
         branch: payload.branch || 'Matematik',
         principalName: payload.principalName || 'Mehmet GÜNGÖR',
-        assignedClasses: payload.assignedClasses || ['5-A', '5-B'],
+        assignedClasses: payload.assignedClasses || [],
         isProfileComplete: true,
         createdAt: new Date().toISOString().split('T')[0]
       };
@@ -2340,7 +2338,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         school: payload.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
         branch: payload.branch || 'Matematik',
         principalName: payload.principalName || 'Mehmet GÜNGÖR',
-        assignedClasses: payload.assignedClasses || ['5-A', '5-B'],
+        assignedClasses: payload.assignedClasses || [],
         status: 'approved',
         isProfileComplete: true,
         createdAt: new Date().toISOString().split('T')[0],

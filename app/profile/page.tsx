@@ -82,7 +82,7 @@ export default function ProfilePage() {
   const [principalName, setPrincipalName] = useState('');
   const [isCustomSchool, setIsCustomSchool] = useState(false);
   const [customSchoolName, setCustomSchoolName] = useState('');
-  const [assignedClasses, setAssignedClasses] = useState<string[]>(['5-A', '5-B']);
+  const [assignedClasses, setAssignedClasses] = useState<string[]>([]);
   
   // Student Specific States
   const isStudent = currentUser?.role === 'student';
@@ -146,10 +146,10 @@ export default function ProfilePage() {
         setCustomSchoolName(userSchool);
       }
 
-      if (userObj.assignedClasses && Array.isArray(userObj.assignedClasses) && userObj.assignedClasses.length > 0) {
+      if (userObj.assignedClasses && Array.isArray(userObj.assignedClasses)) {
         setAssignedClasses(userObj.assignedClasses);
       } else {
-        setAssignedClasses(['5-A', '5-B']);
+        setAssignedClasses([]);
       }
 
       if (userObj.role === 'student') {

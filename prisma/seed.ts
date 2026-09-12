@@ -63,12 +63,6 @@ async function main() {
           status: TeacherStatus.APPROVED,
           verifiedAt: new Date(),
           approvedAt: new Date(),
-          classrooms: {
-            create: [
-              { name: '5-A', code: 'MRF5A1', gradeLevel: 5, school: 'Edirne Selimiye İmam Hatip Ortaokulu' },
-              { name: '5-B', code: 'MRF5B2', gradeLevel: 5, school: 'Edirne Selimiye İmam Hatip Ortaokulu' },
-            ],
-          },
         },
       },
     },
@@ -103,42 +97,6 @@ async function main() {
     },
   });
   console.log('✅ Onay Bekleyen Öğretmen oluşturuldu:', teacher2User.email);
-
-  // 4. Öğrenciler
-  const teacher1Profile = await prisma.teacherProfile.findFirst({
-    where: { user: { email: 'ahmet.ogretmen@meb.k12.tr' } }
-  });
-
-  if (teacher1Profile) {
-    const student1Pass = bcrypt.hashSync('admin', 10);
-    const student1 = await prisma.user.upsert({
-      where: { email: 'hasan.ogrenci@meb.k12.tr' },
-      update: { password: student1Pass },
-      create: {
-        email: 'hasan.ogrenci@meb.k12.tr',
-        firstName: 'Çırak',
-        lastName: 'Hasan',
-        name: 'Çırak Hasan',
-        password: student1Pass,
-        role: Role.STUDENT,
-        avatar: '🎓',
-        studentProfile: {
-          create: {
-            studentNumber: '104',
-            gradeLevel: 5,
-            classSection: '5-A',
-            classCode: 'MRF5A1',
-            city: 'Edirne',
-            district: 'Merkez',
-            school: 'Edirne Selimiye İmam Hatip Ortaokulu',
-            teacherId: teacher1Profile.id,
-            points: 450,
-          },
-        },
-      },
-    });
-    console.log('✅ Öğrenci oluşturuldu:', student1.email);
-  }
 
   // 5. Rozetler
   const badges = [

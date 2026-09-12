@@ -149,16 +149,16 @@ export function TeacherDashboard() {
 
   // If current user is teacher
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
-  const rawClasses: string[] = teacher?.assignedClasses && teacher.assignedClasses.length > 0
+  const rawClasses: string[] = teacher?.assignedClasses && Array.isArray(teacher.assignedClasses)
     ? (teacher.assignedClasses as string[])
-    : ['5-A', '5-B'];
+    : [];
 
   // Sınıfları alfabetik / doğal sırada (5-A, 5-B, 5-C, 6-A, 6-B... A-Z) sırala
   const teacherClasses: string[] = useMemo(() => {
     return [...rawClasses].sort((a, b) => a.localeCompare(b, 'tr-TR', { numeric: true }));
   }, [rawClasses]);
 
-  const [selectedClass, setSelectedClass] = useState(teacherClasses[0] || '5-A');
+  const [selectedClass, setSelectedClass] = useState(teacherClasses[0] || '');
   const [newStudentName, setNewStudentName] = useState('');
   const [newStudentNumber, setNewStudentNumber] = useState('');
   const [newStudentClass, setNewStudentClass] = useState(selectedClass);
@@ -209,8 +209,14 @@ export function TeacherDashboard() {
 
   // Keep selectedClass synchronized if classes change
   useEffect(() => {
-    if (!teacherClasses.includes(selectedClass)) {
-      setSelectedClass(teacherClasses[0] || '5-A');
+    if (teacherClasses.length > 0) {
+      if (!teacherClasses.includes(selectedClass)) {
+        setSelectedClass(teacherClasses[0]);
+      }
+    } else {
+      if (selectedClass !== '') {
+        setSelectedClass('');
+      }
     }
   }, [teacherClasses, selectedClass]);
 
@@ -839,9 +845,31 @@ export function TeacherDashboard() {
       {/* SECTION 2: CLASS & STUDENT MANAGEMENT */}
       {activeSection === 'students' && (
         <div className="space-y-6 animate-in fade-in duration-300">
-          
-
-
+          {teacherClasses.length === 0 ? (
+            <div className="bg-white rounded-3xl p-10 border border-slate-200 shadow-sm text-center space-y-4 max-w-xl mx-auto my-8 animate-in fade-in">
+              <div className="w-16 h-16 bg-teal-50 border border-teal-100 rounded-2xl flex items-center justify-center text-3xl mx-auto text-teal-600 shadow-inner">
+                🏫
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-base font-black text-slate-900">
+                  Henüz Tanımlı Bir Sınıfınız Bulunmamaktadır
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed max-w-md mx-auto">
+                  Öğrencilerinizi ve ders akışlarını yönetebilmek için okulunuzun mevcut sınıflarından seçebilir veya yeni bir sınıf ekleyebilirsiniz.
+                </p>
+              </div>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddClassModal(true)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black shadow-md hover:shadow-lg transition-all cursor-pointer active:scale-95"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Sınıf Ekle</span>
+                </button>
+              </div>
+            </div>
+          ) : (
             <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
               
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
@@ -1210,10 +1238,10 @@ export function TeacherDashboard() {
                   </tbody>
                 </table>
               </div>
-
             </div>
+          )}
 
-            {/* SINIF EKLE POP-UP MODAL (OKUL ORTAK HAVUZU + YENİ TANIMLAMA) */}
+          {/* SINIF EKLE POP-UP MODAL (OKUL ORTAK HAVUZU + YENİ TANIMLAMA) */}
             {showAddClassModal && typeof document !== 'undefined' && createPortal(
               <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
                 {/* Arka Plan Karartması (Backdrop) */}
