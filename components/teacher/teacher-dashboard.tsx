@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth, splitFullName, generateRandomStudentPassword } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import Link from 'next/link';
@@ -62,7 +63,8 @@ import {
   Lock,
   ChevronDown,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  X
 } from 'lucide-react';
 
 const GRADE_OPTIONS = ['5', '6', '7', '8'];
@@ -1042,95 +1044,115 @@ export function TeacherDashboard() {
 
             </div>
 
-            {/* SINIF EKLE MODAL */}
-            {showAddClassModal && (
-              <div className="p-5 rounded-3xl bg-teal-950 text-white space-y-4 animate-in fade-in border border-teal-800 shadow-xl">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">🏫</span>
-                    <h4 className="text-sm font-black text-teal-300">Yeni Sınıf / Şube Tanımla</h4>
-                  </div>
-                  <button
-                    onClick={() => setShowAddClassModal(false)}
-                    className="text-xs text-slate-400 hover:text-white"
-                  >
-                    ✕ Kapat
-                  </button>
-                </div>
+            {/* SINIF EKLE POP-UP MODAL */}
+            {showAddClassModal && typeof document !== 'undefined' && createPortal(
+              <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+                {/* Arka Plan Karartması (Backdrop) */}
+                <div
+                  className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm transition-opacity"
+                  onClick={() => setShowAddClassModal(false)}
+                />
 
-                <form onSubmit={handleAddClass} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* 1. Menü: Sınıf Seçimi (5, 6, 7, 8) */}
-                    <div>
-                      <label className="block text-[11px] font-bold text-teal-200/80 mb-1.5">
-                        1. Sınıf Seviyesi
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={newClassGrade}
-                          onChange={(e) => setNewClassGrade(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-teal-700 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
-                        >
-                          {GRADE_OPTIONS.map((grade) => (
-                            <option key={grade} value={grade} className="bg-slate-900 text-white">
-                              {grade}. Sınıf
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="w-4 h-4 text-teal-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                {/* Pop-up Kartı */}
+                <div className="relative w-full max-w-md bg-slate-900 text-white rounded-3xl border border-teal-700/80 shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-200">
+                  {/* Başlık Alanı */}
+                  <div className="px-6 py-5 border-b border-teal-800/80 bg-gradient-to-r from-teal-950 via-slate-900 to-teal-950 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-xl shadow-inner">
+                        🏫
+                      </div>
+                      <div>
+                        <h3 className="text-base font-black text-white">Yeni Sınıf / Şube Ekle</h3>
+                        <p className="text-xs text-teal-300/80">Sınıf seviyesi ve şube seçiniz</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddClassModal(false)}
+                      className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                      title="Kapat"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Form Gövdesi */}
+                  <form onSubmit={handleAddClass} className="p-6 space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* 1. Menü: Sınıf Seçimi (5, 6, 7, 8) */}
+                      <div>
+                        <label className="block text-xs font-bold text-teal-200/90 mb-1.5">
+                          1. Sınıf Seviyesi
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={newClassGrade}
+                            onChange={(e) => setNewClassGrade(e.target.value)}
+                            className="w-full p-3 rounded-xl bg-slate-800 border border-teal-700/80 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
+                          >
+                            {GRADE_OPTIONS.map((grade) => (
+                              <option key={grade} value={grade} className="bg-slate-900 text-white">
+                                {grade}. Sınıf
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="w-4 h-4 text-teal-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </div>
+                      </div>
+
+                      {/* 2. Menü: Şube Seçimi (A, B, C ... Z) */}
+                      <div>
+                        <label className="block text-xs font-bold text-teal-200/90 mb-1.5">
+                          2. Şube Seçimi
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={newClassBranch}
+                            onChange={(e) => setNewClassBranch(e.target.value)}
+                            className="w-full p-3 rounded-xl bg-slate-800 border border-teal-700/80 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
+                          >
+                            {BRANCH_OPTIONS.map((branch) => (
+                              <option key={branch} value={branch} className="bg-slate-900 text-white">
+                                {branch} Şubesi
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="w-4 h-4 text-teal-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </div>
                       </div>
                     </div>
 
-                    {/* 2. Menü: Şube Seçimi (A, B, C ... Z) */}
-                    <div>
-                      <label className="block text-[11px] font-bold text-teal-200/80 mb-1.5">
-                        2. Şube Seçimi
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={newClassBranch}
-                          onChange={(e) => setNewClassBranch(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-teal-700 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
-                        >
-                          {BRANCH_OPTIONS.map((branch) => (
-                            <option key={branch} value={branch} className="bg-slate-900 text-white">
-                              {branch} Şubesi
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="w-4 h-4 text-teal-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Alt Kısım: Önizleme ve Butonlar */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 border-t border-teal-800/60">
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="text-slate-400">Eklenecek Sınıf:</span>
-                      <span className="font-black px-2.5 py-1 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/40 text-sm">
-                        {targetNewClassName}
-                      </span>
-                      {isClassAlreadyAdded && (
-                        <span className="text-amber-400 text-[11px] font-bold">
-                          ⚠️ Bu sınıf listenizde zaten mevcut
+                    {/* Önizleme Alanı */}
+                    <div className="p-3.5 rounded-2xl bg-teal-950/60 border border-teal-800/60 flex items-center justify-between">
+                      <span className="text-xs text-slate-300 font-medium">Oluşturulacak Sınıf:</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-black px-3 py-1 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 text-sm">
+                          {targetNewClassName}
                         </span>
-                      )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                    {isClassAlreadyAdded && (
+                      <div className="p-3 rounded-xl bg-amber-950/50 border border-amber-500/50 text-amber-300 text-xs font-bold flex items-center gap-2">
+                        <span>⚠️ Bu sınıf ({targetNewClassName}) listenizde zaten mevcut!</span>
+                      </div>
+                    )}
+
+                    {/* Butonlar */}
+                    <div className="flex items-center justify-end gap-3 pt-3 border-t border-teal-800/60">
                       <button
                         type="button"
                         onClick={() => setShowAddClassModal(false)}
-                        className="flex-1 sm:flex-none py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                        className="py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
                       >
                         Vazgeç
                       </button>
                       <button
                         type="submit"
                         disabled={isClassAlreadyAdded}
-                        className={`flex-1 sm:flex-none py-2.5 px-5 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-1.5 ${
+                        className={`py-2.5 px-6 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 ${
                           isClassAlreadyAdded
-                            ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                            ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
                             : 'bg-teal-500 hover:bg-teal-400 text-slate-950 cursor-pointer shadow-lg shadow-teal-500/20'
                         }`}
                       >
@@ -1138,168 +1160,182 @@ export function TeacherDashboard() {
                         <span>{targetNewClassName} Sınıfını Ekle</span>
                       </button>
                     </div>
-                  </div>
-                </form>
-              </div>
+                  </form>
+                </div>
+              </div>,
+              document.body
             )}
 
-            {/* SINIF SİL MODAL (YÜKSEK GÜVENLİKLİ VE KOD DOĞRULAMALI) */}
-            {showDeleteClassModal && (
-              <div className="p-6 rounded-3xl bg-slate-950 text-white space-y-5 animate-in fade-in border-2 border-rose-600/80 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-600 via-amber-500 to-rose-600 animate-pulse" />
-                
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-10 h-10 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0">
-                      <AlertTriangle className="w-5 h-5 text-rose-400" />
-                    </div>
-                    <div>
-                      <h4 className="text-base font-black text-rose-400">
-                        Sınıfı ve Tüm Verilerini Kalıcı Olarak Sil
-                      </h4>
-                      <p className="text-xs text-slate-400">
-                        Bu işlem geri alınamaz ve sınıfa ait tüm öğrenci kayıtlarını kalıcı olarak siler.
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setShowDeleteClassModal(false)}
-                    className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
-                  >
-                    ✕ Kapat
-                  </button>
-                </div>
+            {/* SINIF SİL POP-UP MODAL (YÜKSEK GÜVENLİKLİ VE KOD DOĞRULAMALI) */}
+            {showDeleteClassModal && typeof document !== 'undefined' && createPortal(
+              <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"
+                  onClick={() => setShowDeleteClassModal(false)}
+                />
 
-                {/* Sınıf Seçimi / Teyidi */}
-                <div className="bg-rose-950/40 border border-rose-800/60 rounded-2xl p-4 space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <span className="text-xs text-slate-300 font-bold">Silinecek Sınıf / Şube:</span>
-                    <select
-                      value={classToDelete}
-                      onChange={(e) => {
-                        const newTarget = e.target.value;
-                        setClassToDelete(newTarget);
-                        setDeleteSecurityCode(generateRandomSecurityCode(newTarget));
-                        setInputDeleteSecurityCode('');
-                        setIsDeleteRiskAccepted(false);
-                      }}
-                      className="p-2 rounded-xl bg-slate-900 border border-rose-700 text-xs font-black text-rose-300 outline-none cursor-pointer"
-                    >
-                      {teacherClasses.map((cls: string) => (
-                        <option key={cls} value={cls}>
-                          {cls} Şubesi
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {(() => {
-                    const studentsInTarget = visibleStudents.filter((s) => s.classSection === classToDelete);
-                    return (
-                      <div className="text-xs text-rose-200/90 leading-relaxed bg-rose-950/70 p-3 rounded-xl border border-rose-900/80">
-                        ⚠️ <strong>{classToDelete}</strong> şubesinde kayıtlı toplam <span className="font-black underline text-white">{studentsInTarget.length} öğrenci</span> bulunmaktadır. Sınıf silindiğinde bu öğrencilerin tüm hesapları, şifreleri, ders içi XP puanları, öz değerlendirme/rubrik karneleri ve akıllı tahta katılım geçmişleri <span className="underline font-bold">kalıcı olarak silinecektir</span>.
+                <div className="relative w-full max-w-lg bg-slate-950 text-white rounded-3xl border-2 border-rose-600/80 shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-200">
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-600 via-amber-500 to-rose-600 animate-pulse" />
+                  
+                  <div className="p-5 sm:p-6 pb-4 border-b border-rose-900/40 flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-10 h-10 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-5 h-5 text-rose-400" />
                       </div>
-                    );
-                  })()}
-                </div>
-
-                <form onSubmit={handleConfirmDeleteClass} className="space-y-4">
-                  {/* ADIM 1: Risk Kabul Onay Kutusu */}
-                  <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-start gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      id="acceptClassDeleteRisk"
-                      checked={isDeleteRiskAccepted}
-                      onChange={(e) => setIsDeleteRiskAccepted(e.target.checked)}
-                      className="mt-0.5 w-4 h-4 rounded border-rose-600 text-rose-600 focus:ring-rose-500 cursor-pointer accent-rose-600"
-                    />
-                    <label htmlFor="acceptClassDeleteRisk" className="text-xs text-slate-300 font-semibold cursor-pointer select-none">
-                      <strong className="text-rose-400 font-bold">{classToDelete}</strong> şubesindeki tüm öğrenci hesaplarının ve geçmiş etkinlik verilerinin geri getirilemeyecek şekilde silineceğini anladım ve kabul ediyorum.
-                    </label>
-                  </div>
-
-                  {/* ADIM 2: Güvenlik Kodu Doğrulaması */}
-                  <div className={`p-4 rounded-2xl border transition-all space-y-3 ${
-                    isDeleteRiskAccepted
-                      ? 'bg-slate-900/90 border-teal-700/60 shadow-md'
-                      : 'bg-slate-900/40 border-slate-800 opacity-60 pointer-events-none'
-                  }`}>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <label className="text-xs font-bold text-slate-300">
-                        Güvenlik Doğrulama Kodu:
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-black text-sm tracking-widest px-3 py-1 rounded-xl bg-amber-400 text-slate-950 shadow-sm select-all">
-                          {deleteSecurityCode}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setDeleteSecurityCode(generateRandomSecurityCode(classToDelete));
-                            setInputDeleteSecurityCode('');
-                          }}
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs transition-colors cursor-pointer"
-                          title="Yeni Kod Üret"
-                        >
-                          <RefreshCw className="w-3.5 h-3.5" />
-                        </button>
+                      <div>
+                        <h4 className="text-base font-black text-rose-400">
+                          Sınıfı ve Tüm Verilerini Kalıcı Olarak Sil
+                        </h4>
+                        <p className="text-xs text-slate-400">
+                          Bu işlem geri alınamaz ve sınıfa ait tüm verileri siler.
+                        </p>
                       </div>
                     </div>
-
-                    <div>
-                      <p className="text-[11px] text-slate-400 mb-1.5">
-                        Silme işlemini onaylamak için yukarıdaki güvenlik kodunu kutucuğa aynen yazınız:
-                      </p>
-                      <input
-                        type="text"
-                        disabled={!isDeleteRiskAccepted}
-                        placeholder={deleteSecurityCode}
-                        value={inputDeleteSecurityCode}
-                        onChange={(e) => setInputDeleteSecurityCode(e.target.value.toUpperCase().trim())}
-                        className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono font-bold tracking-wider text-white outline-none focus:border-rose-500 uppercase"
-                      />
-                    </div>
-
-                    {/* Kod Eşleşme Durumu */}
-                    {inputDeleteSecurityCode && (
-                      <div className="text-[11px] font-bold flex items-center gap-1.5">
-                        {inputDeleteSecurityCode === deleteSecurityCode ? (
-                          <span className="text-emerald-400 flex items-center gap-1">
-                            <Check className="w-3.5 h-3.5" /> Güvenlik kodu doğrulandı, silme işlemi yapılabilir.
-                          </span>
-                        ) : (
-                          <span className="text-rose-400">
-                            ✕ Girilen kod güvenlik koduyla eşleşmiyor.
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Butonlar */}
-                  <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2 border-t border-slate-800">
                     <button
                       type="button"
                       onClick={() => setShowDeleteClassModal(false)}
-                      className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                      className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                      title="Kapat"
                     >
-                      İptal Et
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={!isDeleteRiskAccepted || inputDeleteSecurityCode !== deleteSecurityCode}
-                      className={`w-full sm:w-auto py-2.5 px-6 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 ${
-                        isDeleteRiskAccepted && inputDeleteSecurityCode === deleteSecurityCode
-                          ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 cursor-pointer animate-pulse'
-                          : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
-                      }`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      <span>{classToDelete} Sınıfını ve Tüm Verilerini Kalıcı Olarak Sil</span>
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
-                </form>
-              </div>
+
+                  <div className="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                    {/* Sınıf Seçimi / Teyidi */}
+                    <div className="bg-rose-950/40 border border-rose-800/60 rounded-2xl p-4 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span className="text-xs text-slate-300 font-bold">Silinecek Sınıf / Şube:</span>
+                        <select
+                          value={classToDelete}
+                          onChange={(e) => {
+                            const newTarget = e.target.value;
+                            setClassToDelete(newTarget);
+                            setDeleteSecurityCode(generateRandomSecurityCode(newTarget));
+                            setInputDeleteSecurityCode('');
+                            setIsDeleteRiskAccepted(false);
+                          }}
+                          className="p-2 rounded-xl bg-slate-900 border border-rose-700 text-xs font-black text-rose-300 outline-none cursor-pointer"
+                        >
+                          {teacherClasses.map((cls: string) => (
+                            <option key={cls} value={cls}>
+                              {cls} Şubesi
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {(() => {
+                        const studentsInTarget = visibleStudents.filter((s) => s.classSection === classToDelete);
+                        return (
+                          <div className="text-xs text-rose-200/90 leading-relaxed bg-rose-950/70 p-3 rounded-xl border border-rose-900/80">
+                            ⚠️ <strong>{classToDelete}</strong> şubesinde kayıtlı toplam <span className="font-black underline text-white">{studentsInTarget.length} öğrenci</span> bulunmaktadır. Sınıf silindiğinde bu öğrencilerin tüm hesapları, şifreleri, ders içi XP puanları, öz değerlendirme/rubrik karneleri ve akıllı tahta katılım geçmişleri <span className="underline font-bold">kalıcı olarak silinecektir</span>.
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    <form onSubmit={handleConfirmDeleteClass} className="space-y-4">
+                      {/* ADIM 1: Risk Kabul Onay Kutusu */}
+                      <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          id="acceptClassDeleteRisk"
+                          checked={isDeleteRiskAccepted}
+                          onChange={(e) => setIsDeleteRiskAccepted(e.target.checked)}
+                          className="mt-0.5 w-4 h-4 rounded border-rose-600 text-rose-600 focus:ring-rose-500 cursor-pointer accent-rose-600"
+                        />
+                        <label htmlFor="acceptClassDeleteRisk" className="text-xs text-slate-300 font-semibold cursor-pointer select-none">
+                          <strong className="text-rose-400 font-bold">{classToDelete}</strong> şubesindeki tüm öğrenci hesaplarının ve geçmiş etkinlik verilerinin geri getirilemeyecek şekilde silineceğini anladım ve kabul ediyorum.
+                        </label>
+                      </div>
+
+                      {/* ADIM 2: Güvenlik Kodu Doğrulaması */}
+                      <div className={`p-4 rounded-2xl border transition-all space-y-3 ${
+                        isDeleteRiskAccepted
+                          ? 'bg-slate-900/90 border-teal-700/60 shadow-md'
+                          : 'bg-slate-900/40 border-slate-800 opacity-60 pointer-events-none'
+                      }`}>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <label className="text-xs font-bold text-slate-300">
+                            Güvenlik Doğrulama Kodu:
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-black text-sm tracking-widest px-3 py-1 rounded-xl bg-amber-400 text-slate-950 shadow-sm select-all">
+                              {deleteSecurityCode}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDeleteSecurityCode(generateRandomSecurityCode(classToDelete));
+                                setInputDeleteSecurityCode('');
+                              }}
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs transition-colors cursor-pointer"
+                              title="Yeni Kod Üret"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[11px] text-slate-400 mb-1.5">
+                            Silme işlemini onaylamak için yukarıdaki güvenlik kodunu kutucuğa aynen yazınız:
+                          </p>
+                          <input
+                            type="text"
+                            disabled={!isDeleteRiskAccepted}
+                            placeholder={deleteSecurityCode}
+                            value={inputDeleteSecurityCode}
+                            onChange={(e) => setInputDeleteSecurityCode(e.target.value.toUpperCase().trim())}
+                            className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono font-bold tracking-wider text-white outline-none focus:border-rose-500 uppercase"
+                          />
+                        </div>
+
+                        {/* Kod Eşleşme Durumu */}
+                        {inputDeleteSecurityCode && (
+                          <div className="text-[11px] font-bold flex items-center gap-1.5">
+                            {inputDeleteSecurityCode === deleteSecurityCode ? (
+                              <span className="text-emerald-400 flex items-center gap-1">
+                                <Check className="w-3.5 h-3.5" /> Güvenlik kodu doğrulandı, silme işlemi yapılabilir.
+                              </span>
+                            ) : (
+                              <span className="text-rose-400">
+                                ✕ Girilen kod güvenlik koduyla eşleşmiyor.
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Butonlar */}
+                      <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2 border-t border-slate-800">
+                        <button
+                          type="button"
+                          onClick={() => setShowDeleteClassModal(false)}
+                          className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                        >
+                          İptal Et
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={!isDeleteRiskAccepted || inputDeleteSecurityCode !== deleteSecurityCode}
+                          className={`w-full sm:w-auto py-2.5 px-6 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 ${
+                            isDeleteRiskAccepted && inputDeleteSecurityCode === deleteSecurityCode
+                              ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 cursor-pointer animate-pulse'
+                              : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                          }`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>{classToDelete} Sınıfını ve Tüm Verilerini Kalıcı Olarak Sil</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>,
+              document.body
             )}
 
             {/* ADD STUDENT MODAL */}
