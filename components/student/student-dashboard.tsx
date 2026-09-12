@@ -41,10 +41,20 @@ import {
   Target
 } from 'lucide-react';
 
+const STUDENT_SUBJECTS = [
+  { name: 'Matematik', icon: '📐', desc: 'Sayılar, Geometri & İşlemler' },
+  { name: 'Fen Bilimleri', icon: '🔬', desc: 'Deneyler, Canlılar & Madde' },
+  { name: 'Türkçe', icon: '📚', desc: 'Okuma, Yazma & Dilbilgisi' },
+  { name: 'Sosyal Bilgiler', icon: '🌍', desc: 'Tarih, Kültür & Yaşam' },
+  { name: 'İngilizce', icon: '🌐', desc: 'Vocabulary & Communication' },
+  { name: 'Din Kültürü ve Ahlak Bilgisi', icon: '🕌', desc: 'Ahlak & Değerler' }
+];
+
 export function StudentDashboard() {
   const { currentUser } = useAuth();
   const { studentPoints, studentBadges, playSound } = useApp();
 
+  const [selectedSubject, setSelectedSubject] = useState<string>('Matematik');
   const [activeTab, setActiveTab] = useState<'overview' | 'board_history' | 'peer_eval' | 'groups' | 'leaderboard' | 'files'>('overview');
   const [files, setFiles] = useState<ClassroomFileRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,6 +65,26 @@ export function StudentDashboard() {
 
   const student = currentUser && currentUser.role === 'student' ? currentUser : null;
   const studentClass = student?.classSection || '5-A';
+
+  const studentSubjectXP = (student as any)?.subjectPoints?.[selectedSubject] ?? (selectedSubject === 'Matematik' ? (student?.points || studentPoints || 100) : 0);
+  const studentTotalXP = student?.points || studentPoints || 100;
+
+  const getMascotGreeting = (subj: string) => {
+    switch (subj) {
+      case 'Matematik':
+        return '"Matematik yolculuğunda harika ilerliyorsun! Bugün hangi sırrı çözeceğiz?"';
+      case 'Fen Bilimleri':
+        return '"Fen Bilimleri dünyasındaki deneyler ve doğanın sırları seni bekliyor!"';
+      case 'Türkçe':
+        return '"Türkçe ile kelimelerin büyülü dünyasını keşfetmeye hazır mısın?"';
+      case 'Sosyal Bilgiler':
+        return '"Tarihin ve coğrafyanın izinde yeni maceralara atılalım!"';
+      case 'İngilizce':
+        return '"Let\'s learn and practice English together today!"';
+      default:
+        return `"${subj} dersinde başarı basamaklarını tırmanmaya devam et!"`;
+    }
+  };
 
   useEffect(() => {
     const visible = getVisibleClassroomFilesForStudent(studentClass, student);
@@ -149,7 +179,7 @@ export function StudentDashboard() {
                 </span>
               </div>
               <div className="text-xs text-slate-100 font-semibold leading-tight">
-                "Matematik yolculuğunda harika ilerliyorsun! Bugün hangi sırrı çözeceğiz?"
+                {getMascotGreeting(selectedSubject)}
               </div>
             </div>
           </div>
@@ -161,9 +191,14 @@ export function StudentDashboard() {
                 ⚡
               </div>
               <div>
-                <div className="text-xs font-bold text-amber-300">Toplam Puanın:</div>
+                <div className="text-[11px] font-bold text-amber-300 flex items-center gap-1">
+                  <span>{selectedSubject} Puanın:</span>
+                </div>
                 <div className="text-xl sm:text-2xl font-black text-white">
-                  +{studentPoints || 450} XP
+                  +{studentSubjectXP} XP
+                </div>
+                <div className="text-[10px] text-slate-300 font-medium">
+                  Genel Toplam: +{studentTotalXP} XP
                 </div>
               </div>
             </div>
@@ -177,6 +212,57 @@ export function StudentDashboard() {
             />
           </div>
 
+        </div>
+      </div>
+
+      {/* DERS SEÇİM ÇUBUĞU (SUBJECT SELECTOR) */}
+      <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-200 shadow-sm space-y-2.5">
+        <div className="flex items-center justify-between px-1 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-base">📚</span>
+            <span className="text-xs font-black uppercase tracking-wider text-slate-800">Ders Seçimi:</span>
+            <span className="text-xs text-slate-500 font-medium">Görüntülemek istediğiniz dersi seçin</span>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-xs font-black">
+            Seçili Ders: {selectedSubject}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          {STUDENT_SUBJECTS.map((subj) => {
+            const isSelected = selectedSubject === subj.name;
+            const pts = (student as any)?.subjectPoints?.[subj.name] ?? (subj.name === 'Matematik' ? (student?.points || studentPoints || 100) : 0);
+
+            return (
+              <button
+                key={subj.name}
+                type="button"
+                onClick={() => {
+                  playSound('select');
+                  setSelectedSubject(subj.name);
+                }}
+                className={`p-3 rounded-2xl text-left transition-all cursor-pointer flex flex-col justify-between border-2 ${
+                  isSelected
+                    ? 'bg-gradient-to-br from-teal-500/10 to-indigo-500/10 border-teal-500 shadow-sm ring-2 ring-teal-500/20'
+                    : 'bg-slate-50 hover:bg-white border-slate-200/80 hover:border-slate-300 text-slate-600'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xl">{subj.icon}</span>
+                  <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${
+                    isSelected ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'
+                  }`}>
+                    {pts} XP
+                  </span>
+                </div>
+                <div className={`font-black text-xs leading-tight truncate ${
+                  isSelected ? 'text-teal-950 font-black' : 'text-slate-800'
+                }`}>
+                  {subj.name}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -553,7 +639,7 @@ export function StudentDashboard() {
       {/* TAB 2: BOARD PARTICIPATION HISTORY */}
       {activeTab === 'board_history' && (
         <div className="space-y-6 animate-in fade-in duration-300">
-          <StudentBoardHistoryCard />
+          <StudentBoardHistoryCard activeSubject={selectedSubject} />
         </div>
       )}
 
@@ -574,7 +660,7 @@ export function StudentDashboard() {
       {/* TAB 4: LEADERBOARD */}
       {activeTab === 'leaderboard' && (
         <div className="space-y-6 animate-in fade-in duration-300">
-          <ClassLeaderboard initialClassSection={studentClass} />
+          <ClassLeaderboard initialClassSection={studentClass} activeSubject={selectedSubject} />
         </div>
       )}
 

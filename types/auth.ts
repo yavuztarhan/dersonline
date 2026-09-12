@@ -57,6 +57,7 @@ export interface StudentUser extends BaseUser {
   district: string;
   teacherId?: string;
   points: number;
+  subjectPoints?: Record<string, number>; // Ders bazında kazanılan XP puanları: { 'Matematik': 250, 'Fen Bilimleri': 120 }
   unlockedBadges: string[];
 }
 

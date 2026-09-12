@@ -30,12 +30,14 @@ interface ClassLeaderboardProps {
   initialClassSection?: string;
   showTeacherControls?: boolean;
   availableClasses?: string[];
+  activeSubject?: string;
 }
 
 export function ClassLeaderboard({
   initialClassSection = '5-A',
   showTeacherControls = false,
-  availableClasses
+  availableClasses,
+  activeSubject
 }: ClassLeaderboardProps) {
   const { currentUser, students, getVisibleStudents, awardPointsToStudent } = useAuth();
   const { playSound, addPoints } = useApp();
@@ -43,6 +45,9 @@ export function ClassLeaderboard({
   const isTeacher = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
   const isStudent = currentUser?.role === 'student';
   const currentStudentId = isStudent ? currentUser?.id : null;
+
+  // Active subject / branch: priority is passed activeSubject, then teacher's branch, then 'Matematik'
+  const effectiveSubject = activeSubject || (isTeacher ? ((currentUser as any)?.branch || 'Matematik') : 'Matematik');
 
   // Teacher's registered classes strictly
   const teacherClasses: string[] = availableClasses && availableClasses.length > 0
@@ -93,7 +98,20 @@ export function ClassLeaderboard({
     ? getVisibleStudents(currentUser)
     : students;
 
-  // Filter & Sort Students by Points (XP)
+  // Helper to extract student points for the active subject
+  const getStudentPoints = (s: StudentUser | any): number => {
+    if (!s) return 0;
+    if (s.subjectPoints && s.subjectPoints[effectiveSubject] !== undefined) {
+      return s.subjectPoints[effectiveSubject];
+    }
+    // Backward compatibility: default seed points count toward Matematik
+    if (effectiveSubject === 'Matematik') {
+      return s.points || 0;
+    }
+    return 0;
+  };
+
+  // Filter & Sort Students by Subject Points (XP)
   const filteredStudents = baseStudents
     .filter((s) => {
       const matchesClass = effectiveClass === 'Tümü'
@@ -105,22 +123,22 @@ export function ClassLeaderboard({
         s.studentNumber.includes(searchQuery);
       return matchesClass && matchesSearch;
     })
-    .sort((a, b) => (b.points || 0) - (a.points || 0));
+    .sort((a, b) => getStudentPoints(b) - getStudentPoints(a));
 
   const top3 = filteredStudents.slice(0, 3);
 
   // Student Rank Title Helper
   const getRankTitle = (points: number) => {
     if (points >= 600) return { title: 'Maarif Dehası', level: 'Seviye 6', color: 'from-amber-500 to-rose-600', icon: '👑' };
-    if (points >= 450) return { title: 'Geometri Mimarı', level: 'Seviye 5', color: 'from-indigo-500 to-purple-600', icon: '💎' };
-    if (points >= 300) return { title: 'Açı Ustası', level: 'Seviye 4', color: 'from-teal-500 to-emerald-600', icon: '⭐' };
-    if (points >= 150) return { title: 'Matematik Kâşifi', level: 'Seviye 3', color: 'from-blue-500 to-cyan-600', icon: '🚀' };
+    if (points >= 450) return { title: 'Bilgi Mimarı', level: 'Seviye 5', color: 'from-indigo-500 to-purple-600', icon: '💎' };
+    if (points >= 300) return { title: 'Ders Ustası', level: 'Seviye 4', color: 'from-teal-500 to-emerald-600', icon: '⭐' };
+    if (points >= 150) return { title: `${effectiveSubject} Kâşifi`, level: 'Seviye 3', color: 'from-blue-500 to-cyan-600', icon: '🚀' };
     return { title: 'Genç Çırak', level: 'Seviye 1', color: 'from-slate-500 to-slate-700', icon: '🌱' };
   };
 
   const handleTeacherAwardXP = (studentId: string, amount: number = rewardAmount) => {
     playSound('bell');
-    awardPointsToStudent(studentId, amount);
+    awardPointsToStudent(studentId, amount, undefined, effectiveSubject);
   };
 
   return (
@@ -134,7 +152,7 @@ export function ClassLeaderboard({
             <span>Sınıf İçi Başarı Sıralaması & Lider Tablosu</span>
           </div>
           <h3 className="text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-2">
-            <span>Matematik Liderleri</span>
+            <span>{effectiveSubject} Liderleri</span>
             <span className="text-xs px-2.5 py-0.5 rounded-lg bg-teal-50 text-teal-700 font-extrabold border border-teal-200">
               {effectiveClass === 'Tümü' ? 'Tüm Sınıflarım' : `${effectiveClass} Şubesi`}
             </span>
@@ -224,10 +242,10 @@ export function ClassLeaderboard({
                 <div className="text-xs text-slate-500 font-bold">{top3[1].classSection} • #{top3[1].studentNumber}</div>
                 <div className="mt-3 px-3 py-1 rounded-xl bg-slate-200/80 text-slate-800 font-black text-sm flex items-center gap-1">
                   <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                  <span>{top3[1].points} XP</span>
+                  <span>{getStudentPoints(top3[1])} XP</span>
                 </div>
                 <div className="text-[10px] text-slate-400 font-bold mt-1">
-                  {getRankTitle(top3[1].points).title}
+                  {getRankTitle(getStudentPoints(top3[1])).title}
                 </div>
                 {isTeacher && (
                   <div className="mt-2 text-[10px] font-extrabold text-teal-700 opacity-80 group-hover:opacity-100 flex items-center gap-1 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
@@ -267,10 +285,10 @@ export function ClassLeaderboard({
                 <div className="text-xs text-amber-900 font-bold">{top3[0].classSection} • #{top3[0].studentNumber}</div>
                 <div className="mt-3 px-4 py-1.5 rounded-2xl bg-amber-400 text-slate-950 font-black text-base shadow-sm flex items-center gap-1.5">
                   <Zap className="w-4 h-4 fill-slate-950" />
-                  <span>{top3[0].points} XP</span>
+                  <span>{getStudentPoints(top3[0])} XP</span>
                 </div>
                 <div className="text-xs text-amber-700 font-extrabold mt-1">
-                  🏆 {getRankTitle(top3[0].points).title}
+                  🏆 {getRankTitle(getStudentPoints(top3[0])).title}
                 </div>
                 {isTeacher && (
                   <div className="mt-2 text-[10px] font-black text-slate-950 flex items-center gap-1 bg-amber-300/80 px-3 py-1 rounded-lg border border-amber-400 shadow-xs">
@@ -309,10 +327,10 @@ export function ClassLeaderboard({
                 <div className="text-xs text-slate-500 font-bold">{top3[2].classSection} • #{top3[2].studentNumber}</div>
                 <div className="mt-3 px-3 py-1 rounded-xl bg-amber-100 text-amber-900 font-black text-sm flex items-center gap-1">
                   <Zap className="w-3.5 h-3.5 text-amber-600 fill-amber-600" />
-                  <span>{top3[2].points} XP</span>
+                  <span>{getStudentPoints(top3[2])} XP</span>
                 </div>
                 <div className="text-[10px] text-slate-400 font-bold mt-1">
-                  {getRankTitle(top3[2].points).title}
+                  {getRankTitle(getStudentPoints(top3[2])).title}
                 </div>
                 {isTeacher && (
                   <div className="mt-2 text-[10px] font-extrabold text-teal-700 opacity-80 group-hover:opacity-100 flex items-center gap-1 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
@@ -363,7 +381,8 @@ export function ClassLeaderboard({
           ) : (
             filteredStudents.map((student, idx) => {
             const rank = idx + 1;
-            const rankInfo = getRankTitle(student.points);
+            const studentPts = getStudentPoints(student);
+            const rankInfo = getRankTitle(studentPts);
             const isMe = currentStudentId === student.id;
 
             return (
@@ -442,9 +461,9 @@ export function ClassLeaderboard({
                   <div className="text-right">
                     <div className="text-base sm:text-lg font-black text-amber-600 flex items-center justify-end gap-1">
                       <Zap className="w-4 h-4 fill-amber-500 text-amber-500" />
-                      <span>{student.points} XP</span>
+                      <span>{studentPts} XP</span>
                     </div>
-                    <div className="text-[10px] font-bold text-slate-400">Toplam Başarı Puanı</div>
+                    <div className="text-[10px] font-bold text-slate-400">{effectiveSubject} Puanı</div>
                   </div>
 
                   {/* Teacher Detail Badge Button */}

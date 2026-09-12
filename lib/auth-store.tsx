@@ -54,6 +54,8 @@ interface AuthContextType {
   resendVerificationCode: (email: string) => string | null;
   updateTeacherProfile: (teacherId: string, updates: Partial<TeacherUser>) => void;
   addClassToTeacher: (teacherId: string, className: string) => void;
+  addClassesToTeacher: (teacherId: string, classNames: string[]) => void;
+  getSchoolClasses: (schoolName?: string) => string[];
   deleteClassFromTeacher: (teacherId: string, className: string) => { deletedStudentCount: number };
   getClassCodeForClass: (className: string, teacherId?: string) => string;
 
@@ -71,11 +73,11 @@ interface AuthContextType {
   changeUserRole: (userId: string, newRole: UserRole) => boolean;
   
   // Student Operations & Visibility
-  addStudent: (student: StudentUser) => void;
+  addStudent: (student: StudentUser) => { success: boolean; error?: string; student?: StudentUser };
   addStudentsBulk: (students: StudentUser[]) => { addedCount: number; updatedCount: number };
   updateStudent: (student: StudentUser) => void;
   deleteStudent: (studentId: string) => void;
-  awardPointsToStudent: (studentId: string, pts: number) => void;
+  awardPointsToStudent: (studentId: string, pts: number, reason?: string, subject?: string) => void;
   getVisibleStudents: (user?: AuthUser | null) => StudentUser[];
 }
 
@@ -1547,25 +1549,81 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return newCode;
   };
 
-  const addClassToTeacher = (teacherId: string, className: string) => {
-    const trimmed = className.trim().toUpperCase();
-    if (!trimmed) return;
+  /**
+   * Bir öğretmenin okulunda kayıtlı olan tüm sınıfların (okul ortak sınıf havuzu) listesini döner.
+   */
+  const getSchoolClasses = (schoolName?: string): string[] => {
+    const teacherUser = teachers.find((t) => t.id === currentUser?.id);
+    const targetSchool = (schoolName || teacherUser?.school || (currentUser as any)?.school || '').trim().toLowerCase();
+    if (!targetSchool) return ['5-A', '5-B'];
 
-    // Ensure classroom has a unique 6-char code in classrooms store
+    const classSet = new Set<string>();
+
+    // 1. Okula ait sınıflar
+    classrooms.forEach((c) => {
+      if (c.school && c.school.trim().toLowerCase() === targetSchool && c.name) {
+        classSet.add(c.name.trim().toUpperCase());
+      }
+    });
+
+    // 2. Okuldaki öğretmenlerin şubeleri
+    teachers.forEach((t) => {
+      if (t.school && t.school.trim().toLowerCase() === targetSchool && t.assignedClasses) {
+        t.assignedClasses.forEach((cls) => {
+          if (cls && cls.trim()) {
+            classSet.add(cls.trim().toUpperCase());
+          }
+        });
+      }
+    });
+
+    // 3. Okuldaki öğrencilerin şubeleri
+    students.forEach((s) => {
+      if (s.school && s.school.trim().toLowerCase() === targetSchool && s.classSection) {
+        classSet.add(s.classSection.trim().toUpperCase());
+      }
+    });
+
+    const list = Array.from(classSet);
+    return list.length > 0
+      ? list.sort((a, b) => a.localeCompare(b, 'tr-TR', { numeric: true }))
+      : ['5-A', '5-B'];
+  };
+
+  const addClassToTeacher = (teacherId: string, className: string) => {
+    addClassesToTeacher(teacherId, [className]);
+  };
+
+  const addClassesToTeacher = (teacherId: string, classNames: string[]) => {
+    if (!classNames || classNames.length === 0) return;
+    const cleanList = classNames
+      .map((c) => c.trim().toUpperCase())
+      .filter(Boolean);
+    if (cleanList.length === 0) return;
+
+    const teacherObj = teachers.find((t) => t.id === teacherId);
+    const teacherSchool = teacherObj?.school;
+
+    // Sınıf kodları havuzunu garanti et (Aynı okulda aynı sınıf tek bir koda sahip olur)
     setClassrooms((prev) => {
-      const exists = prev.some(
-        (c) => c.name.toUpperCase() === trimmed && (!teacherId || c.teacherId === teacherId)
-      );
-      if (exists) return prev;
-      const newCls: ClassroomInfo = {
-        id: `cls-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        name: trimmed,
-        code: generateUniqueClassCode(prev),
-        teacherId,
-        gradeLevel: parseInt(trimmed.charAt(0)) || 5,
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-      return [...prev, newCls];
+      const next = [...prev];
+      for (const name of cleanList) {
+        const exists = next.some(
+          (c) => c.name.toUpperCase() === name && (!teacherSchool || !c.school || c.school.trim().toLowerCase() === teacherSchool.trim().toLowerCase())
+        );
+        if (!exists) {
+          next.push({
+            id: `cls-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            name,
+            code: generateUniqueClassCode(next),
+            teacherId,
+            school: teacherSchool,
+            gradeLevel: parseInt(name.charAt(0)) || 5,
+            createdAt: new Date().toISOString().split('T')[0]
+          });
+        }
+      }
+      return next;
     });
 
     let targetEmail = '';
@@ -1574,17 +1632,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const updated = teachers.map((t) => {
       if (t.id === teacherId) {
         targetEmail = t.email;
-        const classes = t.assignedClasses || [];
-        if (!classes.includes(trimmed)) {
-          updatedClasses = [...classes, trimmed].sort((a, b) =>
-            a.localeCompare(b, 'tr-TR', { numeric: true })
-          );
-          return {
-            ...t,
-            assignedClasses: updatedClasses
-          };
-        }
-        updatedClasses = classes;
+        const current = t.assignedClasses || [];
+        const merged = Array.from(new Set([...current, ...cleanList])).sort((a, b) =>
+          a.localeCompare(b, 'tr-TR', { numeric: true })
+        );
+        updatedClasses = merged;
+        return {
+          ...t,
+          assignedClasses: updatedClasses
+        };
       }
       return t;
     });
@@ -1606,9 +1662,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: syncEmail,
-          assignedClasses: updatedClasses.length > 0 ? updatedClasses : [trimmed],
+          assignedClasses: updatedClasses.length > 0 ? updatedClasses : cleanList,
         }),
-      }).catch((err) => console.warn('[addClassToTeacher] DB sync note:', err));
+      }).catch((err) => console.warn('[addClassesToTeacher] DB sync note:', err));
     }
   };
 
@@ -1758,10 +1814,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { deletedStudentCount: studentsToDelete.length };
   };
 
-  const addStudent = (student: StudentUser) => {
+  const addStudent = (student: StudentUser): { success: boolean; error?: string; student?: StudentUser } => {
     const fName = student.firstName || splitFullName(student.name || '').firstName || 'Öğrenci';
     const lName = student.lastName || splitFullName(student.name || '').lastName || '';
     const fullName = formatFullName(fName, lName, student.name || 'Öğrenci');
+
+    const targetSchool = (student.school || (currentUser as any)?.school || '').trim().toLowerCase();
+    const targetSection = (student.classSection || '').trim().toUpperCase();
+    const targetNumber = (student.studentNumber || '').trim();
+
+    // 1. Okul İçi Mükerrer Numara Denetimi:
+    // Bir okulda aynı şube ve aynı okul numarasıyla birden fazla öğrenci olamaz!
+    if (targetSchool && targetSection && targetNumber) {
+      const isDuplicate = students.some(
+        (s) =>
+          s.id !== student.id &&
+          (s.school || '').trim().toLowerCase() === targetSchool &&
+          (s.classSection || '').trim().toUpperCase() === targetSection &&
+          (s.studentNumber || '').trim() === targetNumber
+      );
+
+      if (isDuplicate) {
+        return {
+          success: false,
+          error: `Bu okulda [${targetSection}] şubesinde #${targetNumber} numaralı bir öğrenci zaten kayıtlıdır. Aynı şubeye mükerrer numara eklenemez.`
+        };
+      }
+    }
 
     // Auto-resolve or generate classCode
     let code = student.classCode;
@@ -1821,6 +1900,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
       }).catch((err) => console.warn('[addStudent] DB sync note:', err));
     } catch (e) {}
+
+    return { success: true, student: normalized };
   };
 
   const addStudentsBulk = (newStudentsList: StudentUser[]): { addedCount: number; updatedCount: number } => {
@@ -1929,15 +2010,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStudents((prev) => prev.filter((s) => s.id !== studentId));
   };
 
-  const awardPointsToStudent = (studentId: string, pts: number) => {
+  const awardPointsToStudent = (studentId: string, pts: number, reason?: string, subject?: string) => {
+    const activeSubject = subject || 'Matematik';
+
     setStudents((prev) =>
-      prev.map((s) => (s.id === studentId ? { ...s, points: Math.max(0, (s.points || 0) + pts) } : s))
+      prev.map((s) => {
+        if (s.id !== studentId) return s;
+        const currentSubjectPoints = s.subjectPoints || {};
+        const newSubjectPts = Math.max(0, (currentSubjectPoints[activeSubject] || 0) + pts);
+        const updatedSubjectPoints = {
+          ...currentSubjectPoints,
+          [activeSubject]: newSubjectPts
+        };
+        const newTotalPoints = Math.max(0, (s.points || 0) + pts);
+
+        return {
+          ...s,
+          points: newTotalPoints,
+          subjectPoints: updatedSubjectPoints
+        };
+      })
     );
 
     if (currentUser && currentUser.id === studentId && currentUser.role === 'student') {
-      const updatedUser = {
-        ...currentUser,
-        points: Math.max(0, ((currentUser as StudentUser).points || 0) + pts)
+      const studentUser = currentUser as StudentUser;
+      const currentSubjectPoints = studentUser.subjectPoints || {};
+      const newSubjectPts = Math.max(0, (currentSubjectPoints[activeSubject] || 0) + pts);
+      const updatedUser: StudentUser = {
+        ...studentUser,
+        points: Math.max(0, (studentUser.points || 0) + pts),
+        subjectPoints: {
+          ...currentSubjectPoints,
+          [activeSubject]: newSubjectPts
+        }
       };
       setCurrentUser(updatedUser);
       try {
@@ -2155,6 +2260,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         resendVerificationCode,
         updateTeacherProfile,
         addClassToTeacher,
+        addClassesToTeacher,
+        getSchoolClasses,
         deleteClassFromTeacher,
         getClassCodeForClass,
         registerStudent,

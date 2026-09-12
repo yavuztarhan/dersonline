@@ -12,10 +12,34 @@ export interface BoardParticipationRecord {
   activityType: 'game' | 'test' | 'rubric' | 'journal';
   activityTitle: string;
   outcomeCode?: string;
+  subject?: string; // 'Matematik', 'Fen Bilimleri' vb.
   score?: number;
   maxScore?: number;
   xpEarned: number;
   timestamp: string; // ISO string
+}
+
+export function getSubjectFromOutcomeOrRecord(record: {
+  subject?: string;
+  outcomeCode?: string;
+  activityTitle?: string;
+}): string {
+  if (record.subject && record.subject.trim()) {
+    return record.subject.trim();
+  }
+  const code = (record.outcomeCode || '').toUpperCase();
+  if (code.startsWith('MAT') || code.startsWith('M.')) return 'Matematik';
+  if (code.startsWith('FEN') || code.startsWith('F.')) return 'Fen Bilimleri';
+  if (code.startsWith('TÜR') || code.startsWith('TUR') || code.startsWith('TR.')) return 'Türkçe';
+  if (code.startsWith('SOS') || code.startsWith('SB.')) return 'Sosyal Bilgiler';
+  if (code.startsWith('İNG') || code.startsWith('ING') || code.startsWith('ENG')) return 'İngilizce';
+  if (code.startsWith('DİN') || code.startsWith('DKAB') || code.startsWith('D.')) return 'Din Kültürü ve Ahlak Bilgisi';
+
+  const title = (record.activityTitle || '').toLowerCase();
+  if (title.includes('fen') || title.includes('deney') || title.includes('kuvvet')) return 'Fen Bilimleri';
+  if (title.includes('türkçe') || title.includes('okuma') || title.includes('yazma')) return 'Türkçe';
+
+  return 'Matematik'; // default
 }
 
 const STORAGE_KEY = 'maarif_board_participations_v1';

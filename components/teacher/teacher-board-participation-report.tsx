@@ -41,12 +41,18 @@ import {
   LineChart,
   Eye
 } from 'lucide-react';
+import { getSubjectFromOutcomeOrRecord } from '@/lib/board-participation-store';
 
-export function TeacherBoardParticipationReport() {
+interface TeacherBoardParticipationReportProps {
+  teacherBranch?: string;
+}
+
+export function TeacherBoardParticipationReport({ teacherBranch }: TeacherBoardParticipationReportProps = {}) {
   const { currentUser, students, getVisibleStudents } = useAuth();
   const { playSound } = useApp();
 
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
+  const activeBranch = teacherBranch || teacher?.branch || 'Matematik';
   const teacherClasses: string[] = teacher?.assignedClasses || ['5-A', '5-B'];
 
   const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '5-A');
@@ -81,12 +87,17 @@ export function TeacherBoardParticipationReport() {
   const visibleStudentIds = useMemo(() => new Set(visibleStudents.map((s) => s.id)), [visibleStudents]);
   const visibleStudentNumbers = useMemo(() => new Set(visibleStudents.map((s) => s.studentNumber)), [visibleStudents]);
 
-  // Filter boardRecords so only records of visible students are considered
+  // Filter boardRecords so only records of visible students and matching the teacher's branch are considered
   const teacherBoardRecords = useMemo(() => {
-    return boardRecords.filter(
-      (r) => visibleStudentIds.has(r.studentId) || visibleStudentNumbers.has(r.studentNumber)
-    );
-  }, [boardRecords, visibleStudentIds, visibleStudentNumbers]);
+    return boardRecords.filter((r) => {
+      const isVisible = visibleStudentIds.has(r.studentId) || visibleStudentNumbers.has(r.studentNumber);
+      if (!isVisible) return false;
+      if (activeBranch) {
+        return getSubjectFromOutcomeOrRecord(r) === activeBranch;
+      }
+      return true;
+    });
+  }, [boardRecords, visibleStudentIds, visibleStudentNumbers, activeBranch]);
 
   // Filter students for selected class
   const classStudents = useMemo(() => {

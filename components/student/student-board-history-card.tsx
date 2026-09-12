@@ -5,7 +5,8 @@ import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import {
   getStoredBoardParticipations,
-  BoardParticipationRecord
+  BoardParticipationRecord,
+  getSubjectFromOutcomeOrRecord
 } from '@/lib/board-participation-store';
 import { downloadStudentBoardReportPDF } from '@/lib/board-pdf-generator';
 import { getNormalizedPercent } from '@/components/teacher/teacher-student-board-history-modal';
@@ -33,7 +34,11 @@ import {
   Star
 } from 'lucide-react';
 
-export function StudentBoardHistoryCard() {
+interface StudentBoardHistoryCardProps {
+  activeSubject?: string;
+}
+
+export function StudentBoardHistoryCard({ activeSubject }: StudentBoardHistoryCardProps = {}) {
   const { currentUser } = useAuth();
   const { playSound } = useApp();
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
@@ -55,14 +60,21 @@ export function StudentBoardHistoryCard() {
     return () => window.removeEventListener('maarif_board_participation_added', handleUpdate);
   }, []);
 
-  // Filter records strictly for the current student
+  // Filter records strictly for the current student (and active subject if specified)
   const studentRecords = useMemo(() => {
     return allRecords.filter(
-      (r) =>
-        (studentNumber && r.studentNumber === studentNumber) ||
-        (studentId && r.studentId === studentId)
+      (r) => {
+        const matchesStudent =
+          (studentNumber && r.studentNumber === studentNumber) ||
+          (studentId && r.studentId === studentId);
+        if (!matchesStudent) return false;
+        if (activeSubject) {
+          return getSubjectFromOutcomeOrRecord(r) === activeSubject;
+        }
+        return true;
+      }
     );
-  }, [allRecords, studentNumber, studentId]);
+  }, [allRecords, studentNumber, studentId, activeSubject]);
 
   // Chronological ascending for trend & chart
   const chronologicalRecords = useMemo(() => {

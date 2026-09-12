@@ -78,10 +78,13 @@ export function TeacherDashboard() {
   const {
     currentUser,
     students,
+    teachers,
     getVisibleStudents,
     addStudent,
     deleteStudent,
     addClassToTeacher,
+    addClassesToTeacher,
+    getSchoolClasses,
     deleteClassFromTeacher,
     awardPointsToStudent,
     classrooms,
@@ -143,10 +146,12 @@ export function TeacherDashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showExcelImportModal, setShowExcelImportModal] = useState(false);
 
-  // Sınıf Ekleme Modalı State (2 Dropdown: Seviye ve Şube)
+  // Sınıf Ekleme Modalı State (Okul Havuzu ve Yeni Sınıf Açma)
   const [showAddClassModal, setShowAddClassModal] = useState(false);
+  const [selectedPoolClasses, setSelectedPoolClasses] = useState<string[]>([]);
   const [newClassGrade, setNewClassGrade] = useState('5');
   const [newClassBranch, setNewClassBranch] = useState('A');
+  const [addStudentError, setAddStudentError] = useState<string | null>(null);
 
   // Sınıf Silme Modalı State (Yüksek Güvenlikli)
   const [showDeleteClassModal, setShowDeleteClassModal] = useState(false);
@@ -154,6 +159,11 @@ export function TeacherDashboard() {
   const [isDeleteRiskAccepted, setIsDeleteRiskAccepted] = useState(false);
   const [deleteSecurityCode, setDeleteSecurityCode] = useState('');
   const [inputDeleteSecurityCode, setInputDeleteSecurityCode] = useState('');
+
+  // Okulun tüm kayıtlı sınıfları (Ortak Havuz)
+  const schoolPoolClasses: string[] = useMemo(() => {
+    return getSchoolClasses ? getSchoolClasses(teacher?.school) : [];
+  }, [getSchoolClasses, teacher?.school, classrooms, teachers, students]);
 
   // Keep selectedClass synchronized if classes change
   useEffect(() => {
@@ -179,6 +189,7 @@ export function TeacherDashboard() {
 
   const handleAddStudent = (e: React.FormEvent) => {
     e.preventDefault();
+    setAddStudentError(null);
     if (!newStudentName.trim() || !newStudentNumber.trim()) return;
 
     const targetClass = newStudentClass || selectedClass;
@@ -186,6 +197,7 @@ export function TeacherDashboard() {
     const avatar = newStudentGender === 'Kız' ? '👩‍🎓' : newStudentGender === 'Erkek' ? '👨‍🎓' : '🎓';
     const classCode = getClassCodeForClass(targetClass, teacher?.id);
     const generatedPassword = generateRandomStudentPassword(6);
+    const activeBranch = teacher?.branch || 'Matematik';
 
     const newStudent = {
       id: `stu-${Date.now()}`,
@@ -205,11 +217,18 @@ export function TeacherDashboard() {
       school: teacher?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
       teacherId: teacher?.id,
       points: 100,
+      subjectPoints: { [activeBranch]: 100 },
       unlockedBadges: ['first-step'],
       createdAt: new Date().toISOString().split('T')[0]
     };
 
-    addStudent(newStudent);
+    const res = addStudent(newStudent);
+    if (res && !res.success) {
+      playSound('clear');
+      setAddStudentError(res.error || 'Bu öğrenci eklenemedi!');
+      return;
+    }
+
     playSound('success');
     setLastAddedStudent({
       name: newStudentName.trim(),
@@ -220,12 +239,14 @@ export function TeacherDashboard() {
     setNewStudentName('');
     setNewStudentNumber('');
     setNewStudentGender('');
+    setAddStudentError(null);
     setShowAddModal(false);
     setSelectedClass(targetClass);
   };
 
   const targetNewClassName = `${newClassGrade}-${newClassBranch}`;
   const isClassAlreadyAdded = teacherClasses.includes(targetNewClassName);
+  const isClassInSchoolPool = schoolPoolClasses.includes(targetNewClassName);
 
   const handleAddClass = (e: React.FormEvent) => {
     e.preventDefault();
@@ -238,6 +259,21 @@ export function TeacherDashboard() {
     playSound('click');
     setSelectedClass(target);
     setShowAddClassModal(false);
+  };
+
+  const handleAddPoolClasses = () => {
+    if (!teacher?.id || selectedPoolClasses.length === 0) return;
+    addClassesToTeacher(teacher.id, selectedPoolClasses);
+    playSound('success');
+    setSelectedClass(selectedPoolClasses[0]);
+    setSelectedPoolClasses([]);
+    setShowAddClassModal(false);
+  };
+
+  const handleTogglePoolClass = (className: string) => {
+    setSelectedPoolClasses((prev) =>
+      prev.includes(className) ? prev.filter((c) => c !== className) : [...prev, className]
+    );
   };
 
   const generateRandomSecurityCode = (className: string) => {
@@ -679,7 +715,7 @@ export function TeacherDashboard() {
 
       {/* SECTION: SMART BOARD PARTICIPATION & NUMPAD ANALYTICS */}
       {activeSection === 'board' && (
-        <TeacherBoardParticipationReport />
+        <TeacherBoardParticipationReport teacherBranch={teacher?.branch} />
       )}
 
       {/* SECTION: CLASS LEADERBOARD & XP RANKINGS */}
@@ -689,6 +725,7 @@ export function TeacherDashboard() {
             initialClassSection={selectedClass}
             showTeacherControls={true}
             availableClasses={teacherClasses}
+            activeSubject={teacher?.branch || 'Matematik'}
           />
         </div>
       )}
@@ -1060,7 +1097,7 @@ export function TeacherDashboard() {
 
             </div>
 
-            {/* SINIF EKLE POP-UP MODAL */}
+            {/* SINIF EKLE POP-UP MODAL (OKUL ORTAK HAVUZU + YENİ TANIMLAMA) */}
             {showAddClassModal && typeof document !== 'undefined' && createPortal(
               <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
                 {/* Arka Plan Karartması (Backdrop) */}
@@ -1070,16 +1107,16 @@ export function TeacherDashboard() {
                 />
 
                 {/* Pop-up Kartı */}
-                <div className="relative w-full max-w-md bg-slate-900 text-white rounded-3xl border border-teal-700/80 shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-200">
+                <div className="relative w-full max-w-lg bg-slate-900 text-white rounded-3xl border border-teal-700/80 shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
                   {/* Başlık Alanı */}
-                  <div className="px-6 py-5 border-b border-teal-800/80 bg-gradient-to-r from-teal-950 via-slate-900 to-teal-950 flex items-center justify-between">
+                  <div className="px-6 py-5 border-b border-teal-800/80 bg-gradient-to-r from-teal-950 via-slate-900 to-teal-950 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-2xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-xl shadow-inner">
                         🏫
                       </div>
                       <div>
-                        <h3 className="text-base font-black text-white">Yeni Sınıf / Şube Ekle</h3>
-                        <p className="text-xs text-teal-300/80">Sınıf seviyesi ve şube seçiniz</p>
+                        <h3 className="text-base font-black text-white">Sınıf / Şube Ekle</h3>
+                        <p className="text-xs text-teal-300/80">{teacher?.school || 'Okulunuz'} • Sınıf Yönetimi</p>
                       </div>
                     </div>
                     <button
@@ -1092,91 +1129,197 @@ export function TeacherDashboard() {
                     </button>
                   </div>
 
-                  {/* Form Gövdesi */}
-                  <form onSubmit={handleAddClass} className="p-6 space-y-5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* 1. Menü: Sınıf Seçimi (5, 6, 7, 8) */}
-                      <div>
-                        <label className="block text-xs font-bold text-teal-200/90 mb-1.5">
-                          1. Sınıf Seviyesi
-                        </label>
-                        <div className="relative">
-                          <select
-                            value={newClassGrade}
-                            onChange={(e) => setNewClassGrade(e.target.value)}
-                            className="w-full p-3 rounded-xl bg-slate-800 border border-teal-700/80 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
-                          >
-                            {GRADE_OPTIONS.map((grade) => (
-                              <option key={grade} value={grade} className="bg-slate-900 text-white">
-                                {grade}. Sınıf
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="w-4 h-4 text-teal-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <div className="p-6 space-y-6 overflow-y-auto">
+                    {/* BÖLÜM 1: OKULUNUZDA KAYITLI SINIFLAR (ORTAK HAVUZ) */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-xs font-black uppercase tracking-wider text-teal-300 flex items-center gap-1.5">
+                            <Users className="w-3.5 h-3.5 text-teal-400" />
+                            <span>1. Okulunuzda Kayıtlı Sınıflar (Ortak Havuz)</span>
+                          </h4>
+                          <p className="text-[11px] text-slate-400 mt-0.5">
+                            Okulunuzdaki öğretmenlerin açtığı sınıfları işaretleyerek listenize ekleyin:
+                          </p>
                         </div>
+                        {selectedPoolClasses.length > 0 && (
+                          <span className="px-2 py-0.5 rounded-full bg-teal-500/20 border border-teal-400 text-teal-300 font-black text-[11px]">
+                            {selectedPoolClasses.length} Seçildi
+                          </span>
+                        )}
                       </div>
 
-                      {/* 2. Menü: Şube Seçimi (A, B, C ... Z) */}
-                      <div>
-                        <label className="block text-xs font-bold text-teal-200/90 mb-1.5">
-                          2. Şube Seçimi
-                        </label>
-                        <div className="relative">
-                          <select
-                            value={newClassBranch}
-                            onChange={(e) => setNewClassBranch(e.target.value)}
-                            className="w-full p-3 rounded-xl bg-slate-800 border border-teal-700/80 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
-                          >
-                            {BRANCH_OPTIONS.map((branch) => (
-                              <option key={branch} value={branch} className="bg-slate-900 text-white">
-                                {branch} Şubesi
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="w-4 h-4 text-teal-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      {schoolPoolClasses.length > 0 ? (
+                        <div className="space-y-2.5">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-44 overflow-y-auto p-1 bg-slate-950/40 rounded-2xl border border-slate-800">
+                            {schoolPoolClasses.map((cName) => {
+                              const isAlreadyInMyList = teacherClasses.includes(cName);
+                              const isSelected = selectedPoolClasses.includes(cName);
+
+                              if (isAlreadyInMyList) {
+                                return (
+                                  <div
+                                    key={cName}
+                                    className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-between text-xs text-slate-400 select-none"
+                                  >
+                                    <span className="font-black text-slate-300">{cName}</span>
+                                    <span className="text-[10px] bg-teal-950 text-teal-400 border border-teal-800/80 px-2 py-0.5 rounded-md font-bold">
+                                      ✓ Ekli
+                                    </span>
+                                  </div>
+                                );
+                              }
+
+                              return (
+                                <button
+                                  key={cName}
+                                  type="button"
+                                  onClick={() => handleTogglePoolClass(cName)}
+                                  className={`p-2.5 rounded-xl flex items-center justify-between text-xs font-bold transition-all cursor-pointer ${
+                                    isSelected
+                                      ? 'bg-teal-500/20 border-2 border-teal-400 text-white shadow-md'
+                                      : 'bg-slate-800 border border-slate-700 hover:border-teal-500/60 text-slate-200'
+                                  }`}
+                                >
+                                  <span className="font-black">{cName}</span>
+                                  <div
+                                    className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors ${
+                                      isSelected
+                                        ? 'bg-teal-400 text-slate-950'
+                                        : 'bg-slate-700 text-transparent'
+                                    }`}
+                                  >
+                                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {selectedPoolClasses.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={handleAddPoolClasses}
+                              className="w-full py-2.5 px-4 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-teal-500/20 animate-in fade-in"
+                            >
+                              <Plus className="w-4 h-4" />
+                              <span>Seçilen Sınıfları Listeme Ekle ({selectedPoolClasses.length})</span>
+                            </button>
+                          )}
                         </div>
-                      </div>
+                      ) : (
+                        <div className="p-3.5 rounded-2xl bg-slate-800/40 border border-slate-700/60 text-center text-xs text-slate-400">
+                          Okulunuzda henüz kayıtlı ortak bir sınıf yok. Aşağıdan ilk sınıfı tanımlayabilirsiniz.
+                        </div>
+                      )}
                     </div>
 
-                    {/* Önizleme Alanı */}
-                    <div className="p-3.5 rounded-2xl bg-teal-950/60 border border-teal-800/60 flex items-center justify-between">
-                      <span className="text-xs text-slate-300 font-medium">Oluşturulacak Sınıf:</span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-black px-3 py-1 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 text-sm">
+                    {/* AYIRAÇ */}
+                    <div className="relative flex items-center justify-center my-2">
+                      <div className="border-t border-slate-800 w-full" />
+                      <span className="bg-slate-900 px-3 text-[11px] font-black uppercase text-slate-500 absolute">
+                        veya
+                      </span>
+                    </div>
+
+                    {/* BÖLÜM 2: YENİ SINIF / ŞUBE TANIMLA (HAVUZDA YOKSA) */}
+                    <form onSubmit={handleAddClass} className="space-y-4">
+                      <div>
+                        <h4 className="text-xs font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <span>2. Yeni Sınıf / Şube Tanımla (Havuzda Yoksa)</span>
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          Aradığınız şube okul havuzunda bulunmuyorsa yeni sınıf açarak havuza ekleyin:
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* Seviye Seçimi */}
+                        <div>
+                          <label className="block text-[11px] font-bold text-teal-200/90 mb-1">
+                            Sınıf Seviyesi
+                          </label>
+                          <div className="relative">
+                            <select
+                              value={newClassGrade}
+                              onChange={(e) => setNewClassGrade(e.target.value)}
+                              className="w-full p-2.5 rounded-xl bg-slate-800 border border-teal-700/80 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
+                            >
+                              {GRADE_OPTIONS.map((grade) => (
+                                <option key={grade} value={grade} className="bg-slate-900 text-white">
+                                  {grade}. Sınıf
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown className="w-4 h-4 text-teal-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          </div>
+                        </div>
+
+                        {/* Şube Seçimi */}
+                        <div>
+                          <label className="block text-[11px] font-bold text-teal-200/90 mb-1">
+                            Şube Seçimi
+                          </label>
+                          <div className="relative">
+                            <select
+                              value={newClassBranch}
+                              onChange={(e) => setNewClassBranch(e.target.value)}
+                              className="w-full p-2.5 rounded-xl bg-slate-800 border border-teal-700/80 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
+                            >
+                              {BRANCH_OPTIONS.map((branch) => (
+                                <option key={branch} value={branch} className="bg-slate-900 text-white">
+                                  {branch} Şubesi
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown className="w-4 h-4 text-teal-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Önizleme & Durum */}
+                      <div className="p-3 rounded-2xl bg-teal-950/60 border border-teal-800/60 flex items-center justify-between">
+                        <span className="text-xs text-slate-300 font-medium">Oluşturulacak Sınıf:</span>
+                        <span className="font-black px-3 py-1 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 text-xs">
                           {targetNewClassName}
                         </span>
                       </div>
-                    </div>
 
-                    {isClassAlreadyAdded && (
-                      <div className="p-3 rounded-xl bg-amber-950/50 border border-amber-500/50 text-amber-300 text-xs font-bold flex items-center gap-2">
-                        <span>⚠️ Bu sınıf ({targetNewClassName}) listenizde zaten mevcut!</span>
+                      {isClassAlreadyAdded ? (
+                        <div className="p-2.5 rounded-xl bg-amber-950/50 border border-amber-500/50 text-amber-300 text-xs font-bold flex items-center gap-2">
+                          <span>⚠️ Bu sınıf ({targetNewClassName}) listenizde zaten mevcut!</span>
+                        </div>
+                      ) : isClassInSchoolPool ? (
+                        <div className="p-2.5 rounded-xl bg-blue-950/50 border border-blue-500/50 text-blue-300 text-xs font-bold flex items-center gap-2">
+                          <span>ℹ️ {targetNewClassName} okul havuzunda zaten kayıtlı. Yukarıdaki listeden işaretleyerek ekleyebilirsiniz.</span>
+                        </div>
+                      ) : null}
+
+                      {/* Butonlar */}
+                      <div className="flex items-center justify-end gap-3 pt-2 border-t border-teal-800/60">
+                        <button
+                          type="button"
+                          onClick={() => setShowAddClassModal(false)}
+                          className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                        >
+                          Kapat
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isClassAlreadyAdded || isClassInSchoolPool}
+                          className={`py-2.5 px-5 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 ${
+                            isClassAlreadyAdded || isClassInSchoolPool
+                              ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                              : 'bg-teal-500 hover:bg-teal-400 text-slate-950 cursor-pointer shadow-lg shadow-teal-500/20'
+                          }`}
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>{targetNewClassName} Sınıfını Aç ve Listeme Ekle</span>
+                        </button>
                       </div>
-                    )}
-
-                    {/* Butonlar */}
-                    <div className="flex items-center justify-end gap-3 pt-3 border-t border-teal-800/60">
-                      <button
-                        type="button"
-                        onClick={() => setShowAddClassModal(false)}
-                        className="py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
-                      >
-                        Vazgeç
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={isClassAlreadyAdded}
-                        className={`py-2.5 px-6 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 ${
-                          isClassAlreadyAdded
-                            ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
-                            : 'bg-teal-500 hover:bg-teal-400 text-slate-950 cursor-pointer shadow-lg shadow-teal-500/20'
-                        }`}
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span>{targetNewClassName} Sınıfını Ekle</span>
-                      </button>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 </div>
               </div>,
               document.body
@@ -1360,12 +1503,22 @@ export function TeacherDashboard() {
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-black text-teal-300">Yeni Öğrenci Tanımla</h4>
                   <button
-                    onClick={() => setShowAddModal(false)}
+                    onClick={() => {
+                      setAddStudentError(null);
+                      setShowAddModal(false);
+                    }}
                     className="text-xs text-slate-400 hover:text-white"
                   >
                     ✕ Kapat
                   </button>
                 </div>
+
+                {addStudentError && (
+                  <div className="p-3.5 rounded-2xl bg-rose-950/80 border border-rose-500/60 text-rose-300 text-xs font-bold flex items-center gap-2.5 animate-in fade-in">
+                    <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span>{addStudentError}</span>
+                  </div>
+                )}
 
                 <form onSubmit={handleAddStudent} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                   <input

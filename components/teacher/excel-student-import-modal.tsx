@@ -273,6 +273,7 @@ export function ExcelStudentImportModal({
           school: schoolName,
           teacherId,
           points: 100,
+          subjectPoints: { [teacher?.branch || 'Matematik']: 100 },
           unlockedBadges: ['first-step'],
           createdAt: todayStr
         };
