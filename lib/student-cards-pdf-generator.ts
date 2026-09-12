@@ -89,25 +89,19 @@ function createPageHTML(
             border: 1px solid #cbd5e1;
             border-left: 4px solid #0284c7;
             border-radius: 6px;
-            padding: 6px 8px;
-            box-sizing: border-box;
+            padding: 4px 8px;
+            font-size: 13px;
+            font-weight: 900;
+            color: #0f172a;
             display: flex;
             align-items: center;
-            justify-content: center;
-            text-align: center;
+            min-height: 26px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           ">
-            <span style="
-              font-size: 13px;
-              font-weight: 900;
-              color: #0f172a;
-              line-height: 1;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              display: block;
-            ">
-              ${stuName}
-            </span>
+            ${stuName}
           </div>
 
           <!-- Key Credentials Badges (4 parameters) -->
@@ -235,26 +229,17 @@ function createPageHTML(
 
       <div style="text-align: right;">
         <div style="
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
+          display: inline-block;
           background: #ffffff;
           color: #000000;
           border: 1.5px solid #000000;
-          padding: 6px 14px;
+          padding: 4px 10px;
           border-radius: 6px;
-          box-sizing: border-box;
-          text-align: center;
+          font-weight: 900;
+          font-size: 11px;
+          letter-spacing: 0.5px;
         ">
-          <span style="
-            font-weight: 900;
-            font-size: 11px;
-            line-height: 1;
-            letter-spacing: 0.5px;
-            display: block;
-          ">
-            ÖĞRENCİ GİRİŞ KARTLARI
-          </span>
+          ÖĞRENCİ GİRİŞ KARTLARI
         </div>
         <div style="font-size: 9px; color: #64748b; margin-top: 4px; font-weight: 600;">
           Tarih: ${todayStr} • Sayfa ${pageIndex + 1} / ${totalPages}
