@@ -246,7 +246,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const dbUser = data.user;
                 const dbClasses: string[] = dbUser.assignedClasses || [];
                 const localClasses: string[] = (parsedUser as any).assignedClasses || [];
-                const mergedClasses = Array.from(new Set([...dbClasses, ...localClasses]));
+                const mergedClasses = Array.from(new Set([...dbClasses, ...localClasses])).sort((a, b) =>
+                  a.localeCompare(b, 'tr-TR', { numeric: true })
+                );
 
                 setCurrentUser((prev) => {
                   if (!prev || prev.email?.toLowerCase() !== parsedUser.email?.toLowerCase()) return prev;
@@ -1574,7 +1576,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         targetEmail = t.email;
         const classes = t.assignedClasses || [];
         if (!classes.includes(trimmed)) {
-          updatedClasses = [...classes, trimmed];
+          updatedClasses = [...classes, trimmed].sort((a, b) =>
+            a.localeCompare(b, 'tr-TR', { numeric: true })
+          );
           return {
             ...t,
             assignedClasses: updatedClasses

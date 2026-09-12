@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth, splitFullName, generateRandomStudentPassword } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
@@ -126,9 +126,14 @@ export function TeacherDashboard() {
 
   // If current user is teacher
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
-  const teacherClasses: string[] = teacher?.assignedClasses && teacher.assignedClasses.length > 0
+  const rawClasses: string[] = teacher?.assignedClasses && teacher.assignedClasses.length > 0
     ? (teacher.assignedClasses as string[])
     : ['5-A', '5-B'];
+
+  // Sınıfları alfabetik / doğal sırada (5-A, 5-B, 5-C, 6-A, 6-B... A-Z) sırala
+  const teacherClasses: string[] = useMemo(() => {
+    return [...rawClasses].sort((a, b) => a.localeCompare(b, 'tr-TR', { numeric: true }));
+  }, [rawClasses]);
 
   const [selectedClass, setSelectedClass] = useState(teacherClasses[0] || '5-A');
   const [newStudentName, setNewStudentName] = useState('');
@@ -159,7 +164,18 @@ export function TeacherDashboard() {
 
   // Students visible to this teacher (only students in same school / added by teacher)
   const visibleStudents = getVisibleStudents(currentUser);
-  const classStudents = visibleStudents.filter((s) => s.classSection === selectedClass);
+  const classStudents = useMemo(() => {
+    return visibleStudents
+      .filter((s) => s.classSection === selectedClass)
+      .sort((a, b) => {
+        const numA = parseInt(a.studentNumber || '0', 10);
+        const numB = parseInt(b.studentNumber || '0', 10);
+        if (!isNaN(numA) && !isNaN(numB) && numA !== numB) {
+          return numA - numB;
+        }
+        return (a.name || '').localeCompare(b.name || '', 'tr-TR');
+      });
+  }, [visibleStudents, selectedClass]);
 
   const handleAddStudent = (e: React.FormEvent) => {
     e.preventDefault();
