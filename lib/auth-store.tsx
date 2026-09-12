@@ -517,11 +517,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithEmail = async (identifier: string, pass?: string): Promise<boolean> => {
     const trimmed = (identifier || '').trim().toLowerCase();
-    const cleanIdNoSpaces = trimmed.replace(/\s+/g, '');
     const cleanPass = (pass || '').trim();
     if (!trimmed || !cleanPass) return false;
 
-    // 1. Primary Authentication: Directly against PostgreSQL Database via Prisma
+    // Direct Database Authentication via Prisma API
     try {
       const res = await fetch('/api/auth/login-verify', {
         method: 'POST',
@@ -543,79 +542,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return true;
       }
     } catch (e) {
-      console.warn('[loginWithEmail] Database login error, falling back to local cache:', e);
-    }
-
-    // 2. Offline / Local Seed Fallback
-    if (checkIsAdmin(trimmed)) {
-      const adminUser = admins.find((a) => a.email.toLowerCase() === trimmed) || getAdminUser(trimmed);
-      const validPass = adminUser.password || 'admin';
-      const matches = cleanPass === validPass;
-
-      if (matches) {
-        setCurrentUser(adminUser);
-        registerDeviceSession(adminUser);
-        return true;
-      }
-    }
-    const adminByPhone = admins.find(a => a.phone && a.phone.replace(/\s+/g, '') === cleanIdNoSpaces);
-    if (adminByPhone) {
-      const validPass = adminByPhone.password || 'admin';
-      const matches = cleanPass === validPass;
-
-      if (matches) {
-        setCurrentUser(adminByPhone);
-        registerDeviceSession(adminByPhone);
-        return true;
-      }
-    }
-
-    // 3. Fallback check for Teachers
-    const teacher = teachers.find((t) => 
-      t.email.toLowerCase() === trimmed || 
-      (t.phone && t.phone.replace(/\s+/g, '') === cleanIdNoSpaces)
-    );
-    if (teacher) {
-      const validPass = teacher.password || 'admin';
-      const matches = cleanPass === validPass;
-
-      if (matches) {
-        setCurrentUser(teacher);
-        registerDeviceSession(teacher);
-        // Self-heal: sync credentials and classes to PostgreSQL DB
-        fetch('/api/user/profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: teacher.email,
-            firstName: teacher.firstName,
-            lastName: teacher.lastName,
-            name: teacher.name,
-            phone: teacher.phone,
-            school: teacher.school,
-            branch: teacher.branch,
-            assignedClasses: teacher.assignedClasses,
-            password: cleanPass,
-          }),
-        }).catch(() => {});
-        return true;
-      }
-    }
-
-    // 4. Fallback check for Students
-    const student = students.find((s) => 
-      (s.email && s.email.toLowerCase() === trimmed) || 
-      (s.studentNumber && s.studentNumber.trim().toLowerCase() === trimmed)
-    );
-    if (student) {
-      const validPass = student.password || 'admin';
-      const matches = cleanPass === validPass;
-
-      if (matches) {
-        setCurrentUser(student);
-        registerDeviceSession(student);
-        return true;
-      }
+      console.warn('[loginWithEmail] Database login error:', e);
     }
 
     return false;
@@ -628,7 +555,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!cleanCode || !cleanNumber || !cleanPass) return false;
 
-    // 1. Primary Authentication: via Database API
+    // Direct Database Authentication via Prisma API
     try {
       const res = await fetch('/api/auth/login-verify', {
         method: 'POST',
@@ -650,51 +577,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return true;
       }
     } catch (e) {
-      console.warn('[loginStudent] API error, falling back to local cache:', e);
-    }
-
-    // 2. Offline / Local Fallback
-    const allClassrooms = [...classrooms, ...SEED_CLASSROOMS];
-    const matchedClassroom = allClassrooms.find((c) => c.code?.toUpperCase() === cleanCode);
-    const cleanCodeNormalized = cleanCode.replace(/[^A-Z0-9]/g, '');
-
-    const student = students.find((s) => {
-      const stuCode = (s.classCode || '').trim().toUpperCase();
-      const stuSection = (s.classSection || '').trim().toUpperCase();
-      const stuSectionNormalized = stuSection.replace(/[^A-Z0-9]/g, '');
-
-      const matchesCode =
-        (stuCode && stuCode === cleanCode) ||
-        (stuSection && (stuSection === cleanCode || stuSectionNormalized === cleanCodeNormalized)) ||
-        (matchedClassroom && stuSection === matchedClassroom.name.toUpperCase());
-
-      const matchesNumber = s.studentNumber && s.studentNumber.trim().toLowerCase() === cleanNumber.toLowerCase();
-      return matchesCode && matchesNumber;
-    });
-
-    if (student) {
-      const validPass = student.password || 'admin';
-      let matches = cleanPass === validPass;
-
-      // Handle bcrypt hashed password in local cache
-      if (!matches && (validPass.startsWith('$2a$') || validPass.startsWith('$2b$') || validPass.startsWith('$2y$'))) {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-require-imports
-          const bcrypt = require('bcryptjs');
-          matches = bcrypt.compareSync(cleanPass, validPass);
-        } catch (e) {}
-      }
-
-      // If password has not been changed by student, also accept default 'admin' fallback
-      if (!matches && !student.isPasswordChangedByStudent && cleanPass === 'admin') {
-        matches = true;
-      }
-
-      if (matches) {
-        setCurrentUser(student);
-        registerDeviceSession(student);
-        return true;
-      }
+      console.warn('[loginStudent] Database login error:', e);
     }
 
     return false;
