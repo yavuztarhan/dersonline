@@ -393,6 +393,52 @@ const MAT_6_1_4_CLUES: WordClue[] = [
   }
 ];
 
+// 6. MAT.7.1.1 Clues (Tam Sayılardan Rasyonel Sayılara)
+const MAT_7_1_1_CLUES: WordClue[] = [
+  {
+    id: 'mat71-c1',
+    question: 'a ve b tam sayı, b ≠ 0 olmak üzere a/b şeklinde yazılabilen sayılara ne ad verilir?',
+    word: 'RASYONEL',
+    hint: '8 Harfli • Sembolü ℚ',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat71-c2',
+    question: 'Bir sayının sayı doğrusunda başlangıç noktasına (0) olan yönsüz gerçek mesafesine ne denir?',
+    word: 'MUTLAKDEĞER',
+    hint: '11 Harfli • Sembolü |x|',
+    color: '#10b981'
+  },
+  {
+    id: 'mat71-c3',
+    question: 'Paydası sıfır olan kesirli bir ifadenin (örneğin a/0) matematiksel durumu nedir?',
+    word: 'TANIMSIZ',
+    hint: '8 Harfli • Sayı belirtmez',
+    color: '#ef4444'
+  },
+  {
+    id: 'mat71-c4',
+    question: '0\'dan başlayıp birer birer sonsuza kadar giden pozitif sayılar ve sıfırın oluşturduğu kümeye ne denir?',
+    word: 'DOĞALSAYI',
+    hint: '9 Harfli • Sembolü ℕ',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat71-c5',
+    question: 'Her tam sayının paydasında bulunan ve onu rasyonel yapan görünmez sayıya ne denir?',
+    word: 'GİZLİPAYDA',
+    hint: '10 Harfli • Değeri 1\'dir',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat71-c6',
+    question: 'İç içe geçmiş sayı kümelerini (N ⊂ Z ⊂ Q) gösteren halka diyagramına kimin adı verilmiştir?',
+    word: 'EULER',
+    hint: '5 Harfli • Euler Şeması',
+    color: '#ec4899'
+  }
+];
+
 const TURKISH_CHARS = [
   'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
   'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
@@ -503,6 +549,7 @@ export function WordSearchGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
+  const isMat711 = id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel');
   const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
   const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
   const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
@@ -512,7 +559,9 @@ export function WordSearchGame() {
   const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
   const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
 
-  const activeClues = isMat614
+  const activeClues = isMat711
+    ? MAT_7_1_1_CLUES
+    : isMat614
     ? MAT_6_1_4_CLUES
     : isMat613
     ? MAT_6_1_3_CLUES

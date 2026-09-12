@@ -493,7 +493,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   baseGamesList.push(
     {
       id: 'memorycards',
-      title: isDivisibilityTopic
+      title: isRationalNumbersTopic
+        ? 'Rasyonel Sayılar Hafıza Kartları'
+        : isDivisibilityTopic
         ? 'Bölünebilme Kuralları Hafıza Kartları'
         : isPrimeFactorsTopic
         ? 'Asal Sayılar ve Çarpanlar Hafıza Kartları'
@@ -503,7 +505,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         ? 'Çarpanlar & Katlar Hafıza Kartları'
         : 'Kavram & Tanım Hafıza Kartları',
       tagline: 'Kavramsal Eşleştirme & Bellek',
-      description: isDivisibilityTopic
+      description: isRationalNumbersTopic
+        ? 'Rasyonel sayı, mutlak değer, Euler şeması, gizli payda ve tanımsızlık kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
+        : isDivisibilityTopic
         ? '2, 3, 4, 5, 6, 9, 10 bölünebilme kuralları ve basamak kavramlarını tanımlarıyla eşleştir.'
         : isPrimeFactorsTopic
         ? 'Asal sayı, kalbur, çarpan ağacı ve algoritma kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
@@ -519,7 +523,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'matching',
-      title: isDivisibilityTopic
+      title: isRationalNumbersTopic
+        ? 'Rasyonel Sayılar & Kümeler Eşleştirme'
+        : isDivisibilityTopic
         ? 'Bölünebilme Kriterleri Eşleştirme'
         : isPrimeFactorsTopic
         ? 'Asal Çarpanlar & Ağaç Eşleştirme'
@@ -532,10 +538,12 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         : isAngleTopic
         ? 'Açı Çeşitleri & İletki Eşleştirme'
         : 'Kavram & Sembol Eşleştirme',
-      tagline: isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic
+      tagline: isRationalNumbersTopic || isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic
         ? 'Matematiksel Modelleri Tanı'
         : 'Geometrik Modelleri Tanı',
-      description: isDivisibilityTopic
+      description: isRationalNumbersTopic
+        ? 'Rasyonel sayılar, mutlak değer cetveli, Euler kümeleri ve tanımsızlık modellerini sembol ve tanımlarıyla eşleştirin.'
+        : isDivisibilityTopic
         ? 'Bölünebilme kurallarını, basamak modellerini ve kalan formüllerini eşleştirin.'
         : isPrimeFactorsTopic
         ? 'Asal sayı kalburu, çarpan ağacı ve üslü gösterimleri tanımlarıyla eşleştirin.'
@@ -555,7 +563,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'wordsearch',
-      title: isDivisibilityTopic
+      title: isRationalNumbersTopic
+        ? 'Rasyonel Sayılar Kelime Avı'
+        : isDivisibilityTopic
         ? 'Bölünebilme Kelime Avı'
         : isPrimeFactorsTopic
         ? 'Asal Sayılar Kelime Avı'
@@ -565,7 +575,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         ? 'Çarpan & Kat Kelime Avı'
         : 'Matematiksel Kelime Avı',
       tagline: 'Soru Odaklı Akıl Yürütme',
-      description: isDivisibilityTopic
+      description: isRationalNumbersTopic
+        ? 'İpuçlarını oku, gizli rasyonel sayı, mutlak değer, Euler ve gizli payda terimlerini bulmaca ızgarasında yakala!'
+        : isDivisibilityTopic
         ? 'İpuçlarını oku, gizli bölünebilme, basamak ve kalan kavramlarını bulmaca ızgarasında yakala!'
         : isPrimeFactorsTopic
         ? 'İpuçlarını oku, asal sayı, kalbur, çarpan ağacı ve üslü gösterim kavramlarını yakala!'
@@ -581,7 +593,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'truefalse',
-      title: isDivisibilityTopic
+      title: isRationalNumbersTopic
+        ? 'Rasyonel Sayılar Hızlı D/Y Testi'
+        : isDivisibilityTopic
         ? 'Bölünebilme Hızlı D/Y Testi'
         : isPrimeFactorsTopic
         ? 'Asal Sayılar Hızlı D/Y Testi'
@@ -591,7 +605,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         ? 'Çarpanlar & Katlar D/Y Testi'
         : 'Hızlı Doğru / Yanlış Testi',
       tagline: 'Hız ve Kavramsal Refleks',
-      description: isDivisibilityTopic
+      description: isRationalNumbersTopic
+        ? 'Rasyonel sayı, sayı kümeleri ve mutlak değer önermelerini hızlıca değerlendir, matematiksel gerekçeleri öğren!'
+        : isDivisibilityTopic
         ? 'Bölünebilme kriterleri önermelerini hızla değerlendir, matematiksel gerekçelerini öğren!'
         : isPrimeFactorsTopic
         ? 'Asal sayılar ve çarpan önermelerini hızlıca değerlendir, pedagojik gerekçeleri öğren!'

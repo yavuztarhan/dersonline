@@ -340,6 +340,52 @@ const MAT_6_1_4_TF: TFQuestion[] = [
   }
 ];
 
+// 6. MAT.7.1.1 (Tam Sayılardan Rasyonel Sayılara)
+const MAT_7_1_1_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat71-1',
+    statement: 'Her tam sayı, paydasına 1 yazılarak bir rasyonel sayı olarak ifade edilebilir (Z ⊂ Q).',
+    isTrue: true,
+    explanation: 'Doğru! Her a tam sayısı a = a/1 şeklinde rasyonel olarak yazılabilir (Gizli Payda Kuralı).'
+  },
+  {
+    id: 'tf-mat71-2',
+    statement: 'Paydası sıfır olan kesirli bir ifade (örneğin 5/0) sıfıra eşittir.',
+    isTrue: false,
+    explanation: 'Yanlış! Payda sıfır olamaz. 5/0 ifadesi sıfır değil, matematiksel olarak TANIMSIZDIR (0/5 = 0\'dır).'
+  },
+  {
+    id: 'tf-mat71-3',
+    statement: '-3/4 rasyonel sayısı sayı doğrusunda 0 ile +1 tam sayıları arasındadır.',
+    isTrue: false,
+    explanation: 'Yanlış! -3/4 negatiftir; sayı doğrusunda sıfırın solunda, yani 0 ile -1 tam sayıları arasındadır.'
+  },
+  {
+    id: 'tf-mat71-4',
+    statement: '-12/3 sayısı hem bir tam sayı (Z) hem de bir rasyonel sayıdır (Q).',
+    isTrue: true,
+    explanation: 'Doğru! -12/3 = -4 eder. -4 bir tam sayıdır ve aynı zamanda paydası 1 olan bir rasyonel sayıdır.'
+  },
+  {
+    id: 'tf-mat71-5',
+    statement: 'İki sayının başlangıç noktasına (0) olan uzaklıkları eşitse mutlak değerleri de eşittir (|-a| = |+a|).',
+    isTrue: true,
+    explanation: 'Doğru! Mutlak değer uzaklık belirtir. Yönü ne olursa olsun sıfıra uzaklık pozitiftir (örn: |-4| = |+4| = 4).'
+  },
+  {
+    id: 'tf-mat71-6',
+    statement: '-2 tam 1/3 rasyonel sayısı sayı doğrusunda -1 ile -2 tam sayıları arasındadır.',
+    isTrue: false,
+    explanation: 'Yanlış! -2 tam 1/3, sıfırdan sola doğru -2\'yi geçip -3\'e doğru ilerler; dolayısıyla -2 ile -3 arasındadır.'
+  },
+  {
+    id: 'tf-mat71-7',
+    statement: 'Doğal sayılar (N), tam sayıların (Z); tam sayılar da rasyonel sayıların (Q) bir alt kümesidir (N ⊂ Z ⊂ Q).',
+    isTrue: true,
+    explanation: 'Doğru! Sayı kümeleri içiçe genişler: Bütün doğal sayılar tam sayı, bütün tam sayılar da rasyonel sayıdır.'
+  }
+];
+
 export function TrueFalseGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
@@ -347,6 +393,7 @@ export function TrueFalseGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
+  const isMat711 = id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel');
   const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
   const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
   const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
@@ -356,7 +403,9 @@ export function TrueFalseGame() {
   const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
   const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
 
-  const questions = isMat614
+  const questions = isMat711
+    ? MAT_7_1_1_TF
+    : isMat614
     ? MAT_6_1_4_TF
     : isMat613
     ? MAT_6_1_3_TF

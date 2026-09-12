@@ -285,8 +285,8 @@ const PARACHUTE_MISSIONS: ParachuteMission[] = [
 export function RationalParachuteGame() {
   const { playSound, addPoints, unlockBadge } = useApp();
   const [missionIndex, setMissionIndex] = useState(0);
-  const [selectedMin, setSelectedMin] = useState<number>(-1);
-  const [selectedPartitions, setSelectedPartitions] = useState<number>(4);
+  const [selectedMin, setSelectedMin] = useState<number>(-3); // Default to first range [-3, -2]
+  const [selectedPartitions, setSelectedPartitions] = useState<number>(2); // Default to first partition 2
   const [landedTick, setLandedTick] = useState<number | null>(null);
   const [gameFeedback, setGameFeedback] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -321,9 +321,8 @@ export function RationalParachuteGame() {
     setIsSuccess(false);
     if (missionIndex + 1 < PARACHUTE_MISSIONS.length) {
       setMissionIndex((prev) => prev + 1);
-      const nextM = PARACHUTE_MISSIONS[missionIndex + 1];
-      setSelectedMin(nextM.correctMin);
-      setSelectedPartitions(nextM.recommendedPartitions);
+      setSelectedMin(-3);
+      setSelectedPartitions(2);
     } else {
       playSound('bell');
       unlockBadge('Hassas Paraşütçü');

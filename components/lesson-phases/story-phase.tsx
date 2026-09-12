@@ -22,7 +22,15 @@ import {
   Zap,
   Volume2,
   RotateCcw,
-  Maximize2
+  Maximize2,
+  Gauge,
+  Sliders,
+  Sun,
+  Activity,
+  Scale,
+  ShieldAlert,
+  AlertTriangle,
+  Crosshair
 } from 'lucide-react';
 import { MascotDialogueBox } from '@/components/mascot';
 
@@ -65,6 +73,14 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   // 6. Sınıf MAT.6.1.4 interactive states
   const [selectedCommonNumberPair, setSelectedCommonNumberPair] = useState<[number, number]>([24, 36]);
   const [activeMultipleStop, setActiveMultipleStop] = useState<number>(24);
+
+  // 7. Sınıf MAT.7.1.1 interactive states
+  const [smartMeterSolar, setSmartMeterSolar] = useState<number>(120); // +120 kWh
+  const [smartMeterGrid, setSmartMeterGrid] = useState<number>(150); // -150 kWh
+  const [laserRoomVal, setLaserRoomVal] = useState<number>(4); // |+4| = |-4| = 4
+  const [activeSliceView, setActiveSliceView] = useState<'negative' | 'positive'>('negative'); // -3/4 vs +5/2
+  const [eulerActiveNum, setEulerActiveNum] = useState<string>('-4'); // -4, +5, 0, 2/3, 4/0
+  const [eulerSecretRevealed, setEulerSecretRevealed] = useState<boolean>(false);
 
   const pages: StorybookPage[] = data.pages || [
     {
@@ -2102,6 +2118,570 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   </div>
                 )}
 
+                {/* 7. SINIF MAT.7.1.1 - 1. BÖLÜM: AKILLI EV ENERJİ SAYACI & 0 REFERANS NOKTASI */}
+                {currentPage.visualScene.type === 'smart-home-meter' && (
+                  <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/90 text-white rounded-2xl">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center">
+                          <Gauge className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-amber-300 uppercase tracking-wider">Akıllı Ev Enerji Sayacı</div>
+                          <div className="text-[10px] text-slate-400">Referans Noktası: 0 kWh (Hedef Denge)</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-right">
+                        <div className="px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">
+                          Güneş: +{smartMeterSolar} kWh
+                        </div>
+                        <div className="px-2 py-1 rounded-lg bg-rose-950/80 border border-rose-500/40 text-rose-300 text-[10px] font-bold">
+                          Şebeke: -{smartMeterGrid} kWh
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Central Bilateral Meter */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 space-y-3 relative overflow-hidden">
+                      <div className="flex items-center justify-between text-[11px] font-bold">
+                        <span className="text-rose-400 flex items-center gap-1">
+                          <ArrowLeft className="w-3 h-3" /> Negatif Bölge (Tüketim Açığı)
+                        </span>
+                        <span className="text-amber-300 font-mono text-xs px-2 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/30">
+                          0 Denge Noktası
+                        </span>
+                        <span className="text-emerald-400 flex items-center gap-1">
+                          Pozitif Bölge (Solar Üretim) <ArrowRight className="w-3 h-3" />
+                        </span>
+                      </div>
+
+                      {/* Bilateral track */}
+                      <div className="relative h-12 bg-slate-950 rounded-xl border border-slate-800 flex items-center px-4">
+                        {/* Negative side bar */}
+                        <div className="w-1/2 h-2 bg-gradient-to-l from-slate-700 to-rose-600 rounded-l-full relative" />
+                        {/* Center zero divider */}
+                        <div className="w-1.5 h-8 bg-amber-400 rounded-full shadow-[0_0_12px_rgba(251,191,36,0.8)] z-10 -mx-[3px] flex items-center justify-center">
+                          <span className="absolute -top-4 text-[10px] font-black text-amber-300">0</span>
+                        </div>
+                        {/* Positive side bar */}
+                        <div className="w-1/2 h-2 bg-gradient-to-r from-slate-700 to-emerald-500 rounded-r-full relative" />
+
+                        {/* Calculated net position pointer */}
+                        {(() => {
+                          const net = smartMeterSolar - smartMeterGrid;
+                          const clamped = Math.max(-150, Math.min(150, net));
+                          const percent = 50 + (clamped / 150) * 45;
+                          return (
+                            <div
+                              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center transition-all duration-500 z-20"
+                              style={{ left: `${percent}%` }}
+                            >
+                              <div className={`px-2 py-0.5 rounded-md text-[10px] font-black font-mono shadow-md border ${
+                                net > 0
+                                  ? 'bg-emerald-500 border-emerald-300 text-white'
+                                  : net < 0
+                                    ? 'bg-rose-500 border-rose-300 text-white'
+                                    : 'bg-amber-500 border-amber-300 text-slate-950'
+                              }`}>
+                                {net > 0 ? `+${net}` : `${net}`} kWh
+                              </div>
+                              <div className={`w-2 h-2 rotate-45 -mt-1 ${
+                                net > 0 ? 'bg-emerald-500' : net < 0 ? 'bg-rose-500' : 'bg-amber-500'
+                              }`} />
+                            </div>
+                          );
+                        })()}
+                      </div>
+
+                      {/* Scale labels */}
+                      <div className="flex justify-between text-[9px] font-mono text-slate-500 px-2">
+                        <span className="text-rose-400">-150</span>
+                        <span className="text-rose-400/70">-100</span>
+                        <span className="text-rose-400/50">-50</span>
+                        <span className="text-amber-400 font-bold">0</span>
+                        <span className="text-emerald-400/50">+50</span>
+                        <span className="text-emerald-400/70">+100</span>
+                        <span className="text-emerald-400">+150</span>
+                      </div>
+                    </div>
+
+                    {/* Net Status Card */}
+                    {(() => {
+                      const net = smartMeterSolar - smartMeterGrid;
+                      return (
+                        <div className={`p-2.5 rounded-xl border flex items-center justify-between text-xs ${
+                          net > 0
+                            ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
+                            : net < 0
+                              ? 'bg-rose-950/40 border-rose-500/40 text-rose-200'
+                              : 'bg-amber-950/40 border-amber-500/40 text-amber-200'
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            <Activity className="w-4 h-4" />
+                            <div>
+                              <span className="font-bold">Net Enerji Durumu: </span>
+                              {net > 0
+                                ? `+${net} kWh Kredi (Üretim Fazlası 🌟)`
+                                : net < 0
+                                  ? `${net} kWh Açık (Şebekeden Çekilen Borç ⚡)`
+                                  : '0 kWh Tam Dengede! Hedef Başarıldı 🎯'}
+                            </div>
+                          </div>
+                          <div className="font-mono font-black text-sm">
+                            {smartMeterSolar} + (-{smartMeterGrid}) = {net > 0 ? `+${net}` : net}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Scenario presets buttons */}
+                    <div className="space-y-1.5">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Senaryo Seç & Test Et:</div>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {[
+                          { label: 'Aylık Fatura', solar: 120, grid: 150, note: '-30 kWh' },
+                          { label: 'Güneşli Gün', solar: 180, grid: 110, note: '+70 kWh' },
+                          { label: 'Kış Gecesi', solar: 40, grid: 160, note: '-120 kWh' },
+                          { label: 'Sıfır Denge', solar: 150, grid: 150, note: '0 kWh' }
+                        ].map((preset, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => {
+                              setSmartMeterSolar(preset.solar);
+                              setSmartMeterGrid(preset.grid);
+                              playSound('select');
+                            }}
+                            className={`p-1.5 rounded-xl text-center border transition-all ${
+                              smartMeterSolar === preset.solar && smartMeterGrid === preset.grid
+                                ? 'bg-amber-500/20 border-amber-400 text-amber-200 font-bold shadow-xs'
+                                : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800 text-[10px]'
+                            }`}
+                          >
+                            <div className="text-[10px] font-bold truncate">{preset.label}</div>
+                            <div className="text-[9px] font-mono text-slate-400">{preset.note}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.1 - 2. BÖLÜM: MUTLAK DEĞER VE İKİZ LAZER CETVELİ */}
+                {currentPage.visualScene.type === 'absolute-value-laser' && (
+                  <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/90 text-white rounded-2xl">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center">
+                          <Crosshair className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-cyan-300 uppercase tracking-wider">İkiz Lazer Metresi</div>
+                          <div className="text-[10px] text-slate-400">Mutlak Değer = 0 Başlangıç Noktasına Olan Yönsüz Uzaklık</div>
+                        </div>
+                      </div>
+                      <div className="px-2.5 py-1 rounded-lg bg-cyan-950/80 border border-cyan-500/40 text-cyan-200 font-mono text-xs font-bold">
+                        |±{laserRoomVal}| = {laserRoomVal} m
+                      </div>
+                    </div>
+
+                    {/* Dual Laser Runway Visual */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4 relative overflow-hidden">
+                      {/* Laser distance bracket */}
+                      <div className="flex justify-between items-center px-4">
+                        <div className="flex-1 flex flex-col items-center">
+                          <span className="text-[10px] font-mono font-bold text-rose-300 mb-1">
+                            |-{laserRoomVal}| = {laserRoomVal} birim uzaklık
+                          </span>
+                          <div className="w-full h-1 bg-rose-500/80 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
+                        </div>
+                        <div className="w-8 flex justify-center">
+                          <div className="w-2 h-2 rounded-full bg-amber-400" />
+                        </div>
+                        <div className="flex-1 flex flex-col items-center">
+                          <span className="text-[10px] font-mono font-bold text-emerald-300 mb-1">
+                            |+{laserRoomVal}| = {laserRoomVal} birim uzaklık
+                          </span>
+                          <div className="w-full h-1 bg-emerald-500/80 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                        </div>
+                      </div>
+
+                      {/* Symmetrical number line with 0 at center */}
+                      <div className="relative h-14 bg-slate-950 rounded-xl border border-slate-800 flex items-center px-4">
+                        {/* Number line spine */}
+                        <div className="w-full h-1 bg-slate-700 rounded-full relative">
+                          {/* Center Zero */}
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                            <div className="w-3.5 h-3.5 rounded-full bg-amber-400 border-2 border-slate-950 shadow-[0_0_10px_rgba(251,191,36,0.9)]" />
+                            <span className="text-[10px] font-black text-amber-300 mt-1 font-mono">0</span>
+                          </div>
+
+                          {/* Negative laser target */}
+                          <div
+                            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center transition-all duration-500"
+                            style={{ left: `${50 - (laserRoomVal / 6) * 44}%` }}
+                          >
+                            <div className="w-4 h-4 rounded-full bg-rose-500 border-2 border-slate-950 shadow-[0_0_10px_rgba(244,63,94,0.9)] animate-pulse" />
+                            <span className="text-[10px] font-black text-rose-300 mt-1 font-mono">-{laserRoomVal}</span>
+                          </div>
+
+                          {/* Positive laser target */}
+                          <div
+                            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center transition-all duration-500"
+                            style={{ left: `${50 + (laserRoomVal / 6) * 44}%` }}
+                          >
+                            <div className="w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-950 shadow-[0_0_10px_rgba(16,185,129,0.9)] animate-pulse" />
+                            <span className="text-[10px] font-black text-emerald-300 mt-1 font-mono">+{laserRoomVal}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Scale ticks */}
+                      <div className="flex justify-between text-[9px] font-mono text-slate-500 px-3">
+                        <span>-6</span>
+                        <span>-5</span>
+                        <span>-4</span>
+                        <span>-3</span>
+                        <span>-2</span>
+                        <span>-1</span>
+                        <span className="text-amber-400 font-bold">0</span>
+                        <span>+1</span>
+                        <span>+2</span>
+                        <span>+3</span>
+                        <span>+4</span>
+                        <span>+5</span>
+                        <span>+6</span>
+                      </div>
+                    </div>
+
+                    {/* Laser Measurement Equation Card */}
+                    <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/40 flex items-center justify-between text-xs">
+                      <div className="space-y-0.5">
+                        <div className="text-cyan-200 font-bold flex items-center gap-1.5">
+                          <Scale className="w-4 h-4 text-cyan-400" />
+                          <span>Mutlak Değer Kuralı:</span>
+                        </div>
+                        <p className="text-[11px] text-slate-300">
+                          İki değer de başlangıç noktası olan 0'a eşit uzaklıktadır: <span className="font-mono text-amber-300 font-bold">{laserRoomVal} metre</span>.
+                        </p>
+                      </div>
+                      <div className="text-right font-mono font-black text-sm text-cyan-300 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+                        |-{laserRoomVal}| = |+{laserRoomVal}| = {laserRoomVal}
+                      </div>
+                    </div>
+
+                    {/* Room Distance Selector */}
+                    <div className="space-y-1.5">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Test Mesafesini Değiştir:</div>
+                      <div className="grid grid-cols-5 gap-1.5">
+                        {[1, 2, 3, 4, 5].map((val) => (
+                          <button
+                            key={val}
+                            onClick={() => {
+                              setLaserRoomVal(val);
+                              playSound('select');
+                            }}
+                            className={`p-2 rounded-xl text-center border transition-all ${
+                              laserRoomVal === val
+                                ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 font-black shadow-xs'
+                                : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800 text-xs font-mono'
+                            }`}
+                          >
+                            <span className="font-bold">{val} m</span>
+                            <div className="text-[9px] text-slate-400">|±{val}| = {val}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.1 - 3. BÖLÜM: SAYI DOĞRUSU DİLİMLERİ VE RASYONEL SAYILAR */}
+                {currentPage.visualScene.type === 'fractional-energy-slices' && (
+                  <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/90 text-white rounded-2xl">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-400 flex items-center justify-center">
+                          <Sliders className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-purple-300 uppercase tracking-wider">Enerji Dilimleri & Sayı Doğrusu</div>
+                          <div className="text-[10px] text-slate-400">Tam Sayıların Arasını Eşit Parçalara Bölme</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => {
+                            setActiveSliceView('negative');
+                            playSound('select');
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${
+                            activeSliceView === 'negative'
+                              ? 'bg-rose-500/30 border-rose-400 text-rose-200'
+                              : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800'
+                          }`}
+                        >
+                          Klima: -3/4 kWh
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveSliceView('positive');
+                            playSound('select');
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${
+                            activeSliceView === 'positive'
+                              ? 'bg-emerald-500/30 border-emerald-400 text-emerald-200'
+                              : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800'
+                          }`}
+                        >
+                          Güneş: +5/2 kWh
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Interactive Zoomed Number Line */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4 relative overflow-hidden">
+                      {activeSliceView === 'negative' ? (
+                        <>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-rose-300 font-bold flex items-center gap-1">
+                              📍 0 ile -1 Tam Sayıları Arası: 4 Eşit Parçaya Bölündü
+                            </span>
+                            <span className="font-mono bg-rose-950/80 border border-rose-500/40 text-rose-200 px-2 py-0.5 rounded text-[11px] font-bold">
+                              Pay = 3 parça sola | Payda = 4 eş parça
+                            </span>
+                          </div>
+
+                          {/* Zoomed Line [-1 to 0] */}
+                          <div className="relative h-20 bg-slate-950 rounded-xl border border-slate-800 flex items-center px-10">
+                            {/* Base track */}
+                            <div className="w-full h-1.5 bg-slate-700 rounded-full relative flex items-center justify-between">
+                              {/* Left boundary: -1 */}
+                              <div className="absolute left-0 -translate-x-1/2 flex flex-col items-center">
+                                <div className="w-4 h-4 rounded-full bg-slate-600 border-2 border-slate-950" />
+                                <span className="text-xs font-black text-slate-300 mt-1.5 font-mono">-1</span>
+                              </div>
+
+                              {/* 1st quarter: -3/4 */}
+                              <div className="absolute left-[25%] -translate-x-1/2 flex flex-col items-center">
+                                <div className="w-5 h-5 rounded-full bg-rose-500 border-2 border-white shadow-[0_0_12px_rgba(244,63,94,0.9)] animate-bounce" />
+                                <span className="text-xs font-black text-rose-300 mt-1.5 font-mono bg-rose-950/90 px-1.5 py-0.5 rounded border border-rose-500/50">
+                                  -3/4
+                                </span>
+                              </div>
+
+                              {/* 2nd quarter: -2/4 = -1/2 */}
+                              <div className="absolute left-[50%] -translate-x-1/2 flex flex-col items-center">
+                                <div className="w-3 h-3 rounded-full bg-slate-500 border-2 border-slate-950" />
+                                <span className="text-[10px] font-mono text-slate-400 mt-1">-2/4 (-1/2)</span>
+                              </div>
+
+                              {/* 3rd quarter: -1/4 */}
+                              <div className="absolute left-[75%] -translate-x-1/2 flex flex-col items-center">
+                                <div className="w-3 h-3 rounded-full bg-slate-500 border-2 border-slate-950" />
+                                <span className="text-[10px] font-mono text-slate-400 mt-1">-1/4</span>
+                              </div>
+
+                              {/* Right boundary: 0 */}
+                              <div className="absolute right-0 translate-x-1/2 flex flex-col items-center">
+                                <div className="w-4 h-4 rounded-full bg-amber-400 border-2 border-slate-950 shadow-[0_0_8px_rgba(251,191,36,0.8)]" />
+                                <span className="text-xs font-black text-amber-300 mt-1.5 font-mono">0</span>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-emerald-300 font-bold flex items-center gap-1">
+                              📍 2 ile 3 Tam Sayıları Arası: 2 Eşit Parçaya Bölündü
+                            </span>
+                            <span className="font-mono bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold">
+                              +5/2 = +2 Tam 1/2 (Bileşik ➔ Tam Sayılı)
+                            </span>
+                          </div>
+
+                          {/* Zoomed Line [1 to 3] */}
+                          <div className="relative h-20 bg-slate-950 rounded-xl border border-slate-800 flex items-center px-10">
+                            {/* Base track */}
+                            <div className="w-full h-1.5 bg-slate-700 rounded-full relative flex items-center justify-between">
+                              {/* Left boundary: 1 */}
+                              <div className="absolute left-0 -translate-x-1/2 flex flex-col items-center">
+                                <div className="w-4 h-4 rounded-full bg-slate-600 border-2 border-slate-950" />
+                                <span className="text-xs font-black text-slate-300 mt-1.5 font-mono">1</span>
+                              </div>
+
+                              {/* Integer: 2 */}
+                              <div className="absolute left-[50%] -translate-x-1/2 flex flex-col items-center">
+                                <div className="w-4 h-4 rounded-full bg-slate-600 border-2 border-slate-950" />
+                                <span className="text-xs font-black text-slate-300 mt-1.5 font-mono">2</span>
+                              </div>
+
+                              {/* Target: 2.5 = 5/2 */}
+                              <div className="absolute left-[75%] -translate-x-1/2 flex flex-col items-center">
+                                <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_12px_rgba(16,185,129,0.9)] animate-bounce" />
+                                <span className="text-xs font-black text-emerald-300 mt-1.5 font-mono bg-emerald-950/90 px-1.5 py-0.5 rounded border border-emerald-500/50">
+                                  +5/2 (+2 1/2)
+                                </span>
+                              </div>
+
+                              {/* Right boundary: 3 */}
+                              <div className="absolute right-0 translate-x-1/2 flex flex-col items-center">
+                                <div className="w-4 h-4 rounded-full bg-slate-600 border-2 border-slate-950" />
+                                <span className="text-xs font-black text-slate-300 mt-1.5 font-mono">3</span>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Explanatory Takeaway Box */}
+                    <div className="p-3 rounded-xl bg-purple-950/40 border border-purple-500/40 text-xs space-y-1">
+                      <div className="text-purple-200 font-bold flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-purple-400" />
+                        <span>Rasyonel Sayıların Sayı Doğrusuna Yerleşimi:</span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 leading-relaxed">
+                        {activeSliceView === 'negative'
+                          ? 'Negatif rasyonel sayılarda 0 başlangıç noktasından SOLA doğru gidilir. -3/4 basit kesir olduğu için 0 ile -1 arasındadır; 4 eş dilimden 3. dilim seçilir.'
+                          : '+5/2 bileşik kesri 2 tam 1/2 değerine eşittir. Bu nedenle 2 ile 3 tam sayıları arasında yer alır ve 2 eş dilimden 1. dilime işaret konur.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.1 - 4. BÖLÜM: EULER ŞEMASI & GİZLİ PAYDA SIRRI */}
+                {currentPage.visualScene.type === 'euler-diagram-sets' && (
+                  <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/90 text-white rounded-2xl">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center">
+                          <Layers className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-indigo-300 uppercase tracking-wider">Sayı Kümeleri Euler Şeması</div>
+                          <div className="text-[10px] text-slate-400 font-mono">ℕ ⊂ ℤ ⊂ ℚ (Doğal ⊂ Tam ⊂ Rasyonel)</div>
+                        </div>
+                      </div>
+                      <div className="px-2.5 py-1 rounded-lg bg-indigo-950/80 border border-indigo-500/40 text-indigo-200 font-mono text-xs font-bold">
+                        {eulerActiveNum === '4/0' ? '🚨 TANIMSIZ!' : `${eulerActiveNum} = ${eulerActiveNum}/1 ∈ ℚ`}
+                      </div>
+                    </div>
+
+                    {/* Euler Diagram Graphic & Undefined Zone */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 grid grid-cols-12 gap-3 items-center">
+                      {/* Nested Euler Rings */}
+                      <div className="col-span-8 flex items-center justify-center py-2">
+                        <div className={`relative rounded-3xl p-4 transition-all duration-300 border-2 ${
+                          eulerActiveNum !== '4/0'
+                            ? 'bg-indigo-950/60 border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)]'
+                            : 'bg-slate-900/40 border-slate-800 opacity-60'
+                        }`}>
+                          <div className="absolute top-1.5 left-3 text-[10px] font-black text-indigo-300">
+                            ℚ Rasyonel Sayılar
+                          </div>
+                          <div className="absolute top-1.5 right-3 text-[9px] font-mono text-indigo-400/80">
+                            -3/4, 2/5, 0.75
+                          </div>
+
+                          {/* Middle ring: Z Integers */}
+                          <div className={`rounded-2xl p-4 mt-3 transition-all duration-300 border-2 ${
+                            ['+5', '-4', '0'].includes(eulerActiveNum)
+                              ? 'bg-blue-950/80 border-blue-400 shadow-[0_0_12px_rgba(96,165,250,0.3)]'
+                              : 'bg-slate-900/60 border-slate-800 opacity-50'
+                          }`}>
+                            <div className="absolute top-7 left-5 text-[10px] font-black text-blue-300">
+                              ℤ Tam Sayılar
+                            </div>
+                            <div className="absolute top-7 right-5 text-[9px] font-mono text-blue-400/80">
+                              -4, -12
+                            </div>
+
+                            {/* Inner ring: N Natural Numbers */}
+                            <div className={`rounded-xl p-3 mt-4 text-center transition-all duration-300 border-2 ${
+                              ['+5', '0'].includes(eulerActiveNum)
+                                ? 'bg-emerald-950/90 border-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.4)]'
+                                : 'bg-slate-900/70 border-slate-800 opacity-50'
+                            }`}>
+                              <div className="text-[10px] font-black text-emerald-300">ℕ Doğal Sayılar</div>
+                              <div className="text-xs font-mono font-bold text-emerald-200 mt-0.5">0, 1, 5, 42...</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Undefined / Danger Zone */}
+                      <div className="col-span-4 h-full flex flex-col justify-center">
+                        <div className={`p-2.5 rounded-2xl border-2 border-dashed transition-all duration-300 text-center space-y-1 ${
+                          eulerActiveNum === '4/0'
+                            ? 'bg-rose-950/80 border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-pulse'
+                            : 'bg-slate-950/60 border-slate-800 text-slate-500'
+                        }`}>
+                          <ShieldAlert className={`w-5 h-5 mx-auto ${eulerActiveNum === '4/0' ? 'text-rose-400' : 'text-slate-600'}`} />
+                          <div className={`text-[10px] font-black ${eulerActiveNum === '4/0' ? 'text-rose-200' : 'text-slate-500'}`}>
+                            Yasak Bölge
+                          </div>
+                          <div className="text-[10px] font-mono font-bold">a / 0</div>
+                          <div className="text-[9px] leading-tight">Payda 0 ise TANIMSIZDIR!</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Active Number Verification Feedback */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">İncelemek İstediğin Sayıyı Seç:</div>
+                      <div className="grid grid-cols-5 gap-1.5">
+                        {['+5', '-4', '0', '2/3', '4/0'].map((num) => (
+                          <button
+                            key={num}
+                            onClick={() => {
+                              setEulerActiveNum(num);
+                              setEulerSecretRevealed(false);
+                              playSound('select');
+                            }}
+                            className={`p-2 rounded-xl text-center border transition-all ${
+                              eulerActiveNum === num
+                                ? num === '4/0'
+                                  ? 'bg-rose-500/30 border-rose-400 text-rose-200 font-black'
+                                  : 'bg-indigo-500/30 border-indigo-400 text-indigo-200 font-black'
+                                : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800 text-xs font-mono font-bold'
+                            }`}
+                          >
+                            <span>{num}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Analysis box for selected number */}
+                      <div className={`p-2.5 rounded-xl border text-xs flex items-center justify-between ${
+                        eulerActiveNum === '4/0'
+                          ? 'bg-rose-950/50 border-rose-500/40 text-rose-200'
+                          : 'bg-slate-900 border-slate-800 text-slate-200'
+                      }`}>
+                        <div className="space-y-0.5">
+                          <span className="font-bold">Küme Üyeliği: </span>
+                          {eulerActiveNum === '+5' && '5 ∈ ℕ, 5 ∈ ℤ ve 5 = 5/1 ∈ ℚ (Hem Doğal, hem Tam, hem Rasyonel!)'}
+                          {eulerActiveNum === '-4' && '-4 ∉ ℕ (Doğal değil), ancak -4 ∈ ℤ ve -4 = -4/1 ∈ ℚ (Tam ve Rasyonel!)'}
+                          {eulerActiveNum === '0' && '0 ∈ ℕ, 0 ∈ ℤ ve 0 = 0/1 ∈ ℚ (Denge noktası tüm kümelere aittir!)'}
+                          {eulerActiveNum === '2/3' && '2/3 ∉ ℕ, 2/3 ∉ ℤ, sadece 2/3 ∈ ℚ (Saf rasyonel sayı!)'}
+                          {eulerActiveNum === '4/0' && '🚨 4/0 TANIMSIZDIR! Payda sıfır olamaz, hiçbir kümenin elemanı DEĞİLDİR!'}
+                        </div>
+                        {['+5', '-4', '0'].includes(eulerActiveNum) && (
+                          <button
+                            onClick={() => {
+                              setEulerSecretRevealed(!eulerSecretRevealed);
+                              playSound('click');
+                            }}
+                            className="px-2 py-1 rounded-lg bg-indigo-600/40 hover:bg-indigo-600/60 border border-indigo-400 text-[10px] font-bold text-indigo-200 shrink-0 ml-2"
+                          >
+                            {eulerSecretRevealed ? `Gizli Payda: ${eulerActiveNum}/1 ✨` : 'Gizli Paydayı Çöz 🔍'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* GENERIC GEOMETRIC CHALKBOARD SCENE FALLBACK (For any unexpected scene type) */}
                 {![
                   'point-map',
@@ -2139,7 +2719,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   'common-divisors-grid',
                   'trees-planting-model',
                   'double-number-line-multiples',
-                  'coprime-venn-diagram'
+                  'coprime-venn-diagram',
+                  'smart-home-meter',
+                  'absolute-value-laser',
+                  'fractional-energy-slices',
+                  'euler-diagram-sets'
                 ].includes(currentPage.visualScene.type) && (
                   <div className="w-full h-full p-5 bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 flex flex-col items-center justify-center text-center space-y-3">
                     <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border-2 border-teal-400 text-teal-300 flex items-center justify-center">

@@ -728,11 +728,96 @@ const MAT_6_1_4_PAIRS: MemoryPair[] = [
   }
 ];
 
+// 7. MAT.7.1.1 Pairs (Tam Sayılardan Rasyonel Sayılara)
+const MAT_7_1_1_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat71-p1',
+    concept: 'RASYONEL SAYILAR',
+    symbol: 'ℚ (a/b, b ≠ 0)',
+    badge: 'ℚ Rasyonel Sayı',
+    definition: 'a ve b tam sayı ve b sıfırdan farklı olmak üzere a/b şeklinde yazılabilen sayılar kümesidir.',
+    example: '3/4, -5/2, 0, 7 gibi sayılar rasyonel sayıdır.',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat71-p2',
+    concept: 'GİZLİ PAYDA KURALI',
+    symbol: 'a = a/1',
+    badge: '🔮 Gizli Payda',
+    definition: 'Her tam sayının paydasında görünmeyen 1 vardır; bu yüzden her tam sayı bir rasyonel sayıdır.',
+    example: '-4 = -4/1 = 4/(-1) = -(4/1)',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat71-p3',
+    concept: 'TANIMSIZ KESİR',
+    symbol: 'a / 0 (b = 0)',
+    badge: '🚫 Tanımsız',
+    definition: 'Paydası sıfır olan kesirli ifadeler matematiksel olarak tanımsızdır ve sayı belirtmez.',
+    example: '5/0 tanımsızdır; ancak 0/5 = 0 bir rasyonel sayıdır.',
+    color: '#ef4444'
+  },
+  {
+    id: 'mat71-p4',
+    concept: 'MUTLAK DEĞER',
+    symbol: '|x| ≥ 0',
+    badge: '📏 Uzaklık Metresi',
+    definition: 'Bir sayının sayı doğrusundaki başlangıç noktasına (0) olan yönsüz gerçek uzaklığıdır.',
+    example: '|-4| = |+4| = 4 birim mesafe.',
+    color: '#10b981'
+  },
+  {
+    id: 'mat71-p5',
+    concept: 'SAYI KÜMELERİ EULER ŞEMASI',
+    symbol: 'ℕ ⊂ ℤ ⊂ ℚ',
+    badge: '⭕ Kümeler Hiyerarşisi',
+    definition: 'Doğal sayılar tam sayıların, tam sayılar da rasyonel sayıların bir alt kümesidir.',
+    example: '5 hem ℕ, hem ℤ, hem ℚ elemanıdır; -3 ise ℤ ve ℚ elemanıdır.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat71-p6',
+    concept: 'SAYI DOĞRUSU DİLİMLEME',
+    symbol: 'Aralık / Payda',
+    badge: '📐 Eşit Dilim',
+    definition: 'Ardışık iki tam sayı arasını kesrin paydası kadar eşit parçaya bölerek rasyonel noktayı bulma.',
+    example: '0 ile -1 arasını 4 eşit parçaya bölüp sola 1 adım giderek -1/4 bulunur.',
+    color: '#06b6d4'
+  },
+  {
+    id: 'mat71-p7',
+    concept: 'AKILLI EV ENERJİ DENGESİ',
+    symbol: '0 kWh = Denge',
+    badge: '🏡 Tasarruf (D17)',
+    definition: 'Güneş üretimini pozitif (+), şebeke çekimini negatif (-) alarak sıfır referansına göre bütçeleme.',
+    example: '+120 kWh solar ve -150 kWh şebeke çekimi ile net bakiye -30 kWh olur.',
+    color: '#eab308'
+  },
+  {
+    id: 'mat71-p8',
+    concept: 'NEGATİF İŞARET KONUMU',
+    symbol: '-a/b = (-a)/b = a/(-b)',
+    badge: '⚖️ Eşit Temsil',
+    definition: 'Negatif bir rasyonel sayıda eksi işareti kesir çizgisinin önüne, paya veya paydaya yazılabilir.',
+    example: '-2/3 kesri (-2)/3 veya 2/(-3) ile tamamen aynı değere sahiptir.',
+    color: '#ec4899'
+  }
+];
+
 // Helper to resolve pairs and topic info
 function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTitle?: string): { code: string; title: string; pairs: MemoryPair[] } {
   const id = outcomeId || '';
   const code = outcomeCode || '';
   const title = (outcomeTitle || '').toLowerCase();
+
+  // 0. MAT.7.1.1 Check
+  if (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel')) {
+    return {
+      code: 'MAT.7.1.1',
+      title: 'Tam Sayılardan Rasyonel Sayılara',
+      pairs: MAT_7_1_1_PAIRS
+    };
+  }
 
   // 1. Direct ID / Code Check (Exact topic matching)
   if (id === 'MAT.6.1.4' || code.includes('6.1.4') || title.includes('ortak kat') || title.includes('ortak bölen')) {
