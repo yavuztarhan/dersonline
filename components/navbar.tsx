@@ -11,7 +11,7 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { MessageInboxModal } from '@/components/messages/message-inbox-modal';
 import { AppDrawer } from '@/components/navigation/app-drawer';
 import { FeedbackModal } from '@/components/feedback/feedback-modal';
-import { getUnreadMessageCount } from '@/lib/message-store';
+import { getUnreadMessageCount, syncMessagesWithDatabase } from '@/lib/message-store';
 import { TeacherBoardAuthModal } from '@/components/teacher/teacher-board-auth-modal';
 import {
   Award,
@@ -45,8 +45,17 @@ export function Navbar() {
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [teacherBoardAuthOpen, setTeacherBoardAuthOpen] = useState(false);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [unreadRefresh, setUnreadRefresh] = useState(0);
 
   const unreadMessageCount = currentUser ? getUnreadMessageCount(currentUser.id) : 0;
+
+  React.useEffect(() => {
+    if (currentUser?.id) {
+      syncMessagesWithDatabase(currentUser.id, currentUser.email).then(() => {
+        setUnreadRefresh((prev) => prev + 1);
+      });
+    }
+  }, [currentUser?.id, currentUser?.email]);
 
   const pathname = usePathname();
   const router = useRouter();

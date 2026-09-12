@@ -71,16 +71,25 @@ const SEED_MESSAGES: MessageRecord[] = [
   }
 ];
 
+export const MESSAGE_RETENTION_DAYS = 90;
+
 export function getStoredMessages(): MessageRecord[] {
   if (typeof window === 'undefined') return SEED_MESSAGES;
   try {
     const raw = localStorage.getItem(STORAGE_MESSAGES_KEY);
+    const cutoff = Date.now() - MESSAGE_RETENTION_DAYS * 24 * 60 * 60 * 1000;
     if (!raw) {
       localStorage.setItem(STORAGE_MESSAGES_KEY, JSON.stringify(SEED_MESSAGES));
       return SEED_MESSAGES;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : SEED_MESSAGES;
+    if (!Array.isArray(parsed)) return SEED_MESSAGES;
+    // 90 günden eski mesajları yerel hafızadan da süpür
+    const valid = parsed.filter((m: MessageRecord) => new Date(m.createdAt).getTime() >= cutoff);
+    if (valid.length !== parsed.length) {
+      localStorage.setItem(STORAGE_MESSAGES_KEY, JSON.stringify(valid));
+    }
+    return valid;
   } catch (err) {
     console.warn('Mesajlar yüklenirken hata oluştu:', err);
     return SEED_MESSAGES;
@@ -189,12 +198,30 @@ export function markMessageAsRead(messageId: string): void {
   const all = getStoredMessages();
   const updated = all.map((m) => (m.id === messageId ? { ...m, read: true } : m));
   saveStoredMessages(updated);
+
+  // Veritabanında da okundu olarak işaretle
+  if (typeof window !== 'undefined') {
+    fetch('/api/messages', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messageId, read: true }),
+    }).catch((e) => console.warn('Mesaj okundu DB güncelleme uyarısı:', e));
+  }
 }
 
 export function deleteMessage(messageId: string): void {
   const all = getStoredMessages();
   const updated = all.filter((m) => m.id !== messageId);
   saveStoredMessages(updated);
+
+  // Veritabanından da sil
+  if (typeof window !== 'undefined') {
+    fetch('/api/messages', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messageId }),
+    }).catch((e) => console.warn('Mesaj silme DB uyarısı:', e));
+  }
 }
 
 export interface SendMessagePayload {
@@ -247,8 +274,9 @@ export function sendMessage(payload: SendMessagePayload): { success: boolean; me
     };
   }
 
+  const localId = `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   const newMessage: MessageRecord = {
-    id: `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    id: localId,
     senderId: payload.senderId,
     senderName: payload.senderName,
     senderRole: payload.senderRole,
@@ -267,5 +295,71 @@ export function sendMessage(payload: SendMessagePayload): { success: boolean; me
   const updated = [newMessage, ...current];
   saveStoredMessages(updated);
 
+  // Veritabanına kaydet (PostgreSQL Message tablosu + 90 gün retention kuralı)
+  if (typeof window !== 'undefined') {
+    fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newMessage),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data?.message?.id && data.message.id !== localId) {
+          const stored = getStoredMessages();
+          const mapped = stored.map((m) => (m.id === localId ? { ...m, id: data.message.id } : m));
+          saveStoredMessages(mapped);
+        }
+      })
+      .catch((e) => console.warn('Mesaj DB kayıt uyarısı:', e));
+  }
+
   return { success: true, message: newMessage };
+}
+
+/**
+ * Kullanıcının mesajlarını veritabanı ile çift yönlü senkronize eder (90 gün filtresiyle).
+ */
+export async function syncMessagesWithDatabase(userId?: string, email?: string): Promise<MessageRecord[]> {
+  if (typeof window === 'undefined' || (!userId && !email)) {
+    return getStoredMessages();
+  }
+
+  try {
+    const url = `/api/messages?userId=${encodeURIComponent(userId || '')}&email=${encodeURIComponent(email || '')}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data?.success && Array.isArray(data.messages)) {
+      const cutoff = Date.now() - MESSAGE_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+      const dbMessages: MessageRecord[] = data.messages.filter(
+        (m: any) => new Date(m.createdAt).getTime() >= cutoff
+      );
+
+      const local = getStoredMessages();
+      const msgMap = new Map<string, MessageRecord>();
+
+      // Yerel mesajları (90 gün içindeyse) ekle
+      local.forEach((m) => {
+        if (new Date(m.createdAt).getTime() >= cutoff) {
+          msgMap.set(m.id, m);
+        }
+      });
+
+      // Veritabanı mesajlarını haritaya ekle (DB asıl gerçektir)
+      dbMessages.forEach((m) => {
+        msgMap.set(m.id, m);
+      });
+
+      const merged = Array.from(msgMap.values()).sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      saveStoredMessages(merged);
+      return merged;
+    }
+  } catch (err) {
+    console.warn('[Message Sync Note]:', err);
+  }
+
+  return getStoredMessages();
 }

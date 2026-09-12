@@ -16,7 +16,8 @@ import {
   DAILY_MESSAGE_LIMIT,
   getRemainingDailyMessages,
   getDailySentMessageCount,
-  formatMessageDateTime
+  formatMessageDateTime,
+  syncMessagesWithDatabase
 } from '@/lib/message-store';
 import { checkContentSafety } from '@/lib/profanity-filter';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -79,6 +80,12 @@ export function MessageInboxModal({
     const sent = getSentForUser(userId);
     setInboxMessages(inbox);
     setSentMessages(sent);
+
+    // Veritabanı ile çift yönlü arka plan senkronizasyonu
+    syncMessagesWithDatabase(userId, currentUser.email).then(() => {
+      setInboxMessages(getInboxForUser(userId));
+      setSentMessages(getSentForUser(userId));
+    });
   };
 
   useEffect(() => {

@@ -269,3 +269,26 @@ model LoginLog {
   @@index([createdAt])
   @@map("login_logs")
 }
+
+model Message {
+  id                   String   @id @default(cuid())
+  senderId             String
+  senderName           String
+  senderRole           String   // admin, teacher, student
+  senderAvatar         String?
+  receiverId           String
+  receiverName         String
+  receiverRole         String   // admin, teacher, student
+  receiverClassSection String?
+  title                String
+  content              String   @db.VarChar(500)
+  read                 Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([receiverId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("messages")
+}
+

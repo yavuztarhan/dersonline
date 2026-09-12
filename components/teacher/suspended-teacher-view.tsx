@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ShieldAlert,
   Send,
@@ -14,7 +14,7 @@ import {
   Lock
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-store';
-import { sendMessage, getInboxForUser, MessageRecord, markMessageAsRead } from '@/lib/message-store';
+import { sendMessage, getInboxForUser, MessageRecord, markMessageAsRead, syncMessagesWithDatabase } from '@/lib/message-store';
 import confetti from 'canvas-confetti';
 
 export function SuspendedTeacherView() {
@@ -26,9 +26,16 @@ export function SuspendedTeacherView() {
   const [successMsg, setSuccessMsg] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<MessageRecord | null>(null);
+  const [inboxMessages, setInboxMessages] = useState<MessageRecord[]>([]);
 
-  // Get messages sent to this suspended teacher from admin
-  const inboxMessages = currentUser?.id ? getInboxForUser(currentUser.id) : [];
+  useEffect(() => {
+    if (currentUser?.id) {
+      setInboxMessages(getInboxForUser(currentUser.id));
+      syncMessagesWithDatabase(currentUser.id, currentUser.email).then(() => {
+        setInboxMessages(getInboxForUser(currentUser.id));
+      });
+    }
+  }, [currentUser?.id, currentUser?.email]);
 
   const handleSendMessageToAdmin = (e: React.FormEvent) => {
     e.preventDefault();
