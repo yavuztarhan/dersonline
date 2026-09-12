@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
+import { useAuth } from '@/lib/auth-store';
 import { PedagogyGuide, Outcome } from '@/types';
 import { LessonPlanModal } from '@/components/lesson-plan-modal';
 import {
@@ -29,9 +30,10 @@ interface TeacherGuideDrawerProps {
 
 export function TeacherGuideDrawer({ outcomeCode, outcomeTitle, guide, outcome }: TeacherGuideDrawerProps) {
   const { teacherDrawerOpen, setTeacherDrawerOpen, playSound } = useApp();
+  const { currentUser } = useAuth();
   const [showPlanModal, setShowPlanModal] = useState(false);
 
-  if (!teacherDrawerOpen) return null;
+  if (!teacherDrawerOpen || currentUser?.role === 'student') return null;
 
   return (
     <div className="fixed inset-0 z-[70] flex justify-end bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">

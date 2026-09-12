@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
+import { useAuth } from '@/lib/auth-store';
 import { LessonPhaseId, Outcome } from '@/types';
 import { getOutcomeById } from '@/lib/curriculum-data';
 import { WhiteboardModal } from '@/components/whiteboard/whiteboard-modal';
@@ -73,6 +74,9 @@ export function BoardToolbar({
     isFullscreen,
     toggleFullscreen,
   } = useApp();
+  const { currentUser } = useAuth();
+  const isTeacherOrAdmin = currentUser ? (currentUser.role === 'teacher' || currentUser.role === 'admin') : (role === 'teacher');
+  const isStudent = currentUser?.role === 'student' || role === 'student';
 
   const targetOutcome = outcome || getOutcomeById(outcomeCode);
 
@@ -442,20 +446,22 @@ export function BoardToolbar({
             <Users className="w-5 h-5" />
           </button>
 
-          {/* Teacher Guide Drawer Trigger */}
-          <button
-            onClick={() => {
-              playSound('click');
-              setTeacherDrawerOpen(true);
-            }}
-            className="p-3 rounded-2xl hover:bg-slate-800 text-teal-400 hover:text-teal-300 transition-colors"
-            title="Öğretmen Kılavuzu & Maarif İpuçları"
-          >
-            <BookOpen className="w-5 h-5" />
-          </button>
+          {/* Teacher Guide Drawer Trigger (Teacher / Admin Only) */}
+          {isTeacherOrAdmin && !isStudent && (
+            <button
+              onClick={() => {
+                playSound('click');
+                setTeacherDrawerOpen(true);
+              }}
+              className="p-3 rounded-2xl hover:bg-slate-800 text-teal-400 hover:text-teal-300 transition-colors"
+              title="Öğretmen Kılavuzu & Maarif İpuçları"
+            >
+              <BookOpen className="w-5 h-5" />
+            </button>
+          )}
 
-          {/* Teacher Answer Key Toggle */}
-          {role === 'teacher' && (
+          {/* Teacher Answer Key Toggle (Teacher / Admin Only) */}
+          {isTeacherOrAdmin && !isStudent && (
             <button
               onClick={() => {
                 playSound('click');

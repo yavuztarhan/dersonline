@@ -531,19 +531,21 @@ export function StepSelector() {
                             </span>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              playSound('select');
-                              setPlanModalOutcome(outcome);
-                            }}
-                            className="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                            title="Bu kazanımın resmi Maarif Modeli Günlük Planını PDF olarak indir"
-                          >
-                            <FileText className="w-3.5 h-3.5 text-teal-600" />
-                            <span>Plan İndir (PDF)</span>
-                          </button>
+                          {!isStudent && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                playSound('select');
+                                setPlanModalOutcome(outcome);
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                              title="Bu kazanımın resmi Maarif Modeli Günlük Planını PDF olarak indir"
+                            >
+                              <FileText className="w-3.5 h-3.5 text-teal-600" />
+                              <span>Plan İndir (PDF)</span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
@@ -574,17 +576,19 @@ export function StepSelector() {
               </div>
 
               <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-                <button
-                  type="button"
-                  onClick={() => {
-                    playSound('select');
-                    setPlanModalOutcome(selectedOutcome);
-                  }}
-                  className="w-full sm:w-auto px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
-                >
-                  <FileText className="w-4 h-4 text-teal-400" />
-                  <span>Ders Planı (PDF)</span>
-                </button>
+                {!isStudent && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playSound('select');
+                      setPlanModalOutcome(selectedOutcome);
+                    }}
+                    className="w-full sm:w-auto px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                  >
+                    <FileText className="w-4 h-4 text-teal-400" />
+                    <span>Ders Planı (PDF)</span>
+                  </button>
+                )}
 
                 <button
                   onClick={handleLaunchLesson}
@@ -600,7 +604,7 @@ export function StepSelector() {
       )}
 
       {/* Lesson Plan PDF Modal */}
-      {planModalOutcome && (
+      {planModalOutcome && !isStudent && (
         <LessonPlanModal
           isOpen={!!planModalOutcome}
           onClose={() => setPlanModalOutcome(null)}
