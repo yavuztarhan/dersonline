@@ -1469,6 +1469,8 @@ export const CURRICULUM_DATA: Grade[] = [
           }
         ]
       },
+      /*
+      // Matematik haricindeki dersler şimdilik yorum satırına alındı
       {
         id: 'sci-5',
         gradeId: 'grade-5',
@@ -1490,6 +1492,7 @@ export const CURRICULUM_DATA: Grade[] = [
           }
         ]
       }
+      */
     ]
   },
   {
