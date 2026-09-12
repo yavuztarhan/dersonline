@@ -77,6 +77,7 @@ interface AuthContextType {
   addStudentsBulk: (students: StudentUser[]) => { addedCount: number; updatedCount: number };
   updateStudent: (student: StudentUser) => void;
   deleteStudent: (studentId: string) => void;
+  resetStudentPassword: (studentId: string) => { success: boolean; newPassword?: string };
   awardPointsToStudent: (studentId: string, pts: number, reason?: string, subject?: string) => void;
   getVisibleStudents: (user?: AuthUser | null) => StudentUser[];
 }
@@ -711,6 +712,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return next;
     });
 
+    const isStudentUser = currentUser?.role === 'student' || students.some((s) => s.id === userId);
+
     setTeachers((prev) => {
       const next = prev.map((t) => (t.id === userId || (targetEmail && t.email?.toLowerCase() === targetEmail) ? { ...t, password: newPassword } : t));
       try {
@@ -720,7 +723,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     setStudents((prev) => {
-      const next = prev.map((s) => (s.id === userId || (targetEmail && s.email?.toLowerCase() === targetEmail) ? { ...s, password: newPassword } : s));
+      const next = prev.map((s) => {
+        if (s.id === userId || (targetEmail && s.email?.toLowerCase() === targetEmail)) {
+          return {
+            ...s,
+            password: newPassword,
+            isPasswordChangedByStudent: isStudentUser ? true : s.isPasswordChangedByStudent
+          };
+        }
+        return s;
+      });
       try {
         localStorage.setItem('maarif_students', JSON.stringify(next));
       } catch (e) {}
@@ -730,7 +742,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCurrentUser((prev) => {
       if (!prev) return prev;
       if (prev.id === userId || (targetEmail && prev.email?.toLowerCase() === targetEmail)) {
-        const updated = { ...prev, password: newPassword };
+        const updated = {
+          ...prev,
+          password: newPassword,
+          ...(prev.role === 'student' ? { isPasswordChangedByStudent: true } : {})
+        };
         try {
           localStorage.setItem('maarif_current_user', JSON.stringify(updated));
         } catch (e) {}
@@ -739,7 +755,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return prev;
     });
 
-    if (targetEmail) {
+    if (isStudentUser) {
+      try {
+        fetch('/api/students', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'update_password',
+            studentId: userId,
+            newPassword,
+            isPasswordChangedByStudent: true
+          }),
+        }).catch(() => {});
+      } catch (e) {}
+    } else if (targetEmail) {
       try {
         const u = currentUser;
         fetch('/api/user/profile', {
@@ -2010,6 +2039,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStudents((prev) => prev.filter((s) => s.id !== studentId));
   };
 
+  const resetStudentPassword = (studentId: string): { success: boolean; newPassword?: string } => {
+    if (!studentId) return { success: false };
+    const newPassword = generateRandomStudentPassword(6);
+
+    setStudents((prev) => {
+      const next = prev.map((s) => {
+        if (s.id === studentId) {
+          return { ...s, password: newPassword, isPasswordChangedByStudent: false };
+        }
+        return s;
+      });
+      try {
+        localStorage.setItem('maarif_students', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
+    setCurrentUser((prev) => {
+      if (prev && prev.id === studentId) {
+        const updated = { ...prev, password: newPassword, isPasswordChangedByStudent: false };
+        try {
+          localStorage.setItem('maarif_current_user', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      }
+      return prev;
+    });
+
+    try {
+      fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_password',
+          studentId,
+          newPassword,
+          isPasswordChangedByStudent: false
+        })
+      }).catch(() => {});
+    } catch (e) {}
+
+    return { success: true, newPassword };
+  };
+
   const awardPointsToStudent = (studentId: string, pts: number, reason?: string, subject?: string) => {
     const activeSubject = subject || 'Matematik';
 
@@ -2277,6 +2350,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         addStudentsBulk,
         updateStudent,
         deleteStudent,
+        resetStudentPassword,
         awardPointsToStudent,
         getVisibleStudents
       }}

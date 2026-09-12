@@ -36,7 +36,8 @@ import {
   RefreshCw,
   Eye,
   EyeOff,
-  UserCheck
+  UserCheck,
+  Hash
 } from 'lucide-react';
 
 const BRANCH_OPTIONS = [
@@ -83,6 +84,12 @@ export default function ProfilePage() {
   const [customSchoolName, setCustomSchoolName] = useState('');
   const [assignedClasses, setAssignedClasses] = useState<string[]>(['5-A', '5-B']);
   
+  // Student Specific States
+  const isStudent = currentUser?.role === 'student';
+  const [studentNumber, setStudentNumber] = useState('');
+  const [studentClassSection, setStudentClassSection] = useState('');
+  const [studentClassCode, setStudentClassCode] = useState('');
+
   // Dropdown Class Selector States
   const [selectedGrade, setSelectedGrade] = useState<'5' | '6' | '7' | '8'>('5');
   const [selectedSection, setSelectedSection] = useState<string>('A');
@@ -91,6 +98,7 @@ export default function ProfilePage() {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [passwordMsg, setPasswordMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   // Live API States
@@ -142,6 +150,12 @@ export default function ProfilePage() {
         setAssignedClasses(userObj.assignedClasses);
       } else {
         setAssignedClasses(['5-A', '5-B']);
+      }
+
+      if (userObj.role === 'student') {
+        setStudentNumber(userObj.studentNumber || '');
+        setStudentClassSection(userObj.classSection || '5-A');
+        setStudentClassCode(userObj.classCode || '');
       }
     }
   }, [currentUser]);
@@ -278,7 +292,12 @@ export default function ProfilePage() {
       const ok = setUserPassword(currentUser.id, password);
       if (ok) {
         playSound('success');
-        setPasswordMsg({ text: 'Giriş şifreniz başarıyla kaydedildi! Artık e-posta ve şifrenizle giriş yapabilirsiniz.', type: 'success' });
+        setPasswordMsg({
+          text: isStudent
+            ? 'Giriş şifreniz başarıyla kaydedildi! Artık yeni belirlediğiniz şifrenizle giriş yapabilirsiniz.'
+            : 'Giriş şifreniz başarıyla kaydedildi! Artık e-posta ve şifrenizle giriş yapabilirsiniz.',
+          type: 'success'
+        });
         setPassword('');
         setPasswordConfirm('');
       }
@@ -290,6 +309,32 @@ export default function ProfilePage() {
     e.preventDefault();
     setErrorMsg('');
     setSavedSuccess(false);
+
+    // Öğrenci için form gönderimi
+    if (isStudent) {
+      if (password) {
+        const validation = validatePassword(password);
+        if (!validation.isValid) {
+          setErrorMsg(validation.errorMessage || 'Şifre kurallara uymuyor.');
+          return;
+        }
+        if (password !== passwordConfirm) {
+          setErrorMsg('Girdiğiniz şifreler eşleşmiyor.');
+          return;
+        }
+        if (currentUser) {
+          setUserPassword(currentUser.id, password);
+        }
+      }
+      setIsSubmitting(true);
+      playSound('success');
+      setSavedSuccess(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        router.push('/');
+      }, 800);
+      return;
+    }
 
     if (!firstName.trim()) {
       setErrorMsg('Lütfen adınızı giriniz.');
@@ -481,7 +526,13 @@ export default function ProfilePage() {
               </span>
             </div>
             <div className="pt-2 text-[11px] text-slate-300">
-              🔒 Güvenli Kullanıcı Hesabı. E-posta adresi doğrulanmıştır.
+              {isStudent ? (
+                <span className="text-teal-200 font-semibold">
+                  🎓 Öğrenci Hesabı • {studentClassSection || '5-A'} Şubesi • Okul No: #{studentNumber}
+                </span>
+              ) : (
+                <span>🔒 Güvenli Kullanıcı Hesabı. E-posta adresi doğrulanmıştır.</span>
+              )}
             </div>
           </div>
         </div>
@@ -493,92 +544,152 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Ad */}
             <div className="space-y-1.5">
-              <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-teal-600" />
-                <span>Ad (İsim)</span>
-                <span className="text-rose-500">*</span>
+              <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Ad (İsim)</span>
+                  {!isStudent && <span className="text-rose-500">*</span>}
+                </span>
+                {isStudent && (
+                  <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-slate-400" />
+                    <span>Değiştirilemez</span>
+                  </span>
+                )}
               </label>
               <input
                 type="text"
                 required
+                disabled={isStudent}
+                readOnly={isStudent}
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Örn: Ahmet"
-                className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
+                className={`w-full px-4 py-3 rounded-2xl border text-xs font-bold outline-none transition-all ${
+                  isStudent
+                    ? 'bg-slate-100 border-slate-200 text-slate-600 cursor-not-allowed select-none'
+                    : 'border-slate-200 text-slate-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10'
+                }`}
               />
             </div>
 
             {/* Soyad */}
             <div className="space-y-1.5">
-              <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-teal-600" />
-                <span>Soyad</span>
-                <span className="text-rose-500">*</span>
+              <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Soyad</span>
+                  {!isStudent && <span className="text-rose-500">*</span>}
+                </span>
+                {isStudent && (
+                  <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-slate-400" />
+                    <span>Değiştirilemez</span>
+                  </span>
+                )}
               </label>
               <input
                 type="text"
                 required
+                disabled={isStudent}
+                readOnly={isStudent}
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Örn: Yılmaz"
-                className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
+                className={`w-full px-4 py-3 rounded-2xl border text-xs font-bold outline-none transition-all ${
+                  isStudent
+                    ? 'bg-slate-100 border-slate-200 text-slate-600 cursor-not-allowed select-none'
+                    : 'border-slate-200 text-slate-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10'
+                }`}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* E-Posta Adresi (Disabled / Read Only) */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Kayıtlı E-Posta Adresi</span>
-                </span>
-                <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                  <Lock className="w-3 h-3 text-slate-400" />
-                  <span>Değiştirilemez</span>
-                </span>
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  disabled
-                  readOnly
-                  value={email}
-                  className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-500 cursor-not-allowed select-none"
-                />
-                <div className="absolute right-3.5 top-3.5 flex items-center gap-1 text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-                  <ShieldCheck className="w-3 h-3 text-blue-600" />
-                  <span>Doğrulandı</span>
+            {/* Öğrenci için: Okul Numarası (Değiştirilemez) */}
+            {isStudent && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Hash className="w-3.5 h-3.5 text-teal-600" />
+                    <span>Okul Numarası</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-slate-400" />
+                    <span>Değiştirilemez</span>
+                  </span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    disabled
+                    readOnly
+                    value={studentNumber}
+                    className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-mono font-black text-slate-700 cursor-not-allowed select-none"
+                  />
+                  <div className="absolute right-3.5 top-3.5 flex items-center gap-1 text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
+                    <span>Okul Kaydı</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Telefon Numarası */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-teal-600" />
-                  <span>İletişim Cep Telefonu</span>
-                  <span className="text-rose-500">*</span>
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">10 Hane (5XX...)</span>
-              </label>
-              <div className="flex rounded-2xl border border-slate-200 overflow-hidden focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/10 transition-all bg-white">
-                <span className="inline-flex items-center px-4 py-3 bg-slate-100 border-r border-slate-200 text-slate-700 font-black text-xs select-none">
-                  🇹🇷 +90
-                </span>
-                <input
-                  type="tel"
-                  required={currentUser.role === 'teacher'}
-                  maxLength={10}
-                  value={phone}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                  placeholder="5051234567"
-                  className="w-full px-4 py-3 text-xs font-bold text-slate-900 outline-none bg-transparent"
-                />
+            {/* Öğretmen ve Yönetici için: E-Posta Adresi */}
+            {!isStudent && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Kayıtlı E-Posta Adresi</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-slate-400" />
+                    <span>Değiştirilemez</span>
+                  </span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    disabled
+                    readOnly
+                    value={email}
+                    className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-500 cursor-not-allowed select-none"
+                  />
+                  <div className="absolute right-3.5 top-3.5 flex items-center gap-1 text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                    <ShieldCheck className="w-3 h-3 text-blue-600" />
+                    <span>Doğrulandı</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Telefon Numarası (Öğretmen / Yönetici) */}
+            {!isStudent && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-teal-600" />
+                    <span>İletişim Cep Telefonu</span>
+                    <span className="text-rose-500">*</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400">10 Hane (5XX...)</span>
+                </label>
+                <div className="flex rounded-2xl border border-slate-200 overflow-hidden focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/10 transition-all bg-white">
+                  <span className="inline-flex items-center px-4 py-3 bg-slate-100 border-r border-slate-200 text-slate-700 font-black text-xs select-none">
+                    🇹🇷 +90
+                  </span>
+                  <input
+                    type="tel"
+                    required={currentUser.role === 'teacher'}
+                    maxLength={10}
+                    value={phone}
+                    onChange={(e) => handlePhoneChange(e.target.value)}
+                    placeholder="5051234567"
+                    className="w-full px-4 py-3 text-xs font-bold text-slate-900 outline-none bg-transparent"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Cinsiyet (İsteğe Bağlı) */}
             <div className="space-y-1.5">
@@ -603,25 +714,27 @@ export default function ProfilePage() {
               </select>
             </div>
 
-            {/* Branş */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-teal-600" />
-                <span>Öğretmenlik Branşı</span>
-                <span className="text-rose-500">*</span>
-              </label>
-              <select
-                value={branch}
-                onChange={(e) => setBranch(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer"
-              >
-                {BRANCH_OPTIONS.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Branş (Yalnızca Öğretmen / Yönetici) */}
+            {!isStudent && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Öğretmenlik Branşı</span>
+                  <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  value={branch}
+                  onChange={(e) => setBranch(e.target.value)}
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer"
+                >
+                  {BRANCH_OPTIONS.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* PASSWORD MANAGEMENT CARD (GOOGLE İLE GİRİŞ YAPANLAR İÇİN ŞİFRE BELİRLEME) */}
@@ -633,7 +746,13 @@ export default function ProfilePage() {
                   <span>Giriş Şifresi Belirleme / Güncelleme</span>
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Google veya başka yöntemle girmiş olsanız bile buradan şifre belirleyerek sonraki girişlerinizde <strong>e-posta ve şifrenizle</strong> giriş yapabilirsiniz.
+                  {isStudent ? (
+                    'Öğrenci hesabınız için yeni bir giriş şifresi belirleyebilirsiniz. Şifrenizi kaydettiğinizde sonraki girişlerinizde sınıf kodunuz, okul numaranız ve bu şifrenizle giriş yapabilirsiniz.'
+                  ) : (
+                    <>
+                      Google veya başka yöntemle girmiş olsanız bile buradan şifre belirleyerek sonraki girişlerinizde <strong>e-posta ve şifrenizle</strong> giriş yapabilirsiniz.
+                    </>
+                  )}
                 </p>
               </div>
               <span className="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-900 text-[10px] font-black shrink-0">
@@ -667,12 +786,12 @@ export default function ProfilePage() {
                     placeholder="En az 6 karakter (Büyük, küçük harf ve rakam)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-900 outline-none focus:border-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-indigo-500 bg-white pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -681,26 +800,35 @@ export default function ProfilePage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-700">Yeni Şifre (Tekrar)</label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Şifreyi tekrar yazınız"
-                  value={passwordConfirm}
-                  onChange={(e) => setPasswordConfirm(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-900 outline-none focus:border-indigo-500"
-                />
+                <div className="relative">
+                  <input
+                    type={showPasswordConfirm ? 'text' : 'password'}
+                    placeholder="Şifreyi tekrar yazınız"
+                    value={passwordConfirm}
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-indigo-500 bg-white pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
+                  >
+                    {showPasswordConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Live Password Criteria Badges */}
+            {/* Validation Pill Badges */}
             {password.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px] font-bold select-none animate-in fade-in">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-bold">
                 {(() => {
                   const passVal = validatePassword(password);
                   return (
                     <>
                       <div className={`p-1.5 rounded-lg flex items-center gap-1.5 ${passVal.hasMinLength ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
                         <span>{passVal.hasMinLength ? '✓' : '○'}</span>
-                        <span>En az 6 karakter</span>
+                        <span>En az 6 Karakter</span>
                       </div>
                       <div className={`p-1.5 rounded-lg flex items-center gap-1.5 ${passVal.hasUpperCase ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
                         <span>{passVal.hasUpperCase ? '✓' : '○'}</span>
@@ -733,237 +861,322 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Location & School Selection (Provinces -> Districts -> Schools) */}
-          <div className="pt-4 border-t border-slate-100 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-teal-600" />
-                <span>Görev Yaptığınız Okul ve Konum Bilgileri</span>
-              </h3>
-              <span className="text-[10px] font-bold text-slate-400">
-                MEB / ÖğretmenEvrak Okul Veritabanı
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              
-              {/* İl Seçimi (81 İl) */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-extrabold text-slate-700">
-                  İl (Şehir) <span className="text-rose-500">*</span>
-                </label>
-                <select
-                  value={city}
-                  onChange={(e) => handleCityChange(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
-                >
-                  {allProvinces.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
+          {/* ÖĞRENCİ İÇİN: Kayıtlı Okul ve Sınıf Bilgileri (Değiştirilemez) */}
+          {isStudent ? (
+            <div className="pt-4 border-t border-slate-100 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-teal-600" />
+                  <span>Kayıtlı Okul ve Sınıf Bilgileriniz</span>
+                </h3>
+                <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                  <Lock className="w-3 h-3 text-slate-400" />
+                  <span>Değiştirilemez</span>
+                </span>
               </div>
 
-              {/* İlçe Seçimi (Live) */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-extrabold text-slate-700 flex items-center justify-between">
-                  <span>İlçe <span className="text-rose-500">*</span></span>
-                  {loadingDistricts && <Loader2 className="w-3 h-3 text-teal-600 animate-spin" />}
-                </label>
-                <select
-                  value={district}
-                  onChange={(e) => handleDistrictChange(e.target.value)}
-                  disabled={loadingDistricts}
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer disabled:bg-slate-100"
-                >
-                  {districtsList.map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Okul Dropdown / Search */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-extrabold text-slate-700 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <span>Okul Adı <span className="text-rose-500">*</span></span>
-                    {loadingSchools && <Loader2 className="w-3 h-3 text-teal-600 animate-spin" />}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!isCustomSchool) {
-                        setCustomSchoolName(school || customSchoolName || '');
-                        setIsCustomSchool(true);
-                      } else {
-                        if (customSchoolName.trim()) {
-                          setSchool(customSchoolName.trim());
-                        }
-                        setIsCustomSchool(false);
-                      }
-                    }}
-                    className="text-[10px] font-bold text-teal-600 hover:underline cursor-pointer"
-                  >
-                    {isCustomSchool ? 'Listeden Seç' : '+ Farklı Okul Yaz'}
-                  </button>
-                </label>
-
-                {!isCustomSchool ? (
-                  <div className="space-y-2">
-                    {/* Filter search if schools count is high */}
-                    {schoolsList.length > 5 && (
-                      <div className="relative">
-                        <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                        <input
-                          type="text"
-                          placeholder={`${schoolsList.length} okul arasında ara...`}
-                          value={schoolSearchQuery}
-                          onChange={(e) => setSchoolSearchQuery(e.target.value)}
-                          className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-[11px] font-bold text-slate-800 outline-none focus:border-teal-500 bg-slate-50"
-                        />
-                      </div>
-                    )}
-
-                    <select
-                      value={school}
-                      onChange={(e) => {
-                        if (e.target.value === 'CUSTOM_NEW') {
-                          setCustomSchoolName(school || '');
-                          setIsCustomSchool(true);
-                        } else {
-                          setSchool(e.target.value);
-                        }
-                      }}
-                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
-                    >
-                      {/* Make sure currently selected/saved school is always an option */}
-                      {school && !filteredSchools.some((s) => s.name === school) && (
-                        <option value={school}>
-                          {school} (Kayıtlı Okulunuz)
-                        </option>
-                      )}
-                      {filteredSchools.map((s) => (
-                        <option key={s.id} value={s.name}>
-                          {s.name} ({s.type})
-                        </option>
-                      ))}
-                      <option value="CUSTOM_NEW">➕ Listede Yoksa Yeni Okul Ekle...</option>
-                    </select>
-                  </div>
-                ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {/* Okul Adı */}
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-extrabold text-slate-700">
+                    Kayıtlı Okul Adı
+                  </label>
                   <input
                     type="text"
-                    required={isCustomSchool}
-                    placeholder="Okulunuzun tam adını yazınız..."
-                    value={customSchoolName}
-                    onChange={(e) => setCustomSchoolName(e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl border-2 border-teal-500 text-xs font-bold text-slate-900 outline-none"
+                    disabled
+                    readOnly
+                    value={school || 'Kayıtlı Okul'}
+                    className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 cursor-not-allowed select-none"
                   />
+                </div>
+
+                {/* Sınıf / Şube */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-extrabold text-slate-700">
+                    Sınıf / Şube
+                  </label>
+                  <input
+                    type="text"
+                    disabled
+                    readOnly
+                    value={studentClassSection ? `${studentClassSection} Şubesi` : '5-A Şubesi'}
+                    className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 cursor-not-allowed select-none"
+                  />
+                </div>
+
+                {/* İl / İlçe */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-extrabold text-slate-700">
+                    İl / İlçe
+                  </label>
+                  <input
+                    type="text"
+                    disabled
+                    readOnly
+                    value={`${city} / ${district}`}
+                    className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 cursor-not-allowed select-none"
+                  />
+                </div>
+
+                {/* Sınıf Kodu */}
+                {studentClassCode && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-extrabold text-slate-700">
+                      Sınıf Kodu
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      readOnly
+                      value={studentClassCode}
+                      className="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-mono font-black text-slate-700 cursor-not-allowed select-none"
+                    />
+                  </div>
                 )}
               </div>
 
-            </div>
-
-            {/* Okul Müdürü Adı ve Soyadı (Günlük Ders Planı PDF İmzası İçin) */}
-            <div className="pt-2 space-y-1.5">
-              <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Okul Müdürü Adı ve Soyadı</span>
-                  <span className="text-teal-600 font-normal text-[11px]">(Resmi Günlük Plan PDF Onayı İçin)</span>
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">
-                  Ders Planı İmzası
-                </span>
-              </label>
-              <input
-                type="text"
-                value={principalName}
-                onChange={(e) => setPrincipalName(e.target.value)}
-                placeholder="Örn: Mehmet GÜNGÖR"
-                className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
-              />
-              <p className="text-[11px] text-slate-400">
-                📄 İndireceğiniz MEB Maarif Modeli Günlük Ders Planı PDF çıktılarının sol/sağ alt imza bölümünde &quot;Okul Müdürü&quot; unvanıyla yer alır.
-              </p>
-            </div>
-          </div>
-
-          {/* Sınıflarım & Şubelerim */}
-          <div className="pt-4 border-t border-slate-100 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-black text-slate-900">Girdiğiniz Sınıflar & Şubeler</h3>
-                <p className="text-xs text-slate-500">
-                  Ders vereceğiniz sınıf seviyesi ve şubeleri seçip ekleyiniz.
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 text-xs flex items-start gap-2.5">
+                <span className="text-base">ℹ️</span>
+                <p className="leading-relaxed">
+                  Okul, sınıf ve okul numarası bilgileriniz okulunuz ve öğretmeniniz tarafından tanımlanmıştır. Bu bilgilerde bir hata olduğunu düşünüyorsanız lütfen ders öğretmeniniz ile iletişime geçiniz.
                 </p>
               </div>
-
-              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                {/* 1. Menü: Sınıf Seviyesi (5, 6, 7, 8) */}
-                <div className="flex items-center gap-1">
-                  <select
-                    value={selectedGrade}
-                    onChange={(e) => setSelectedGrade(e.target.value as any)}
-                    className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 bg-white cursor-pointer shadow-2xs"
-                  >
-                    {GRADE_OPTIONS.map((g) => (
-                      <option key={g} value={g}>
-                        {g}. Sınıf
-                      </option>
-                    ))}
-                  </select>
+            </div>
+          ) : (
+            <>
+              {/* Location & School Selection (Provinces -> Districts -> Schools) */}
+              <div className="pt-4 border-t border-slate-100 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-teal-600" />
+                    <span>Görev Yaptığınız Okul ve Konum Bilgileri</span>
+                  </h3>
+                  <span className="text-[10px] font-bold text-slate-400">
+                    MEB / ÖğretmenEvrak Okul Veritabanı
+                  </span>
                 </div>
 
-                {/* 2. Menü: Şube Seçimi (A - Z) */}
-                <div className="flex items-center gap-1">
-                  <select
-                    value={selectedSection}
-                    onChange={(e) => setSelectedSection(e.target.value)}
-                    className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 bg-white cursor-pointer min-w-[85px] shadow-2xs"
-                  >
-                    {SECTION_OPTIONS.map((s) => (
-                      <option key={s} value={s}>
-                        {s} Şubesi
-                      </option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  
+                  {/* İl Seçimi (81 İl) */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-extrabold text-slate-700">
+                      İl (Şehir) <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                      value={city}
+                      onChange={(e) => handleCityChange(e.target.value)}
+                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
+                    >
+                      {allProvinces.map((p) => (
+                        <option key={p} value={p}>
+                          {p}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* İlçe Seçimi (Live) */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-extrabold text-slate-700 flex items-center justify-between">
+                      <span>İlçe <span className="text-rose-500">*</span></span>
+                      {loadingDistricts && <Loader2 className="w-3 h-3 text-teal-600 animate-spin" />}
+                    </label>
+                    <select
+                      value={district}
+                      onChange={(e) => handleDistrictChange(e.target.value)}
+                      disabled={loadingDistricts}
+                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer disabled:bg-slate-100"
+                    >
+                      {districtsList.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Okul Dropdown / Search */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-extrabold text-slate-700 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <span>Okul Adı <span className="text-rose-500">*</span></span>
+                        {loadingSchools && <Loader2 className="w-3 h-3 text-teal-600 animate-spin" />}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!isCustomSchool) {
+                            setCustomSchoolName(school || customSchoolName || '');
+                            setIsCustomSchool(true);
+                          } else {
+                            if (customSchoolName.trim()) {
+                              setSchool(customSchoolName.trim());
+                            }
+                            setIsCustomSchool(false);
+                          }
+                        }}
+                        className="text-[10px] font-bold text-teal-600 hover:underline cursor-pointer"
+                      >
+                        {isCustomSchool ? 'Listeden Seç' : '+ Farklı Okul Yaz'}
+                      </button>
+                    </label>
+
+                    {!isCustomSchool ? (
+                      <div className="space-y-2">
+                        {/* Filter search if schools count is high */}
+                        {schoolsList.length > 5 && (
+                          <div className="relative">
+                            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                            <input
+                              type="text"
+                              placeholder={`${schoolsList.length} okul arasında ara...`}
+                              value={schoolSearchQuery}
+                              onChange={(e) => setSchoolSearchQuery(e.target.value)}
+                              className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-[11px] font-bold text-slate-800 outline-none focus:border-teal-500 bg-slate-50"
+                            />
+                          </div>
+                        )}
+
+                        <select
+                          value={school}
+                          onChange={(e) => {
+                            if (e.target.value === 'CUSTOM_NEW') {
+                              setCustomSchoolName(school || '');
+                              setIsCustomSchool(true);
+                            } else {
+                              setSchool(e.target.value);
+                            }
+                          }}
+                          className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
+                        >
+                          {/* Make sure currently selected/saved school is always an option */}
+                          {school && !filteredSchools.some((s) => s.name === school) && (
+                            <option value={school}>
+                              {school} (Kayıtlı Okulunuz)
+                            </option>
+                          )}
+                          {filteredSchools.map((s) => (
+                            <option key={s.id} value={s.name}>
+                              {s.name} ({s.type})
+                            </option>
+                          ))}
+                          <option value="CUSTOM_NEW">➕ Listede Yoksa Yeni Okul Ekle...</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        required={isCustomSchool}
+                        placeholder="Okulunuzun tam adını yazınız..."
+                        value={customSchoolName}
+                        onChange={(e) => setCustomSchoolName(e.target.value)}
+                        className="w-full px-4 py-3 rounded-2xl border-2 border-teal-500 text-xs font-bold text-slate-900 outline-none"
+                      />
+                    )}
+                  </div>
+
                 </div>
 
-                {/* + Şube Ekle Butonu */}
-                <button
-                  type="button"
-                  onClick={handleAddClass}
-                  className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Şube Ekle</span>
-                </button>
+                {/* Okul Müdürü Adı ve Soyadı (Günlük Ders Planı PDF İmzası İçin) */}
+                <div className="pt-2 space-y-1.5">
+                  <label className="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-teal-600" />
+                      <span>Okul Müdürü Adı ve Soyadı</span>
+                      <span className="text-teal-600 font-normal text-[11px]">(Resmi Günlük Plan PDF Onayı İçin)</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400">
+                      Ders Planı İmzası
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={principalName}
+                    onChange={(e) => setPrincipalName(e.target.value)}
+                    placeholder="Örn: Mehmet GÜNGÖR"
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
+                  />
+                  <p className="text-[11px] text-slate-400">
+                    📄 İndireceğiniz MEB Maarif Modeli Günlük Ders Planı PDF çıktılarının sol/sağ alt imza bölümünde &quot;Okul Müdürü&quot; unvanıyla yer alır.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-wrap gap-2 pt-1">
-              {assignedClasses.map((cls) => (
-                <span
-                  key={cls}
-                  className="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 font-extrabold text-xs flex items-center gap-2 shadow-2xs group hover:border-teal-300 transition-colors"
-                >
-                  <span>📚 {cls}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveClass(cls)}
-                    className="w-4 h-4 rounded-full bg-slate-200 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors text-[10px] cursor-pointer"
-                    title="Şubeyi Kaldır"
-                  >
-                    ✕
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
+              {/* Sınıflarım & Şubelerim */}
+              <div className="pt-4 border-t border-slate-100 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900">Girdiğiniz Sınıflar & Şubeler</h3>
+                    <p className="text-xs text-slate-500">
+                      Ders vereceğiniz sınıf seviyesi ve şubeleri seçip ekleyiniz.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                    {/* 1. Menü: Sınıf Seviyesi (5, 6, 7, 8) */}
+                    <div className="flex items-center gap-1">
+                      <select
+                        value={selectedGrade}
+                        onChange={(e) => setSelectedGrade(e.target.value as any)}
+                        className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 bg-white cursor-pointer shadow-2xs"
+                      >
+                        {GRADE_OPTIONS.map((g) => (
+                          <option key={g} value={g}>
+                            {g}. Sınıf
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* 2. Menü: Şube Seçimi (A - Z) */}
+                    <div className="flex items-center gap-1">
+                      <select
+                        value={selectedSection}
+                        onChange={(e) => setSelectedSection(e.target.value)}
+                        className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 bg-white cursor-pointer min-w-[85px] shadow-2xs"
+                      >
+                        {SECTION_OPTIONS.map((s) => (
+                          <option key={s} value={s}>
+                            {s} Şubesi
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* + Şube Ekle Butonu */}
+                    <button
+                      type="button"
+                      onClick={handleAddClass}
+                      className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Şube Ekle</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {assignedClasses.map((cls) => (
+                    <span
+                      key={cls}
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 font-extrabold text-xs flex items-center gap-2 shadow-2xs group hover:border-teal-300 transition-colors"
+                    >
+                      <span>📚 {cls}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveClass(cls)}
+                        className="w-4 h-4 rounded-full bg-slate-200 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors text-[10px] cursor-pointer"
+                        title="Şubeyi Kaldır"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Action Buttons */}
           <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">

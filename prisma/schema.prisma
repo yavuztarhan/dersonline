@@ -86,6 +86,7 @@ model StudentProfile {
   teacher       TeacherProfile? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
   points        Int      @default(0) // XP Puanı
   subjectPoints Json?    // Branş bazlı XP { "Matematik": 150, "Fen Bilimleri": 100 }
+  isPasswordChangedByStudent Boolean @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

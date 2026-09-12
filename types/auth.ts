@@ -59,6 +59,7 @@ export interface StudentUser extends BaseUser {
   points: number;
   subjectPoints?: Record<string, number>; // Ders bazında kazanılan XP puanları: { 'Matematik': 250, 'Fen Bilimleri': 120 }
   unlockedBadges: string[];
+  isPasswordChangedByStudent?: boolean; // Öğrenci profilinden şifresini değiştirdi mi?
 }
 
 export interface AdminUser extends BaseUser {

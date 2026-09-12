@@ -83,6 +83,7 @@ export function TeacherDashboard() {
     getVisibleStudents,
     addStudent,
     deleteStudent,
+    resetStudentPassword,
     addClassToTeacher,
     addClassesToTeacher,
     getSchoolClasses,
@@ -99,6 +100,15 @@ export function TeacherDashboard() {
   const [copiedClassCode, setCopiedClassCode] = useState(false);
   const [copiedPasswordStuId, setCopiedPasswordStuId] = useState<string | null>(null);
   const [lastAddedStudent, setLastAddedStudent] = useState<{
+    name: string;
+    number: string;
+    classCode: string;
+    password: string;
+  } | null>(null);
+
+  // Student password reset states
+  const [confirmResetStudent, setConfirmResetStudent] = useState<any | null>(null);
+  const [resetSuccessModal, setResetSuccessModal] = useState<{
     name: string;
     number: string;
     classCode: string;
@@ -1067,31 +1077,49 @@ export function TeacherDashboard() {
                               </span>
                             </td>
                             <td className="py-3 px-3" onClick={(e) => e.stopPropagation()}>
-                              <div className="inline-flex items-center gap-1 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
-                                <Lock className="w-3 h-3 text-slate-400" />
-                                <span className="font-mono font-bold text-xs text-slate-800 tracking-wider">
-                                  {stuPass}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (navigator.clipboard) {
-                                      navigator.clipboard.writeText(stuPass);
-                                    }
-                                    playSound('click');
-                                    setCopiedPasswordStuId(stu.id);
-                                    setTimeout(() => setCopiedPasswordStuId(null), 2000);
-                                  }}
-                                  className="p-0.5 hover:bg-slate-200 rounded text-slate-500 transition-colors cursor-pointer"
-                                  title="Şifreyi Kopyala"
-                                >
-                                  {copiedPasswordStuId === stu.id ? (
-                                    <Check className="w-3 h-3 text-emerald-600" />
-                                  ) : (
-                                    <Copy className="w-3 h-3" />
-                                  )}
-                                </button>
-                              </div>
+                              {stu.isPasswordChangedByStudent ? (
+                                <div className="inline-flex items-center gap-1.5 flex-wrap">
+                                  <span className="inline-flex items-center gap-1 font-black text-[10px] bg-amber-50 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-md shadow-2xs">
+                                    <Lock className="w-3 h-3 text-amber-600" />
+                                    <span>DEĞİŞTİRİLDİ</span>
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setConfirmResetStudent(stu)}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-md text-[10px] font-black transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+                                    title="Yeni Şifre Üret"
+                                  >
+                                    <RefreshCw className="w-3 h-3" />
+                                    <span>Şifre Üret</span>
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center gap-1 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+                                  <Lock className="w-3 h-3 text-slate-400" />
+                                  <span className="font-mono font-bold text-xs text-slate-800 tracking-wider">
+                                    {stuPass}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (navigator.clipboard) {
+                                        navigator.clipboard.writeText(stuPass);
+                                      }
+                                      playSound('click');
+                                      setCopiedPasswordStuId(stu.id);
+                                      setTimeout(() => setCopiedPasswordStuId(null), 2000);
+                                    }}
+                                    className="p-0.5 hover:bg-slate-200 rounded text-slate-500 transition-colors cursor-pointer"
+                                    title="Şifreyi Kopyala"
+                                  >
+                                    {copiedPasswordStuId === stu.id ? (
+                                      <Check className="w-3 h-3 text-emerald-600" />
+                                    ) : (
+                                      <Copy className="w-3 h-3" />
+                                    )}
+                                  </button>
+                                </div>
+                              )}
                             </td>
                             <td className="py-3 px-3 text-[11px] text-slate-600 truncate max-w-[140px]">
                               {stu.school || teacher?.school}
@@ -1537,6 +1565,144 @@ export function TeacherDashboard() {
                         </button>
                       </div>
                     </form>
+                  </div>
+                </div>
+              </div>,
+              document.body
+            )}
+
+            {/* RESET STUDENT PASSWORD CONFIRMATION MODAL */}
+            {confirmResetStudent && typeof document !== 'undefined' && createPortal(
+              <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+                <div
+                  className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm transition-opacity"
+                  onClick={() => setConfirmResetStudent(null)}
+                />
+                <div className="relative bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-4 z-10 animate-in zoom-in-95 duration-200">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-2 text-amber-600 font-black text-sm">
+                      <AlertTriangle className="w-5 h-5 text-amber-500" />
+                      <span>Şifre Sıfırlama Onayı</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmResetStudent(null)}
+                      className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 text-sm cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl">
+                      <p className="text-xs font-bold text-amber-950">
+                        Öğrenci: <span className="font-extrabold text-amber-900">{confirmResetStudent.name}</span> (#{confirmResetStudent.studentNumber})
+                      </p>
+                      <p className="text-[11px] text-amber-800 mt-0.5">
+                        Sınıf / Şube: {confirmResetStudent.classSection} Şubesi
+                      </p>
+                    </div>
+                    <p className="text-sm font-bold text-slate-800 leading-relaxed">
+                      Öğrenci şifresini değiştirmiş yeni şifre üretmek istediğinizden emin misiniz?
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Onaylarsanız öğrenci için sistem tarafından harf ve rakamlardan oluşan 6 haneli rastgele yeni bir şifre üretilecek ve öğrencinin kendi belirlediği şifre silinecektir.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmResetStudent(null)}
+                      className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      Vazgeç
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const stu = confirmResetStudent;
+                        const res = resetStudentPassword(stu.id);
+                        if (res.success && res.newPassword) {
+                          playSound('success');
+                          setResetSuccessModal({
+                            name: stu.name,
+                            number: stu.studentNumber || '',
+                            classCode: stu.classCode || '',
+                            password: res.newPassword
+                          });
+                        }
+                        setConfirmResetStudent(null);
+                      }}
+                      className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Yeni Şifre Üret</span>
+                    </button>
+                  </div>
+                </div>
+              </div>,
+              document.body
+            )}
+
+            {/* RESET STUDENT PASSWORD SUCCESS MODAL */}
+            {resetSuccessModal && typeof document !== 'undefined' && createPortal(
+              <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+                <div
+                  className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm transition-opacity"
+                  onClick={() => setResetSuccessModal(null)}
+                />
+                <div className="relative bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-4 z-10 animate-in zoom-in-95 duration-200">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-2 text-emerald-600 font-black text-sm">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                      <span>Yeni Şifre Üretildi!</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setResetSuccessModal(null)}
+                      className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 text-sm cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-3">
+                    <div className="text-xs font-bold text-slate-700">
+                      <span className="text-slate-500">Öğrenci:</span> {resetSuccessModal.name} (#{resetSuccessModal.number})
+                    </div>
+                    <div className="flex items-center justify-between bg-white border border-emerald-200 p-3.5 rounded-xl shadow-2xs">
+                      <div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Yeni Giriş Şifresi</div>
+                        <div className="font-mono font-black text-xl text-emerald-700 tracking-widest">{resetSuccessModal.password}</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (navigator.clipboard) {
+                            navigator.clipboard.writeText(resetSuccessModal.password);
+                          }
+                          playSound('click');
+                        }}
+                        className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Kopyala</span>
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-emerald-800 leading-relaxed">
+                      Öğrencinin kendi belirlediği şifre silindi. Yeni şifre tabloda gösterilmektedir ve öğrenci artık bu şifre ile giriş yapabilir.
+                    </p>
+                  </div>
+
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setResetSuccessModal(null)}
+                      className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Tamam
+                    </button>
                   </div>
                 </div>
               </div>,

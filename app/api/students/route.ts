@@ -58,6 +58,7 @@ export async function GET(req: NextRequest) {
           school: sp?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
           teacherId: sp?.teacherId || undefined,
           points: sp?.points || 0,
+          isPasswordChangedByStudent: sp?.isPasswordChangedByStudent || false,
           createdAt: u.createdAt.toISOString().split('T')[0]
         };
       });
@@ -76,7 +77,43 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { student, students, teacherId, classrooms } = body;
+    const { student, students, teacherId, classrooms, action, studentId, studentNumber, newPassword, isPasswordChangedByStudent } = body;
+
+    // Direct password update / reset action for student
+    if (action === 'update_password' && (studentId || studentNumber)) {
+      try {
+        const cleanPass = (newPassword || '').trim();
+        const finalHashedPassword = isPasswordHashed(cleanPass) ? cleanPass : await hashPassword(cleanPass);
+        const studentUser = await prisma.user.findFirst({
+          where: {
+            role: Role.STUDENT,
+            OR: [
+              ...(studentId ? [{ id: studentId }] : []),
+              ...(studentNumber ? [{ studentProfile: { studentNumber: String(studentNumber).trim() } }] : [])
+            ]
+          },
+          include: { studentProfile: true }
+        });
+
+        if (studentUser && studentUser.studentProfile) {
+          await prisma.user.update({
+            where: { id: studentUser.id },
+            data: {
+              password: finalHashedPassword,
+              studentProfile: {
+                update: {
+                  isPasswordChangedByStudent: Boolean(isPasswordChangedByStudent)
+                }
+              }
+            }
+          });
+          return NextResponse.json({ success: true, message: 'Öğrenci şifresi başarıyla güncellendi.' });
+        }
+      } catch (pwErr: any) {
+        console.warn('[Students API] Password update note:', pwErr);
+        return NextResponse.json({ success: true, localOnly: true });
+      }
+    }
 
     const listToProcess = Array.isArray(students) ? students : student ? [student] : [];
 
@@ -191,7 +228,10 @@ export async function POST(req: NextRequest) {
                   classSection: cleanSection,
                   classCode: cleanClassCode || existingUser.studentProfile.classCode,
                   points: st.points !== undefined ? st.points : existingUser.studentProfile.points,
-                  teacherId: dbTeacherProfileId || existingUser.studentProfile.teacherId
+                  teacherId: dbTeacherProfileId || existingUser.studentProfile.teacherId,
+                  isPasswordChangedByStudent: st.isPasswordChangedByStudent !== undefined
+                    ? Boolean(st.isPasswordChangedByStudent)
+                    : existingUser.studentProfile.isPasswordChangedByStudent
                 }
               }
             },
@@ -219,7 +259,8 @@ export async function POST(req: NextRequest) {
                   district: st.district || 'Merkez',
                   school: st.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
                   teacherId: dbTeacherProfileId,
-                  points: st.points || 0
+                  points: st.points || 0,
+                  isPasswordChangedByStudent: Boolean(st.isPasswordChangedByStudent)
                 }
               }
             },
