@@ -200,7 +200,7 @@ export function FeedbackModal({
 
             <div className="text-xs text-slate-300 flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
-              <span>Alıcı: <strong>Sistem Yöneticisi</strong> <span className="opacity-80 font-normal font-mono">(powerose@gmail.com)</span></span>
+              <span>Alıcı: <strong>Sistem Yöneticisi</strong></span>
             </div>
           </div>
 
@@ -226,7 +226,7 @@ export function FeedbackModal({
                 {isGameRequest ? 'Oyun Fikriniz İletildi!' : 'Geri Bildiriminiz Başarıyla Gönderildi!'}
               </h4>
               <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                Mesajınız Sistem Yöneticisine (powerose@gmail.com) başarıyla iletildi. Görüş ve katkınız için teşekkür ederiz!
+                Mesajınız Sistem Yöneticisine başarıyla iletildi. Görüş ve katkınız için teşekkür ederiz!
               </p>
 
               <div className="inline-flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold">
@@ -246,28 +246,6 @@ export function FeedbackModal({
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              
-              {/* Sabit Alıcı Alanı (Değiştirilemez) */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-black text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Alıcı (Sabit - Değiştirilemez)</span>
-                </label>
-                <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-2xl select-none">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center text-lg shadow-2xs font-bold">
-                      🛡️
-                    </div>
-                    <div>
-                      <div className="text-xs font-black text-slate-900">Sistem Yöneticisi</div>
-                      <div className="text-[11px] text-teal-700 font-bold font-mono">powerose@gmail.com</div>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-teal-100 text-teal-900 text-[10px] font-black uppercase tracking-wider border border-teal-200/60">
-                    Sabit Alıcı
-                  </span>
-                </div>
-              </div>
 
               {/* Description Box */}
               <div className={`p-4 rounded-2xl border text-xs leading-relaxed space-y-1.5 ${
