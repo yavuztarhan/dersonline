@@ -3,6 +3,8 @@
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/lib/store';
+import { useAuth } from '@/lib/auth-store';
+import { StudentUser } from '@/types/auth';
 import { getDirectLaunchData } from '@/lib/direct-launch';
 import { Play, Calendar, Zap, ChevronRight, BookOpen } from 'lucide-react';
 
@@ -35,17 +37,41 @@ const GRADE_STYLES: Record<number, { badge: string; borderHover: string; btnBg: 
 
 export function DirectLaunchSection() {
   const { playSound } = useApp();
+  const { currentUser } = useAuth();
+
+  const isStudent = currentUser?.role === 'student';
+  const studentUser = isStudent ? (currentUser as StudentUser) : null;
+
+  // Öğrencinin sınıf seviyesini belirle (örn. 5)
+  const studentGradeLevel = useMemo(() => {
+    if (!studentUser) return null;
+    if (studentUser.gradeLevel) return Number(studentUser.gradeLevel);
+    if (studentUser.classSection) {
+      const parsed = parseInt(studentUser.classSection.replace(/\D/g, ''), 10);
+      if (!isNaN(parsed)) return parsed;
+    }
+    return null;
+  }, [studentUser]);
 
   // Sunucu / tarayıcı tarihine göre ilgili haftanın kazanımlarını hesapla
   const data = useMemo(() => {
     return getDirectLaunchData();
   }, []);
 
-  if (!data || data.items.length === 0) {
+  // Öğrenci giriş yapmışsa yalnızca kendi sınıf seviyesindeki kartı göster
+  const items = useMemo(() => {
+    if (!data || !data.items) return [];
+    if (isStudent && studentGradeLevel) {
+      return data.items.filter((item) => item.gradeLevel === studentGradeLevel);
+    }
+    return data.items;
+  }, [data, isStudent, studentGradeLevel]);
+
+  if (!data || items.length === 0) {
     return null;
   }
 
-  const { week, isUpcoming, items } = data;
+  const { week, isUpcoming } = data;
 
   return (
     <section aria-label="Dersi Doğrudan Başlat" className="hidden md:block w-full pt-4 animate-in fade-in duration-300">
@@ -67,7 +93,9 @@ export function DirectLaunchSection() {
                 </span>
               </div>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                MEB Akademik Çalışma Takvimine göre {week.label} müfredat kazanımları
+                {isStudent && studentGradeLevel
+                  ? `MEB Akademik Çalışma Takvimine göre bu haftaki ${studentGradeLevel}. Sınıf müfredat kazanımın`
+                  : `MEB Akademik Çalışma Takvimine göre ${week.label} müfredat kazanımları`}
               </p>
             </div>
           </div>
@@ -86,7 +114,13 @@ export function DirectLaunchSection() {
         </div>
 
         {/* Dynamic Grade Outcome Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className={`grid gap-4 ${
+          items.length === 1
+            ? 'grid-cols-1 max-w-md'
+            : items.length === 2
+            ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl'
+            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+        }`}>
           {items.map((item) => {
             const style = GRADE_STYLES[item.gradeLevel] || GRADE_STYLES[5];
 
