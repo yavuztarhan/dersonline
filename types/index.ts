@@ -72,7 +72,8 @@ export interface LabPhaseData {
     | 'factors-multiples-bench'
     | 'divisibility-bench'
     | 'prime-factors-bench'
-    | 'common-multiples-divisors-bench';
+    | 'common-multiples-divisors-bench'
+    | 'rational-numbers-bench';
   instructions: string;
   taskGoal: string;
   interactiveTips: string[];

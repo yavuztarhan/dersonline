@@ -11,6 +11,7 @@ import {
   PrimeFactorsBench,
   CommonMultiplesDivisorsBench
 } from '@/components/lesson-phases/mat6-lab-benches';
+import { RationalNumbersBench } from '@/components/lesson-phases/rational-numbers-bench';
 import confetti from 'canvas-confetti';
 import {
   Shapes,
@@ -99,10 +100,16 @@ function getAngleType(deg: number): { type: 'sifir' | 'dar' | 'dik' | 'genis' | 
 export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const { playSound, unlockBadge, addPoints, selectedOutcome } = useApp();
 
+  const isRationalNumbersOutcome =
+    selectedOutcome?.id === 'MAT.7.1.1' ||
+    selectedOutcome?.code?.includes('7.1.1') ||
+    data.toolType === 'rational-numbers-bench';
+
   const isDivisibilityOutcome =
-    selectedOutcome?.id === 'MAT.6.1.2' ||
+    !isRationalNumbersOutcome &&
+    (selectedOutcome?.id === 'MAT.6.1.2' ||
     selectedOutcome?.code?.includes('6.1.2') ||
-    data.toolType === 'divisibility-bench';
+    data.toolType === 'divisibility-bench');
 
   const isPrimeFactorsOutcome =
     selectedOutcome?.id === 'MAT.6.1.3' ||
@@ -886,6 +893,50 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       </g>
     );
   };
+
+  // ==========================================
+  // OUTCOME: MAT.7.1.1 (RATIONAL NUMBERS BENCH)
+  // ==========================================
+  if (isRationalNumbersOutcome) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-800 text-xs font-bold uppercase tracking-wider mb-2">
+              <FlaskConical className="w-3.5 h-3.5 text-purple-600" />
+              <span>2. Aşama: Dinamik Sayı Doğrusu ve Sayı Kümeleri Laboratuvarı (MAT.7.1.1)</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-900">{data.title}</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Euler şeması (N ⊂ Z ⊂ Q), gizli payda mekanizması, dinamik sayı doğrusu ve mutlak değer lazer metresi ile rasyonel sayıları keşfedin!
+            </p>
+          </div>
+        </div>
+
+        {/* Rational Numbers Interactive Lab Bench */}
+        <RationalNumbersBench />
+
+        {/* Jump to Phase 3 */}
+        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-slate-600 font-bold">
+            <CheckCircle2 className="w-4 h-4 text-purple-600" />
+            <span>Atölye çalışmalarını tamamladıktan sonra 3. Aşama Oyunlar Arenası&apos;na geçebilirsiniz.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              playSound('select');
+              onNextPhase();
+            }}
+            className="px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs shadow-md shadow-purple-600/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+          >
+            <span>3. Aşama: Oyunlar Arenası</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // OUTCOME: MAT.6.1.2 (DIVISIBILITY CRITERIA BENCH)

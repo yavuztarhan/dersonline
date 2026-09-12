@@ -568,7 +568,67 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk4', text: 'Cetvel ve dijital çizim araçlarıyla doğru, doğru parçası ve ışın çizebiliyorum.' },
       { id: 'chk5', text: 'Öğrenme günlüğümde güçlü ve geliştirmem gereken yönlerimi ifade edebiliyorum.' }
     ]
-  }
+  },
+  'MAT.7.1.1': {
+    id: 'rubric-mat-7-1-1',
+    outcomeId: 'MAT.7.1.1',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Tam Sayılardan Rasyonel Sayılara',
+    description:
+      'Doğal sayı, tam sayı ve rasyonel sayı kümelerini yorumlama, sayı doğrusunda temsil, mutlak değer mantığı ve akıllı ev enerji dengesini analiz etme becerilerinizi dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Sayı Kümelerini Yorumlama (N ⊂ Z ⊂ Q)',
+        category: 'Kavramsal Anlama & Sayı Kümeleri',
+        levelDescriptions: {
+          1: 'Doğal sayı, tam sayı ve rasyonel sayı kümelerini birbirine karıştırıyorum; gizli payda kuralını hatırlamakta zorlanıyorum.',
+          2: 'Pozitif sayıları kümelere ayırabiliyorum fakat negatif tam sayıların da rasyonel sayı olduğunu ve paydanın 0 olamayacağını bazen unutuyorum.',
+          3: 'Her tam sayının paydası 1 olan bir rasyonel sayı olduğunu ve N ⊂ Z ⊂ Q ilişkisini doğru açıklarım. Paydanın sıfır olamayacağını bilirim.',
+          4: 'Sayı kümeleri arasındaki hiyerarşiyi Euler şemasıyla eksiksiz açıklar, farklı rasyonel temsilleri (-a/b = (-a)/b = a/(-b)) ve tanımsızlık durumlarını gerekçeleriyle savunurum.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Sayı Doğrusunda Temsil ve Dilimleme',
+        category: 'Matematiksel Temsil & Sayı Doğrusu',
+        levelDescriptions: {
+          1: 'Rasyonel sayıların sayı doğrusunda hangi iki tam sayı arasında yer aldığını bulmakta zorlanıyorum.',
+          2: 'Pozitif rasyonel sayıları sayı doğrusunda dilimleyerek gösterebiliyorum fakat negatif rasyonel sayıları gösterirken yönü karıştırıyorum.',
+          3: 'Pozitif ve negatif rasyonel sayıların yer alacağı ardışık iki tam sayıyı doğru belirler, aralığı paydaya göre eşit parçalara bölerek noktayı hatasız bulurum.',
+          4: 'Farklı paydalara sahip rasyonel sayıları aynı sayı doğrusunda hassas şekilde dilimleyip karşılaştırabilir, rasyonel sayıların yoğunluk özelliğini açıklarım.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Mutlak Değer ve Uzaklık Anlayışı',
+        category: 'Matematiksel Muhakeme & Mutlak Değer',
+        levelDescriptions: {
+          1: 'Mutlak değerin yalnızca işareti artı yapma ezberi olduğunu düşünüyor, sıfıra olan uzaklık anlamını kuramıyorum.',
+          2: 'Tam sayıların mutlak değerini bulabiliyorum ancak rasyonel sayıların mutlak değerini sayı doğrusunda uzaklık olarak modellemekte zorlanıyorum.',
+          3: 'Pozitif ve negatif rasyonel sayıların mutlak değerinin başlangıç noktasına (0) olan uzaklık olduğunu bilir ve |-a/b| = |a/b| eşitliğini açıklarım.',
+          4: 'Mutlak değeri referans noktasına göre sapma, tolerans ve denge durumlarında (enerji dengesi, hedef sapması) bir analiz aracı olarak yetkinlikle kullanırım.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Finansal ve Görsel Okuryazarlık (Gerçek Yaşam Bağlantısı - D17 / OB3 / OB4)',
+        category: 'Gerçek Yaşam Modellemesi & Tasarruf',
+        levelDescriptions: {
+          1: 'Akıllı ev sayaç verilerindeki pozitif ve negatif değerleri günlük hayatla ilişkilendirmekte zorlanıyorum.',
+          2: 'Güneş enerjisi üretimi ve şebeke tüketimini artı/eksi olarak ifade edebiliyorum ancak toplam enerji dengesini yorumlamakta yardıma ihtiyaç duyuyorum.',
+          3: 'Akıllı ev enerji tüketim ve üretim verilerini rasyonel sayılarla modeller, sıfır noktasına göre tasarruf/israf durumunu mutlak değerle doğru analiz ederim.',
+          4: 'Enerji verimliliği raporlarını grafik ve sayı doğrusu üzerinde yorumlayarak hane bütçesi ve çevre için sürdürülebilir tasarruf önerileri geliştiririm.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Her doğal sayının bir tam sayı ve her tam sayının bir rasyonel sayı (N ⊂ Z ⊂ Q) olduğunu açıklarım.' },
+      { id: 'chk2', text: 'Bir tam sayıyı a/b şeklinde paydası 1 olacak biçimde (gizli payda) yazabilirim.' },
+      { id: 'chk3', text: 'Paydası 0 olan kesirli ifadelerin matematiksel olarak tanımsız olduğunu bilirim.' },
+      { id: 'chk4', text: 'Sayı doğrusunda negatif ve pozitif rasyonel sayıları doğru aralığı eşit parçalara bölerek gösterebilirim.' },
+      { id: 'chk5', text: 'Günlük hayattaki tasarruf veya tüketim sapmalarını mutlak değer kullanarak analiz edebilirim.' }
+    ]
+  },
 };
 
 /**
@@ -1223,7 +1283,67 @@ export const PEER_OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk4', text: 'Cetvel ve dijital çizim araçlarıyla çizimleri hatasız yapabiliyor.' },
       { id: 'chk5', text: 'Grup içi iş birliğinde yapıcı ve destekleyici bir rol üstleniyor.' }
     ]
-  }
+  },
+  'MAT.7.1.1': {
+    id: 'peer-rubric-mat-7-1-1',
+    outcomeId: 'MAT.7.1.1',
+    title: 'Akran Değerlendirme Rubriği: Tam Sayılardan Rasyonel Sayılara',
+    description:
+      'Takım arkadaşınızın doğal sayı, tam sayı ve rasyonel sayı kümelerini yorumlama, sayı doğrusunda temsil, mutlak değer mantığı ve akıllı ev enerji dengesini analiz etme becerilerini dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Sayı Kümelerini Yorumlama (N ⊂ Z ⊂ Q)',
+        category: 'Kavramsal Anlama & Sayı Kümeleri',
+        levelDescriptions: {
+          1: 'Arkadaşım sayı kümelerini birbirine karıştırıyor; gizli payda kuralını hatırlamakta zorlanıyor.',
+          2: 'Pozitif sayıları kümelere ayırabiliyor fakat negatif sayıların da rasyonel olduğunu bazen unutuyor.',
+          3: 'Her tam sayının paydası 1 olan bir rasyonel sayı olduğunu ve N ⊂ Z ⊂ Q ilişkisini doğru açıklıyor.',
+          4: 'Sayı kümeleri hiyerarşisini Euler şemasıyla arkadaşlarına eksiksiz açıklıyor, tanımsızlık durumlarını gerekçelendiriyor.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Sayı Doğrusunda Temsil ve Dilimleme',
+        category: 'Matematiksel Temsil & Sayı Doğrusu',
+        levelDescriptions: {
+          1: 'Rasyonel sayıların sayı doğrusundaki ardışık iki tam sayısını belirlemekte zorlanıyor.',
+          2: 'Pozitif sayıları dilimleyebiliyor fakat negatif sayılarda sola doğru ilerlemeyi bazen karıştırıyor.',
+          3: 'Sayı doğrusunda ardışık tam sayıları doğru seçip paydaya göre eşit parçalara bölerek noktayı buluyor.',
+          4: 'Farklı paydalı sayıları aynı sayı doğrusunda hassas şekilde dilimleyip karşılaştırabiliyor.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Mutlak Değer ve Uzaklık Anlayışı',
+        category: 'Matematiksel Muhakeme & Mutlak Değer',
+        levelDescriptions: {
+          1: 'Mutlak değerin sıfıra olan uzaklık anlamını kurmakta zorlanıyor.',
+          2: 'Tam sayıların mutlak değerini bulabiliyor ancak rasyonel sayıların mutlak değerini modellemekte desteğe ihtiyaç duyuyor.',
+          3: 'Pozitif ve negatif rasyonel sayıların mutlak değerinin başlangıç noktasına (0) olan uzaklık olduğunu açıklıyor.',
+          4: 'Mutlak değeri enerji dengesi ve sapma analizlerinde bağımsız ve yetkin bir araç olarak kullanıyor.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Takım Çalışması & Finansal Okuryazarlık (D17 / OB3 / OB4)',
+        category: 'İş Birliği & Gerçek Yaşam',
+        levelDescriptions: {
+          1: 'Grup çalışmalarında akıllı ev enerji dengesi yorumlarına katılmakta çekingen kalıyor.',
+          2: 'Grup görevlerini yapıyor ancak enerji tasarrufu çıkarımlarında desteğe ihtiyaç duyuyor.',
+          3: 'Grup çalışmalarında enerji verilerini rasyonel sayılarla modelleyip takımına yapıcı katkı sağlıyor.',
+          4: 'Takım içinde liderlik yapıyor, enerji verimliliği ve tasarruf önerilerini net matematiksel argümanlarla sunuyor.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Sayı kümeleri (N ⊂ Z ⊂ Q) arasındaki hiyerarşiyi kavradı.' },
+      { id: 'chk2', text: 'Bir tam sayıyı paydası 1 olan bir rasyonel sayı olarak yazabiliyor.' },
+      { id: 'chk3', text: 'Paydası 0 olan kesirli ifadelerin tanımsız olduğunu biliyor.' },
+      { id: 'chk4', text: 'Sayı doğrusunda rasyonel sayıları doğru aralığı dilimleyerek gösteriyor.' },
+      { id: 'chk5', text: 'Grup çalışmalarında yapıcı ve destekleyici bir rol üstleniyor.' }
+    ]
+  },
 };
 
 /**

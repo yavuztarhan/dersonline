@@ -13,6 +13,11 @@ import { MemoryCardsGame } from '@/components/lesson-phases/memory-cards-game';
 import { KolilemeFactoryGame } from '@/components/lesson-phases/kolileme-factory-game';
 import { FrogJumpGame } from '@/components/lesson-phases/frog-jump-game';
 import { RainbowVaultGame } from '@/components/lesson-phases/rainbow-vault-game';
+import {
+  SetSortingGame,
+  RationalParachuteGame,
+  ZeroBalanceCenterGame
+} from '@/components/lesson-phases/mat7-games';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import { useAuth } from '@/lib/auth-store';
 import {
@@ -56,6 +61,9 @@ interface MatchCard {
 }
 
 export type PuzzleGameId = 
+  | 'setsorting'
+  | 'rationalparachute'
+  | 'zerobalance'
   | 'kolilemefactory'
   | 'frogjump'
   | 'rainbowvault'
@@ -202,10 +210,16 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     }
   };
 
+  const isRationalNumbersTopic =
+    selectedOutcome?.id === 'MAT.7.1.1' ||
+    selectedOutcome?.code?.includes('7.1.1') ||
+    data.title?.toLowerCase().includes('rasyonel');
+
   const isDivisibilityTopic =
-    selectedOutcome?.id === 'MAT.6.1.2' ||
+    !isRationalNumbersTopic &&
+    (selectedOutcome?.id === 'MAT.6.1.2' ||
     selectedOutcome?.code?.includes('6.1.2') ||
-    data.title?.toLowerCase().includes('bölünebilme');
+    data.title?.toLowerCase().includes('bölünebilme'));
 
   const isPrimeFactorsTopic =
     selectedOutcome?.id === 'MAT.6.1.3' ||
@@ -270,7 +284,40 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     reward: string;
   }> = [];
 
-  if (isDivisibilityTopic) {
+  if (isRationalNumbersTopic) {
+    baseGamesList.push(
+      {
+        id: 'setsorting',
+        title: 'Küme Ayıklama İstasyonu (N ⊂ Z ⊂ Q)',
+        tagline: 'Arcade Hızlı Sınıflandırma',
+        description: 'Ekrana gelen pozitif, negatif, kesirli ve tanımsız sayıları hızla analiz et, doğru sepete (N, Z, Q veya Tanımsız) yerleştir!',
+        icon: <Layers className="w-8 h-8" />,
+        badge: '10 Soru • Hızlı Karar',
+        gradient: 'from-purple-600 via-indigo-600 to-blue-700',
+        reward: '+150 XP & Küme Dedektifi'
+      },
+      {
+        id: 'rationalparachute',
+        title: 'Rasyonel Paraşütçü: Sayı Doğrusu İnişi',
+        tagline: 'Hassas Koordinat & İniş',
+        description: 'Verilen rasyonel enerji değerini bulmak için doğru ardışık iki tam sayıyı seç, aralığı paydaya göre dilimle ve paraşütçüyü indir!',
+        icon: <Compass className="w-8 h-8" />,
+        badge: '3 Görev • Hassas İniş',
+        gradient: 'from-indigo-500 via-blue-600 to-sky-700',
+        reward: '+150 XP & Hassas Paraşütçü'
+      },
+      {
+        id: 'zerobalance',
+        title: 'Sıfır Denge Merkezi: Mutlak Değer Kilidi',
+        tagline: 'Enerji Kristalleri & Uzaklık',
+        description: 'Akıllı evdeki enerji kaçaklarını mutlak değer metresiyle ölç, sıfır noktasına eşit mesafedeki zıt kristallerle dengeyi sağla!',
+        icon: <Zap className="w-8 h-8" />,
+        badge: '2 Kademe • Denge Kilidi',
+        gradient: 'from-emerald-500 via-teal-600 to-cyan-700',
+        reward: '+120 XP & Enerji Mimarı'
+      }
+    );
+  } else if (isDivisibilityTopic) {
     baseGamesList.push(
       {
         id: 'kolilemefactory',
@@ -699,6 +746,27 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
 
           {/* Teacher Smart Board Student Delegation Widget */}
           <BoardStudentWidget activityTitle={currentGameInfo?.title || 'Aktif Oyun'} />
+
+          {/* FEATURED GAME: KÜME AYIKLAMA İSTASYONU (MAT.7.1.1) */}
+          {selectedGameId === 'setsorting' && (
+            <div className="animate-in fade-in duration-200">
+              <SetSortingGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: RASYONEL PARAŞÜTÇÜ (MAT.7.1.1) */}
+          {selectedGameId === 'rationalparachute' && (
+            <div className="animate-in fade-in duration-200">
+              <RationalParachuteGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: SIFIR DENGE MERKEZİ (MAT.7.1.1) */}
+          {selectedGameId === 'zerobalance' && (
+            <div className="animate-in fade-in duration-200">
+              <ZeroBalanceCenterGame />
+            </div>
+          )}
 
           {/* FEATURED GAME: KOLİLEME FABRİKASI (ÇARPAN EŞLEME ARCADE) */}
           {selectedGameId === 'kolilemefactory' && (

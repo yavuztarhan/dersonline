@@ -2790,7 +2790,419 @@ export const CURRICULUM_DATA: Grade[] = [
         icon: 'Calculator',
         color: 'from-purple-500 to-indigo-600',
         description: 'Tam Sayılarla İşlemler, Rasyonel Sayılar, Eşitlik ve Denklem.',
-        units: []
+        units: [
+          {
+          "id": "unit-7-sayilar",
+          "subjectId": "mat-7",
+          "unitNumber": 1,
+          "title": "1. Ünite: Sayılar ve Nicelikler (1)",
+          "description": "Tam sayılar, rasyonel sayılar ve farklı temsilleri, sayı doğrusu ve mutlak değer modelleri.",
+          "icon": "Calculator",
+          "themeColor": "#7c3aed",
+          "topics": [
+                    {
+                              "id": "topic-7-rasyonel-1",
+                              "unitId": "unit-7-sayilar",
+                              "title": "Tam Sayılardan Rasyonel Sayılara",
+                              "description": "Doğal sayı, tam sayı ve rasyonel sayı kümeleri, Euler şeması, gizli payda, sayı doğrusu ve mutlak değer.",
+                              "outcomes": [
+                                        {
+                                                  "id": "MAT.7.1.1",
+                                                  "code": "MAT.7.1.1",
+                                                  "title": "Doğal Sayı, Tam Sayı ve Rasyonel Sayıları Yorumlayabilme",
+                                                  "shortTitle": "Tam Sayılardan Rasyonel Sayılara",
+                                                  "description": "Gerçek yaşam ya da matematiksel durumlarda doğal sayı, tam sayı ve rasyonel sayıları yorumlar; Euler şeması (N ⊂ Z ⊂ Q), gizli payda mekanizması ve sayı doğrusu modelleriyle rasyonel sayıları açıklar, mutlak değer kavramıyla başlangıç noktasına uzaklık ilişkisini ve enerji tasarrufu sapmalarını analiz eder.",
+                                                  "gradeId": "grade-7",
+                                                  "subjectId": "mat-7",
+                                                  "unitId": "unit-7-sayilar",
+                                                  "topicId": "topic-7-rasyonel-1",
+                                                  "durationMinutes": 40,
+                                                  "pedagogyGuide": {
+                                                            "maarifSDBs": [
+                                                                      "SDB1.2: Kendini Düzenleme / Öz Düzenleme (Sayıları rasyonel forma dönüştürürken paydanın 0 olamayacağı kuralını ve gizli paydayı sistematik kontrol etme)",
+                                                                      "SDB2.2: İş Birliği ve Akran Öğrenmesi (Akıllı ev enerji bakiye senaryosunda üretim ve tüketim sapmalarını mutlak değerle karşılaştırıp tartışma)",
+                                                                      "SDB3.3: Matematiksel Muhakeme ve Problem Çözme (Her tam sayının paydası 1 olan bir rasyonel sayı olduğunu ispatlama ve sayı doğrusunda ardışık tam sayıları doğru dilimleme)"
+                                                            ],
+                                                            "processComponents": [
+                                                                      "a) Tam sayıları inceler (N ⊂ Z ⊂ Q hiyerarşisi, gizli payda).",
+                                                                      "b) Tam sayıları rasyonel sayılara genişletir ve mutlak değerle sayı doğrusunda açıklar.",
+                                                                      "c) Sayı doğrusu üzerinde her rasyonel sayının bir noktaya karşılık geldiğini açıklar."
+                                                            ],
+                                                            "learningGoals": [
+                                                                      "Doğal sayılar (N), tam sayılar (Z) ve rasyonel sayılar (Q) kümeleri arasındaki hiyerarşiyi (N ⊂ Z ⊂ Q) kavrar.",
+                                                                      "Her tam sayının paydasına 1 yazılarak a/b biçiminde rasyonel sayı olarak gösterilebileceğini (gizli payda) fark eder.",
+                                                                      "a/b ifadesinde b = 0 olduğunda ifadenin matematiksel olarak tanımsız olduğunu açıklar.",
+                                                                      "Negatif rasyonel sayıların farklı temsillerini (-a/b = (-a)/b = a/(-b)) sayı doğrusunda modeller.",
+                                                                      "Sayı doğrusunda pozitif ve negatif rasyonel sayıların yer alacağı ardışık iki tam sayıyı belirler ve aralığı eşit parçalara bölerek noktayı bulur.",
+                                                                      "Mutlak değerin başlangıç noktasına (0) olan uzaklık olduğunu fark eder; günlük hayattaki hedef sapmaları ve enerji dengesini mutlak değerle analiz eder."
+                                                            ],
+                                                            "teacherTips": [
+                                                                      "Derse akıllı ev enerji sayacı senaryosu ile başlayınız; güneş paneli üretimini pozitif (+), şebeke tüketimini negatif (-) değerlerle göstererek sıfır referans noktasını vurgulayınız.",
+                                                                      "Euler şeması modelini tahtada iç içe geçen üç halka olarak çiziniz ve -4 sayısının neden Z ve Q halkalarında olup N halkasında olmadığını tartışınız.",
+                                                                      "Paydanın sıfır olamama durumunu \"sıfır parçaya bölme yapılamaz\" mantığı ve hesap makinelerindeki \"Error / Tanımsız\" uyarısıyla somutlaştırınız.",
+                                                                      "Sayı doğrusunda -3/4 noktasını bulurken öğrencilerin sıfırdan sola doğru 3 birim ilerlemesi gerektiğini hatırlatarak negatif yön yanılgısını önleyiniz."
+                                                            ],
+                                                            "misconceptions": [
+                                                                      "Paydası 0 olan ifadelerin 0'a eşit olduğunu düşünmek (Örn: 5/0 = 0 yanılgısı; doğrusu tanımsızdır, 0/5 = 0'dır).",
+                                                                      "Tam sayıların rasyonel sayı olmadığını zannetmek (Her tam sayının paydasında gizli 1 olduğunu unutmak).",
+                                                                      "Sayı doğrusunda negatif kesirleri yerleştirirken pozitif yön gibi sağa doğru saymak (Örn: -1 tam 1/2'yi -1 ile 0 arasında zannetmek).",
+                                                                      "Mutlak değerin yalnızca işaret değiştiren bir işlem olduğunu düşünüp geometrik uzaklık anlamını kavrayamamak."
+                                                            ],
+                                                            "keyQuestions": [
+                                                                      "Akıllı sayacın ekranındaki +4 kWh ve -4 kWh değerlerinin sıfıra olan mesafeleri neden aynıdır?",
+                                                                      "Güneş panelinin ürettiği +3 kWh enerjiyi a/b şeklinde yazabilir miyiz? Paydasına 1 yazmak sayının değerini değiştirir mi?",
+                                                                      "İki ardışık tam sayı arası neden istenildiği kadar küçük eşit enerji dilimlerine bölünebilir?"
+                                                            ]
+                                                  },
+                                                  "phases": {
+                                                            "story": {
+                                                                      "title": "Geleceğin Akıllı Evi: Enerji Tasarrufu ve Sıfır Atık Karnesi",
+                                                                      "character": {
+                                                                                "name": "Enerji Mühendisi Selim & Eren",
+                                                                                "role": "Akıllı Bina & Enerji Tasarrufu Uzmanları",
+                                                                                "avatar": "🏡"
+                                                                      },
+                                                                      "scenario": "Eren ailesi, evlerinin elektrik ve su tüketimini anlık takip etmek için akıllı bir enerji yönetim sistemi kurmuştur. Sistem, sıfır referans noktasını (0) \"hedef enerji dengesi\" olarak kabul etmektedir: Güneş panellerinin ürettiği temiz elektrik pozitif tam sayılarla (+3 kWh, +5 kWh), şebekeden çekilen fazla tüketim ise negatif tam sayılarla (-2 kWh, -4 kWh) kaydedilmektedir.",
+                                                                      "realLifeConnection": "Sıfır atık, akıllı ev otomasyonu, enerji bütçelemesi ve sürdürülebilir tüketim analizinde tam sayılar ve rasyonel sayılar kritik rol oynar.",
+                                                                      "reflectionQuestion": "Akıllı sayacın ekranındaki +4 kWh ve -4 kWh değerlerinin sıfır noktasına olan mesafeleri neden aynıdır? +5/2 kWh ve -3/4 kWh gibi değerleri sayı doğrusunda nereye yerleştirebiliriz?",
+                                                                      "keyTakeaway": "Her tam sayı paydası 1 olan bir rasyonel sayıdır (N ⊂ Z ⊂ Q). Mutlak değer, sayının başlangıç noktasına (0) olan yönlü olmayan gerçek uzaklığıdır.",
+                                                                      "pages": [
+                                                                                {
+                                                                                          "id": "p7-1",
+                                                                                          "pageNumber": 1,
+                                                                                          "chapterTitle": "1. Bölüm: Sıfır Denge Noktası ve Akıllı Enerji Sayacı",
+                                                                                          "conceptTitle": "Referans Noktası (0) ve Tam Sayılarla Enerji Dengesi",
+                                                                                          "conceptBadge": "Hedef Sıfır Dengesi",
+                                                                                          "symbolicCode": "Üretim: +120 kWh | Tüketim: -150 kWh ⟹ Net Bakiye: -30 kWh",
+                                                                                          "narrativeText": "Eren ailesi ay sonunda akıllı evin kontrol panelinin başına geçti. Baba Selim Bey ekrandaki grafiği işaret etti: \"Bu ay güneş panellerimiz +120 kWh temiz enerji üretti ancak şebekeden -150 kWh enerji çektik. Net enerji bakiyemiz -30 kWh. Yani sıfır dengesinin 30 kWh altındayız!\" Eren şaşkınlıkla ekrana baktı: \"Demek ki sıfır (0) noktası bizim hedef denge çizgimiz!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Mühendis Selim",
+                                                                                                    "text": "Aynen öyle Eren! Sıfırın sağı üretilen fazlalığı, sıfırın solu ise tüketilen açığı temsil eder. Sayı doğrusundaki 0 noktası akıllı evin kalbidir."
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "smart-home-meter",
+                                                                                                    "caption": "Akıllı enerji sayacı: 0 noktası nötr denge, sağ taraf yeşil solar üretim (+), sol taraf kırmızı şebeke çekimi (-)."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Akıllı sayacın aylık net bakiye formülünü onaylayın ve sıfır noktasını mühürleyin!",
+                                                                                                    "actionLabel": "Sıfır Noktasını Onayla ⚡",
+                                                                                                    "feedbackRevealed": "Harika! 0 referans noktası doğrulandı. Net bakiye -30 kWh olarak sisteme işlendi."
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 1: Gerçek hayat durumlarında sıfır (0) noktası mutlak yokluk değil, kabul edilen başlangıç veya denge referans noktasıdır."
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-2",
+                                                                                          "pageNumber": 2,
+                                                                                          "chapterTitle": "2. Bölüm: İki Odanın Tartışması & Mutlak Değerin Keşfi",
+                                                                                          "conceptTitle": "Mutlak Değer: Yönsüz Gerçek Mesafe",
+                                                                                          "conceptBadge": "Mutlak Değer Metresi",
+                                                                                          "symbolicCode": "|+4| = |-4| = 4 birim mesafe",
+                                                                                          "narrativeText": "Akıllı evin odaları incelenirken ilginç bir durum ortaya çıktı. Çocuk odasındaki sensör +4 kWh (fazla enerji üretimi), misafir odasındaki klima ise -4 kWh (enerji tüketimi) göstermişti. Eren sordu: \"Hangi oda hedef dengeden daha fazla saptı?\" Selim Bey gülümsedi: \"İkisi de sıfır noktasından tam 4 kWh uzaklıkta! Enerji tasarrufunda sapmanın yönü değil, sıfıra olan mesafesi önemlidir.\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Eren",
+                                                                                                    "text": "Anladım! +4 de sıfıra 4 adım uzakta, -4 de sıfıra 4 adım uzakta! İşte bu yüzden |+4| = 4 ve |-4| = 4 oluyor. Mutlak değer sadece mesafeyi ölçer!"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "absolute-value-laser",
+                                                                                                    "caption": "0 noktasından sağa ve sola uzanan 4 birimlik ikiz lazer cetveli: |+4| = |-4| = 4."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Mutlak değer lazer metresini çalıştırarak +4 ve -4 noktalarının mesafelerini test edin!",
+                                                                                                    "actionLabel": "Lazer Metreyi Ateşle 🎯",
+                                                                                                    "feedbackRevealed": "Mükemmel tespit! |-4| = |+4| = 4 birim. Her iki odanın dengeden sapma büyüklüğü eşittir."
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 2: Bir sayının sayı doğrusundaki başlangıç noktasına (0) olan uzaklığına o sayının mutlak değeri denir. Uzaklık negatif olamaz!"
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-3",
+                                                                                          "pageNumber": 3,
+                                                                                          "chapterTitle": "3. Bölüm: Saatlik Rapor ve Parçalanan Enerji Dilimleri",
+                                                                                          "conceptTitle": "Tam Sayı Olmayan Değerler: Rasyonel Sayılara Giriş",
+                                                                                          "conceptBadge": "Kesirli Enerji",
+                                                                                          "symbolicCode": "Saat 14:00: +5/2 kWh | Saat 18:00: -3/4 kWh",
+                                                                                          "narrativeText": "Öğleden sonra saatlik enerji raporu geldi. Saat 14:00'te güneş panelleri tam 2 buçuk kWh (+5/2 kWh) elektrik üretmişti. Saat 18:00'de ise klima yarım saat çalışıp -3/4 kWh tüketmişti. Eren panoya baktı: \"+5/2 ve -3/4 birer tam sayı değil! Sayı doğrusundaki cetvelimizde bunları nereye yerleştireceğiz?\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Mühendis Selim",
+                                                                                                    "text": "Tam sayılar cetveli artık yetersiz kalıyor Eren! Şimdi ardışık tam sayıların arasını eşit parçalara bölerek yeni sayı evrenimize, yani RASYONEL SAYILARA adım atıyoruz!"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "fractional-energy-slices",
+                                                                                                    "caption": "+5/2 = +2 tam 1/2 noktası (2 ile 3 arasında); -3/4 noktası (-1 ile 0 arasında)."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "+5/2 ve -3/4 değerlerinin hangi tam sayılar arasında olduğunu belirleyin!",
+                                                                                                    "actionLabel": "Aralıkları Tespit Et 📏",
+                                                                                                    "feedbackRevealed": "+5/2 sayısı 2 ile 3 tam sayıları arasında, -3/4 sayısı ise 0 ile -1 arasındadır!"
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 3: a ve b birer tam sayı ve b ≠ 0 olmak üzere, a/b şeklinde yazılabilen sayılara rasyonel sayılar (ℚ) denir."
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-4",
+                                                                                          "pageNumber": 4,
+                                                                                          "chapterTitle": "4. Bölüm: Gizli Payda Sırrı & Sayı Kümeleri Evreni",
+                                                                                          "conceptTitle": "N ⊂ Z ⊂ Q Hiyerarşisi ve Gizli Payda Mekanizması",
+                                                                                          "conceptBadge": "Sayı Kümeleri",
+                                                                                          "symbolicCode": "-4 = -4/1 = 4/(-1) = -(4/1)  ve  ℕ ⊂ ℤ ⊂ ℚ",
+                                                                                          "narrativeText": "Eren merakla sordu: \"Peki baba, dün öğrendiğimiz tam sayılar bu yeni rasyonel dünyada kayıp mı oldu?\" Selim Bey tahtaya büyük bir Euler şeması çizdi: \"Asla! Her tam sayının paydasında görünmeyen gizli bir 1 vardır. Örneğin -4 aslında -4/1 demektir. Yani her doğal sayı bir tam sayıdır, her tam sayı da aynı zamanda bir rasyonel sayıdır!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Mühendis Selim & Eren",
+                                                                                                    "text": "Doğal Sayılar (N), Tam Sayıların (Z) içindedir; Tam Sayılar da Rasyonel Sayıların (Q) içindedir! Fakat payda asla 0 olamaz; çünkü enerjiyi sıfır parçaya bölemeyiz!"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "euler-diagram-sets",
+                                                                                                    "caption": "İç içe geçmiş halkalar: En içte N (Doğal), ortada Z (Tam), en dışta Q (Rasyonel). Dışarıda ise Paydası 0 olan Tanımsızlar."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Gizli paydayı ortaya çıkararak -4 sayısının rasyonel kimliğini mühürleyin!",
+                                                                                                    "actionLabel": "Gizli Paydayı Aç 🔮",
+                                                                                                    "feedbackRevealed": "-4 = -4/1 = 4/(-1) = -(4/1). Bütün tam sayılar birer rasyonel sayıdır (N ⊂ Z ⊂ Q)!"
+                                                                                          },
+                                                                                          "mathTakeaway": "Sonuç: a ∈ ℤ için a = a/1 olduğundan her tam sayı bir rasyonel sayıdır. b = 0 durumunda a/0 matematiksel olarak tanımsızdır."
+                                                                                }
+                                                                      ]
+                                                            },
+                                                            "lab": {
+                                                                      "title": "Dinamik Sayı Doğrusu ve Sayı Kümeleri Laboratuvarı",
+                                                                      "toolType": "rational-numbers-bench",
+                                                                      "instructions": "Euler şeması üzerinde sayı kümelerini test edin, gizli payda mekanizmasını ve tanımsızlık alarmlarını inceleyin. Ardından yakınlaştırmalı sayı doğrusunda ardışık iki tam sayı arasını eşit parçalara bölerek rasyonel noktaları bulun ve mutlak değer lazer metresiyle başlangıç noktasına olan uzaklıkları ölçün.",
+                                                                      "taskGoal": "N ⊂ Z ⊂ Q ilişkisini kanıtlayın, -3/4 ve +5/2 noktalarını sayı doğrusunda işaretleyin ve |-4| = |+4| eşitliğini lazer metresiyle gösterin.",
+                                                                      "interactiveTips": [
+                                                                                "Euler şemasında sayıyı girerken paydaya 0 yazarak sistemin tanımsızlık alarmı vermesini gözlemleyiniz.",
+                                                                                "Gizli payda butonuna tıklayarak tam sayıların rasyonel gösterimlerini (-4/1, 4/(-1), -(4/1)) keşfediniz.",
+                                                                                "Sayı doğrusunda negatif kesirleri dilimlerken 0'dan sola doğru ilerlemeyi unutmayınız!",
+                                                                                "Mutlak değer metresinde mesafenin yönü olmadığını, daima pozitif bir büyüklük olduğunu inceleyiniz."
+                                                                      ]
+                                                            },
+                                                            "puzzle": {
+                                                                      "title": "Rasyonel Sayılar Oyun İstasyonu",
+                                                                      "instructions": "Öğrendiğiniz kavramları pekiştirmek için 3 özel oyundan birini seçiniz: Küme Ayıklama İstasyonu (Arcade), Rasyonel Paraşütçü (Sayı Doğrusu İnişi) veya Sıfır Denge Merkezi (Mutlak Değer Kilidi).",
+                                                                      "items": [
+                                                                                {
+                                                                                          "id": "p1",
+                                                                                          "concept": "Rasyonel Sayı (Q)",
+                                                                                          "symbol": "a/b, b ≠ 0",
+                                                                                          "definition": "a ve b tam sayı olmak ve payda sıfırdan farklı olmak üzere a/b şeklinde yazılabilen sayılardır.",
+                                                                                          "visualType": "fraction"
+                                                                                },
+                                                                                {
+                                                                                          "id": "p2",
+                                                                                          "concept": "Sayı Kümeleri Hiyerarşisi",
+                                                                                          "symbol": "N ⊂ Z ⊂ Q",
+                                                                                          "definition": "Her doğal sayı bir tam sayıdır, her tam sayı da paydası 1 olan bir rasyonel sayıdır.",
+                                                                                          "visualType": "sets"
+                                                                                },
+                                                                                {
+                                                                                          "id": "p3",
+                                                                                          "concept": "Mutlak Değer",
+                                                                                          "symbol": "|x| ≥ 0",
+                                                                                          "definition": "Bir sayının sayı doğrusunda başlangıç noktasına (0) olan uzaklığıdır; asla negatif olamaz.",
+                                                                                          "visualType": "distance"
+                                                                                },
+                                                                                {
+                                                                                          "id": "p4",
+                                                                                          "concept": "Tanımsız Kesir",
+                                                                                          "symbol": "a/0",
+                                                                                          "definition": "Paydası sıfır olan kesirli ifadeler matematiksel olarak tanımsızdır ve bir sayı belirtmez.",
+                                                                                          "visualType": "undefined"
+                                                                                }
+                                                                      ]
+                                                            },
+                                                            "assessment": {
+                                                                      "title": "Değerlendirme Testi: Tam Sayılardan Rasyonel Sayılara",
+                                                                      "instructions": "Aşağıdaki 14 soruyu dikkatle okuyunuz. Sorular 8 temel kavrama ve 6 günlük hayat / akıllı ev bağlam temelli sorudan oluşmaktadır.",
+                                                                      "reflectionPrompt": "Bugün rasyonel sayılar kavramı, geçen yıl öğrendiğiniz tam sayılar evrenini nasıl genişletti? Akıllı ev enerji sayacındaki verileri incelerken mutlak değer size neyi fark ettirdi?",
+                                                                      "questions": [
+                                                                                {
+                                                                                          "id": "q1",
+                                                                                          "questionText": "Aşağıdakilerden hangisi bir rasyonel sayıdır fakat tam sayı DEĞİLDİR?",
+                                                                                          "options": [
+                                                                                                    "-8/2",
+                                                                                                    "0/4",
+                                                                                                    "5",
+                                                                                                    "-3/5"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 3,
+                                                                                          "explanation": "-8/2 = -4 (tam sayı), 0/4 = 0 (tam sayı), 5 = tam sayı. -3/5 ise tam sayıya sadeleşmez; rasyonel sayıdır fakat tam sayı değildir.",
+                                                                                          "bloomLevel": "Bilgi"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q2",
+                                                                                          "questionText": "(x - 3) / (x + 2) ifadesi x'in hangi değeri için bir rasyonel sayı BELİRTMEZ?",
+                                                                                          "options": [
+                                                                                                    "3",
+                                                                                                    "0",
+                                                                                                    "-2",
+                                                                                                    "2"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 2,
+                                                                                          "explanation": "Bir kesrin rasyonel sayı belirtmesi için paydası sıfırdan farklı olmalıdır (b ≠ 0). x + 2 = 0 ise x = -2 için payda sıfır olur ve ifade tanımsız hale gelir.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q3",
+                                                                                          "questionText": "Aşağıdaki rasyonel sayı eşitliklerinden hangisi YANLIŞTIR?",
+                                                                                          "options": [
+                                                                                                    "-2/3 = (-2)/3",
+                                                                                                    "-2/3 = 2/(-3)",
+                                                                                                    "-2/3 = (-2)/(-3)",
+                                                                                                    "-(-2/3) = 2/3"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 2,
+                                                                                          "explanation": "(-2)/(-3) ifadesinde iki negatif sayının bölümü pozitif yapar ((-2)/(-3) = +2/3). Bu yüzden negatif olan -2/3 sayısına eşit olamaz.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q4",
+                                                                                          "questionText": "-7/3 rasyonel sayısı sayı doğrusunda hangi ardışık iki tam sayı arasındadır?",
+                                                                                          "options": [
+                                                                                                    "-1 ile -2",
+                                                                                                    "-2 ile -3",
+                                                                                                    "-3 ile -4",
+                                                                                                    "2 ile 3"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "-7/3 sayısı tam sayılı kesre çevrildiğinde -2 tam 1/3 olur. Sıfırdan sola doğru -2'yi geçip -3'e doğru ilerlediği için -2 ile -3 arasındadır.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q5",
+                                                                                          "questionText": "Aşağıdaki matematiksel ifadelerden hangisi DAİMA DOĞRUDUR?",
+                                                                                          "options": [
+                                                                                                    "Her rasyonel sayı aynı zamanda bir doğal sayıdır.",
+                                                                                                    "Her tam sayı aynı zamanda bir rasyonel sayıdır (Z ⊂ Q).",
+                                                                                                    "Sıfır sayısı bir rasyonel sayı değildir.",
+                                                                                                    "Paydası payından büyük olan her rasyonel sayı pozitiftir."
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Z ⊂ Q olduğu için her tam sayının paydasına 1 yazılarak a/1 şeklinde rasyonel sayı olarak ifade edilebilir.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q6",
+                                                                                          "questionText": "|-4/5| ifadesinin değeri ve sayı doğrusundaki geometrik anlamı aşağıdakilerden hangisidir?",
+                                                                                          "options": [
+                                                                                                    "-4/5, başlangıç noktasının solundadır.",
+                                                                                                    "4/5, başlangıç noktasına (0) olan uzaklığı 4/5 birimdir.",
+                                                                                                    "5/4, başlangıç noktasına olan uzaklığı ters çevirir.",
+                                                                                                    "0, başlangıç noktasıyla çakışıktır."
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Mutlak değer bir sayının başlangıç noktasına (0) olan uzaklığıdır ve uzaklık negatif olamaz. |-4/5| = 4/5 birimdir.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q7",
+                                                                                          "questionText": "0 ile -1 arası 4 eşit parçaya bölündüğünde sıfıra en yakın olan ilk bölme noktası hangi rasyonel sayıyı gösterir?",
+                                                                                          "options": [
+                                                                                                    "-1/4",
+                                                                                                    "-3/4",
+                                                                                                    "-1/2",
+                                                                                                    "-1/8"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "0 ile -1 arası 4 parçaya bölündüğünde her bir parçanın uzunluğu 1/4 birimdir. Sıfırdan sola doğru ilk adım -1/4 noktasıdır.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q8",
+                                                                                          "questionText": "-18/6 rasyonel sayısı sayı kümelerinden hangilerinin elemanıdır?",
+                                                                                          "options": [
+                                                                                                    "Yalnızca Q",
+                                                                                                    "Yalnızca Z",
+                                                                                                    "Z ve Q",
+                                                                                                    "N, Z ve Q"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 2,
+                                                                                          "explanation": "-18/6 = -3 tam sayısıdır. -3 sayısı negatif olduğu için N (Doğal Sayılar) kümesinde yer almaz; Z (Tam Sayılar) ve Q (Rasyonel Sayılar) kümelerinin elemanıdır.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q9",
+                                                                                          "questionText": "Eren ailesinin akıllı evi günün ilk yarısında +7/2 kWh güneş enerjisi üretmiş, ikinci yarısında şebekeden 3 tam 1/4 kWh enerji tüketmiştir. Akıllı sayaç bu iki değeri sayı doğrusunda işaretlemektedir. Buna göre üretilen enerji ile tüketilen enerjinin başlangıç noktasına (0) olan uzaklıkları toplamı kaç kWh'tir?",
+                                                                                          "options": [
+                                                                                                    "1/4",
+                                                                                                    "6 tam 3/4",
+                                                                                                    "6",
+                                                                                                    "5/4"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Uzaklık mutlak değerle hesaplanır: |+7/2| = 3.5 kWh = 3 tam 2/4. Tüketim |-3 tam 1/4| = 3 tam 1/4. Toplam uzaklık: 3 2/4 + 3 1/4 = 6 tam 3/4 kWh'tir.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q10",
+                                                                                          "questionText": "Bir derin dondurucunun sıcaklık ayarı -18 °C'dir. Hızlı dondurma moduna alındığında dondurucu her yarım saatte 3/2 °C daha soğumaktadır. 1 saat sonra sıcaklık göstergesinde yazan sayı değeri sayı doğrusunda hangi ardışık iki tam sayı arasında yer alır ya da hangi tam sayıya eşittir?",
+                                                                                          "options": [
+                                                                                                    "-19 ile -20 arasında",
+                                                                                                    "-20 ile -21 sınırında (-21 °C tam sayısı)",
+                                                                                                    "-21 ile -22 arasında",
+                                                                                                    "-22 ile -23 arasında"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "1 saatte iki tane yarım saat vardır. Toplam soğuma: 2 × (3/2) = 3 °C. Sıcaklık -18 - 3 = -21 °C olur. Bu değer tam olarak -21 tam sayısıdır (-20 ile -21 sınır noktası).",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q11",
+                                                                                          "questionText": "Okul kantininde başlatılan \"Sıfır Atık\" projesinde kantin görevlisi her gün artan ekmek miktarını tartmaktadır. Pazartesi günü hedeflenen sıfır noktasından -4/5 kg eksik atık çıkmış (tasarruf), Salı günü ise +6/5 kg fazla atık çıkmıştır. Kantin panosundaki dijital sayaçta bu iki günün atık durumunun sıfıra olan mesafeleri karşılaştırıldığında hangisi doğrudur?",
+                                                                                          "options": [
+                                                                                                    "Pazartesi günkü atık sıfıra daha uzaktır.",
+                                                                                                    "Salı günkü atık sıfıra daha uzaktır çünkü |+6/5| > |-4/5|'tir.",
+                                                                                                    "Her iki günün sıfıra mesafesi eşittir.",
+                                                                                                    "Negatif atık mutlak değerle hesaplanamaz."
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Sıfıra olan mesafe mutlak değerle ölçülür: |-4/5| = 4/5 = 0.8 kg. |+6/5| = 6/5 = 1.2 kg. 1.2 > 0.8 olduğundan Salı günkü atık sıfır denge noktasından daha uzaktır.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q12",
+                                                                                          "questionText": "Deniz seviyesi 0 kabul edilen bir test sahasında bir araştırma dronu su seviyesinin +15/4 metre üzerinde, denizaltı keşif robotu ise su seviyesinin 7/2 metre altındadır (-7/2 m). Kontrol ekranında dron ile denizaltının su seviyesine göre konumları gösterildiğinde hangisi deniz seviyesine (0) daha yakındır?",
+                                                                                          "options": [
+                                                                                                    "Dron (15/4 metre)",
+                                                                                                    "Denizaltı (-7/2 metre)",
+                                                                                                    "İkisi de eşit mesafededir",
+                                                                                                    "Karşılaştırılamaz"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Dronun uzaklığı: |+15/4| = 3.75 metredir. Denizaltının uzaklığı: |-7/2| = |-14/4| = 3.5 metredir. 3.5 < 3.75 olduğu için denizaltı robotu deniz seviyesine (0) daha yakındır.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q13",
+                                                                                          "questionText": "Bir su arıtma tesisi mikron düzeyindeki filtre gözeneklerini rasyonel sayılarla modellemektedir: K filtresi 1/8 mm, L filtresi 3/16 mm, M filtresi 1/4 mm gözenek açıklığına sahiptir. En ince tortuları bile süzmek isteyen bir mühendis su arıtma standardına göre sıfıra en yakın (en küçük) gözenek açıklığına sahip filtreyi seçecektir. Mühendis hangi filtreyi seçmelidir?",
+                                                                                          "options": [
+                                                                                                    "K Filtresi (1/8 mm)",
+                                                                                                    "L Filtresi (3/16 mm)",
+                                                                                                    "M Filtresi (1/4 mm)",
+                                                                                                    "K ve M eşit açıklıktadır"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Kesirlerin paydalarını 16'da eşitleyelim: K = 2/16 mm, L = 3/16 mm, M = 4/16 mm. En küçük gözenek 2/16 mm ile K filtresidir, dolayısıyla sıfıra en yakın olan K filtresidir.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q14",
+                                                                                          "questionText": "Bir enerji şirketinde 4 farklı güneş panelinin kış aylarındaki performans kaybı / kazancı rasyonel sayılarla listelenmiştir:\nPanel A: -5/3, Panel B: -7/4, Panel C: -3/2, Panel D: -11/6.\nHangi panelin performans kaybı sayı doğrusunda -2 tam sayısına en yakındır?",
+                                                                                          "options": [
+                                                                                                    "Panel A (-5/3)",
+                                                                                                    "Panel B (-7/4)",
+                                                                                                    "Panel C (-3/2)",
+                                                                                                    "Panel D (-11/6)"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 3,
+                                                                                          "explanation": "-2 tam sayısına olan uzaklıklar |-2 - (-x)| ile hesaplanır:\nPanel A: |-2 - (-5/3)| = |-1/3| ≈ 0.33\nPanel B: |-2 - (-7/4)| = |-1/4| = 0.25\nPanel C: |-2 - (-3/2)| = |-1/2| = 0.50\nPanel D: |-2 - (-11/6)| = |-1/6| ≈ 0.166. En küçük fark Panel D'dedir, dolayısıyla -2'ye en yakın panel D'dir.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                }
+                                                                      ]
+                                                            }
+                                                  }
+                                        }
+                              ]
+                    }
+          ]
+}
+        ]
       }
     ]
   },
