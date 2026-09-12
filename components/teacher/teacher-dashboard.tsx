@@ -26,8 +26,10 @@ import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { ExcelStudentImportModal } from '@/components/teacher/excel-student-import-modal';
 import { SuspendedTeacherView } from '@/components/teacher/suspended-teacher-view';
 import { downloadStudentCardsPDF } from '@/lib/student-cards-pdf-generator';
+import { MessageInboxModal } from '@/components/messages/message-inbox-modal';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+
 import {
   FileSpreadsheet,
   School,
@@ -65,8 +67,10 @@ import {
   ChevronDown,
   AlertTriangle,
   RefreshCw,
+  MessageSquare,
   X
 } from 'lucide-react';
+
 
 const GRADE_OPTIONS = ['5', '6', '7', '8'];
 const BRANCH_OPTIONS = [
@@ -114,6 +118,11 @@ export function TeacherDashboard() {
     classCode: string;
     password: string;
   } | null>(null);
+
+  // Direct student message state (öğrenci listesindeki mesaj ikonu)
+  const [messageTargetStudentId, setMessageTargetStudentId] = useState<string | null>(null);
+
+
 
   // Classroom Files State
   const [classroomFiles, setClassroomFiles] = useState<ClassroomFileRecord[]>([]);
@@ -1139,6 +1148,18 @@ export function TeacherDashboard() {
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
+                                    playSound('click');
+                                    setMessageTargetStudentId(stu.id);
+                                  }}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-teal-700 hover:bg-teal-50 transition-colors cursor-pointer"
+                                  title={`${stu.name} adlı öğrenciye mesaj gönder`}
+                                >
+                                  <MessageSquare className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     playSound('select');
                                     setSelectedStudentForDetail(stu);
                                   }}
@@ -1161,6 +1182,7 @@ export function TeacherDashboard() {
                                 </button>
                               </div>
                             </td>
+
                           </tr>
                         );
                       })
@@ -2186,6 +2208,15 @@ export function TeacherDashboard() {
         }}
       />
 
+      {/* Öğrenci Listesinden Doğrudan Mesaj Gönderme Modalı */}
+      <MessageInboxModal
+        isOpen={!!messageTargetStudentId}
+        onClose={() => setMessageTargetStudentId(null)}
+        defaultTab="compose"
+        lockedRecipientId={messageTargetStudentId || undefined}
+      />
+
     </div>
+
   );
 }
