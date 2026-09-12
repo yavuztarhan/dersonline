@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AppProvider } from '@/lib/store';
 import { AuthProvider } from '@/lib/auth-store';
@@ -6,11 +6,30 @@ import { SessionProvider } from '@/components/providers/session-provider';
 import { Navbar } from '@/components/navbar';
 import { RandomStudentPickerModal } from '@/components/random-student-picker';
 import { EnforceProfileGuard } from '@/components/auth/enforce-profile-guard';
+import { PwaInstallBanner } from '@/components/pwa-install-banner';
+
+export const viewport: Viewport = {
+  themeColor: '#0d9488',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export const metadata: Metadata = {
   title: 'Maarif Akademi – Kademeli Akıllı Tahta ve İnteraktif Dersler Platformu',
   description:
     'Türkiye Yüzyılı Maarif Modeli müfredatına tam uyumlu, akıllı tahta öğretmen sunum ve interaktif öğrenci ders platformu.',
+  manifest: '/manifest.webmanifest',
+  applicationName: 'Maarif Akademi',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Maarif Akademi',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -43,6 +62,7 @@ export default function RootLayout({
                 {children}
               </main>
               <RandomStudentPickerModal />
+              <PwaInstallBanner />
             </AppProvider>
           </AuthProvider>
         </SessionProvider>
