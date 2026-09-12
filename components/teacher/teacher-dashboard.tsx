@@ -817,11 +817,10 @@ export function TeacherDashboard() {
 
       {/* SECTION 2: CLASS & STUDENT MANAGEMENT */}
       {activeSection === 'students' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in duration-300">
+        <div className="space-y-6 animate-in fade-in duration-300">
           
-          {/* Left Column: Sınıf & Öğrenci Yönetimi (2 cols) */}
-          <div className="lg:col-span-2 space-y-6">
-            
+
+
             <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
               
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
@@ -1817,37 +1816,9 @@ export function TeacherDashboard() {
                 </form>
               </div>
             )}
-
-          </div>
-
-          {/* Right Column: Quick info & stats */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <BarChart2 className="w-4 h-4 text-teal-600" />
-                <span>Sınıf İstatistikleri</span>
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-2xl bg-teal-50 border border-teal-100 text-center">
-                  <div className="text-xl font-black text-teal-800">{classStudents.length}</div>
-                  <div className="text-[11px] font-bold text-teal-600">{selectedClass} Mevcudu</div>
-                </div>
-                <div className="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-100 text-center">
-                  <div className="text-xl font-black text-indigo-800">{teacherClasses.length}</div>
-                  <div className="text-[11px] font-bold text-indigo-600">Toplam Şube</div>
-                </div>
-              </div>
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
-                <div className="font-bold text-slate-900">💡 Hızlı İpuçları</div>
-                <p>
-                  Öğrenciler dersin 4. Aşamasındaki &quot;Öz Değerlendirme Formunu&quot; doldurduklarında sonuçlar anında Rubrik Raporları sekmesine yansır.
-                </p>
-              </div>
-            </div>
-          </div>
-
         </div>
       )}
+
 
 
 
