@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { isUserAdmin } from '@/lib/auth-options';
 import { hashPassword, isPasswordHashed } from '@/lib/password';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -47,8 +49,8 @@ export async function GET(req: NextRequest) {
     }
 
     const profile = user.teacherProfile;
-    const classrooms = profile?.classrooms || [];
-    const classNames = classrooms.map((c) => c.name.toUpperCase());
+    const classrooms: any[] = (profile as any)?.classrooms || [];
+    const classNames = classrooms.map((c: any) => c.name.toUpperCase());
 
     // 2. Fetch all students belonging to this teacher or these classrooms
     const studentsInDb = await prisma.studentProfile.findMany({

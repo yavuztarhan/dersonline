@@ -9,6 +9,8 @@ import {
   isEncryptedStudentPassword
 } from '@/lib/password';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
