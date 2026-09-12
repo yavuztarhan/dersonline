@@ -145,11 +145,11 @@ export async function POST(req: NextRequest) {
           create: {
             userId: user.id,
             phone: phone || '',
-            city: city || 'Edirne',
-            district: district || 'Merkez',
-            school: school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+            city: city || '',
+            district: district || '',
+            school: school || '',
             branch: branch || 'Matematik',
-            principalName: principalName || 'Mehmet GÜNGÖR',
+            principalName: principalName || '',
             status: 'APPROVED',
           },
         });

@@ -40,9 +40,9 @@ export function ExcelStudentImportModal({
   const { playSound } = useApp();
   const teacher = currentUser as TeacherUser | null;
 
-  const teacherClasses = teacher?.assignedClasses || ['5-A', '5-B', '6-A'];
+  const teacherClasses = teacher?.assignedClasses || [];
   const [selectedClass, setSelectedClass] = useState<string>(
-    defaultClass || teacherClasses[0] || '5-A'
+    defaultClass || teacherClasses[0] || ''
   );
   const [isCreatingNewClass, setIsCreatingNewClass] = useState(false);
   const [newClassName, setNewClassName] = useState('');

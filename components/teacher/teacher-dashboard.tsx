@@ -94,7 +94,8 @@ export function TeacherDashboard() {
     deleteClassFromTeacher,
     awardPointsToStudent,
     classrooms,
-    getClassCodeForClass
+    getClassCodeForClass,
+    refreshData
   } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
   const [activeSection, setActiveSection] = useState<'analytics' | 'forms' | 'students' | 'groups' | 'leaderboard' | 'files' | 'board'>('board');
@@ -122,8 +123,6 @@ export function TeacherDashboard() {
   // Direct student message state (öğrenci listesindeki mesaj ikonu)
   const [messageTargetStudentId, setMessageTargetStudentId] = useState<string | null>(null);
 
-
-
   // Classroom Files State
   const [classroomFiles, setClassroomFiles] = useState<ClassroomFileRecord[]>([]);
   const [dashboardWhiteboardOpen, setDashboardWhiteboardOpen] = useState(false);
@@ -137,6 +136,7 @@ export function TeacherDashboard() {
 
   useEffect(() => {
     setClassroomFiles(getStoredClassroomFiles());
+    refreshData();
   }, []);
 
   // Sınıf dosyaları sekmesinde sadece bu öğretmenin oluşturduğu, düzenlediği veya kaydettiği beyaz tahta ders notları ve sınıfa gönderilen etkinlik kağıtları gösterilir.

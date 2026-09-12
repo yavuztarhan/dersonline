@@ -15,11 +15,11 @@ import {
 import { validatePassword } from '@/lib/password-validator';
 
 export interface AdminCreateUserPayload {
-  firstName: string;
-  lastName: string;
   email: string;
   password: string;
   role: 'admin' | 'teacher';
+  firstName?: string;
+  lastName?: string;
   phone?: string;
   city?: string;
   district?: string;
@@ -81,6 +81,7 @@ interface AuthContextType {
   resetStudentPassword: (studentId: string) => { success: boolean; newPassword?: string };
   awardPointsToStudent: (studentId: string, pts: number, reason?: string, subject?: string) => void;
   getVisibleStudents: (user?: AuthUser | null) => StudentUser[];
+  refreshData: () => Promise<void>;
 }
 
 export {
@@ -269,10 +270,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (data?.success && data?.user) {
                 const dbUser = data.user;
                 const dbClasses: string[] = dbUser.assignedClasses || [];
-                const localClasses: string[] = (parsedUser as any).assignedClasses || [];
-                const mergedClasses = Array.from(new Set([...dbClasses, ...localClasses])).sort((a, b) =>
-                  a.localeCompare(b, 'tr-TR', { numeric: true })
-                );
 
                 setCurrentUser((prev) => {
                   if (!prev || prev.email?.toLowerCase() !== parsedUser.email?.toLowerCase()) return prev;
@@ -287,7 +284,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     school: dbUser.school || (prev as any).school,
                     branch: dbUser.branch || (prev as any).branch,
                     principalName: dbUser.principalName || (prev as any).principalName,
-                    assignedClasses: mergedClasses.length > 0 ? mergedClasses : (prev as any).assignedClasses,
+                    assignedClasses: dbClasses,
                     accountStatus: dbUser.accountStatus || prev.accountStatus || 'aktif',
                     status: dbUser.accountStatus === 'beklemede' ? 'suspended' : (dbUser.status || (prev as any).status),
                     isKvkkAccepted: dbUser.isKvkkAccepted !== undefined ? dbUser.isKvkkAccepted : (prev as any).isKvkkAccepted,
@@ -307,6 +304,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                               status: dbUser.accountStatus === 'beklemede' ? 'suspended' : t.status,
                               isKvkkAccepted: dbUser.isKvkkAccepted !== undefined ? dbUser.isKvkkAccepted : t.isKvkkAccepted,
                               kvkkAcceptedAt: dbUser.kvkkAcceptedAt || t.kvkkAcceptedAt,
+                              assignedClasses: dbClasses,
                             }
                           : t
                       )
@@ -316,10 +314,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   return synced;
                 });
 
-                // If local user has classes or password not yet saved to DB, sync them
-                const hasMissingClasses = localClasses.some((c: string) => !dbClasses.includes(c));
+                // If user password is not yet saved to DB, sync it
                 const needsPasswordSync = Boolean(parsedUser.password && !dbUser.hasPassword);
-                if (hasMissingClasses || needsPasswordSync) {
+                if (needsPasswordSync) {
                   fetch('/api/user/profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -331,28 +328,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                       phone: (parsedUser as any).phone,
                       school: (parsedUser as any).school,
                       branch: (parsedUser as any).branch,
-                      assignedClasses: mergedClasses,
-                      ...(needsPasswordSync ? { password: parsedUser.password } : {}),
+                      assignedClasses: dbClasses,
+                      password: parsedUser.password,
                     }),
                   }).catch(() => {});
                 }
-              } else {
-                // User is in local storage but not in PostgreSQL DB: auto self-heal
-                fetch('/api/user/profile', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    email: parsedUser.email,
-                    firstName: parsedUser.firstName,
-                    lastName: parsedUser.lastName,
-                    name: parsedUser.name,
-                    phone: (parsedUser as any).phone,
-                    school: (parsedUser as any).school,
-                    branch: (parsedUser as any).branch,
-                    assignedClasses: (parsedUser as any).assignedClasses || [],
-                    password: parsedUser.password,
-                  }),
-                }).catch(() => {});
               }
             })
             .catch(() => {});
@@ -2297,14 +2277,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: false, error: 'Lütfen geçerli bir e-posta adresi giriniz.' };
     }
 
-    if (!payload.firstName.trim()) {
-      return { success: false, error: 'Lütfen kullanıcının adını giriniz.' };
-    }
-
-    if (!payload.lastName.trim()) {
-      return { success: false, error: 'Lütfen kullanıcının soyadını giriniz.' };
-    }
-
     const passCheck = validatePassword(payload.password);
     if (!passCheck.isValid) {
       return { success: false, error: passCheck.errorMessage };
@@ -2319,13 +2291,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: false, error: 'Bu e-posta adresi ile kayıtlı bir kullanıcı zaten mevcut.' };
     }
 
-    const fullName = formatFullName(payload.firstName.trim(), payload.lastName.trim());
+    const fName = (payload.firstName || '').trim();
+    const lName = (payload.lastName || '').trim();
+    const fullName = formatFullName(fName, lName, cleanEmail.split('@')[0]);
 
     if (payload.role === 'admin') {
       const newAdmin: AdminUser = {
         id: `usr-admin-${Date.now()}`,
-        firstName: payload.firstName.trim(),
-        lastName: payload.lastName.trim(),
+        firstName: fName,
+        lastName: lName,
         name: fullName,
         email: cleanEmail,
         password: payload.password,
@@ -2333,13 +2307,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         avatar: '👑',
         permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports'],
         phone: payload.phone || '',
-        city: payload.city || 'Edirne',
-        district: payload.district || 'Merkez',
-        school: payload.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+        city: payload.city || '',
+        district: payload.district || '',
+        school: payload.school || '',
         branch: payload.branch || 'Matematik',
-        principalName: payload.principalName || 'Mehmet GÜNGÖR',
+        principalName: payload.principalName || '',
         assignedClasses: payload.assignedClasses || [],
-        isProfileComplete: true,
+        isProfileComplete: Boolean(fName && lName),
         createdAt: new Date().toISOString().split('T')[0]
       };
 
@@ -2365,7 +2339,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             district: newAdmin.district,
             school: newAdmin.school,
             principalName: newAdmin.principalName,
-            assignedClasses: newAdmin.assignedClasses
+            assignedClasses: newAdmin.assignedClasses,
+            password: payload.password
           })
         }).catch(() => {});
       } catch (e) {}
@@ -2374,22 +2349,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       const newTeacher: TeacherUser = {
         id: `tch-${Date.now()}`,
-        firstName: payload.firstName.trim(),
-        lastName: payload.lastName.trim(),
+        firstName: fName,
+        lastName: lName,
         name: fullName,
         email: cleanEmail,
         password: payload.password,
         role: 'teacher',
         avatar: '👨‍🏫',
         phone: payload.phone || '',
-        city: payload.city || 'Edirne',
-        district: payload.district || 'Merkez',
-        school: payload.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+        city: payload.city || '',
+        district: payload.district || '',
+        school: payload.school || '',
         branch: payload.branch || 'Matematik',
-        principalName: payload.principalName || 'Mehmet GÜNGÖR',
+        principalName: payload.principalName || '',
         assignedClasses: payload.assignedClasses || [],
         status: 'approved',
-        isProfileComplete: true,
+        isProfileComplete: Boolean(fName && lName && payload.school && payload.phone),
         createdAt: new Date().toISOString().split('T')[0],
         verifiedAt: new Date().toISOString().split('T')[0],
         approvedAt: new Date().toISOString().split('T')[0]
@@ -2417,12 +2392,82 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             district: newTeacher.district,
             school: newTeacher.school,
             principalName: newTeacher.principalName,
-            assignedClasses: newTeacher.assignedClasses
+            assignedClasses: newTeacher.assignedClasses,
+            password: payload.password
           })
         }).catch(() => {});
       } catch (e) {}
 
       return { success: true, user: newTeacher };
+    }
+  };
+
+  const refreshData = async () => {
+    try {
+      // 1. Fetch classrooms from DB
+      const classRes = await fetch('/api/classrooms').then(r => r.json()).catch(() => null);
+      if (classRes?.success && Array.isArray(classRes.classrooms)) {
+        setClassrooms(classRes.classrooms);
+        try {
+          localStorage.setItem('maarif_classrooms', JSON.stringify(classRes.classrooms));
+        } catch (e) {}
+      }
+
+      // 2. Fetch students from DB
+      const stuRes = await fetch('/api/students').then(r => r.json()).catch(() => null);
+      if (stuRes?.success && Array.isArray(stuRes.students)) {
+        const enrichedStu = stuRes.students.map(enrichUser);
+        setStudents(enrichedStu);
+        try {
+          localStorage.setItem('maarif_students', JSON.stringify(enrichedStu));
+        } catch (e) {}
+      }
+
+      // 3. Fetch teachers from DB
+      const tchRes = await fetch('/api/admin/teachers').then(r => r.json()).catch(() => null);
+      if (tchRes?.success && Array.isArray(tchRes.teachers)) {
+        const enrichedTch = tchRes.teachers.map(enrichUser);
+        setTeachers(enrichedTch);
+        try {
+          localStorage.setItem('maarif_teachers', JSON.stringify(enrichedTch));
+        } catch (e) {}
+      }
+
+      // 4. Fetch currentUser profile from DB if logged in
+      if (currentUser?.email) {
+        const profRes = await fetch(`/api/user/profile?email=${encodeURIComponent(currentUser.email)}`).then(r => r.json()).catch(() => null);
+        if (profRes?.success && profRes?.user) {
+          const dbUser = profRes.user;
+          const dbClasses: string[] = dbUser.assignedClasses || [];
+          setCurrentUser((prev) => {
+            if (!prev) return prev;
+            const updated = {
+              ...prev,
+              firstName: dbUser.firstName || prev.firstName,
+              lastName: dbUser.lastName || prev.lastName,
+              name: dbUser.name || prev.name,
+              phone: dbUser.phone || (prev as any).phone,
+              city: dbUser.city || (prev as any).city,
+              district: dbUser.district || (prev as any).district,
+              school: dbUser.school || (prev as any).school,
+              branch: dbUser.branch || (prev as any).branch,
+              principalName: dbUser.principalName || (prev as any).principalName,
+              assignedClasses: dbClasses,
+              accountStatus: dbUser.accountStatus || prev.accountStatus || 'aktif',
+              status: dbUser.accountStatus === 'beklemede' ? 'suspended' : (dbUser.status || (prev as any).status),
+              isKvkkAccepted: dbUser.isKvkkAccepted !== undefined ? dbUser.isKvkkAccepted : (prev as any).isKvkkAccepted,
+              kvkkAcceptedAt: dbUser.kvkkAcceptedAt || prev.kvkkAcceptedAt,
+              isProfileComplete: dbUser.isProfileComplete !== undefined ? dbUser.isProfileComplete : (prev as any).isProfileComplete,
+            };
+            try {
+              localStorage.setItem('maarif_current_user', JSON.stringify(updated));
+            } catch (e) {}
+            return updated;
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('[refreshData] Error:', e);
     }
   };
 
@@ -2468,7 +2513,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         deleteStudent,
         resetStudentPassword,
         awardPointsToStudent,
-        getVisibleStudents
+        getVisibleStudents,
+        refreshData
       }}
     >
       {children}

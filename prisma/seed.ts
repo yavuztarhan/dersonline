@@ -40,35 +40,7 @@ async function main() {
     console.log('✅ Admin oluşturuldu/güncellendi:', createdAdmin.email);
   }
 
-  // 2. Onaylı Öğretmen (Edirne Selimiye İHO)
-  const teacher1Pass = bcrypt.hashSync('admin', 10);
-  const teacher1User = await prisma.user.upsert({
-    where: { email: 'ahmet.ogretmen@meb.k12.tr' },
-    update: { password: teacher1Pass },
-    create: {
-      email: 'ahmet.ogretmen@meb.k12.tr',
-      firstName: 'Mimar Sinan & Hasan',
-      lastName: 'Hoca',
-      name: 'Mimar Sinan & Hasan Hoca',
-      password: teacher1Pass,
-      role: Role.TEACHER,
-      avatar: '👨‍🏫',
-      teacherProfile: {
-        create: {
-          phone: '0555 123 45 67',
-          city: 'Edirne',
-          district: 'Merkez',
-          school: 'Edirne Selimiye İmam Hatip Ortaokulu',
-          branch: 'Matematik',
-          status: TeacherStatus.APPROVED,
-          verifiedAt: new Date(),
-          approvedAt: new Date(),
-        },
-      },
-    },
-    include: { teacherProfile: true },
-  });
-  console.log('✅ Onaylı Öğretmen oluşturuldu:', teacher1User.email);
+
 
   // 4. Rozetler
   const badges = [

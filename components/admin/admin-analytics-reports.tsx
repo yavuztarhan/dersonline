@@ -1038,13 +1038,14 @@ interface SchoolReportItem {
                         {tch.branch || 'Matematik'}
                       </td>
                       <td className="py-3.5 px-4">
-                        <div className="flex gap-1 flex-wrap">
-                          {(tch.assignedClasses && tch.assignedClasses.length > 0 ? tch.assignedClasses : ['5-A', '5-B']).map((c) => (
+                          {(tch.assignedClasses || []).map((c) => (
                             <span key={c} className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-black">
                               {c}
                             </span>
                           ))}
-                        </div>
+                          {(!tch.assignedClasses || tch.assignedClasses.length === 0) && (
+                            <span className="text-[11px] text-slate-400 italic">Tanımlı sınıf yok</span>
+                          )}
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${

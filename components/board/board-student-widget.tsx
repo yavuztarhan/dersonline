@@ -74,7 +74,7 @@ export function BoardStudentWidget({ activityTitle, className = '' }: BoardStude
 
   // Teacher's classes
   const teacher = currentUser as any;
-  const teacherClasses: string[] = teacher?.assignedClasses || ['5-A', '5-B'];
+  const teacherClasses: string[] = teacher?.assignedClasses || [];
 
   // Students belonging to teacher's classes
   const classStudents = students.filter((s) => {

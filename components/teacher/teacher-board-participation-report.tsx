@@ -53,9 +53,9 @@ export function TeacherBoardParticipationReport({ teacherBranch }: TeacherBoardP
 
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
   const activeBranch = teacherBranch || teacher?.branch || 'Matematik';
-  const teacherClasses: string[] = teacher?.assignedClasses || ['5-A', '5-B'];
+  const teacherClasses: string[] = teacher?.assignedClasses || [];
 
-  const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '5-A');
+  const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'ranking' | 'timeline'>('ranking');
   const [pickedStudent, setPickedStudent] = useState<StudentUser | null>(null);

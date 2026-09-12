@@ -53,15 +53,15 @@ interface TeacherFormsAnalyticsReportProps {
 }
 
 export function TeacherFormsAnalyticsReport({
-  teacherClasses = ['5-A', '5-B'],
-  teacherSchool = 'Edirne Selimiye İmam Hatip Ortaokulu',
-  teacherName = 'Ayşe Yılmaz',
+  teacherClasses = [],
+  teacherSchool = '',
+  teacherName = '',
   teacherBranch = 'Matematik'
 }: TeacherFormsAnalyticsReportProps) {
   const { currentUser, students, getVisibleStudents } = useAuth();
   const { playSound } = useApp();
 
-  const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '5-A');
+  const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '');
   const [selectedOutcomeCode, setSelectedOutcomeCode] = useState<string>('MAT.5.3.3');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudentDetail, setSelectedStudentDetail] = useState<StudentTriangulatedData | null>(null);
