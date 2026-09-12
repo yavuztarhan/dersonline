@@ -25,6 +25,7 @@ import { StudentOutcomeDetailModal } from '@/components/gamification/student-out
 import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { ExcelStudentImportModal } from '@/components/teacher/excel-student-import-modal';
 import { SuspendedTeacherView } from '@/components/teacher/suspended-teacher-view';
+import { downloadStudentCardsPDF } from '@/lib/student-cards-pdf-generator';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -152,6 +153,7 @@ export function TeacherDashboard() {
   const [newClassGrade, setNewClassGrade] = useState('5');
   const [newClassBranch, setNewClassBranch] = useState('A');
   const [addStudentError, setAddStudentError] = useState<string | null>(null);
+  const [isGeneratingCardsPdf, setIsGeneratingCardsPdf] = useState(false);
 
   // Sınıf Silme Modalı State (Yüksek Güvenlikli)
   const [showDeleteClassModal, setShowDeleteClassModal] = useState(false);
@@ -274,6 +276,34 @@ export function TeacherDashboard() {
     setSelectedPoolClasses((prev) =>
       prev.includes(className) ? prev.filter((c) => c !== className) : [...prev, className]
     );
+  };
+
+  const handleDownloadStudentCardsPDF = async () => {
+    if (classStudents.length === 0) {
+      alert(`${selectedClass} şubesinde kayıtlı öğrenci bulunmuyor.`);
+      return;
+    }
+
+    try {
+      setIsGeneratingCardsPdf(true);
+      playSound('select');
+      const classCode = getClassCodeForClass(selectedClass, teacher?.id);
+
+      await downloadStudentCardsPDF({
+        schoolName: teacher?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+        classSection: selectedClass,
+        classCode: classCode || selectedClass,
+        teacherName: teacher?.name,
+        students: classStudents
+      });
+
+      playSound('success');
+    } catch (err: any) {
+      console.error('Öğrenci giriş kartları PDF hatası:', err);
+      alert('Öğrenci giriş kartları PDF dosyası oluşturulurken bir hata meydana geldi.');
+    } finally {
+      setIsGeneratingCardsPdf(false);
+    }
   };
 
   const generateRandomSecurityCode = (className: string) => {
@@ -860,7 +890,23 @@ export function TeacherDashboard() {
                     );
                   })()}
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {/* Giriş Kartları PDF İndir Butonu */}
+                    <button
+                      type="button"
+                      onClick={handleDownloadStudentCardsPDF}
+                      disabled={isGeneratingCardsPdf || classStudents.length === 0}
+                      className="px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 text-xs font-bold border border-indigo-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={`${selectedClass} şubesindeki ${classStudents.length} öğrenci için kesilebilir giriş yönergeli şifre kartları PDF'i indir`}
+                    >
+                      {isGeneratingCardsPdf ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600" />
+                      ) : (
+                        <Download className="w-3.5 h-3.5 text-indigo-600" />
+                      )}
+                      <span>{isGeneratingCardsPdf ? 'PDF Hazırlanıyor...' : 'Giriş Kartları (PDF)'}</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => setShowExcelImportModal(true)}
