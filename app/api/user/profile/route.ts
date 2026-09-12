@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
       assignedClasses,
       password,
       gender,
+      role,
     } = body;
 
     if (!email) {
@@ -101,7 +102,9 @@ export async function POST(req: NextRequest) {
     const computedFullName = hasNameInput
       ? (name || `${firstName || ''} ${lastName || ''}`.trim())
       : undefined;
-    const isAdmin = isUserAdmin(cleanEmail);
+    const isExplicitAdmin = role && String(role).toUpperCase() === 'ADMIN';
+    const isExplicitTeacher = role && String(role).toUpperCase() === 'TEACHER';
+    const isAdmin = isExplicitAdmin || isUserAdmin(cleanEmail);
 
     const hashedPassword = password
       ? (isPasswordHashed(password) ? password : await hashPassword(password))
@@ -116,13 +119,13 @@ export async function POST(req: NextRequest) {
           ...(computedFullName ? { name: computedFullName } : {}),
           gender: gender !== undefined ? gender : undefined,
           ...(hashedPassword ? { password: hashedPassword } : {}),
-          ...(isAdmin ? { role: 'ADMIN' } : {}),
+          ...(isAdmin ? { role: 'ADMIN' } : isExplicitTeacher ? { role: 'TEACHER' } : {}),
         },
         create: {
           email: cleanEmail,
           firstName: firstName || '',
           lastName: lastName || '',
-          name: computedFullName || 'Kullanıcı',
+          name: computedFullName || (cleanEmail.split('@')[0] || 'Kullanıcı'),
           gender: gender || undefined,
           password: hashedPassword || undefined,
           role: isAdmin ? 'ADMIN' : 'TEACHER',
@@ -130,7 +133,7 @@ export async function POST(req: NextRequest) {
       });
 
       // Upsert teacherProfile only if user is teacher, or non-admin with school info
-      if (!isAdmin && (user.role === 'TEACHER' || school || phone)) {
+      if (!isAdmin && (user.role === 'TEACHER' || isExplicitTeacher || school || phone)) {
         const profile = await prisma.teacherProfile.upsert({
           where: { userId: user.id },
           update: {

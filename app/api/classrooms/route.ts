@@ -166,6 +166,36 @@ export async function POST(req: NextRequest) {
             ]
           }
         });
+
+        if (!tProf) {
+          const user = await prisma.user.findFirst({
+            where: {
+              OR: [
+                ...(cleanEmail ? [{ email: { equals: cleanEmail, mode: 'insensitive' as const } }] : []),
+                ...(teacherId ? [{ id: teacherId }] : [])
+              ]
+            }
+          });
+          if (user) {
+            tProf = await prisma.teacherProfile.upsert({
+              where: { userId: user.id },
+              update: {
+                school: school || undefined,
+                city: city || undefined,
+                district: district || undefined,
+              },
+              create: {
+                userId: user.id,
+                phone: '',
+                school: school || '',
+                city: city || '',
+                district: district || '',
+                branch: 'Matematik',
+                status: 'APPROVED'
+              }
+            });
+          }
+        }
       }
 
       const targetSchool = school || tProf?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';

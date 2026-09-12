@@ -159,7 +159,8 @@ export function TeacherDashboard() {
   }, [rawClasses]);
 
   const [selectedClass, setSelectedClass] = useState(teacherClasses[0] || '');
-  const [newStudentName, setNewStudentName] = useState('');
+  const [newStudentFirstName, setNewStudentFirstName] = useState('');
+  const [newStudentLastName, setNewStudentLastName] = useState('');
   const [newStudentNumber, setNewStudentNumber] = useState('');
   const [newStudentClass, setNewStudentClass] = useState(selectedClass);
   const [newStudentGender, setNewStudentGender] = useState('');
@@ -238,10 +239,22 @@ export function TeacherDashboard() {
   const handleAddStudent = (e: React.FormEvent) => {
     e.preventDefault();
     setAddStudentError(null);
-    if (!newStudentName.trim() || !newStudentNumber.trim()) return;
+    const cleanFirst = newStudentFirstName.trim();
+    const cleanLast = newStudentLastName.trim();
+    const cleanNumber = newStudentNumber.trim();
+
+    if (!cleanFirst || !cleanLast || !cleanNumber) {
+      setAddStudentError('Lütfen ad, soyad ve okul numarası alanlarını doldurunuz.');
+      return;
+    }
 
     const targetClass = newStudentClass || selectedClass;
-    const { firstName, lastName } = splitFullName(newStudentName.trim());
+    if (!targetClass) {
+      setAddStudentError('Lütfen bir sınıf seçiniz.');
+      return;
+    }
+
+    const fullName = `${cleanFirst} ${cleanLast}`;
     const avatar = newStudentGender === 'Kız' ? '👩‍🎓' : newStudentGender === 'Erkek' ? '👨‍🎓' : '🎓';
     const classCode = getClassCodeForClass(targetClass, teacher?.id);
     const generatedPassword = generateRandomStudentPassword(6);
@@ -249,12 +262,12 @@ export function TeacherDashboard() {
 
     const newStudent = {
       id: `stu-${Date.now()}`,
-      firstName: firstName || 'Öğrenci',
-      lastName: lastName || '',
-      name: newStudentName.trim(),
+      firstName: cleanFirst,
+      lastName: cleanLast,
+      name: fullName,
       role: 'student' as const,
       avatar,
-      studentNumber: newStudentNumber.trim(),
+      studentNumber: cleanNumber,
       classCode,
       password: generatedPassword,
       gender: newStudentGender || undefined,
@@ -279,12 +292,13 @@ export function TeacherDashboard() {
 
     playSound('success');
     setLastAddedStudent({
-      name: newStudentName.trim(),
-      number: newStudentNumber.trim(),
+      name: fullName,
+      number: cleanNumber,
       classCode,
       password: generatedPassword
     });
-    setNewStudentName('');
+    setNewStudentFirstName('');
+    setNewStudentLastName('');
     setNewStudentNumber('');
     setNewStudentGender('');
     setAddStudentError(null);
@@ -1785,91 +1799,167 @@ export function TeacherDashboard() {
               document.body
             )}
 
-            {/* ADD STUDENT MODAL */}
-            {showAddModal && (
-              <div className="p-5 rounded-3xl bg-slate-900 text-white space-y-4 animate-in fade-in border border-slate-800 shadow-xl">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-black text-teal-300">Yeni Öğrenci Tanımla</h4>
-                  <button
-                    onClick={() => {
-                      setAddStudentError(null);
-                      setShowAddModal(false);
-                    }}
-                    className="text-xs text-slate-400 hover:text-white"
-                  >
-                    ✕ Kapat
-                  </button>
-                </div>
+            {/* ADD STUDENT MODAL (CENTERED POP-UP) */}
+            {showAddModal && typeof document !== 'undefined' && createPortal(
+              <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm transition-opacity"
+                  onClick={() => {
+                    setAddStudentError(null);
+                    setShowAddModal(false);
+                  }}
+                />
 
-                {addStudentError && (
-                  <div className="p-3.5 rounded-2xl bg-rose-950/80 border border-rose-500/60 text-rose-300 text-xs font-bold flex items-center gap-2.5 animate-in fade-in">
-                    <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-                    <span>{addStudentError}</span>
-                  </div>
-                )}
-
-                <form onSubmit={handleAddStudent} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Okul No (Örn: 105)"
-                    value={newStudentNumber}
-                    onChange={(e) => setNewStudentNumber(e.target.value)}
-                    className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
-                  />
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ad Soyad (Örn: Beren Kurt)"
-                    value={newStudentName}
-                    onChange={(e) => setNewStudentName(e.target.value)}
-                    className="sm:col-span-2 p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
-                  />
-                  <select
-                    value={newStudentGender}
-                    onChange={(e) => setNewStudentGender(e.target.value)}
-                    className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400 cursor-pointer"
-                  >
-                    <option value="">Cinsiyet (İsteğe Bağlı)</option>
-                    <option value="Kız">Kız</option>
-                    <option value="Erkek">Erkek</option>
-                  </select>
-                  <select
-                    value={newStudentClass}
-                    onChange={(e) => setNewStudentClass(e.target.value)}
-                    className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
-                  >
-                    {teacherClasses.map((cls: string) => (
-                      <option key={cls} value={cls}>
-                        {cls}
-                      </option>
-                    ))}
-                  </select>
-
-                  <div className="sm:col-span-5 flex items-center justify-between gap-2 pt-1 flex-wrap">
-                    <div className="text-[11px] text-teal-300 flex items-center gap-1.5 font-medium">
-                      <KeyRound className="w-3.5 h-3.5 text-teal-400 shrink-0" />
-                      <span>Sistem öğrenci için otomatik şifre ve 6 haneli sınıf kodu üretecektir. E-posta gerekmez.</span>
+                {/* Pop-up Card */}
+                <div className="relative w-full max-w-lg bg-slate-900 text-white rounded-3xl border border-teal-700/80 shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                  {/* Modal Header */}
+                  <div className="px-6 py-5 border-b border-teal-800/80 bg-gradient-to-r from-teal-950 via-slate-900 to-teal-950 flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-xl shadow-inner">
+                        👨‍🎓
+                      </div>
+                      <div>
+                        <h3 className="text-base font-black text-white">Yeni Öğrenci Ekle</h3>
+                        <p className="text-xs text-teal-300/80">
+                          {selectedClass ? `${selectedClass} Şubesi • ` : ''}Öğrenci Kayıt Formu
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddStudentError(null);
+                        setShowAddModal(false);
+                      }}
+                      className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Form Body */}
+                  <form onSubmit={handleAddStudent} className="p-6 space-y-4 overflow-y-auto">
+                    {addStudentError && (
+                      <div className="p-3.5 rounded-2xl bg-rose-950/80 border border-rose-500/60 text-rose-300 text-xs font-bold flex items-center gap-2.5 animate-in fade-in">
+                        <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                        <span>{addStudentError}</span>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      {/* Adı */}
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-teal-200/90">
+                          Öğrenci Adı *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Örn: Beren"
+                          value={newStudentFirstName}
+                          onChange={(e) => setNewStudentFirstName(e.target.value)}
+                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
+                        />
+                      </div>
+
+                      {/* Soyadı */}
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-teal-200/90">
+                          Öğrenci Soyadı *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Örn: Kurt"
+                          value={newStudentLastName}
+                          onChange={(e) => setNewStudentLastName(e.target.value)}
+                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
+                        />
+                      </div>
+
+                      {/* Okul Numarası */}
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-teal-200/90">
+                          Okul Numarası *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Örn: 105"
+                          value={newStudentNumber}
+                          onChange={(e) => setNewStudentNumber(e.target.value)}
+                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400"
+                        />
+                      </div>
+
+                      {/* Sınıf / Şube */}
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-teal-200/90">
+                          Sınıf / Şube *
+                        </label>
+                        <select
+                          value={newStudentClass || selectedClass}
+                          onChange={(e) => setNewStudentClass(e.target.value)}
+                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400 cursor-pointer"
+                        >
+                          {teacherClasses.map((cls: string) => (
+                            <option key={cls} value={cls}>
+                              {cls}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Cinsiyet */}
+                      <div className="sm:col-span-2 space-y-1">
+                        <label className="text-[11px] font-bold text-teal-200/90">
+                          Cinsiyet (İsteğe Bağlı)
+                        </label>
+                        <select
+                          value={newStudentGender}
+                          onChange={(e) => setNewStudentGender(e.target.value)}
+                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white outline-none focus:border-teal-400 cursor-pointer"
+                        >
+                          <option value="">Cinsiyet Seçiniz</option>
+                          <option value="Kız">Kız</option>
+                          <option value="Erkek">Erkek</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Bilgilendirme */}
+                    <div className="p-3 rounded-2xl bg-teal-950/60 border border-teal-800/60 flex items-start gap-2.5 text-[11px] text-teal-300">
+                      <KeyRound className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                      <span className="leading-relaxed">
+                        Sistem öğrenci için otomatik şifre ve 6 haneli sınıf kodu üretecektir. E-posta gerekmez.
+                      </span>
+                    </div>
+
+                    {/* Modal Footer Actions */}
+                    <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
                       <button
                         type="button"
-                        onClick={() => setShowAddModal(false)}
-                        className="py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold"
+                        onClick={() => {
+                          setAddStudentError(null);
+                          setShowAddModal(false);
+                        }}
+                        className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold transition-all cursor-pointer"
                       >
                         Vazgeç
                       </button>
                       <button
                         type="submit"
-                        className="py-2 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                        className="py-2.5 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
                       >
                         <Plus className="w-4 h-4" />
                         <span>Öğrenciyi Kaydet</span>
                       </button>
                     </div>
-                  </div>
-                </form>
-              </div>
+                  </form>
+                </div>
+              </div>,
+              document.body
             )}
         </div>
       )}

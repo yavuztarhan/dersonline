@@ -23,7 +23,7 @@ interface AdminCreateUserModalProps {
 }
 
 export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCreateUserModalProps) {
-  const { adminCreateUser } = useAuth();
+  const { adminCreateUser, refreshData } = useAuth();
 
   const [role, setRole] = useState<'teacher' | 'admin'>('teacher');
   const [email, setEmail] = useState('');
@@ -50,7 +50,7 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
   // Live Password check
   const passValidation = validatePassword(password);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
 
@@ -67,23 +67,60 @@ export function AdminCreateUserModal({ isOpen, onClose, onUserCreated }: AdminCr
 
     setIsSubmitting(true);
 
-    const res = adminCreateUser({
-      email: cleanEmail,
-      password: password,
-      role: role
-    });
+    try {
+      // 1. Direct database persistence via profile API
+      const response = await fetch('/api/user/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: cleanEmail,
+          password: password,
+          role: role,
+          firstName: '',
+          lastName: '',
+          name: cleanEmail.split('@')[0],
+          school: '',
+          city: '',
+          district: '',
+          branch: 'Matematik'
+        })
+      });
 
-    setIsSubmitting(false);
+      const dbResult = await response.json();
+      if (!dbResult.success && !dbResult.localOnly) {
+        setIsSubmitting(false);
+        setErrorMsg(dbResult.error || 'Veritabanına kullanıcı kaydedilemedi.');
+        return;
+      }
 
-    if (!res.success) {
-      setErrorMsg(res.error || 'Kullanıcı oluşturulurken bir hata oluştu.');
-      return;
+      // 2. Local store synchronization
+      const res = adminCreateUser({
+        email: cleanEmail,
+        password: password,
+        role: role
+      });
+
+      if (!res.success) {
+        setIsSubmitting(false);
+        setErrorMsg(res.error || 'Kullanıcı oluşturulurken bir hata oluştu.');
+        return;
+      }
+
+      // 3. Refresh live database records
+      if (refreshData) {
+        await refreshData();
+      }
+
+      setIsSubmitting(false);
+
+      if (onUserCreated) {
+        onUserCreated(cleanEmail, role === 'admin' ? 'Yönetici' : 'Öğretmen');
+      }
+      onClose();
+    } catch (err: any) {
+      setIsSubmitting(false);
+      setErrorMsg(err.message || 'Kullanıcı oluşturulurken bir hata oluştu.');
     }
-
-    if (onUserCreated) {
-      onUserCreated(cleanEmail, role === 'admin' ? 'Yönetici' : 'Öğretmen');
-    }
-    onClose();
   };
 
   if (!isOpen || !mounted) return null;
