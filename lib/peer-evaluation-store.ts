@@ -239,7 +239,67 @@ export function savePeerEvaluation(record: Omit<PeerEvaluationRecord, 'id' | 'su
 
   const updated = [newRecord, ...filtered];
   saveStoredPeerEvaluations(updated);
+
+  // Asynchronously persist to database API
+  if (typeof window !== 'undefined') {
+    fetch('/api/peer-evaluations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(record)
+    }).catch((err) => console.warn('[peer-evaluation-store] Background API sync note:', err));
+  }
+
   return newRecord;
+}
+
+/**
+ * Synchronizes peer evaluations from PostgreSQL database API into localStorage.
+ */
+export async function syncPeerEvaluationsFromApi(classSection?: string): Promise<PeerEvaluationRecord[]> {
+  if (typeof window === 'undefined') return getStoredPeerEvaluations();
+
+  try {
+    const url = classSection && classSection !== 'Tümü'
+      ? `/api/peer-evaluations?classSection=${encodeURIComponent(classSection)}`
+      : '/api/peer-evaluations';
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data?.success && Array.isArray(data.evaluations) && data.evaluations.length > 0) {
+      const local = getStoredPeerEvaluations();
+      const mergedMap = new Map<string, PeerEvaluationRecord>();
+      local.forEach((item) => mergedMap.set(item.id, item));
+      data.evaluations.forEach((dbItem: any) => {
+        mergedMap.set(dbItem.id, {
+          id: dbItem.id,
+          evaluatorStudentId: dbItem.evaluatorStudentId || '',
+          evaluatorStudentName: dbItem.evaluatorStudentName || 'Öğrenci',
+          evaluatorStudentNumber: dbItem.evaluatorStudentNumber || '',
+          targetStudentId: dbItem.targetStudentId || '',
+          targetStudentName: dbItem.targetStudentName || 'Hedef Öğrenci',
+          targetStudentNumber: dbItem.targetStudentNumber || '',
+          targetAvatar: dbItem.targetAvatar || '👦',
+          groupId: dbItem.groupId || '',
+          groupName: dbItem.groupName || '',
+          classSection: dbItem.classSection || '5-A',
+          outcomeCode: dbItem.outcomeCode || '',
+          outcomeTitle: dbItem.outcomeTitle || '',
+          ratings: (typeof dbItem.ratings === 'object' && dbItem.ratings) ? dbItem.ratings : {},
+          totalScore: dbItem.totalScore || 0,
+          maxScore: dbItem.maxScore || 20,
+          percentage: dbItem.percentage || 0,
+          performanceLevel: dbItem.performanceLevel || 'Başarılı',
+          evaluatorNote: dbItem.evaluatorNote || undefined,
+          submittedAt: typeof dbItem.submittedAt === 'string' ? dbItem.submittedAt : new Date(dbItem.submittedAt).toISOString()
+        });
+      });
+      const merged = Array.from(mergedMap.values());
+      saveStoredPeerEvaluations(merged);
+      return merged;
+    }
+  } catch (err) {
+    console.warn('[peer-evaluation-store] syncPeerEvaluationsFromApi note:', err);
+  }
+  return getStoredPeerEvaluations();
 }
 
 export function getPeerEvaluationsForTargetStudent(
@@ -365,7 +425,8 @@ export interface StudentTriangulatedData {
  */
 export function getTriangulatedCorrelationData(
   classSection: string = '5-A',
-  outcomeCode: string = 'MAT.5.3.3'
+  outcomeCode: string = 'MAT.5.3.3',
+  allowedStudents?: Array<{ id: string; name?: string; studentNumber?: string; classSection?: string }>
 ): {
   studentsData: StudentTriangulatedData[];
   classStats: {
@@ -388,34 +449,48 @@ export function getTriangulatedCorrelationData(
   // Get all unique students in this class from submissions, groups, and activities
   const studentMap = new Map<string, { id: string; name: string; number: string; classSection: string }>();
 
-  // From groups
-  allGroups
-    .filter((g: StudentGroup) => classSection === 'Tümü' || g.classSection === classSection)
-    .forEach((g: StudentGroup) => {
-      g.members.forEach((m: StudentGroupMember) => {
-        if (!studentMap.has(m.id)) {
-          studentMap.set(m.id, { id: m.id, name: m.name, number: m.studentNumber, classSection: g.classSection });
+  if (allowedStudents !== undefined) {
+    // Only consider students provided by the caller (e.g. teacher's visible students)
+    allowedStudents
+      .filter((s) => classSection === 'Tümü' || s.classSection === classSection)
+      .forEach((s) => {
+        studentMap.set(s.id, {
+          id: s.id,
+          name: s.name || 'Öğrenci',
+          number: s.studentNumber || '-',
+          classSection: s.classSection || classSection
+        });
+      });
+  } else {
+    // From groups
+    allGroups
+      .filter((g: StudentGroup) => classSection === 'Tümü' || g.classSection === classSection)
+      .forEach((g: StudentGroup) => {
+        g.members.forEach((m: StudentGroupMember) => {
+          if (!studentMap.has(m.id)) {
+            studentMap.set(m.id, { id: m.id, name: m.name, number: m.studentNumber, classSection: g.classSection });
+          }
+        });
+      });
+
+    // From submissions
+    allSubmissions
+      .filter((s: RubricSubmissionRecord) => (classSection === 'Tümü' || s.classSection === classSection) && s.outcomeCode === outcomeCode)
+      .forEach((s: RubricSubmissionRecord) => {
+        if (!studentMap.has(s.studentId)) {
+          studentMap.set(s.studentId, { id: s.studentId, name: s.studentName, number: s.studentNumber, classSection: s.classSection });
         }
       });
-    });
 
-  // From submissions
-  allSubmissions
-    .filter((s: RubricSubmissionRecord) => (classSection === 'Tümü' || s.classSection === classSection) && s.outcomeCode === outcomeCode)
-    .forEach((s: RubricSubmissionRecord) => {
-      if (!studentMap.has(s.studentId)) {
-        studentMap.set(s.studentId, { id: s.studentId, name: s.studentName, number: s.studentNumber, classSection: s.classSection });
-      }
-    });
-
-  // From activities
-  allActivities
-    .filter((a: StudentActivityScore) => (classSection === 'Tümü' || a.classSection === classSection) && a.outcomeCode === outcomeCode)
-    .forEach((a: StudentActivityScore) => {
-      if (!studentMap.has(a.studentId)) {
-        studentMap.set(a.studentId, { id: a.studentId, name: a.studentName, number: a.studentNumber, classSection: a.classSection });
-      }
-    });
+    // From activities
+    allActivities
+      .filter((a: StudentActivityScore) => (classSection === 'Tümü' || a.classSection === classSection) && a.outcomeCode === outcomeCode)
+      .forEach((a: StudentActivityScore) => {
+        if (!studentMap.has(a.studentId)) {
+          studentMap.set(a.studentId, { id: a.studentId, name: a.studentName, number: a.studentNumber, classSection: a.classSection });
+        }
+      });
+  }
 
   const studentsList = Array.from(studentMap.values());
   const studentsData: StudentTriangulatedData[] = [];

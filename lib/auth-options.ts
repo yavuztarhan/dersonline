@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
       if (user?.email) {
         const isAdmin = isUserAdmin(user.email);
         try {
-          await prisma.user.upsert({
+          const dbUser = await prisma.user.upsert({
             where: { email: user.email.toLowerCase() },
             update: {
               name: user.name || 'Google Kullanıcısı',
@@ -43,11 +43,40 @@ export const authOptions: NextAuthOptions = {
               email: user.email.toLowerCase(),
               name: user.name || 'Google Kullanıcısı',
               avatar: user.image || undefined,
-              role: isAdmin ? 'ADMIN' : 'STUDENT',
+              role: isAdmin ? 'ADMIN' : 'TEACHER',
+            },
+          });
+
+          if (!isAdmin) {
+            await prisma.teacherProfile.upsert({
+              where: { userId: dbUser.id },
+              update: {},
+              create: {
+                userId: dbUser.id,
+                city: 'Edirne',
+                district: 'Merkez',
+                school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+                branch: 'Matematik',
+                status: 'APPROVED',
+              },
+            });
+          }
+
+          // Record login stats
+          await prisma.user.update({
+            where: { id: dbUser.id },
+            data: {
+              lastLoginAt: new Date(),
+              loginCount: { increment: 1 },
+              loginLogs: {
+                create: {
+                  deviceCategory: 'desktop',
+                  userAgent: 'Google OAuth',
+                },
+              },
             },
           });
         } catch (e) {
-          // Non-fatal: local auth store and session will still proceed
           console.warn('NextAuth Prisma upsert note:', e);
         }
       }
@@ -56,14 +85,14 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.sub;
-        (session.user as any).role = token.role || (isUserAdmin(session.user.email) ? 'admin' : 'student');
+        (session.user as any).role = token.role || (isUserAdmin(session.user.email) ? 'admin' : 'teacher');
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = isUserAdmin(user.email) ? 'admin' : 'student';
+        token.role = isUserAdmin(user.email) ? 'admin' : 'teacher';
       }
       return token;
     },

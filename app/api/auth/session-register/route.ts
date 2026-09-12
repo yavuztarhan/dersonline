@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
+import { prisma } from '@/lib/prisma';
 import {
   detectDeviceCategory,
   DEVICE_SESSION_CONFIGS,
@@ -40,6 +41,36 @@ export async function POST(req: NextRequest) {
     };
 
     registerUserActiveSession(activeSession);
+
+    // Record login to PostgreSQL
+    try {
+      const dbUser = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { id: userId },
+            { email: userEmail.toLowerCase() },
+          ],
+        },
+      });
+
+      if (dbUser) {
+        await prisma.user.update({
+          where: { id: dbUser.id },
+          data: {
+            lastLoginAt: new Date(now),
+            loginCount: { increment: 1 },
+            loginLogs: {
+              create: {
+                deviceCategory,
+                userAgent: userAgent || undefined,
+              },
+            },
+          },
+        });
+      }
+    } catch (e) {
+      console.warn('[session-register] DB login log note:', e);
+    }
 
     return NextResponse.json({
       success: true,

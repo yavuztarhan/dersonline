@@ -10,6 +10,7 @@ import { AuthModal } from '@/components/auth/auth-modal';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { MessageInboxModal } from '@/components/messages/message-inbox-modal';
 import { AppDrawer } from '@/components/navigation/app-drawer';
+import { FeedbackModal } from '@/components/feedback/feedback-modal';
 import { getUnreadMessageCount } from '@/lib/message-store';
 import { TeacherBoardAuthModal } from '@/components/teacher/teacher-board-auth-modal';
 import {
@@ -25,7 +26,8 @@ import {
   Mail,
   Menu,
   Tv,
-  QrCode
+  QrCode,
+  GraduationCap
 } from 'lucide-react';
 
 export function Navbar() {
@@ -33,15 +35,16 @@ export function Navbar() {
     role,
     playSound,
     studentPoints,
-    resetSelection,
+    resetSelection
   } = useApp();
 
   const { currentUser, logout } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalDefaultTab, setAuthModalDefaultTab] = useState<'login' | 'register' | 'board'>('login');
+  const [authModalDefaultTab, setAuthModalDefaultTab] = useState<'student' | 'login' | 'register' | 'board'>('login');
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [teacherBoardAuthOpen, setTeacherBoardAuthOpen] = useState(false);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
 
   const unreadMessageCount = currentUser ? getUnreadMessageCount(currentUser.id) : 0;
 
@@ -53,6 +56,12 @@ export function Navbar() {
     playSound('click');
     resetSelection();
     router.push('/');
+  };
+
+  const handleOpenStudentLogin = () => {
+    playSound('click');
+    setAuthModalDefaultTab('student');
+    setAuthModalOpen(true);
   };
 
   const handleOpenLogin = () => {
@@ -266,6 +275,13 @@ export function Navbar() {
             ) : (
               <div className="flex items-center gap-2 flex-nowrap shrink-0">
                 <button
+                  onClick={handleOpenStudentLogin}
+                  className="hidden sm:flex px-3 py-2 rounded-xl text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 font-bold text-xs transition-colors items-center gap-1.5 border border-indigo-200 cursor-pointer"
+                >
+                  <GraduationCap className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Öğrenci Girişi</span>
+                </button>
+                <button
                   onClick={handleOpenLogin}
                   className="px-3.5 py-2 rounded-xl text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors flex items-center gap-1.5 border border-slate-200 cursor-pointer"
                 >
@@ -319,12 +335,21 @@ export function Navbar() {
         }}
         onOpenMessageModal={() => setMessageModalOpen(true)}
         onOpenBoardAuthModal={() => setTeacherBoardAuthOpen(true)}
+        onOpenFeedbackModal={() => setFeedbackModalOpen(true)}
       />
 
       {/* Teacher Smart Board Unified Auth Modal (QR Camera + PIN) */}
       <TeacherBoardAuthModal
         isOpen={teacherBoardAuthOpen}
         onClose={() => setTeacherBoardAuthOpen(false)}
+      />
+
+      {/* Teacher Feedback Modal (powerose@gmail.com - Sistem Yöneticisi) */}
+      <FeedbackModal
+        isOpen={feedbackModalOpen}
+        onClose={() => setFeedbackModalOpen(false)}
+        contextTitle="Öğretmen Görüş & Geri Bildirim"
+        type="feedback"
       />
     </>
   );

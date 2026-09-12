@@ -7,6 +7,7 @@ import {
   TeacherUser,
   StudentUser,
   AdminUser,
+  ClassroomInfo,
   UserRole,
   TeacherRegistrationPayload,
   StudentRegistrationPayload
@@ -33,11 +34,13 @@ interface AuthContextType {
   teachers: TeacherUser[];
   students: StudentUser[];
   admins: AdminUser[];
+  classrooms: ClassroomInfo[];
   activeVerificationCode: { email: string; code: string; expiresAt: number } | null;
   
   // Auth Operations
   loginAsRole: (role: UserRole) => void;
   loginWithEmail: (emailOrIdentifier: string, pass?: string) => Promise<boolean>;
+  loginStudent: (classCode: string, studentNumber: string, pass?: string) => Promise<boolean>;
   loginWithGoogle: (profile: { name: string; email: string; avatar?: string }) => { isNewUser: boolean; user: AuthUser };
   loginWithBoardSession: (user: AuthUser, sessionToken: string, expiresAt: number, deviceCategory: string) => void;
   logout: () => void;
@@ -51,6 +54,8 @@ interface AuthContextType {
   resendVerificationCode: (email: string) => string | null;
   updateTeacherProfile: (teacherId: string, updates: Partial<TeacherUser>) => void;
   addClassToTeacher: (teacherId: string, className: string) => void;
+  deleteClassFromTeacher: (teacherId: string, className: string) => { deletedStudentCount: number };
+  getClassCodeForClass: (className: string, teacherId?: string) => string;
 
   // Student Registration Flow
   registerStudent: (data: StudentRegistrationPayload) => StudentUser;
@@ -59,6 +64,8 @@ interface AuthContextType {
   adminCreateUser: (payload: AdminCreateUserPayload) => { success: boolean; error?: string; user?: AuthUser };
   approveTeacher: (teacherId: string) => void;
   rejectTeacher: (teacherId: string, reason?: string) => void;
+  suspendTeacher: (teacherId: string, email?: string) => void;
+  unsuspendTeacher: (teacherId: string, email?: string) => void;
   deleteTeacher: (teacherId: string) => void;
   deleteAdmin: (adminId: string) => void;
   changeUserRole: (userId: string, newRole: UserRole) => boolean;
@@ -79,6 +86,7 @@ export {
   SEED_ADMINS,
   SEED_TEACHERS,
   SEED_STUDENTS,
+  SEED_CLASSROOMS,
   isUserAdmin,
   getAdminUser
 } from '@/lib/auth-seed-data';
@@ -90,9 +98,41 @@ import {
   SEED_ADMINS,
   SEED_TEACHERS,
   SEED_STUDENTS,
+  SEED_CLASSROOMS,
   isUserAdmin,
   getAdminUser
 } from '@/lib/auth-seed-data';
+
+export function generateUniqueClassCode(existingClassrooms: ClassroomInfo[] = []): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  let attempts = 0;
+  do {
+    code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    attempts++;
+  } while (
+    existingClassrooms.some((c) => c.code?.toUpperCase() === code) &&
+    attempts < 1000
+  );
+  return code;
+}
+
+export function generateRandomStudentPassword(length = 6): string {
+  const letters = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
+  const numbers = '23456789';
+  const all = letters + numbers;
+
+  let password = '';
+  password += letters.charAt(Math.floor(Math.random() * letters.length));
+  password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+  for (let i = 2; i < length; i++) {
+    password += all.charAt(Math.floor(Math.random() * all.length));
+  }
+  return password.split('').sort(() => Math.random() - 0.5).join('');
+}
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -101,6 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [admins, setAdmins] = useState<AdminUser[]>(SEED_ADMINS);
   const [teachers, setTeachers] = useState<TeacherUser[]>(SEED_TEACHERS);
   const [students, setStudents] = useState<StudentUser[]>(SEED_STUDENTS);
+  const [classrooms, setClassrooms] = useState<ClassroomInfo[]>(SEED_CLASSROOMS);
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeVerificationCode, setActiveVerificationCode] = useState<{
     email: string;
@@ -129,12 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(savedAdmins);
         if (Array.isArray(parsed) && parsed.length > 0) {
           // Merge seed admins so core admins are always available
-          const merged = parsed.map(enrichUser).map((adm: AdminUser) => {
-            if (adm.email?.toLowerCase() === 'powerose@gmail.com') {
-              return { ...adm, password: adm.password || 'Admin1234' };
-            }
-            return adm;
-          });
+          const merged = parsed.map(enrichUser);
           for (const s of SEED_ADMINS) {
             if (!merged.some((a: AdminUser) => a.email.toLowerCase() === s.email.toLowerCase())) {
               merged.push(s);
@@ -152,6 +188,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
+      // Live DB synchronization for teachers
+      fetch('/api/admin/teachers')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && Array.isArray(data.teachers) && data.teachers.length > 0) {
+            setTeachers((prev) => {
+              const dbEmails = new Set(data.teachers.map((dt: any) => dt.email.toLowerCase()));
+              const merged = [...data.teachers.map(enrichUser)];
+              prev.forEach((t) => {
+                if (!dbEmails.has(t.email.toLowerCase())) {
+                  merged.push(t);
+                }
+              });
+              try {
+                localStorage.setItem('maarif_teachers', JSON.stringify(merged));
+              } catch (e) {}
+              return merged;
+            });
+          }
+        })
+        .catch(() => {});
+
       const savedStudents = localStorage.getItem('maarif_students');
       if (savedStudents) {
         const parsed = JSON.parse(savedStudents);
@@ -160,12 +218,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
+      const savedClassrooms = localStorage.getItem('maarif_classrooms');
+      if (savedClassrooms) {
+        const parsed = JSON.parse(savedClassrooms);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const merged = [...parsed];
+          for (const sc of SEED_CLASSROOMS) {
+            if (!merged.some((c: ClassroomInfo) => c.code === sc.code || (c.name === sc.name && c.teacherId === sc.teacherId))) {
+              merged.push(sc);
+            }
+          }
+          setClassrooms(merged);
+        }
+      }
+
       const savedUser = localStorage.getItem('maarif_current_user');
       if (savedUser) {
         const parsedUser = enrichUser(JSON.parse(savedUser));
-        if (parsedUser.email?.toLowerCase() === 'powerose@gmail.com') {
-          parsedUser.password = parsedUser.password || 'Admin1234';
-        }
         setCurrentUser(parsedUser);
 
         // Background server sync: fetch updated profile from DB if available
@@ -175,6 +244,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .then((data) => {
               if (data?.success && data?.user) {
                 const dbUser = data.user;
+                const dbClasses: string[] = dbUser.assignedClasses || [];
+                const localClasses: string[] = (parsedUser as any).assignedClasses || [];
+                const mergedClasses = Array.from(new Set([...dbClasses, ...localClasses]));
+
                 setCurrentUser((prev) => {
                   if (!prev || prev.email?.toLowerCase() !== parsedUser.email?.toLowerCase()) return prev;
                   const synced = {
@@ -188,15 +261,72 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     school: dbUser.school || (prev as any).school,
                     branch: dbUser.branch || (prev as any).branch,
                     principalName: dbUser.principalName || (prev as any).principalName,
-                    assignedClasses: (dbUser.assignedClasses && dbUser.assignedClasses.length > 0)
-                      ? dbUser.assignedClasses
-                      : (prev as any).assignedClasses,
+                    assignedClasses: mergedClasses.length > 0 ? mergedClasses : (prev as any).assignedClasses,
+                    accountStatus: dbUser.accountStatus || prev.accountStatus || 'aktif',
+                    status: dbUser.accountStatus === 'beklemede' ? 'suspended' : (dbUser.status || (prev as any).status),
+                    isKvkkAccepted: dbUser.isKvkkAccepted !== undefined ? dbUser.isKvkkAccepted : (prev as any).isKvkkAccepted,
+                    kvkkAcceptedAt: dbUser.kvkkAcceptedAt || prev.kvkkAcceptedAt,
                   };
                   try {
                     localStorage.setItem('maarif_current_user', JSON.stringify(synced));
                   } catch (e) {}
+
+                  if (dbUser.accountStatus) {
+                    setTeachers((prevTchs) =>
+                      prevTchs.map((t) =>
+                        t.email.toLowerCase() === parsedUser.email?.toLowerCase()
+                          ? {
+                              ...t,
+                              accountStatus: dbUser.accountStatus,
+                              status: dbUser.accountStatus === 'beklemede' ? 'suspended' : t.status,
+                              isKvkkAccepted: dbUser.isKvkkAccepted !== undefined ? dbUser.isKvkkAccepted : t.isKvkkAccepted,
+                              kvkkAcceptedAt: dbUser.kvkkAcceptedAt || t.kvkkAcceptedAt,
+                            }
+                          : t
+                      )
+                    );
+                  }
+
                   return synced;
                 });
+
+                // If local user has classes or password not yet saved to DB, sync them
+                const hasMissingClasses = localClasses.some((c: string) => !dbClasses.includes(c));
+                const needsPasswordSync = Boolean(parsedUser.password && !dbUser.hasPassword);
+                if (hasMissingClasses || needsPasswordSync) {
+                  fetch('/api/user/profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      email: parsedUser.email,
+                      firstName: parsedUser.firstName,
+                      lastName: parsedUser.lastName,
+                      name: parsedUser.name,
+                      phone: (parsedUser as any).phone,
+                      school: (parsedUser as any).school,
+                      branch: (parsedUser as any).branch,
+                      assignedClasses: mergedClasses,
+                      ...(needsPasswordSync ? { password: parsedUser.password } : {}),
+                    }),
+                  }).catch(() => {});
+                }
+              } else {
+                // User is in local storage but not in PostgreSQL DB: auto self-heal
+                fetch('/api/user/profile', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email: parsedUser.email,
+                    firstName: parsedUser.firstName,
+                    lastName: parsedUser.lastName,
+                    name: parsedUser.name,
+                    phone: (parsedUser as any).phone,
+                    school: (parsedUser as any).school,
+                    branch: (parsedUser as any).branch,
+                    assignedClasses: (parsedUser as any).assignedClasses || ['5-A'],
+                    password: parsedUser.password,
+                  }),
+                }).catch(() => {});
               }
             })
             .catch(() => {});
@@ -231,6 +361,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {}
   }, [students, isLoaded]);
 
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem('maarif_classrooms', JSON.stringify(classrooms));
+    } catch (e) {}
+  }, [classrooms, isLoaded]);
+
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -250,7 +387,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isLoaded) return;
     if (session?.user?.email) {
       const email = session.user.email;
-      if (!currentUser || currentUser.email.toLowerCase() !== email.toLowerCase()) {
+      if (!currentUser || (currentUser.email && currentUser.email.toLowerCase() !== email.toLowerCase())) {
         loginWithGoogle({
           name: session.user.name || 'Google Kullanıcısı',
           email: session.user.email,
@@ -419,12 +556,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 2. Offline / Local Seed Fallback
     if (checkIsAdmin(trimmed)) {
       const adminUser = admins.find((a) => a.email.toLowerCase() === trimmed) || getAdminUser(trimmed);
-      const isPowerose = trimmed === 'powerose@gmail.com';
-      const validPass = isPowerose ? (adminUser.password || 'Admin1234') : (adminUser.password || 'admin');
-      const matches =
-        cleanPass === validPass ||
-        (isPowerose && (cleanPass === 'admin' || cleanPass === 'Admin1234' || cleanPass.toLowerCase() === 'admin1234')) ||
-        cleanPass === 'admin';
+      const validPass = adminUser.password || 'admin';
+      const matches = cleanPass === validPass;
 
       if (matches) {
         setCurrentUser(adminUser);
@@ -434,12 +567,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const adminByPhone = admins.find(a => a.phone && a.phone.replace(/\s+/g, '') === cleanIdNoSpaces);
     if (adminByPhone) {
-      const isPowerose = adminByPhone.email?.toLowerCase() === 'powerose@gmail.com';
-      const validPass = adminByPhone.password || (isPowerose ? 'Admin1234' : 'admin');
-      const matches =
-        cleanPass === validPass ||
-        (isPowerose && (cleanPass === 'admin' || cleanPass === 'Admin1234' || cleanPass.toLowerCase() === 'admin1234')) ||
-        cleanPass === 'admin';
+      const validPass = adminByPhone.password || 'admin';
+      const matches = cleanPass === validPass;
 
       if (matches) {
         setCurrentUser(adminByPhone);
@@ -455,29 +584,95 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     if (teacher) {
       const validPass = teacher.password || 'admin';
-      const matches =
-        cleanPass === validPass ||
-        cleanPass === 'admin' ||
-        cleanPass === '123456';
+      const matches = cleanPass === validPass;
 
       if (matches) {
         setCurrentUser(teacher);
         registerDeviceSession(teacher);
+        // Self-heal: sync credentials and classes to PostgreSQL DB
+        fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: teacher.email,
+            firstName: teacher.firstName,
+            lastName: teacher.lastName,
+            name: teacher.name,
+            phone: teacher.phone,
+            school: teacher.school,
+            branch: teacher.branch,
+            assignedClasses: teacher.assignedClasses,
+            password: cleanPass,
+          }),
+        }).catch(() => {});
         return true;
       }
     }
 
     // 4. Fallback check for Students
     const student = students.find((s) => 
-      s.email.toLowerCase() === trimmed || 
+      (s.email && s.email.toLowerCase() === trimmed) || 
       (s.studentNumber && s.studentNumber.trim().toLowerCase() === trimmed)
     );
     if (student) {
       const validPass = student.password || 'admin';
-      const matches =
-        cleanPass === validPass ||
-        cleanPass === 'admin' ||
-        cleanPass === '123456';
+      const matches = cleanPass === validPass;
+
+      if (matches) {
+        setCurrentUser(student);
+        registerDeviceSession(student);
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const loginStudent = async (classCode: string, studentNumber: string, pass?: string): Promise<boolean> => {
+    const cleanCode = (classCode || '').trim().toUpperCase();
+    const cleanNumber = (studentNumber || '').trim();
+    const cleanPass = (pass || '').trim();
+
+    if (!cleanCode || !cleanNumber || !cleanPass) return false;
+
+    // 1. Primary Authentication: via Database API
+    try {
+      const res = await fetch('/api/auth/login-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ classCode: cleanCode, studentNumber: cleanNumber, password: cleanPass })
+      });
+      const data = await res.json();
+      if (data?.success && data?.user) {
+        const verifiedUser: AuthUser = data.user;
+        setCurrentUser(verifiedUser);
+        if (data.sessionId) {
+          try {
+            localStorage.setItem('maarif_session_token', data.sessionId);
+            localStorage.setItem('maarif_session_expires', String(data.expiresAt));
+            localStorage.setItem('maarif_device_category', data.deviceCategory);
+            localStorage.setItem('maarif_current_user', JSON.stringify(verifiedUser));
+          } catch (e) {}
+        }
+        return true;
+      }
+    } catch (e) {
+      console.warn('[loginStudent] API error, falling back to local cache:', e);
+    }
+
+    // 2. Offline / Local Fallback
+    const matchedClassroom = classrooms.find((c) => c.code?.toUpperCase() === cleanCode);
+    const student = students.find((s) => {
+      const matchesCode =
+        (s.classCode && s.classCode.toUpperCase() === cleanCode) ||
+        (matchedClassroom && s.classSection && s.classSection.toUpperCase() === matchedClassroom.name.toUpperCase());
+      const matchesNumber = s.studentNumber && s.studentNumber.trim().toLowerCase() === cleanNumber.toLowerCase();
+      return matchesCode && matchesNumber;
+    });
+
+    if (student) {
+      const validPass = student.password || 'admin';
+      const matches = cleanPass === validPass;
 
       if (matches) {
         setCurrentUser(student);
@@ -542,10 +737,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (targetEmail) {
       try {
+        const u = currentUser;
         fetch('/api/user/profile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: targetEmail, password: newPassword }),
+          body: JSON.stringify({
+            email: targetEmail,
+            firstName: u?.firstName,
+            lastName: u?.lastName,
+            name: u?.name,
+            phone: (u as any)?.phone,
+            school: (u as any)?.school,
+            branch: (u as any)?.branch,
+            assignedClasses: (u as any)?.assignedClasses,
+            password: newPassword,
+          }),
         }).catch(() => {});
       } catch (e) {}
     }
@@ -646,7 +852,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           lastName: updates.lastName || base?.lastName || 'Yöneticisi',
           name: formatFullName(updates.firstName || base?.firstName, updates.lastName || base?.lastName, 'Sistem Yöneticisi'),
           email: updates.email || base?.email || targetEmail,
-          password: (updates as any).password || (base as any)?.password || (targetEmail === 'powerose@gmail.com' ? 'Admin1234' : 'admin'),
+          password: (updates as any).password || (base as any)?.password || 'admin',
           role: 'admin',
           avatar: base?.avatar || '👑',
           permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports'],
@@ -673,7 +879,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 4. Update Students list
     setStudents((prev) => {
       const nextStudents = prev.map((s) => {
-        if (s.id === userId || (targetEmail && s.email.toLowerCase() === targetEmail)) {
+        if (s.id === userId || (targetEmail && s.email && s.email.toLowerCase() === targetEmail)) {
           return applyUpdates(s) as StudentUser;
         }
         return s;
@@ -711,23 +917,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const acceptKvkk = (userId: string) => {
     const timestamp = new Date().toISOString();
-    setTeachers((prev) =>
-      prev.map((t) => (t.id === userId ? { ...t, kvkkAcceptedAt: timestamp } : t))
-    );
+    setTeachers((prev) => {
+      const updated = prev.map((t) => (t.id === userId || (currentUser?.email && t.email.toLowerCase() === currentUser.email.toLowerCase()) ? { ...t, isKvkkAccepted: true, kvkkAcceptedAt: timestamp } : t));
+      try {
+        localStorage.setItem('maarif_teachers', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
     setAdmins((prev) =>
-      prev.map((a) => (a.id === userId ? { ...a, kvkkAcceptedAt: timestamp } : a))
+      prev.map((a) => (a.id === userId ? { ...a, isKvkkAccepted: true, kvkkAcceptedAt: timestamp } : a))
     );
     setStudents((prev) =>
-      prev.map((s) => (s.id === userId ? { ...s, kvkkAcceptedAt: timestamp } : s))
+      prev.map((s) => (s.id === userId ? { ...s, isKvkkAccepted: true, kvkkAcceptedAt: timestamp } : s))
     );
 
-    if (currentUser && currentUser.id === userId) {
-      const updated = { ...currentUser, kvkkAcceptedAt: timestamp };
+    if (currentUser) {
+      const updated = { ...currentUser, isKvkkAccepted: true, kvkkAcceptedAt: timestamp };
       setCurrentUser(updated);
       try {
         localStorage.setItem('maarif_current_user', JSON.stringify(updated));
       } catch (e) {}
     }
+
+    // Persist to PostgreSQL database
+    fetch('/api/user/accept-kvkk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId,
+        email: currentUser?.email,
+      }),
+    }).catch((err) => console.error('Accept KVKK database error:', err));
   };
 
   const loginWithGoogle = (profile: { name: string; email: string; avatar?: string }): { isNewUser: boolean; user: AuthUser } => {
@@ -761,7 +981,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // 2. Check if student
-    const existingStudent = students.find((s) => s.email.toLowerCase() === trimmed);
+    const existingStudent = students.find((s) => s.email && s.email.toLowerCase() === trimmed);
     if (existingStudent) {
       setCurrentUser(existingStudent);
       registerDeviceSession(existingStudent);
@@ -819,6 +1039,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setTeachers(updated);
     setCurrentUser(newTeacher);
     registerDeviceSession(newTeacher);
+
+    // Sync newly logged in Google teacher to PostgreSQL DB
+    fetch('/api/user/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: profile.email,
+        firstName: firstName || 'Google',
+        lastName: lastName || 'Kullanıcısı',
+        name: fullName,
+        school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+        branch: 'Matematik',
+        assignedClasses: ['5-A'],
+      }),
+    }).catch((e) => console.warn('Google teacher sync note:', e));
 
     return { isNewUser: true, user: newTeacher };
   };
@@ -997,6 +1232,90 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const target = updated.find((t) => t.id === teacherId);
       if (target) setCurrentUser(target);
     }
+
+    fetch('/api/admin/teachers', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teacherId, action: 'reject', reason })
+    }).catch(err => console.error('Reject teacher DB error:', err));
+  };
+
+  const suspendTeacher = (teacherId: string, email?: string) => {
+    const target = teachers.find(
+      (t) => t.id === teacherId || (email && t.email.toLowerCase() === email.toLowerCase())
+    );
+    const targetEmail = email || target?.email;
+
+    const updated = teachers.map((t) =>
+      t.id === teacherId || (targetEmail && t.email.toLowerCase() === targetEmail.toLowerCase())
+        ? {
+            ...t,
+            status: 'suspended' as const,
+            accountStatus: 'beklemede' as const,
+          }
+        : t
+    );
+    setTeachers(updated);
+    try {
+      localStorage.setItem('maarif_teachers', JSON.stringify(updated));
+    } catch (e) {}
+
+    if (currentUser && target && (currentUser.id === target.id || currentUser.email?.toLowerCase() === target.email.toLowerCase())) {
+      const suspendedUser = {
+        ...currentUser,
+        status: 'suspended' as const,
+        accountStatus: 'beklemede' as const,
+      };
+      setCurrentUser(suspendedUser);
+      try {
+        localStorage.setItem('maarif_current_user', JSON.stringify(suspendedUser));
+      } catch (e) {}
+    }
+
+    fetch('/api/admin/teachers', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teacherId, email: targetEmail, action: 'suspend' }),
+    }).catch((err) => console.error('Suspend teacher DB error:', err));
+  };
+
+  const unsuspendTeacher = (teacherId: string, email?: string) => {
+    const target = teachers.find(
+      (t) => t.id === teacherId || (email && t.email.toLowerCase() === email.toLowerCase())
+    );
+    const targetEmail = email || target?.email;
+
+    const updated = teachers.map((t) =>
+      t.id === teacherId || (targetEmail && t.email.toLowerCase() === targetEmail.toLowerCase())
+        ? {
+            ...t,
+            status: 'approved' as const,
+            accountStatus: 'aktif' as const,
+          }
+        : t
+    );
+    setTeachers(updated);
+    try {
+      localStorage.setItem('maarif_teachers', JSON.stringify(updated));
+    } catch (e) {}
+
+    if (currentUser && target && (currentUser.id === target.id || currentUser.email?.toLowerCase() === target.email.toLowerCase())) {
+      const activeUser = {
+        ...currentUser,
+        status: 'approved' as const,
+        accountStatus: 'aktif' as const,
+      };
+      setCurrentUser(activeUser);
+      try {
+        localStorage.setItem('maarif_current_user', JSON.stringify(activeUser));
+      } catch (e) {}
+    }
+
+    fetch('/api/admin/teachers', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teacherId, email: targetEmail, action: 'unsuspend' }),
+    }).catch((err) => console.error('Unsuspend teacher DB error:', err));
   };
 
   const deleteTeacher = (teacherId: string) => {
@@ -1046,7 +1365,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isProfileComplete: true
         };
         setTeachers((prev) => [newTeacher, ...prev.filter((t) => t.email.toLowerCase() !== adminUser.email.toLowerCase())]);
-        if (currentUser?.email.toLowerCase() === adminUser.email.toLowerCase()) {
+        if (currentUser?.email && currentUser.email.toLowerCase() === adminUser.email.toLowerCase()) {
           setCurrentUser(newTeacher);
         }
       } else if (newRole === 'student') {
@@ -1069,8 +1388,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           unlockedBadges: ['first-step'],
           createdAt: new Date().toISOString().split('T')[0]
         };
-        setStudents((prev) => [newStudent, ...prev.filter((s) => s.email.toLowerCase() !== adminUser.email.toLowerCase())]);
-        if (currentUser?.email.toLowerCase() === adminUser.email.toLowerCase()) {
+        setStudents((prev) => [newStudent, ...prev.filter((s) => !s.email || s.email.toLowerCase() !== adminUser.email.toLowerCase())]);
+        if (currentUser?.email && currentUser.email.toLowerCase() === adminUser.email.toLowerCase()) {
           setCurrentUser(newStudent);
         }
       }
@@ -1105,7 +1424,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           branch: teacherUser.branch
         };
         setAdmins((prev) => [newAdmin, ...prev.filter((a) => a.email.toLowerCase() !== teacherUser.email.toLowerCase())]);
-        if (currentUser?.email.toLowerCase() === teacherUser.email.toLowerCase()) {
+        if (currentUser?.email && currentUser.email.toLowerCase() === teacherUser.email.toLowerCase()) {
           setCurrentUser(newAdmin);
         }
       } else if (newRole === 'student') {
@@ -1128,8 +1447,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           unlockedBadges: ['first-step'],
           createdAt: new Date().toISOString().split('T')[0]
         };
-        setStudents((prev) => [newStudent, ...prev.filter((s) => s.email.toLowerCase() !== teacherUser.email.toLowerCase())]);
-        if (currentUser?.email.toLowerCase() === teacherUser.email.toLowerCase()) {
+        setStudents((prev) => [newStudent, ...prev.filter((s) => !s.email || s.email.toLowerCase() !== teacherUser.email.toLowerCase())]);
+        if (currentUser?.email && currentUser.email.toLowerCase() === teacherUser.email.toLowerCase()) {
           setCurrentUser(newStudent);
         }
       }
@@ -1145,13 +1464,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const remainingStudents = students.filter((s) => s.id !== userId);
       setStudents(remainingStudents);
 
+      const fallbackEmail = studentUser.email || (studentUser.studentNumber ? `${studentUser.studentNumber}@okul.meb.k12.tr` : `student_${studentUser.id}@okul.meb.k12.tr`);
+
       if (newRole === 'admin') {
         const newAdmin: AdminUser = {
           id: `usr-admin-${studentUser.id}`,
           firstName: studentUser.firstName || splitFullName(studentUser.name).firstName,
           lastName: studentUser.lastName || splitFullName(studentUser.name).lastName,
           name: studentUser.name,
-          email: studentUser.email,
+          email: fallbackEmail,
           password: studentUser.password,
           role: 'admin',
           avatar: '👑',
@@ -1161,8 +1482,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           district: studentUser.district,
           school: studentUser.school
         };
-        setAdmins((prev) => [newAdmin, ...prev.filter((a) => a.email.toLowerCase() !== studentUser.email.toLowerCase())]);
-        if (currentUser?.email.toLowerCase() === studentUser.email.toLowerCase()) {
+        setAdmins((prev) => [newAdmin, ...prev.filter((a) => a.email.toLowerCase() !== fallbackEmail.toLowerCase())]);
+        if (currentUser?.id === studentUser.id || (currentUser?.email && currentUser.email.toLowerCase() === fallbackEmail.toLowerCase())) {
           setCurrentUser(newAdmin);
         }
       } else if (newRole === 'teacher') {
@@ -1171,7 +1492,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           firstName: studentUser.firstName || splitFullName(studentUser.name).firstName,
           lastName: studentUser.lastName || splitFullName(studentUser.name).lastName,
           name: studentUser.name,
-          email: studentUser.email,
+          email: fallbackEmail,
           password: studentUser.password,
           role: 'teacher',
           avatar: '👨‍🏫',
@@ -1186,8 +1507,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           assignedClasses: [studentUser.classSection || '5-A'],
           isProfileComplete: true
         };
-        setTeachers((prev) => [newTeacher, ...prev.filter((t) => t.email.toLowerCase() !== studentUser.email.toLowerCase())]);
-        if (currentUser?.email.toLowerCase() === studentUser.email.toLowerCase()) {
+        setTeachers((prev) => [newTeacher, ...prev.filter((t) => t.email.toLowerCase() !== fallbackEmail.toLowerCase())]);
+        if (currentUser?.id === studentUser.id || (currentUser?.email && currentUser.email.toLowerCase() === fallbackEmail.toLowerCase())) {
           setCurrentUser(newTeacher);
         }
       }
@@ -1201,19 +1522,65 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateUserProfile(teacherId, updates);
   };
 
+  const getClassCodeForClass = (className: string, teacherId?: string): string => {
+    const trimmed = (className || '').trim().toUpperCase();
+    if (!trimmed) return '';
+
+    const match = classrooms.find(
+      (c) => c.name.toUpperCase() === trimmed && (!teacherId || c.teacherId === teacherId)
+    ) || classrooms.find((c) => c.name.toUpperCase() === trimmed);
+
+    if (match) return match.code;
+
+    const newCode = generateUniqueClassCode(classrooms);
+    const newCls: ClassroomInfo = {
+      id: `cls-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      name: trimmed,
+      code: newCode,
+      teacherId,
+      gradeLevel: parseInt(trimmed.charAt(0)) || 5,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    setClassrooms((prev) => [...prev, newCls]);
+    return newCode;
+  };
+
   const addClassToTeacher = (teacherId: string, className: string) => {
     const trimmed = className.trim().toUpperCase();
     if (!trimmed) return;
 
+    // Ensure classroom has a unique 6-char code in classrooms store
+    setClassrooms((prev) => {
+      const exists = prev.some(
+        (c) => c.name.toUpperCase() === trimmed && (!teacherId || c.teacherId === teacherId)
+      );
+      if (exists) return prev;
+      const newCls: ClassroomInfo = {
+        id: `cls-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        name: trimmed,
+        code: generateUniqueClassCode(prev),
+        teacherId,
+        gradeLevel: parseInt(trimmed.charAt(0)) || 5,
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+      return [...prev, newCls];
+    });
+
+    let targetEmail = '';
+    let updatedClasses: string[] = [];
+
     const updated = teachers.map((t) => {
       if (t.id === teacherId) {
+        targetEmail = t.email;
         const classes = t.assignedClasses || [];
         if (!classes.includes(trimmed)) {
+          updatedClasses = [...classes, trimmed];
           return {
             ...t,
-            assignedClasses: [...classes, trimmed]
+            assignedClasses: updatedClasses
           };
         }
+        updatedClasses = classes;
       }
       return t;
     });
@@ -1221,19 +1588,212 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (currentUser && currentUser.id === teacherId) {
       const target = updated.find((t) => t.id === teacherId);
-      if (target) setCurrentUser(target);
+      if (target) {
+        setCurrentUser(target);
+        targetEmail = target.email;
+        updatedClasses = target.assignedClasses || [];
+      }
     }
+
+    const syncEmail = targetEmail || currentUser?.email;
+    if (syncEmail) {
+      fetch('/api/user/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: syncEmail,
+          assignedClasses: updatedClasses.length > 0 ? updatedClasses : [trimmed],
+        }),
+      }).catch((err) => console.warn('[addClassToTeacher] DB sync note:', err));
+    }
+  };
+
+  const deleteClassFromTeacher = (teacherId: string, className: string): { deletedStudentCount: number } => {
+    const trimmed = className.trim().toUpperCase();
+    if (!trimmed) return { deletedStudentCount: 0 };
+
+    // 1. Identify all students in this class belonging to this teacher
+    const targetTeacher = teachers.find((t) => t.id === teacherId);
+    const teacherSchool = targetTeacher?.school;
+
+    const studentsToDelete = students.filter(
+      (s) =>
+        s.classSection.toUpperCase() === trimmed &&
+        (!s.teacherId || s.teacherId === teacherId || (teacherSchool && s.school === teacherSchool))
+    );
+    const studentIdsToDelete = new Set(studentsToDelete.map((s) => s.id));
+    const studentNumbersToDelete = new Set(studentsToDelete.map((s) => s.studentNumber));
+
+    // 2. Remove students from state and localStorage
+    setStudents((prev) => {
+      const nextStudents = prev.filter((s) => !studentIdsToDelete.has(s.id));
+      try {
+        localStorage.setItem('maarif_students', JSON.stringify(nextStudents));
+      } catch (e) {}
+      return nextStudents;
+    });
+
+    // 3. Remove classroom from classrooms state and localStorage
+    setClassrooms((prev) => {
+      const nextClassrooms = prev.filter(
+        (c) => !(c.name.toUpperCase() === trimmed && (!c.teacherId || c.teacherId === teacherId))
+      );
+      try {
+        localStorage.setItem('maarif_classrooms', JSON.stringify(nextClassrooms));
+      } catch (e) {}
+      return nextClassrooms;
+    });
+
+    // 4. Remove class from teacher's assignedClasses
+    const updatedTeachers = teachers.map((t) => {
+      if (t.id === teacherId) {
+        return {
+          ...t,
+          assignedClasses: (t.assignedClasses || []).filter((c) => c.toUpperCase() !== trimmed)
+        };
+      }
+      return t;
+    });
+    setTeachers(updatedTeachers);
+    try {
+      localStorage.setItem('maarif_teachers', JSON.stringify(updatedTeachers));
+    } catch (e) {}
+
+    if (currentUser && currentUser.id === teacherId) {
+      const target = updatedTeachers.find((t) => t.id === teacherId);
+      if (target) {
+        setCurrentUser(target);
+        try {
+          localStorage.setItem('maarif_current_user', JSON.stringify(target));
+        } catch (e) {}
+      }
+    }
+
+    // 5. Clean up associated data in related localStorage stores
+    try {
+      // Rubrics / self assessment submissions
+      const rubricsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_rubric_submissions_v1') : null;
+      if (rubricsRaw) {
+        const rubrics = JSON.parse(rubricsRaw);
+        const filteredRubrics = rubrics.filter(
+          (r: any) =>
+            !(
+              r.classSection?.toUpperCase() === trimmed &&
+              (r.teacherId === teacherId || studentNumbersToDelete.has(r.studentNumber))
+            )
+        );
+        localStorage.setItem('maarif_rubric_submissions_v1', JSON.stringify(filteredRubrics));
+      }
+
+      // Learning journals
+      const journalsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_learning_journals_v1') : null;
+      if (journalsRaw) {
+        const journals = JSON.parse(journalsRaw);
+        const filteredJournals = journals.filter((j: any) => j.classSection?.toUpperCase() !== trimmed);
+        localStorage.setItem('maarif_learning_journals_v1', JSON.stringify(filteredJournals));
+      }
+
+      // Board participations
+      const boardRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_board_participations_v1') : null;
+      if (boardRaw) {
+        const board = JSON.parse(boardRaw);
+        const filteredBoard = board.filter(
+          (b: any) =>
+            !(
+              b.classSection?.toUpperCase() === trimmed &&
+              (b.teacherId === teacherId || studentNumbersToDelete.has(b.studentNumber))
+            )
+        );
+        localStorage.setItem('maarif_board_participations_v1', JSON.stringify(filteredBoard));
+      }
+
+      // Peer evaluations
+      const peerRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_peer_evaluations_v1') : null;
+      if (peerRaw) {
+        const peer = JSON.parse(peerRaw);
+        const filteredPeer = peer.filter((p: any) => p.classSection?.toUpperCase() !== trimmed);
+        localStorage.setItem('maarif_peer_evaluations_v1', JSON.stringify(filteredPeer));
+      }
+
+      // Teacher groups
+      const groupsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_teacher_groups_v1') : null;
+      if (groupsRaw) {
+        const groups = JSON.parse(groupsRaw);
+        const filteredGroups = groups.filter((g: any) => g.classSection?.toUpperCase() !== trimmed);
+        localStorage.setItem('maarif_teacher_groups_v1', JSON.stringify(filteredGroups));
+      }
+    } catch (cleanErr) {
+      console.warn('[deleteClassFromTeacher] Error cleaning related stores:', cleanErr);
+    }
+
+    // 6. Asynchronously sync class deletion to backend database
+    try {
+      fetch('/api/students', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teacherId,
+          className: trimmed
+        })
+      }).catch((err) => console.warn('[deleteClassFromTeacher] DB deletion sync note:', err));
+
+      const remainingClasses = (targetTeacher?.assignedClasses || []).filter((c) => c.toUpperCase() !== trimmed);
+      const syncEmail = targetTeacher?.email || currentUser?.email;
+      if (syncEmail) {
+        fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: syncEmail,
+            assignedClasses: remainingClasses,
+          }),
+        }).catch(() => {});
+      }
+    } catch (e) {}
+
+    return { deletedStudentCount: studentsToDelete.length };
   };
 
   const addStudent = (student: StudentUser) => {
     const fName = student.firstName || splitFullName(student.name || '').firstName || 'Öğrenci';
     const lName = student.lastName || splitFullName(student.name || '').lastName || '';
     const fullName = formatFullName(fName, lName, student.name || 'Öğrenci');
+
+    // Auto-resolve or generate classCode
+    let code = student.classCode;
+    if (!code && student.classSection) {
+      const sec = student.classSection.trim().toUpperCase();
+      const match = classrooms.find(
+        (c) => c.name.toUpperCase() === sec && (!student.teacherId || c.teacherId === student.teacherId)
+      ) || classrooms.find((c) => c.name.toUpperCase() === sec);
+      if (match) {
+        code = match.code;
+      } else {
+        code = generateUniqueClassCode(classrooms);
+        const newCls: ClassroomInfo = {
+          id: `cls-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          name: sec,
+          code: code,
+          teacherId: student.teacherId,
+          gradeLevel: parseInt(sec.charAt(0)) || 5,
+          createdAt: new Date().toISOString().split('T')[0]
+        };
+        setClassrooms((prev) => [...prev, newCls]);
+      }
+    }
+
+    // Auto-generate random alphanumeric password if not provided
+    const password = student.password && student.password.trim().length > 0
+      ? student.password.trim()
+      : generateRandomStudentPassword();
+
     const normalized: StudentUser = {
       ...student,
       firstName: fName,
       lastName: lName,
       name: fullName,
+      classCode: code,
+      password: password,
       gender: student.gender || undefined
     };
 
@@ -1244,6 +1804,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       return [normalized, ...prev];
     });
+
+    // Asynchronous database synchronization
+    try {
+      fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          student: normalized,
+          teacherId: currentUser?.id,
+          classrooms: classrooms
+        })
+      }).catch((err) => console.warn('[addStudent] DB sync note:', err));
+    } catch (e) {}
   };
 
   const addStudentsBulk = (newStudentsList: StudentUser[]): { addedCount: number; updatedCount: number } => {
@@ -1254,11 +1827,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const fName = student.firstName || splitFullName(student.name || '').firstName || 'Öğrenci';
       const lName = student.lastName || splitFullName(student.name || '').lastName || '';
       const fullName = formatFullName(fName, lName, student.name || 'Öğrenci');
+
+      let code = student.classCode;
+      if (!code && student.classSection) {
+        const sec = student.classSection.trim().toUpperCase();
+        const match = classrooms.find(
+          (c) => c.name.toUpperCase() === sec && (!student.teacherId || c.teacherId === student.teacherId)
+        ) || classrooms.find((c) => c.name.toUpperCase() === sec);
+        if (match) {
+          code = match.code;
+        }
+      }
+
+      const password = student.password && student.password.trim().length > 0
+        ? student.password.trim()
+        : generateRandomStudentPassword();
+
       return {
         ...student,
         firstName: fName,
         lastName: lName,
         name: fullName,
+        classCode: code,
+        password: password,
         gender: student.gender || undefined
       };
     });
@@ -1289,6 +1880,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       return next;
     });
+
+    // Asynchronous database synchronization
+    try {
+      fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          students: normalizedList,
+          teacherId: currentUser?.id,
+          classrooms: classrooms
+        })
+      }).catch((err) => console.warn('[addStudentsBulk] DB sync note:', err));
+    } catch (e) {}
 
     return { addedCount: added, updatedCount: updated };
   };
@@ -1411,7 +2015,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check if email already exists
     const emailExistsInAdmins = admins.some(a => a.email.toLowerCase() === cleanEmail);
     const emailExistsInTeachers = teachers.some(t => t.email.toLowerCase() === cleanEmail);
-    const emailExistsInStudents = students.some(s => s.email.toLowerCase() === cleanEmail);
+    const emailExistsInStudents = students.some(s => s.email && s.email.toLowerCase() === cleanEmail);
 
     if (emailExistsInAdmins || emailExistsInTeachers || emailExistsInStudents) {
       return { success: false, error: 'Bu e-posta adresi ile kayıtlı bir kullanıcı zaten mevcut.' };
@@ -1531,9 +2135,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         teachers,
         students,
         admins,
+        classrooms,
         activeVerificationCode,
         loginAsRole,
         loginWithEmail,
+        loginStudent,
         loginWithGoogle,
         loginWithBoardSession,
         logout,
@@ -1545,10 +2151,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         resendVerificationCode,
         updateTeacherProfile,
         addClassToTeacher,
+        deleteClassFromTeacher,
+        getClassCodeForClass,
         registerStudent,
         adminCreateUser,
         approveTeacher,
         rejectTeacher,
+        suspendTeacher,
+        unsuspendTeacher,
         deleteTeacher,
         deleteAdmin,
         changeUserRole,

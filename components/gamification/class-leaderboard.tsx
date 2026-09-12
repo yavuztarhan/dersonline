@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -29,37 +29,76 @@ import { StudentOutcomeDetailModal } from '@/components/gamification/student-out
 interface ClassLeaderboardProps {
   initialClassSection?: string;
   showTeacherControls?: boolean;
+  availableClasses?: string[];
 }
 
 export function ClassLeaderboard({
   initialClassSection = '5-A',
-  showTeacherControls = false
+  showTeacherControls = false,
+  availableClasses
 }: ClassLeaderboardProps) {
-  const { currentUser, students, awardPointsToStudent } = useAuth();
+  const { currentUser, students, getVisibleStudents, awardPointsToStudent } = useAuth();
   const { playSound, addPoints } = useApp();
 
   const isTeacher = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
   const isStudent = currentUser?.role === 'student';
   const currentStudentId = isStudent ? currentUser?.id : null;
 
+  // Teacher's registered classes strictly
+  const teacherClasses: string[] = availableClasses && availableClasses.length > 0
+    ? availableClasses
+    : (currentUser as any)?.assignedClasses && (currentUser as any).assignedClasses.length > 0
+      ? (currentUser as any).assignedClasses
+      : [];
+
   // Selected Student for Detailed Outcome & Rubric Analytics Modal
   const [selectedStudentForDetail, setSelectedStudentForDetail] = useState<any | null>(null);
 
+  // Initial class selection
+  const defaultClass = isTeacher
+    ? (teacherClasses.includes(initialClassSection) ? initialClassSection : teacherClasses[0] || initialClassSection)
+    : initialClassSection;
+
   // Teacher Selected Class Filter & Search States
-  const [selectedClass, setSelectedClass] = useState<string>(initialClassSection);
+  const [selectedClass, setSelectedClass] = useState<string>(defaultClass);
   const [searchQuery, setSearchQuery] = useState('');
   const [rewardAmount, setRewardAmount] = useState<number>(25);
+
+  // Sync if initialClassSection or teacherClasses change
+  useEffect(() => {
+    if (isTeacher) {
+      if (initialClassSection && (teacherClasses.includes(initialClassSection) || initialClassSection === 'Tümü')) {
+        setSelectedClass(initialClassSection);
+      } else if (teacherClasses.length > 0 && selectedClass !== 'Tümü' && !teacherClasses.includes(selectedClass)) {
+        setSelectedClass(teacherClasses[0]);
+      }
+    }
+  }, [initialClassSection, teacherClasses, isTeacher]);
 
   // Student Own Class vs Teacher Selected Class (Students can ONLY see their own class)
   const studentClassSection = (currentUser as StudentUser)?.classSection || initialClassSection || '5-A';
   const effectiveClass = isStudent ? studentClassSection : selectedClass;
 
-  const CLASS_OPTIONS = ['5-A', '5-B', '5-C', '5-D', 'Tümü'];
+  // CLASS_OPTIONS strictly only from teacher's own registered classes!
+  const CLASS_OPTIONS: string[] = isTeacher
+    ? (teacherClasses.length > 1
+        ? [...teacherClasses, 'Tümü']
+        : teacherClasses.length === 1
+          ? teacherClasses
+          : [])
+    : [studentClassSection];
+
+  // Base students: For teachers, strictly only their visible registered students
+  const baseStudents = isTeacher && currentUser?.role === 'teacher' && getVisibleStudents
+    ? getVisibleStudents(currentUser)
+    : students;
 
   // Filter & Sort Students by Points (XP)
-  const filteredStudents = students
+  const filteredStudents = baseStudents
     .filter((s) => {
-      const matchesClass = effectiveClass === 'Tümü' ? true : s.classSection === effectiveClass;
+      const matchesClass = effectiveClass === 'Tümü'
+        ? (isTeacher && teacherClasses.length > 0 ? teacherClasses.includes(s.classSection) : true)
+        : s.classSection === effectiveClass;
       const matchesSearch =
         !searchQuery ||
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,7 +136,7 @@ export function ClassLeaderboard({
           <h3 className="text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-2">
             <span>Matematik Liderleri</span>
             <span className="text-xs px-2.5 py-0.5 rounded-lg bg-teal-50 text-teal-700 font-extrabold border border-teal-200">
-              {effectiveClass === 'Tümü' ? 'Tüm Sınıflar' : `${effectiveClass} Şubesi`}
+              {effectiveClass === 'Tümü' ? 'Tüm Sınıflarım' : `${effectiveClass} Şubesi`}
             </span>
           </h3>
           <p className="text-xs sm:text-sm text-slate-500">
@@ -109,25 +148,31 @@ export function ClassLeaderboard({
 
         {/* Class Selection Tabs (Teachers / Admins) or Fixed Class Badge (Students) */}
         {isTeacher ? (
-          <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-black self-stretch md:self-auto overflow-x-auto">
-            {CLASS_OPTIONS.map((cls) => (
-              <button
-                key={cls}
-                type="button"
-                onClick={() => {
-                  playSound('select');
-                  setSelectedClass(cls);
-                }}
-                className={`px-4 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer ${
-                  selectedClass === cls
-                    ? 'bg-slate-900 text-white shadow-sm font-black'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-              >
-                {cls === 'Tümü' ? 'Tüm Okul' : `${cls} Şubesi`}
-              </button>
-            ))}
-          </div>
+          CLASS_OPTIONS.length > 0 ? (
+            <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-black self-stretch md:self-auto overflow-x-auto">
+              {CLASS_OPTIONS.map((cls) => (
+                <button
+                  key={cls}
+                  type="button"
+                  onClick={() => {
+                    playSound('select');
+                    setSelectedClass(cls);
+                  }}
+                  className={`px-4 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer ${
+                    selectedClass === cls
+                      ? 'bg-slate-900 text-white shadow-sm font-black'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  {cls === 'Tümü' ? 'Tüm Sınıflarım' : `${cls} Şubesi`}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="px-4 py-2 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+              Kayıtlı sınıfınız bulunmuyor
+            </div>
+          )
         ) : (
           <div className="flex items-center gap-3 bg-teal-50 border border-teal-200 px-4 py-2.5 rounded-2xl shadow-2xs">
             <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black text-sm">
@@ -305,7 +350,18 @@ export function ClassLeaderboard({
         </div>
 
         <div className="space-y-2">
-          {filteredStudents.map((student, idx) => {
+          {filteredStudents.length === 0 ? (
+            <div className="p-12 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200 space-y-2">
+              <div className="text-3xl">🏆</div>
+              <div className="font-bold text-sm text-slate-700">
+                {effectiveClass === 'Tümü' ? 'Kayıtlı öğrenci bulunmuyor.' : `${effectiveClass} şubesinde henüz kayıtlı öğrenci bulunmuyor.`}
+              </div>
+              <div className="text-xs text-slate-400">
+                Öğrenciler puan (XP) kazandıkça liderlik sıralaması burada listelenecektir.
+              </div>
+            </div>
+          ) : (
+            filteredStudents.map((student, idx) => {
             const rank = idx + 1;
             const rankInfo = getRankTitle(student.points);
             const isMe = currentStudentId === student.id;
@@ -427,7 +483,7 @@ export function ClassLeaderboard({
                 </div>
               </div>
             );
-          })}
+          }))}
         </div>
       </div>
 
@@ -437,7 +493,7 @@ export function ClassLeaderboard({
           isOpen={!!selectedStudentForDetail}
           onClose={() => setSelectedStudentForDetail(null)}
           student={selectedStudentForDetail}
-          allStudents={students}
+          allStudents={baseStudents}
           onAwardXp={handleTeacherAwardXP}
           isTeacher={isTeacher}
         />

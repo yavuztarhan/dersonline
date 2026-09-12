@@ -1,8 +1,9 @@
 import { PrismaClient, Role, TeacherStatus } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import bcrypt from 'bcryptjs';
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/maarif_db?schema=public';
+const connectionString = process.env.DATABASE_URL || 'postgresql://maarif_user:maarif_password123@localhost:5432/maarif_db?schema=public';
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
@@ -18,18 +19,20 @@ async function main() {
   ];
 
   for (const admin of adminUsers) {
+    const rawPass = admin.email === 'powerose@gmail.com' ? 'Admin1234' : 'admin';
+    const hashedPass = bcrypt.hashSync(rawPass, 10);
     const createdAdmin = await prisma.user.upsert({
       where: { email: admin.email },
       update: { 
         role: Role.ADMIN,
-        password: admin.email === 'powerose@gmail.com' ? 'Admin1234' : 'admin'
+        password: hashedPass
       },
       create: {
         email: admin.email,
         firstName: admin.firstName,
         lastName: admin.lastName,
         name: admin.name,
-        password: admin.email === 'powerose@gmail.com' ? 'Admin1234' : 'admin',
+        password: hashedPass,
         role: Role.ADMIN,
         avatar: admin.avatar,
       },
@@ -38,15 +41,16 @@ async function main() {
   }
 
   // 2. Onaylı Öğretmen (Edirne Selimiye İHO)
+  const teacher1Pass = bcrypt.hashSync('admin', 10);
   const teacher1User = await prisma.user.upsert({
     where: { email: 'ahmet.ogretmen@meb.k12.tr' },
-    update: {},
+    update: { password: teacher1Pass },
     create: {
       email: 'ahmet.ogretmen@meb.k12.tr',
       firstName: 'Mimar Sinan & Hasan',
       lastName: 'Hoca',
       name: 'Mimar Sinan & Hasan Hoca',
-      password: 'admin',
+      password: teacher1Pass,
       role: Role.TEACHER,
       avatar: '👨‍🏫',
       teacherProfile: {
@@ -61,8 +65,8 @@ async function main() {
           approvedAt: new Date(),
           classrooms: {
             create: [
-              { name: '5-A', gradeLevel: 5, school: 'Edirne Selimiye İmam Hatip Ortaokulu' },
-              { name: '5-B', gradeLevel: 5, school: 'Edirne Selimiye İmam Hatip Ortaokulu' },
+              { name: '5-A', code: 'MRF5A1', gradeLevel: 5, school: 'Edirne Selimiye İmam Hatip Ortaokulu' },
+              { name: '5-B', code: 'MRF5B2', gradeLevel: 5, school: 'Edirne Selimiye İmam Hatip Ortaokulu' },
             ],
           },
         },
@@ -73,15 +77,16 @@ async function main() {
   console.log('✅ Onaylı Öğretmen oluşturuldu:', teacher1User.email);
 
   // 3. Onay Bekleyen Öğretmen (Kadıköy)
+  const teacher2Pass = bcrypt.hashSync('admin', 10);
   const teacher2User = await prisma.user.upsert({
     where: { email: 'zeynep.kaya@meb.k12.tr' },
-    update: {},
+    update: { password: teacher2Pass },
     create: {
       email: 'zeynep.kaya@meb.k12.tr',
       firstName: 'Zeynep',
       lastName: 'Kaya',
       name: 'Zeynep Kaya',
-      password: 'admin',
+      password: teacher2Pass,
       role: Role.TEACHER,
       avatar: '👩‍🏫',
       teacherProfile: {
@@ -105,15 +110,16 @@ async function main() {
   });
 
   if (teacher1Profile) {
+    const student1Pass = bcrypt.hashSync('admin', 10);
     const student1 = await prisma.user.upsert({
       where: { email: 'hasan.ogrenci@meb.k12.tr' },
-      update: {},
+      update: { password: student1Pass },
       create: {
         email: 'hasan.ogrenci@meb.k12.tr',
         firstName: 'Çırak',
         lastName: 'Hasan',
         name: 'Çırak Hasan',
-        password: 'admin',
+        password: student1Pass,
         role: Role.STUDENT,
         avatar: '🎓',
         studentProfile: {
@@ -121,6 +127,7 @@ async function main() {
             studentNumber: '104',
             gradeLevel: 5,
             classSection: '5-A',
+            classCode: 'MRF5A1',
             city: 'Edirne',
             district: 'Merkez',
             school: 'Edirne Selimiye İmam Hatip Ortaokulu',

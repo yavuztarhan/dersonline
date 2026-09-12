@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG } from '@/lib/mascot-config';
+import { SuspendedTeacherView } from '@/components/teacher/suspended-teacher-view';
 
 export default function HomePage() {
   const { role, playSound } = useApp();
@@ -49,6 +50,16 @@ export default function HomePage() {
         <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
       </div>
     );
+  }
+
+  // Suspension Guard: If account is suspended (beklemede), show appeal screen
+  const isSuspended =
+    currentUser.accountStatus === 'beklemede' ||
+    currentUser.status === 'suspended' ||
+    (currentUser as any).status === 'SUSPENDED';
+
+  if (isSuspended) {
+    return <SuspendedTeacherView />;
   }
 
   // Check if teacher profile is incomplete

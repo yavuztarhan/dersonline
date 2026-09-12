@@ -30,12 +30,18 @@ import {
   BarChart3,
   TrendingUp,
   FileText,
-  UserPlus
+  UserPlus,
+  Eye,
+  Ban,
+  PlayCircle
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { AdminAnalyticsReports } from '@/components/admin/admin-analytics-reports';
 import { AdminCreateUserModal } from '@/components/admin/admin-create-user-modal';
+import { AdminTeacherDetailModal } from '@/components/admin/admin-teacher-detail-modal';
+import { AdminSendMessageModal } from '@/components/admin/admin-send-message-modal';
+import { AdminDeleteTeacherModal } from '@/components/admin/admin-delete-teacher-modal';
 import {
   KVKK_AGREEMENT_TITLE,
   KVKK_AGREEMENT_TEXT,
@@ -52,6 +58,8 @@ export function AdminDashboard() {
     currentUser,
     approveTeacher,
     rejectTeacher,
+    suspendTeacher,
+    unsuspendTeacher,
     deleteTeacher,
     deleteAdmin,
     deleteStudent,
@@ -64,6 +72,9 @@ export function AdminDashboard() {
   const [selectedCityFilter, setSelectedCityFilter] = useState('Tümü');
   const [notificationMsg, setNotificationMsg] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
   const [createUserModalOpen, setCreateUserModalOpen] = useState(false);
+  const [selectedTeacherForModal, setSelectedTeacherForModal] = useState<any | null>(null);
+  const [selectedTeacherForMessage, setSelectedTeacherForMessage] = useState<any | null>(null);
+  const [selectedTeacherForDelete, setSelectedTeacherForDelete] = useState<any | null>(null);
 
   const pendingTeachers = teachers.filter((t) => t.status === 'pending_admin_approval');
   const approvedTeachers = teachers.filter((t) => t.status === 'approved');
@@ -680,10 +691,19 @@ export function AdminDashboard() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredTeachers.map((tch) => (
-                  <tr key={tch.id} className="hover:bg-slate-50/80 transition-colors">
+                  <tr key={tch.id} className="hover:bg-slate-50/80 transition-colors group">
                     <td className="py-3.5 px-4 font-bold text-slate-900">
-                      <div>{tch.name}</div>
-                      <div className="text-[10px] text-slate-400 font-normal">{tch.email}</div>
+                      <button
+                        onClick={() => setSelectedTeacherForModal(tch)}
+                        className="text-left group/btn flex flex-col items-start focus:outline-none"
+                        title="Öğretmenin giriş istatistiklerini, sınıflarını ve öğrencilerini incele"
+                      >
+                        <span className="font-black text-slate-900 group-hover/btn:text-teal-600 transition-colors flex items-center gap-1.5">
+                          <span>{tch.name}</span>
+                          <Eye className="w-3.5 h-3.5 text-teal-600 opacity-60 group-hover/btn:opacity-100 transition-opacity" />
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-normal group-hover/btn:text-slate-600">{tch.email}</span>
+                      </button>
                     </td>
                     <td className="py-3.5 px-4 font-medium">{tch.city} / {tch.district}</td>
                     <td className="py-3.5 px-4 font-extrabold text-teal-900">{tch.school}</td>
@@ -707,6 +727,12 @@ export function AdminDashboard() {
                           <span>Reddedildi</span>
                         </span>
                       )}
+                      {(tch.status === 'suspended' || (tch as any).status === 'SUSPENDED' || (tch as any).accountStatus === 'beklemede') && (
+                        <span className="px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200 font-black text-[10px] inline-flex items-center gap-1">
+                          <Ban className="w-3 h-3 text-rose-600" />
+                          <span>Askıda (Beklemede)</span>
+                        </span>
+                      )}
                     </td>
                     <td className="py-3.5 px-4">
                       {/* Dynamic Role Switcher Dropdown */}
@@ -722,19 +748,70 @@ export function AdminDashboard() {
                         </select>
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-right space-x-1.5">
+                    <td className="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                      {/* Mesaj Gönder */}
+                      <button
+                        onClick={() => setSelectedTeacherForMessage(tch)}
+                        className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 hover:bg-blue-100 font-extrabold inline-flex items-center gap-1 text-[11px] transition-colors border border-blue-200/60"
+                        title="Öğretmene Mesaj Gönder"
+                      >
+                        <Mail className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Mesaj</span>
+                      </button>
+
+                      {/* Askıya Al / Askıyı Kaldır */}
+                      {tch.status === 'suspended' || (tch as any).status === 'SUSPENDED' || (tch as any).accountStatus === 'beklemede' ? (
+                        <button
+                          onClick={() => {
+                            unsuspendTeacher(tch.id, tch.email);
+                            showNotification(`${tch.name} adlı öğretmenin hesabı aktif hale getirildi!`, 'success');
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold inline-flex items-center gap-1 text-[11px] transition-colors border border-emerald-200/60"
+                          title="Askıyı Kaldır ve Hesabı Aktif Et"
+                        >
+                          <PlayCircle className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Aktif Et</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            if (confirm(`${tch.name} adlı öğretmeni askıya almak istediğinize emin misiniz? Öğretmen sisteme giriş yapabilecek ancak dersleri kullanamayacak ve sadece yöneticiye mesaj yazabilecektir.`)) {
+                              suspendTeacher(tch.id, tch.email);
+                              showNotification(`${tch.name} adlı öğretmen askıya alındı.`, 'info');
+                            }
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 font-extrabold inline-flex items-center gap-1 text-[11px] transition-colors border border-amber-200/60"
+                          title="Öğretmeni Askıya Al"
+                        >
+                          <Ban className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Askıya Al</span>
+                        </button>
+                      )}
+
+                      {/* Detay */}
+                      <button
+                        onClick={() => setSelectedTeacherForModal(tch)}
+                        className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-800 hover:bg-teal-100 font-extrabold inline-flex items-center gap-1 text-[11px] transition-colors border border-teal-200/60"
+                        title="İstatistikler ve Sınıf Öğrencileri"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-teal-600" />
+                        <span>Detay</span>
+                      </button>
+
                       {tch.status === 'pending_admin_approval' && (
                         <button
                           onClick={() => handleApprove(tch.id, tch.name)}
-                          className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700"
+                          className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 text-[11px]"
                         >
                           Onayla
                         </button>
                       )}
+
+                      {/* Güvenli Silme (Doğrulama Kodlu) */}
                       <button
-                        onClick={() => deleteTeacher(tch.id)}
-                        className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50"
-                        title="Öğretmeni Sil"
+                        onClick={() => setSelectedTeacherForDelete(tch)}
+                        className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 inline-block align-middle transition-colors border border-transparent hover:border-rose-200"
+                        title="Öğretmeni ve Tüm Verilerini Kalıcı Olarak Sil"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -964,6 +1041,30 @@ export function AdminDashboard() {
         onClose={() => setCreateUserModalOpen(false)}
         onUserCreated={() => {
           showNotification('Yeni kullanıcı başarıyla oluşturuldu ve anında onaylandı!', 'success');
+        }}
+      />
+
+      {/* Admin Teacher Detail & Analytics Modal */}
+      <AdminTeacherDetailModal
+        isOpen={Boolean(selectedTeacherForModal)}
+        onClose={() => setSelectedTeacherForModal(null)}
+        teacher={selectedTeacherForModal}
+      />
+
+      {/* Admin Send Message to Teacher Modal */}
+      <AdminSendMessageModal
+        isOpen={Boolean(selectedTeacherForMessage)}
+        onClose={() => setSelectedTeacherForMessage(null)}
+        teacher={selectedTeacherForMessage}
+      />
+
+      {/* Admin Safe Delete Teacher Modal with Verification Code */}
+      <AdminDeleteTeacherModal
+        isOpen={Boolean(selectedTeacherForDelete)}
+        onClose={() => setSelectedTeacherForDelete(null)}
+        teacher={selectedTeacherForDelete}
+        onDeleted={(teacherName) => {
+          showNotification(`${teacherName} ve ilişkili tüm verileri başarıyla kalıcı olarak silindi.`, 'success');
         }}
       />
 

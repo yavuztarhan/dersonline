@@ -1,4 +1,43 @@
-import { AdminUser, TeacherUser, StudentUser } from '@/types/auth';
+import { AdminUser, TeacherUser, StudentUser, ClassroomInfo } from '@/types/auth';
+
+export const SEED_CLASSROOMS: ClassroomInfo[] = [
+  {
+    id: 'cls-5a',
+    name: '5-A',
+    code: 'MRF5A1',
+    teacherId: 'tch-101',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    gradeLevel: 5,
+    createdAt: '2026-09-01'
+  },
+  {
+    id: 'cls-5b',
+    name: '5-B',
+    code: 'MRF5B2',
+    teacherId: 'tch-101',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    gradeLevel: 5,
+    createdAt: '2026-09-01'
+  },
+  {
+    id: 'cls-5c',
+    name: '5-C',
+    code: 'MRF5C3',
+    teacherId: 'tch-102',
+    school: 'Kadıköy Melahat Şefizade Ortaokulu',
+    gradeLevel: 5,
+    createdAt: '2026-09-01'
+  },
+  {
+    id: 'cls-5d',
+    name: '5-D',
+    code: 'MRF5D4',
+    teacherId: 'tch-101',
+    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    gradeLevel: 5,
+    createdAt: '2026-09-01'
+  }
+];
 
 export function splitFullName(fullName: string): { firstName: string; lastName: string } {
   const clean = (fullName || '').trim().replace(/\s+/g, ' ');
@@ -195,6 +234,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '104',
     gradeLevel: 5,
     classSection: '5-A',
+    classCode: 'MRF5A1',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -215,6 +255,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '215',
     gradeLevel: 5,
     classSection: '5-A',
+    classCode: 'MRF5A1',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -235,6 +276,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '108',
     gradeLevel: 5,
     classSection: '5-A',
+    classCode: 'MRF5A1',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -255,6 +297,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '312',
     gradeLevel: 5,
     classSection: '5-A',
+    classCode: 'MRF5A1',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -275,6 +318,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '177',
     gradeLevel: 5,
     classSection: '5-A',
+    classCode: 'MRF5A1',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -297,6 +341,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '142',
     gradeLevel: 5,
     classSection: '5-B',
+    classCode: 'MRF5B2',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -317,6 +362,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '254',
     gradeLevel: 5,
     classSection: '5-B',
+    classCode: 'MRF5B2',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -337,6 +383,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '189',
     gradeLevel: 5,
     classSection: '5-B',
+    classCode: 'MRF5B2',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -359,6 +406,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '305',
     gradeLevel: 5,
     classSection: '5-C',
+    classCode: 'MRF5C3',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -379,6 +427,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '411',
     gradeLevel: 5,
     classSection: '5-C',
+    classCode: 'MRF5C3',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -401,6 +450,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '502',
     gradeLevel: 5,
     classSection: '5-D',
+    classCode: 'MRF5D4',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -421,6 +471,7 @@ export const SEED_STUDENTS: StudentUser[] = [
     studentNumber: '534',
     gradeLevel: 5,
     classSection: '5-D',
+    classCode: 'MRF5D4',
     city: 'Edirne',
     district: 'Merkez',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',

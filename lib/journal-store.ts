@@ -141,6 +141,16 @@ export function saveJournalEntry(entry: Omit<LearningJournalEntry, 'id' | 'submi
       console.error('Error saving journal entry to localStorage:', err);
     }
   }
+
+  // Asynchronously persist to database API
+  if (typeof window !== 'undefined') {
+    fetch('/api/learning-journals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    }).catch((err) => console.warn('[journal-store] Background API sync note:', err));
+  }
+
   return newEntry;
 }
 
@@ -159,6 +169,59 @@ export function updateTeacherJournalFeedback(entryId: string, feedback: string, 
       } catch (err) {
         console.error('Error updating journal feedback in localStorage:', err);
       }
+
+      // Asynchronously update feedback on database API
+      fetch('/api/learning-journals', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: entryId, teacherFeedback: feedback, teacherLiked: liked })
+      }).catch((err) => console.warn('[journal-store] Background feedback API sync note:', err));
     }
   }
+}
+
+/**
+ * Synchronizes learning journals from PostgreSQL database API into localStorage.
+ */
+export async function syncJournalsFromApi(classSection?: string): Promise<LearningJournalEntry[]> {
+  if (typeof window === 'undefined') return INITIAL_JOURNAL_ENTRIES;
+
+  try {
+    const url = classSection && classSection !== 'Tümü'
+      ? `/api/learning-journals?classSection=${encodeURIComponent(classSection)}`
+      : '/api/learning-journals';
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data?.success && Array.isArray(data.journals) && data.journals.length > 0) {
+      const local = getStoredJournalEntries();
+      // Merge DB records with local records avoiding duplicates
+      const mergedMap = new Map<string, LearningJournalEntry>();
+      local.forEach((item) => mergedMap.set(item.id, item));
+      data.journals.forEach((dbItem: any) => {
+        mergedMap.set(dbItem.id, {
+          id: dbItem.id,
+          studentId: dbItem.studentId || '',
+          studentName: dbItem.studentName || 'Öğrenci',
+          studentNumber: dbItem.studentNumber || '',
+          gradeLevel: dbItem.gradeLevel || 5,
+          classSection: dbItem.classSection || '5-A',
+          school: dbItem.school || '',
+          outcomeId: dbItem.outcomeId || '',
+          outcomeCode: dbItem.outcomeCode || '',
+          outcomeTitle: dbItem.outcomeTitle || '',
+          prompt: dbItem.prompt || '',
+          studentReflection: dbItem.studentReflection || '',
+          teacherFeedback: dbItem.teacherFeedback || undefined,
+          teacherLiked: Boolean(dbItem.teacherLiked),
+          submittedAt: typeof dbItem.submittedAt === 'string' ? dbItem.submittedAt : new Date(dbItem.submittedAt).toISOString()
+        });
+      });
+      const merged = Array.from(mergedMap.values());
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      return merged;
+    }
+  } catch (err) {
+    console.warn('[journal-store] syncJournalsFromApi note:', err);
+  }
+  return getStoredJournalEntries();
 }

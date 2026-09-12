@@ -1,23 +1,37 @@
 export type UserRole = 'admin' | 'teacher' | 'student';
 
-export type TeacherApprovalStatus = 'pending_email' | 'pending_admin_approval' | 'approved' | 'rejected';
+export type TeacherApprovalStatus = 'pending_email' | 'pending_admin_approval' | 'approved' | 'rejected' | 'suspended';
 
 export interface BaseUser {
   id: string;
   name: string; // Tam Ad (firstName + lastName)
   firstName: string; // Ad
   lastName: string; // Soyad
-  email: string;
-  password?: string; // Profilde belirlenebilen giriş şifresi
+  email?: string; // Öğretmen ve Yöneticiler için zorunlu, öğrenciler için opsiyonel
+  password?: string; // Profilde belirlenebilen veya otomatik üretilen giriş şifresi
   gender?: 'Kız' | 'Erkek' | 'Belirtmek İstemiyorum' | string; // İsteğe bağlı cinsiyet
   role: UserRole;
+  status?: TeacherApprovalStatus | string;
+  accountStatus?: 'aktif' | 'beklemede';
+  isKvkkAccepted?: boolean;
   avatar?: string;
   createdAt: string;
   kvkkAcceptedAt?: string; // KVKK & Öğretmen Taahhütnamesi Onay Zamanı
 }
 
+export interface ClassroomInfo {
+  id: string;
+  name: string; // Örn: '5-A'
+  code: string; // 6 haneli sistem genelinde BENZERSİZ sınıf kodu (Örn: 'MRF5A1')
+  teacherId?: string;
+  school?: string;
+  gradeLevel: number;
+  createdAt: string;
+}
+
 export interface TeacherUser extends BaseUser {
   role: 'teacher';
+  email: string;
   phone?: string;
   city: string; // İl
   district: string; // İlçe
@@ -37,6 +51,7 @@ export interface StudentUser extends BaseUser {
   studentNumber: string; // Okul No
   gradeLevel: number; // 5
   classSection: string; // 5-A
+  classCode?: string; // 6 haneli benzersiz sınıf kodu
   school: string;
   city: string;
   district: string;
@@ -47,6 +62,7 @@ export interface StudentUser extends BaseUser {
 
 export interface AdminUser extends BaseUser {
   role: 'admin';
+  email: string;
   permissions: string[];
   phone?: string;
   city?: string;

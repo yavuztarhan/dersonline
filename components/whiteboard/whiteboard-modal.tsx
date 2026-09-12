@@ -1350,7 +1350,10 @@ export function WhiteboardModal({
     if (loadedFileId) {
       updateClassroomFile(loadedFileId, {
         isPublishedToClass: newStatus,
-        fileType: isActivitySheet ? 'activity_sheet' : 'whiteboard_note'
+        fileType: isActivitySheet ? 'activity_sheet' : 'whiteboard_note',
+        authorId: currentUser?.id,
+        authorName: currentUser?.name || 'Öğretmen',
+        school: (currentUser as any)?.school || ''
       });
     }
 
@@ -1375,8 +1378,9 @@ export function WhiteboardModal({
       playSound('select');
       saveCurrentCanvasData();
 
-      const teacherName = currentUser?.name || 'Ahmet Yılmaz';
-      const teacherSchool = (currentUser as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
+      const teacherId = currentUser?.id;
+      const teacherName = currentUser?.name || (isTeacher ? 'Öğretmen' : 'Kullanıcı');
+      const teacherSchool = (currentUser as any)?.school || '';
 
       updateClassroomFile(loadedFileId, {
         title: documentTitle || `${selectedClass} ${outcomeCode} Ders Notları`,
@@ -1385,6 +1389,7 @@ export function WhiteboardModal({
         classSection: selectedClass,
         outcomeCode,
         outcomeTitle,
+        authorId: teacherId,
         authorName: teacherName,
         school: teacherSchool,
         pages,
@@ -1419,8 +1424,9 @@ export function WhiteboardModal({
       playSound('select');
       saveCurrentCanvasData();
 
-      const teacherName = currentUser?.name || 'Ahmet Yılmaz';
-      const teacherSchool = (currentUser as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
+      const teacherId = currentUser?.id;
+      const teacherName = currentUser?.name || (isTeacher ? 'Öğretmen' : 'Kullanıcı');
+      const teacherSchool = (currentUser as any)?.school || '';
 
       const newRecord = saveClassroomFile({
         title: documentTitle || `${selectedClass} ${outcomeCode} Ders Notları`,
@@ -1429,6 +1435,7 @@ export function WhiteboardModal({
         classSection: selectedClass,
         outcomeCode,
         outcomeTitle,
+        authorId: teacherId,
         authorName: teacherName,
         authorRole: isTeacher ? 'teacher' : 'student',
         school: teacherSchool,

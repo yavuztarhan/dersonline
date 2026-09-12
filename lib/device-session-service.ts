@@ -92,7 +92,7 @@ export interface BoardLoginRequest {
 export interface ActiveUserSession {
   sessionId: string;
   userId: string;
-  userEmail: string;
+  userEmail?: string;
   deviceCategory: DeviceCategory;
   createdAt: number;
   expiresAt: number;

@@ -101,20 +101,14 @@ export function MessageInboxModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Build Hierarchically Allowed Recipient List
+  // Build Hierarchically Allowed Recipient List (Admins strictly hidden from recipient dropdown)
   const allowedRecipients = React.useMemo(() => {
     if (!currentUser) return [];
 
     const list: { id: string; name: string; role: 'admin' | 'teacher' | 'student'; roleLabel: string; avatar: string; extraInfo?: string }[] = [];
 
-    // 1. If Admin: Can message Teachers and other Admins
+    // 1. If Admin: Can message Teachers (Admins not shown as recipients)
     if (userRole === 'admin') {
-      admins
-        .filter((a) => a.id !== userId)
-        .forEach((a) => {
-          list.push({ id: a.id, name: a.name, role: 'admin', roleLabel: 'Yönetici', avatar: a.avatar || '🛡️' });
-        });
-
       teachers.forEach((t) => {
         list.push({
           id: t.id,
@@ -127,12 +121,8 @@ export function MessageInboxModal({
       });
     }
 
-    // 2. If Teacher: Can message Admins and visible Students
+    // 2. If Teacher: Can message visible Students only (Admins hidden from recipient list)
     if (userRole === 'teacher') {
-      admins.forEach((a) => {
-        list.push({ id: a.id, name: a.name, role: 'admin', roleLabel: 'Yönetim', avatar: a.avatar || '🛡️' });
-      });
-
       const visible = getVisibleStudents(currentUser);
       visible.forEach((s) => {
         list.push({
@@ -146,7 +136,7 @@ export function MessageInboxModal({
       });
     }
 
-    // 3. If Student: Can message Teachers AND System Admin (Görüş & Destek)
+    // 3. If Student: Can message Teachers only (Admins hidden from recipient list)
     if (userRole === 'student') {
       teachers.forEach((t) => {
         list.push({
@@ -158,20 +148,10 @@ export function MessageInboxModal({
           extraInfo: `${t.school || 'Okul'} (${t.branch || 'Matematik'})`
         });
       });
-
-      admins.forEach((a) => {
-        list.push({
-          id: a.id,
-          name: a.name,
-          role: 'admin',
-          roleLabel: 'Sistem Yöneticisi (Görüş & Destek)',
-          avatar: a.avatar || '🛡️'
-        });
-      });
     }
 
     return list;
-  }, [currentUser, userRole, userId, admins, teachers, getVisibleStudents]);
+  }, [currentUser, userRole, teachers, getVisibleStudents]);
 
   const [mounted, setMounted] = useState(false);
 
@@ -637,7 +617,11 @@ export function MessageInboxModal({
                 <label className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center justify-between">
                   <span>Alıcı Seçiniz</span>
                   <span className="text-[10px] text-teal-700 font-bold">
-                    {userRole === 'student' ? 'Yalnızca Öğretmenlerinize mesaj yazabilirsiniz' : 'Yetkili Alıcı Listesi'}
+                    {userRole === 'student'
+                      ? 'Yalnızca Öğretmenlerinize mesaj yazabilirsiniz'
+                      : userRole === 'teacher'
+                      ? 'Yalnızca Kayıtlı Öğrencilerinize mesaj yazabilirsiniz'
+                      : 'Öğretmen Listesi'}
                   </span>
                 </label>
                 <select

@@ -36,7 +36,8 @@ import {
   FileText,
   Flame,
   Plus,
-  Tv
+  Tv,
+  MessageSquarePlus
 } from 'lucide-react';
 
 interface AppDrawerProps {
@@ -45,6 +46,7 @@ interface AppDrawerProps {
   onOpenAuthModal?: (tab: 'login' | 'register') => void;
   onOpenMessageModal?: () => void;
   onOpenBoardAuthModal?: () => void;
+  onOpenFeedbackModal?: () => void;
 }
 
 export function AppDrawer({
@@ -52,7 +54,8 @@ export function AppDrawer({
   onClose,
   onOpenAuthModal,
   onOpenMessageModal,
-  onOpenBoardAuthModal
+  onOpenBoardAuthModal,
+  onOpenFeedbackModal
 }: AppDrawerProps) {
   const { currentUser, logout } = useAuth();
   const {
@@ -496,6 +499,30 @@ export function AppDrawer({
                       {unreadMessages}
                     </span>
                   )}
+                </button>
+
+                {/* Görüş & Geri Bildirim (Sadece Öğretmenler - Sabit Alıcı: Sistem Yöneticisi) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenFeedbackModal?.();
+                  }}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-amber-950 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border border-amber-200 transition-all cursor-pointer shadow-2xs group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                      <MessageSquarePlus className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-black text-amber-950 flex items-center gap-1.5">
+                        <span>Görüş & Geri Bildirim</span>
+                        <span className="text-[9px] bg-amber-500 text-white px-1.5 py-0.2 rounded font-black">Admin</span>
+                      </div>
+                      <div className="text-[10px] text-amber-800 font-normal">Sistem Yöneticisine mesaj ilet</div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-amber-600 group-hover:translate-x-0.5 transition-transform" />
                 </button>
 
                 <button

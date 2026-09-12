@@ -83,8 +83,9 @@ export interface ClassroomFileRecord {
   classSection: string; // '5-A', '5-B', '5-C', 'Tümü'
   outcomeCode: string; // 'MAT.5.3.4', 'MAT.5.3.3', 'MAT.5.3.2', 'MAT.5.3.1'
   outcomeTitle: string;
+  authorId?: string; // Öğretmenin veya oluşturan kullanıcının benzersiz ID'si
   authorName: string;
-  authorRole: 'teacher' | 'student';
+  authorRole: 'teacher' | 'student' | 'system';
   school?: string;
   pageCount: number;
   pages: WhiteboardPageData[];
@@ -105,6 +106,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
     classSection: '5-A',
     outcomeCode: 'MAT.5.3.4',
     outcomeTitle: 'Düzlemde İki veya Üç Doğrunun Durumuna Bağlı Olarak Oluşabilecek Açılara Dair Çıkarım Yapabilme',
+    authorId: 'tch-101',
     authorName: 'Ahmet Yılmaz',
     authorRole: 'teacher',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -135,6 +137,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
     classSection: '5-A',
     outcomeCode: 'MAT.5.3.3',
     outcomeTitle: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme',
+    authorId: 'tch-101',
     authorName: 'Ahmet Yılmaz',
     authorRole: 'teacher',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -158,6 +161,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
     classSection: '5-B',
     outcomeCode: 'MAT.5.3.2',
     outcomeTitle: 'Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye',
+    authorId: 'tch-101',
     authorName: 'Ahmet Yılmaz',
     authorRole: 'teacher',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
@@ -3418,7 +3422,11 @@ export function getStoredClassroomFiles(): ClassroomFileRecord[] {
         const seed = initialMap.get(file.id)!;
         initialMap.delete(file.id);
         // If system template was updated, sync it
-        if (JSON.stringify(file.pages) !== JSON.stringify(seed.pages) || file.title !== seed.title) {
+        if (
+          JSON.stringify(file.pages) !== JSON.stringify(seed.pages) ||
+          file.title !== seed.title ||
+          file.authorId !== seed.authorId
+        ) {
           hasChange = true;
           return { ...seed, createdAt: file.createdAt };
         }
@@ -3509,26 +3517,88 @@ export function updateClassroomFile(
   return updatedRecord;
 }
 
-export function publishFileToClass(fileId: string, isPublished: boolean): ClassroomFileRecord | null {
-  return updateClassroomFile(fileId, { isPublishedToClass: isPublished });
+export function publishFileToClass(
+  fileId: string,
+  isPublished: boolean,
+  authorId?: string
+): ClassroomFileRecord | null {
+  return updateClassroomFile(fileId, {
+    isPublishedToClass: isPublished,
+    ...(authorId ? { authorId } : {})
+  });
 }
 
-export function getVisibleClassroomFilesForStudent(classSection?: string): ClassroomFileRecord[] {
-  const allFiles = getStoredClassroomFiles();
-  return allFiles.filter((f) => {
-    const matchesClass = !classSection || f.classSection === classSection || f.classSection === 'Tümü';
-    const isActivitySheet =
+/**
+ * Öğretmen paneli ve beyaz tahta sınıf dosyalarında:
+ * Yalnızca dosyayı oluşturan, düzenleyen veya sınıfa gönderen öğretmen kendi dosyalarını görebilir.
+ * Yeni kayıtlı öğretmenin listesi boş döner.
+ */
+export function getVisibleClassroomFilesForTeacher(
+  teacherId?: string,
+  teacherName?: string,
+  allFiles?: ClassroomFileRecord[]
+): ClassroomFileRecord[] {
+  if (!teacherId) return [];
+  const files = allFiles || getStoredClassroomFiles();
+
+  return files.filter((f) => {
+    // Sadece bu öğretmenin oluşturduğu, düzenlediği veya kaydettiği dosyalar
+    const isOwner = f.authorId
+      ? f.authorId === teacherId
+      : (teacherId === 'tch-101' && f.authorName === 'Ahmet Yılmaz');
+
+    if (!isOwner) return false;
+
+    // Etkinlik kağıtları sadece sınıfa gönderilmişse sınıf dosyalarında görünür
+    const isSheet =
       f.fileType === 'activity_sheet' ||
       f.tags?.includes('Etkinlik Kağıdı') ||
-      f.id?.startsWith('file-activity-');
+      f.id?.startsWith('file-activity-') ||
+      f.title?.toLowerCase().includes('etkinlik');
+
+    if (isSheet && !f.isPublishedToClass) return false;
+
+    return true;
+  });
+}
+
+/**
+ * Öğrenci paneli sınıf dosyalarında:
+ * Yalnızca öğrencinin şubesine ve öğrencinin kendi öğretmenine ait gönderilmiş dosyalar görünür.
+ */
+export function getVisibleClassroomFilesForStudent(
+  classSection?: string,
+  student?: { id?: string; teacherId?: string; school?: string } | null
+): ClassroomFileRecord[] {
+  const allFiles = getStoredClassroomFiles();
+  const targetClass = classSection || '5-A';
+
+  return allFiles.filter((f) => {
+    const matchesClass = f.classSection === targetClass || f.classSection === 'Tümü';
+    if (!matchesClass) return false;
+
+    const isSheet =
+      f.fileType === 'activity_sheet' ||
+      f.tags?.includes('Etkinlik Kağıdı') ||
+      f.id?.startsWith('file-activity-') ||
+      f.title?.toLowerCase().includes('etkinlik');
 
     // Etkinlik kağıtları sadece öğretmen tarafından sınıfa gönderildiyse görünür
-    if (isActivitySheet) {
-      return matchesClass && f.isPublishedToClass === true;
+    if (isSheet && !f.isPublishedToClass) return false;
+
+    // Öğrenciye gönderen öğretmen kontrolü:
+    if (student?.teacherId) {
+      const isTeacherFile = f.authorId
+        ? f.authorId === student.teacherId
+        : (student.teacherId === 'tch-101' && f.authorName === 'Ahmet Yılmaz');
+      return isTeacherFile;
     }
 
-    // Beyaz tahta ders notları sınıfa doğrudan görünür
-    return matchesClass;
+    if (student?.school && f.school) {
+      return student.school.trim().toLowerCase() === f.school.trim().toLowerCase();
+    }
+
+    return false;
   });
 }
 

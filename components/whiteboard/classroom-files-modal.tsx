@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import {
   ClassroomFileRecord,
   getStoredClassroomFiles,
+  getVisibleClassroomFilesForTeacher,
+  getVisibleClassroomFilesForStudent,
   deleteClassroomFile,
   exportClassroomFileToPdf
 } from '@/lib/class-files-store';
@@ -57,13 +59,23 @@ export function ClassroomFilesModal({
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
   const [viewingFile, setViewingFile] = useState<ClassroomFileRecord | null>(null);
 
+  const loadRelevantFiles = () => {
+    if (currentUser?.role === 'teacher') {
+      setFiles(getVisibleClassroomFilesForTeacher(currentUser.id, currentUser.name));
+    } else if (currentUser?.role === 'student') {
+      setFiles(getVisibleClassroomFilesForStudent(classSection, currentUser as any));
+    } else {
+      setFiles(getStoredClassroomFiles());
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
-      setFiles(getStoredClassroomFiles());
+      loadRelevantFiles();
       if (outcomeCode) setSelectedOutcomeFilter(outcomeCode);
       if (classSection) setSelectedClassFilter(classSection);
     }
-  }, [isOpen, outcomeCode, classSection]);
+  }, [isOpen, outcomeCode, classSection, currentUser]);
 
   if (!isOpen) return null;
 
@@ -96,7 +108,7 @@ export function ClassroomFilesModal({
   const handleDelete = (fileId: string, title: string) => {
     if (window.confirm(`"${title}" isimli ders notunu silmek istediğinize emin misiniz?`)) {
       deleteClassroomFile(fileId);
-      setFiles(getStoredClassroomFiles());
+      loadRelevantFiles();
       playSound('clear');
     }
   };

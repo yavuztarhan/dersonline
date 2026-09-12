@@ -57,13 +57,13 @@ export function StudentDashboard() {
   const studentClass = student?.classSection || '5-A';
 
   useEffect(() => {
-    const visible = getVisibleClassroomFilesForStudent(studentClass);
+    const visible = getVisibleClassroomFilesForStudent(studentClass, student);
     setFiles(visible);
     if (student?.id) {
       const pending = getPendingPeerEvaluationsForStudent(student.id);
       setPendingPeerCount(pending.length);
     }
-  }, [studentClass, student?.id]);
+  }, [studentClass, student]);
 
   const relevantFiles = files.filter((f) => {
     const isSheet =

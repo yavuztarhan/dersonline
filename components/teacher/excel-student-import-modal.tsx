@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { useAuth } from '@/lib/auth-store';
+import { useAuth, generateRandomStudentPassword } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { StudentUser, TeacherUser } from '@/types/auth';
 import {
@@ -36,7 +36,7 @@ export function ExcelStudentImportModal({
   defaultClass,
   onImportSuccess
 }: ExcelStudentImportModalProps) {
-  const { currentUser, addStudentsBulk, addClassToTeacher } = useAuth();
+  const { currentUser, addStudentsBulk, addClassToTeacher, getClassCodeForClass } = useAuth();
   const { playSound } = useApp();
   const teacher = currentUser as TeacherUser | null;
 
@@ -249,20 +249,22 @@ export function ExcelStudentImportModal({
       const districtName = teacher?.district || 'Merkez';
       const teacherId = teacher?.id;
       const todayStr = new Date().toISOString().split('T')[0];
+      const classCode = getClassCodeForClass ? getClassCodeForClass(targetClass, teacherId) : undefined;
 
       const newStudentUsers: StudentUser[] = studentsToImport.map((s, idx) => {
-        const email = `${s.studentNumber.replace(/\s+/g, '')}@okul.meb.k12.tr`;
         const avatar = s.gender === 'Kız' ? '👩‍🎓' : s.gender === 'Erkek' ? '👨‍🎓' : '🎓';
+        const generatedPassword = generateRandomStudentPassword(6);
 
         return {
           id: `stu-${Date.now()}-${idx}-${Math.random().toString(36).substr(2, 4)}`,
           firstName: s.firstName,
           lastName: s.lastName,
           name: s.fullName,
-          email,
           role: 'student',
           avatar,
           studentNumber: s.studentNumber,
+          classCode,
+          password: generatedPassword,
           gender: s.gender || undefined,
           gradeLevel,
           classSection: targetClass,

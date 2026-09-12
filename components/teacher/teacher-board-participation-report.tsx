@@ -73,18 +73,33 @@ export function TeacherBoardParticipationReport() {
     return () => window.removeEventListener('maarif_board_participation_added', updateRecords);
   }, []);
 
+  // Only use students visible to this teacher (no unassigned demo students)
+  const visibleStudents = useMemo(() => {
+    return getVisibleStudents(currentUser);
+  }, [currentUser, getVisibleStudents, students]);
+
+  const visibleStudentIds = useMemo(() => new Set(visibleStudents.map((s) => s.id)), [visibleStudents]);
+  const visibleStudentNumbers = useMemo(() => new Set(visibleStudents.map((s) => s.studentNumber)), [visibleStudents]);
+
+  // Filter boardRecords so only records of visible students are considered
+  const teacherBoardRecords = useMemo(() => {
+    return boardRecords.filter(
+      (r) => visibleStudentIds.has(r.studentId) || visibleStudentNumbers.has(r.studentNumber)
+    );
+  }, [boardRecords, visibleStudentIds, visibleStudentNumbers]);
+
   // Filter students for selected class
   const classStudents = useMemo(() => {
-    return students.filter((s) => {
+    return visibleStudents.filter((s) => {
       if (selectedClass === 'Tümü') return true;
       return s.classSection === selectedClass;
     });
-  }, [students, selectedClass]);
+  }, [visibleStudents, selectedClass]);
 
   // Aggregate participation metrics per student
   const studentStats = useMemo(() => {
     return classStudents.map((stu) => {
-      const recordsForStudent = boardRecords.filter(
+      const recordsForStudent = teacherBoardRecords.filter(
         (r) => r.studentNumber === stu.studentNumber || r.studentId === stu.id
       );
 
@@ -117,7 +132,7 @@ export function TeacherBoardParticipationReport() {
         participationLevel
       };
     }).sort((a, b) => b.count - a.count || (b.student.points || 0) - (a.student.points || 0));
-  }, [classStudents, boardRecords]);
+  }, [classStudents, teacherBoardRecords]);
 
   // Summary KPIs
   const totalBoardParticipations = useMemo(() => {
@@ -128,8 +143,8 @@ export function TeacherBoardParticipationReport() {
     return studentStats.filter((s) => s.count > 0).length;
   }, [studentStats]);
 
-  const totalClassStudentsCount = classStudents.length || 1;
-  const participationRate = Math.round((activeBoardStudentsCount / totalClassStudentsCount) * 100);
+  const totalClassStudentsCount = classStudents.length;
+  const participationRate = totalClassStudentsCount > 0 ? Math.round((activeBoardStudentsCount / totalClassStudentsCount) * 100) : 0;
 
   const totalBoardXp = useMemo(() => {
     return studentStats.reduce((sum, s) => sum + s.totalXp, 0);
@@ -151,9 +166,9 @@ export function TeacherBoardParticipationReport() {
     );
   }, [studentStats, searchTerm]);
 
-  // Filtered timeline records
+  // Filtered timeline records (only for visible students)
   const filteredTimelineRecords = useMemo(() => {
-    return boardRecords.filter((r) => {
+    return teacherBoardRecords.filter((r) => {
       if (selectedClass !== 'Tümü' && r.classSection !== selectedClass) return false;
       if (!searchTerm) return true;
       const term = searchTerm.toLocaleLowerCase('tr');
@@ -163,17 +178,17 @@ export function TeacherBoardParticipationReport() {
         r.activityTitle.toLocaleLowerCase('tr').includes(term)
       );
     });
-  }, [boardRecords, selectedClass, searchTerm]);
+  }, [teacherBoardRecords, selectedClass, searchTerm]);
 
   // Get records for the modal-selected student
   const selectedStudentRecords = useMemo(() => {
     if (!selectedStudentForHistory) return [];
-    return boardRecords.filter(
+    return teacherBoardRecords.filter(
       (r) =>
         r.studentNumber === selectedStudentForHistory.studentNumber ||
         r.studentId === selectedStudentForHistory.id
     );
-  }, [boardRecords, selectedStudentForHistory]);
+  }, [teacherBoardRecords, selectedStudentForHistory]);
 
   // Random Student Smart Picker (Prioritizes low-participation students)
   const handlePickRandomStudent = () => {
@@ -514,7 +529,22 @@ export function TeacherBoardParticipationReport() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
-                {filteredStats.map((item, index) => (
+                {filteredStats.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-12 text-center text-slate-400">
+                      <div className="space-y-2">
+                        <div className="text-3xl">🎓</div>
+                        <div className="font-bold text-xs text-slate-700">
+                          {selectedClass === 'Tümü' ? 'Kayıtlı öğrenciniz bulunmuyor.' : `${selectedClass} şubesinde henüz kayıtlı öğrenci bulunmuyor.`}
+                        </div>
+                        <div className="text-[11px] text-slate-400">
+                          e-Okul sınıf listenizi yüklemek veya yeni öğrenci eklemek için &quot;Sınıfım &amp; Öğrenciler&quot; sekmesini kullanabilirsiniz.
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredStats.map((item, index) => (
                   <tr
                     key={item.student.id}
                     onClick={() => handleOpenStudentHistory(item.student)}
@@ -616,7 +646,7 @@ export function TeacherBoardParticipationReport() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

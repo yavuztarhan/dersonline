@@ -19,23 +19,30 @@ enum TeacherStatus {
   PENDING_ADMIN_APPROVAL
   APPROVED
   REJECTED
+  SUSPENDED
 }
 
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique
+  email     String?  @unique // Öğretmen/admin için zorunlu, öğrenci için opsiyonel
   firstName String   @default("")
   lastName  String   @default("")
   name      String
-  password  String?  // Giriş şifresi (Google veya e-posta ile giriş yapanlar için)
+  password  String?  // Giriş şifresi (Öğretmen, Admin veya Öğrenci şifresi)
   gender    String?  // İsteğe bağlı cinsiyet
-  role      Role     @default(STUDENT)
-  avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role          Role     @default(STUDENT)
+  accountStatus String   @default("aktif") // "aktif" | "beklemede"
+  isKvkkAccepted Boolean  @default(false)   // KVKK & Taahhütname onay durumu
+  kvkkAcceptedAt DateTime?                 // KVKK onay tarihi
+  avatar        String?
+  lastLoginAt   DateTime?
+  loginCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   teacherProfile TeacherProfile?
   studentProfile StudentProfile?
+  loginLogs      LoginLog[]
 
   @@map("users")
 }
@@ -71,6 +78,7 @@ model StudentProfile {
   studentNumber String   // Okul No (Örn: 104)
   gradeLevel    Int      @default(5)
   classSection  String   @default("5-A") // Şube (5-A, 5-B vb.)
+  classCode     String?  // 6 haneli benzersiz sınıf kodu (Örn: MRF5A1)
   city          String
   district      String
   school        String
@@ -92,6 +100,7 @@ model StudentProfile {
 model Classroom {
   id         String   @id @default(cuid())
   name       String   // 5-A
+  code       String?  @unique // 6 haneli benzersiz sınıf kodu (örn: MRF5A1)
   gradeLevel Int      @default(5)
   school     String
   teacherId  String
@@ -247,3 +256,16 @@ model BoardParticipation {
   @@map("board_participations")
 }
 
+model LoginLog {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceCategory String   @default("desktop") // desktop, smartboard, mobile, windows
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("login_logs")
+}

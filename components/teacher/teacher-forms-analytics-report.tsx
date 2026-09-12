@@ -6,7 +6,8 @@ import { useApp } from '@/lib/store';
 import {
   getTriangulatedCorrelationData,
   StudentTriangulatedData,
-  PeerEvaluationRecord
+  PeerEvaluationRecord,
+  syncPeerEvaluationsFromApi
 } from '@/lib/peer-evaluation-store';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { OUTCOME_RUBRICS, getRubricForOutcome } from '@/lib/rubric-data';
@@ -57,7 +58,7 @@ export function TeacherFormsAnalyticsReport({
   teacherName = 'Ayşe Yılmaz',
   teacherBranch = 'Matematik'
 }: TeacherFormsAnalyticsReportProps) {
-  const { currentUser } = useAuth();
+  const { currentUser, students, getVisibleStudents } = useAuth();
   const { playSound } = useApp();
 
   const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '5-A');
@@ -72,10 +73,21 @@ export function TeacherFormsAnalyticsReport({
     { code: 'MAT.5.3.2', title: 'Geometrik Şekillerin İnşası ve Pergel/Gönye Kullanımı' }
   ];
 
+  // Restrict to students visible to this teacher (no unassigned demo students)
+  const visibleStudents = useMemo(() => {
+    return getVisibleStudents(currentUser);
+  }, [currentUser, getVisibleStudents, students]);
+
+  const [syncVersion, setSyncVersion] = useState(0);
+
+  useEffect(() => {
+    syncPeerEvaluationsFromApi().then(() => setSyncVersion((v) => v + 1));
+  }, []);
+
   // Fetch Triangulated Data
   const { studentsData, classStats } = useMemo(() => {
-    return getTriangulatedCorrelationData(selectedClass, selectedOutcomeCode);
-  }, [selectedClass, selectedOutcomeCode]);
+    return getTriangulatedCorrelationData(selectedClass, selectedOutcomeCode, visibleStudents);
+  }, [selectedClass, selectedOutcomeCode, visibleStudents, syncVersion]);
 
   // Filtered student list by search
   const filteredStudents = useMemo(() => {

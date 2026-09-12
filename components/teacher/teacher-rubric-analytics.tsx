@@ -7,12 +7,14 @@ import {
   getStoredSubmissions,
   calculateClassAnalytics,
   calculateOutcomeCrossClassAnalytics,
-  updateTeacherFeedbackInStore
+  updateTeacherFeedbackInStore,
+  syncRubricSubmissionsFromApi
 } from '@/lib/rubric-store';
 import {
   LearningJournalEntry,
   getStoredJournalEntries,
-  updateTeacherJournalFeedback
+  updateTeacherJournalFeedback,
+  syncJournalsFromApi
 } from '@/lib/journal-store';
 import { getRubricForOutcome } from '@/lib/rubric-data';
 import {
@@ -71,7 +73,7 @@ export function TeacherRubricAnalytics({
   onOpenStudentDetail
 }: TeacherRubricAnalyticsProps) {
   const { playSound } = useApp();
-  const { currentUser, students } = useAuth();
+  const { currentUser, students, getVisibleStudents } = useAuth();
 
   const currentTeacher = currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin') ? currentUser : null;
   const activeSchool = teacherSchool || (currentTeacher as any)?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
@@ -84,6 +86,28 @@ export function TeacherRubricAnalytics({
   // Submissions & Journals State
   const [submissions, setSubmissions] = useState<RubricSubmissionRecord[]>([]);
   const [journalEntries, setJournalEntries] = useState<LearningJournalEntry[]>([]);
+
+  // Visible students for this teacher (prevents unassigned demo students from appearing)
+  const visibleStudents = useMemo(() => {
+    return getVisibleStudents(currentUser);
+  }, [currentUser, getVisibleStudents, students]);
+
+  const visibleStudentIds = useMemo(() => new Set(visibleStudents.map((s) => s.id)), [visibleStudents]);
+  const visibleStudentNumbers = useMemo(() => new Set(visibleStudents.map((s) => s.studentNumber)), [visibleStudents]);
+
+  // Filtered submissions: only students registered to this teacher
+  const teacherSubmissions = useMemo(() => {
+    return submissions.filter(
+      (s) => visibleStudentIds.has(s.studentId) || visibleStudentNumbers.has(s.studentNumber)
+    );
+  }, [submissions, visibleStudentIds, visibleStudentNumbers]);
+
+  // Filtered journals: only students registered to this teacher
+  const teacherJournalEntries = useMemo(() => {
+    return journalEntries.filter(
+      (j) => visibleStudentIds.has(j.studentId) || visibleStudentNumbers.has(j.studentNumber)
+    );
+  }, [journalEntries, visibleStudentIds, visibleStudentNumbers]);
 
   // Outcome Tracking Modal State
   const [selectedOutcomeForTracking, setSelectedOutcomeForTracking] = useState<{ code: string; title: string } | null>(null);
@@ -116,15 +140,29 @@ export function TeacherRubricAnalytics({
   const [teacherFeedbackInput, setTeacherFeedbackInput] = useState<string>('');
   const [feedbackSavedNotice, setFeedbackSavedNotice] = useState(false);
 
-  // Load submissions & journals on mount
+  // Load submissions & journals on mount (instant cache + live DB sync)
   useEffect(() => {
     setSubmissions(getStoredSubmissions());
     setJournalEntries(getStoredJournalEntries());
+
+    syncRubricSubmissionsFromApi().then((data) => {
+      if (Array.isArray(data)) setSubmissions(data);
+    });
+    syncJournalsFromApi().then((data) => {
+      if (Array.isArray(data)) setJournalEntries(data);
+    });
   }, []);
 
   const refreshData = () => {
     setSubmissions(getStoredSubmissions());
     setJournalEntries(getStoredJournalEntries());
+
+    syncRubricSubmissionsFromApi().then((data) => {
+      if (Array.isArray(data)) setSubmissions(data);
+    });
+    syncJournalsFromApi().then((data) => {
+      if (Array.isArray(data)) setJournalEntries(data);
+    });
   };
 
   // Distinct Available Outcomes
@@ -139,23 +177,23 @@ export function TeacherRubricAnalytics({
     { code: 'MAT.6.1.4', title: 'İki Doğal Sayının Ortak Bölenleri ve Ortak Katları', grade: 6 }
   ];
 
-  // Calculations for Active Class
-  const classAnalytics = useMemo(() => calculateClassAnalytics(selectedClass), [selectedClass, submissions]);
+  // Calculations for Active Class using teacher's visible submissions
+  const classAnalytics = useMemo(() => calculateClassAnalytics(selectedClass, teacherSubmissions), [selectedClass, teacherSubmissions]);
 
-  // Calculations for Cross-Class Outcome Mode
-  const outcomeAnalytics = useMemo(() => calculateOutcomeCrossClassAnalytics(selectedOutcomeCode), [selectedOutcomeCode, submissions]);
+  // Calculations for Cross-Class Outcome Mode using teacher's visible submissions
+  const outcomeAnalytics = useMemo(() => calculateOutcomeCrossClassAnalytics(selectedOutcomeCode, teacherSubmissions), [selectedOutcomeCode, teacherSubmissions]);
 
   // Global High-Level KPIs
-  const totalSubmissionsCount = submissions.length;
+  const totalSubmissionsCount = teacherSubmissions.length;
   const overallAveragePercent = totalSubmissionsCount > 0
-    ? Math.round(submissions.reduce((acc, cur) => acc + cur.percentage, 0) / totalSubmissionsCount)
+    ? Math.round(teacherSubmissions.reduce((acc, cur) => acc + cur.percentage, 0) / totalSubmissionsCount)
     : 0;
-  const excellentCount = submissions.filter((s) => s.performanceLevel === 'Mükemmel').length;
-  const totalJournalCount = journalEntries.length;
+  const excellentCount = teacherSubmissions.filter((s) => s.performanceLevel === 'Mükemmel').length;
+  const totalJournalCount = teacherJournalEntries.length;
 
-  // Filtered Table Submissions
+  // Filtered Table Submissions (strictly from teacher's own students)
   const filteredTableSubmissions = useMemo(() => {
-    return submissions.filter((sub) => {
+    return teacherSubmissions.filter((sub) => {
       const matchClass = selectedClass === 'all' || sub.classSection === selectedClass;
       const matchOutcome = tableOutcomeFilter === 'all' || sub.outcomeCode === tableOutcomeFilter;
       const matchLevel = tableLevelFilter === 'all' || sub.performanceLevel === tableLevelFilter;
@@ -165,7 +203,7 @@ export function TeacherRubricAnalytics({
         sub.outcomeCode.toLowerCase().includes(tableSearchTerm.toLowerCase());
       return matchClass && matchOutcome && matchLevel && matchSearch;
     });
-  }, [submissions, selectedClass, tableOutcomeFilter, tableLevelFilter, tableSearchTerm]);
+  }, [teacherSubmissions, selectedClass, tableOutcomeFilter, tableLevelFilter, tableSearchTerm]);
 
   // Table Pagination Slice
   const totalTablePages = Math.ceil(filteredTableSubmissions.length / pageSize) || 1;
@@ -174,9 +212,9 @@ export function TeacherRubricAnalytics({
     return filteredTableSubmissions.slice(start, start + pageSize);
   }, [filteredTableSubmissions, tablePage]);
 
-  // Filtered Journals
+  // Filtered Journals (strictly from teacher's own students)
   const filteredJournals = useMemo(() => {
-    return journalEntries.filter((j) => {
+    return teacherJournalEntries.filter((j) => {
       const matchClass = journalClassFilter === 'all' || j.classSection === journalClassFilter;
       const matchOutcome = journalOutcomeFilter === 'all' || j.outcomeCode === journalOutcomeFilter;
       const matchSearch = !journalSearchTerm ||
@@ -186,7 +224,7 @@ export function TeacherRubricAnalytics({
         j.outcomeTitle.toLowerCase().includes(journalSearchTerm.toLowerCase());
       return matchClass && matchOutcome && matchSearch;
     });
-  }, [journalEntries, journalClassFilter, journalOutcomeFilter, journalSearchTerm]);
+  }, [teacherJournalEntries, journalClassFilter, journalOutcomeFilter, journalSearchTerm]);
 
   // Handler: Open Rubric Inspector Modal
   const handleOpenInspector = (sub: RubricSubmissionRecord) => {
@@ -513,124 +551,136 @@ export function TeacherRubricAnalytics({
           </div>
 
           {/* Outcomes Summary Cards for this Class */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {classAnalytics.outcomeStats.map((stat) => (
-              <div
-                key={stat.outcomeCode}
-                className="bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-teal-400 transition-all shadow-sm space-y-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="px-2.5 py-0.5 rounded-md bg-teal-600 text-white text-[10px] font-black uppercase font-mono">
-                      {stat.outcomeCode}
-                    </span>
-                    <h3 className="text-base font-black text-slate-900 mt-1">
-                      {stat.outcomeTitle}
-                    </h3>
-                  </div>
+          {classAnalytics.outcomeStats.length === 0 ? (
+            <div className="p-12 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 space-y-3">
+              <div className="text-4xl">📋</div>
+              <h3 className="text-base font-black text-slate-900">
+                {selectedClass === 'Tümü' ? 'Kayıtlı Değerlendirme Verisi Bulunmuyor' : `${selectedClass} Şubesinde Henüz Değerlendirme Verisi Bulunmuyor`}
+              </h3>
+              <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                Öğrencileriniz ders esnasında veya sonrasında Öz Değerlendirme Rubrik Formunu doldurduklarında sonuçlar otomatik olarak burada analiz edilecektir.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {classAnalytics.outcomeStats.map((stat) => (
+                <div
+                  key={stat.outcomeCode}
+                  className="bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-teal-400 transition-all shadow-sm space-y-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <span className="px-2.5 py-0.5 rounded-md bg-teal-600 text-white text-[10px] font-black uppercase font-mono">
+                        {stat.outcomeCode}
+                      </span>
+                      <h3 className="text-base font-black text-slate-900 mt-1">
+                        {stat.outcomeTitle}
+                      </h3>
+                    </div>
 
-                  <div className="text-right shrink-0">
-                    <div className="text-2xl font-black text-teal-600 font-mono">%{stat.avgPercent}</div>
-                    <div className="text-[10px] font-bold text-slate-400">Ortalama Başarı</div>
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                  <div
-                    className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
-                    style={{ width: `${stat.avgPercent}%` }}
-                  />
-                </div>
-
-                {/* 5 Criteria Average Indicators */}
-                <div className="space-y-1.5 pt-2 border-t border-slate-100">
-                  <div className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
-                    Ölçüt Bazlı Şube Ortalamaları (1.0 - 4.0):
-                  </div>
-                  <div className="grid grid-cols-5 gap-1 text-center font-mono text-xs">
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                      <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Kavram</div>
-                      <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c1']}</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                      <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Araç / İletki</div>
-                      <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c2']}</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                      <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Sınıflandırma</div>
-                      <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c3']}</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                      <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Yanılgı</div>
-                      <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c4']}</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                      <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Öz Düzenleme</div>
-                      <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c5']}</div>
+                    <div className="text-right shrink-0">
+                      <div className="text-2xl font-black text-teal-600 font-mono">%{stat.avgPercent}</div>
+                      <div className="text-[10px] font-bold text-slate-400">Ortalama Başarı</div>
                     </div>
                   </div>
-                </div>
 
-                {/* Performance Distribution Badges */}
-                <div className="flex items-center justify-between text-xs pt-1 text-slate-600">
-                  <span>Değerlendiren Öğrenci: <strong>{stat.studentCount}</strong></span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-emerald-700 font-bold">🌟 {stat.excellentCount}</span>
-                    <span>•</span>
-                    <span className="text-teal-700 font-bold">🎯 {stat.goodCount}</span>
-                    <span>•</span>
-                    <span className="text-amber-700 font-bold">🔄 {stat.mediumCount}</span>
-                    <span>•</span>
-                    <span className="text-rose-700 font-bold">💡 {stat.needSupportCount}</span>
+                  {/* Progress Bar */}
+                  <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div
+                      className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full"
+                      style={{ width: `${stat.avgPercent}%` }}
+                    />
+                  </div>
+
+                  {/* 5 Criteria Average Indicators */}
+                  <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                    <div className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
+                      Ölçüt Bazlı Şube Ortalamaları (1.0 - 4.0):
+                    </div>
+                    <div className="grid grid-cols-5 gap-1 text-center font-mono text-xs">
+                      <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                        <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Kavram</div>
+                        <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c1']}</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                        <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Araç / İletki</div>
+                        <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c2']}</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                        <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Sınıflandırma</div>
+                        <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c3']}</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                        <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Yanılgı</div>
+                        <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c4']}</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                        <div className="text-[9px] text-slate-400 font-sans font-bold truncate">Öz Düzenleme</div>
+                        <div className="font-black text-slate-900 mt-0.5">{stat.criteriaAvgs['c5']}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Level Distribution Pills */}
+                  <div className="flex items-center justify-between text-xs text-slate-600 pt-1">
+                    <span className="font-bold text-[11px]">Düzey Dağılımı:</span>
+                    <div className="flex items-center gap-1.5 text-[11px]">
+                      <span className="text-emerald-700 font-bold">🌟 {stat.excellentCount}</span>
+                      <span>•</span>
+                      <span className="text-teal-700 font-bold">🎯 {stat.goodCount}</span>
+                      <span>•</span>
+                      <span className="text-amber-700 font-bold">🔄 {stat.mediumCount}</span>
+                      <span>•</span>
+                      <span className="text-rose-700 font-bold">💡 {stat.needSupportCount}</span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons: Tracking Modal & Bulk PDF */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSound('click');
+                        setSelectedOutcomeForTracking({
+                          code: stat.outcomeCode,
+                          title: stat.outcomeTitle
+                        });
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      title={`${selectedClass} şubesindeki öğrencilerin kimlerin doldurup doldurmadığını ve gelişimlerini incele`}
+                    >
+                      <Users className="w-3.5 h-3.5 text-teal-200" />
+                      <span>Öğrenci Takibi & Formlar</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadBulkPDF(
+                        stat.submissions,
+                        `bulk-${selectedClass}-${stat.outcomeCode}`,
+                        { classSection: selectedClass, outcomeCode: stat.outcomeCode, outcomeTitle: stat.outcomeTitle }
+                      )}
+                      disabled={downloadingId !== null || stat.submissions.length === 0}
+                      className="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ml-auto"
+                      title={`${selectedClass} şubesindeki ${stat.submissions.length} öğrencinin raporunu tek PDF olarak indir`}
+                    >
+                      {downloadingId === `bulk-${selectedClass}-${stat.outcomeCode}` ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
+                          <span>PDF Hazırlanıyor...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-3.5 h-3.5 text-teal-600" />
+                          <span>Sınıf Raporunu Toplu PDF İndir</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
-
-                {/* Action Buttons: Tracking Modal & Bulk PDF */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playSound('click');
-                      setSelectedOutcomeForTracking({
-                        code: stat.outcomeCode,
-                        title: stat.outcomeTitle
-                      });
-                    }}
-                    className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-                    title={`${selectedClass} şubesindeki öğrencilerin kimlerin doldurup doldurmadığını ve gelişimlerini incele`}
-                  >
-                    <Users className="w-3.5 h-3.5 text-teal-200" />
-                    <span>Öğrenci Takibi & Formlar</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadBulkPDF(
-                      stat.submissions,
-                      `bulk-${selectedClass}-${stat.outcomeCode}`,
-                      { classSection: selectedClass, outcomeCode: stat.outcomeCode, outcomeTitle: stat.outcomeTitle }
-                    )}
-                    disabled={downloadingId !== null || stat.submissions.length === 0}
-                    className="px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ml-auto"
-                    title={`${selectedClass} şubesindeki ${stat.submissions.length} öğrencinin raporunu tek PDF olarak indir`}
-                  >
-                    {downloadingId === `bulk-${selectedClass}-${stat.outcomeCode}` ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
-                        <span>PDF Hazırlanıyor...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Download className="w-3.5 h-3.5 text-teal-600" />
-                        <span>Sınıf Raporunu Toplu PDF İndir</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
         </div>
       )}

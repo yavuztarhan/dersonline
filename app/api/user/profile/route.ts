@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isUserAdmin } from '@/lib/auth-options';
+import { hashPassword, isPasswordHashed } from '@/lib/password';
 
 export async function GET(req: NextRequest) {
   try {
@@ -49,7 +50,12 @@ export async function GET(req: NextRequest) {
           school: user.teacherProfile?.school || user.studentProfile?.school || '',
           branch: user.teacherProfile?.branch || 'Matematik',
           principalName: user.teacherProfile?.principalName || '',
+          hasPassword: Boolean(user.password),
           assignedClasses,
+          accountStatus: user.accountStatus || 'aktif',
+          status: user.teacherProfile?.status?.toLowerCase() || (user.accountStatus === 'beklemede' ? 'suspended' : 'approved'),
+          isKvkkAccepted: user.isKvkkAccepted || Boolean(user.kvkkAcceptedAt),
+          kvkkAcceptedAt: user.kvkkAcceptedAt ? user.kvkkAcceptedAt.toISOString() : undefined,
           isProfileComplete: Boolean(
             user.firstName &&
             user.lastName &&
@@ -91,8 +97,15 @@ export async function POST(req: NextRequest) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const fullName = name || `${firstName || ''} ${lastName || ''}`.trim() || 'Kullanıcı';
+    const hasNameInput = Boolean(name || firstName || lastName);
+    const computedFullName = hasNameInput
+      ? (name || `${firstName || ''} ${lastName || ''}`.trim())
+      : undefined;
     const isAdmin = isUserAdmin(cleanEmail);
+
+    const hashedPassword = password
+      ? (isPasswordHashed(password) ? password : await hashPassword(password))
+      : undefined;
 
     try {
       const user = await prisma.user.upsert({
@@ -100,74 +113,93 @@ export async function POST(req: NextRequest) {
         update: {
           firstName: firstName !== undefined ? firstName : undefined,
           lastName: lastName !== undefined ? lastName : undefined,
-          name: fullName,
+          ...(computedFullName ? { name: computedFullName } : {}),
           gender: gender !== undefined ? gender : undefined,
-          ...(password ? { password } : {}),
+          ...(hashedPassword ? { password: hashedPassword } : {}),
           ...(isAdmin ? { role: 'ADMIN' } : {}),
         },
         create: {
           email: cleanEmail,
           firstName: firstName || '',
           lastName: lastName || '',
-          name: fullName,
+          name: computedFullName || 'Kullanıcı',
           gender: gender || undefined,
-          password: password || undefined,
+          password: hashedPassword || undefined,
           role: isAdmin ? 'ADMIN' : 'TEACHER',
         },
       });
 
-      // Upsert teacherProfile if user is teacher, or admin who also sets school info
-      const profile = await prisma.teacherProfile.upsert({
-        where: { userId: user.id },
-        update: {
-          phone: phone !== undefined ? phone : undefined,
-          city: city || undefined,
-          district: district || undefined,
-          school: school || undefined,
-          branch: branch || undefined,
-          principalName: principalName !== undefined ? principalName : undefined,
-          status: 'APPROVED',
-        },
-        create: {
-          userId: user.id,
-          phone: phone || '',
-          city: city || 'Edirne',
-          district: district || 'Merkez',
-          school: school || 'Edirne Selimiye İmam Hatip Ortaokulu',
-          branch: branch || 'Matematik',
-          principalName: principalName || 'Mehmet GÜNGÖR',
-          status: 'APPROVED',
-        },
-      });
+      // Upsert teacherProfile only if user is teacher, or non-admin with school info
+      if (!isAdmin && (user.role === 'TEACHER' || school || phone)) {
+        const profile = await prisma.teacherProfile.upsert({
+          where: { userId: user.id },
+          update: {
+            phone: phone !== undefined ? phone : undefined,
+            city: city || undefined,
+            district: district || undefined,
+            school: school || undefined,
+            branch: branch || undefined,
+            principalName: principalName !== undefined ? principalName : undefined,
+            status: 'APPROVED',
+          },
+          create: {
+            userId: user.id,
+            phone: phone || '',
+            city: city || 'Edirne',
+            district: district || 'Merkez',
+            school: school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+            branch: branch || 'Matematik',
+            principalName: principalName || 'Mehmet GÜNGÖR',
+            status: 'APPROVED',
+          },
+        });
 
-      // Save assignedClasses if provided
-      if (Array.isArray(assignedClasses) && assignedClasses.length > 0) {
-        try {
-          await prisma.classroom.deleteMany({
-            where: { teacherId: profile.id },
-          });
+        // Save assignedClasses if provided
+        if (Array.isArray(assignedClasses) && assignedClasses.length > 0) {
+          try {
+            const cleanClassNames = assignedClasses
+              .map((c) => String(c).trim().toUpperCase())
+              .filter(Boolean);
 
-          for (const clsName of assignedClasses) {
-            const gradeMatch = String(clsName).match(/^(\d+)/);
-            const grade = gradeMatch ? parseInt(gradeMatch[1], 10) : 5;
-            await prisma.classroom.create({
-              data: {
-                name: String(clsName).trim(),
-                gradeLevel: grade,
-                school: school || profile.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+            const existingClasses = await prisma.classroom.findMany({
+              where: { teacherId: profile.id },
+            });
+            const existingNames = new Set(existingClasses.map((c) => c.name.toUpperCase()));
+
+            for (const clsName of cleanClassNames) {
+              if (!existingNames.has(clsName)) {
+                const gradeMatch = clsName.match(/^(\d+)/);
+                const grade = gradeMatch ? parseInt(gradeMatch[1], 10) : 5;
+                const safeCode = `MRF${clsName.replace(/[^A-Z0-9]/g, '')}${Math.floor(10 + Math.random() * 90)}`;
+                await prisma.classroom.create({
+                  data: {
+                    name: clsName,
+                    code: safeCode,
+                    gradeLevel: grade,
+                    school: school || profile.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+                    teacherId: profile.id,
+                  },
+                });
+              }
+            }
+
+            // Remove classrooms that are no longer assigned
+            await prisma.classroom.deleteMany({
+              where: {
                 teacherId: profile.id,
+                name: { notIn: cleanClassNames },
               },
             });
+          } catch (classError) {
+            console.warn('[Profile API] Classrooms sync note:', classError);
           }
-        } catch (classError) {
-          console.warn('Classrooms sync note:', classError);
         }
       }
 
       return NextResponse.json({ success: true, user });
-    } catch (dbError) {
-      console.warn('Prisma profile update note (proceeding with local store):', dbError);
-      return NextResponse.json({ success: true, localOnly: true });
+    } catch (dbError: any) {
+      console.error('[Profile API] Database update error:', dbError);
+      return NextResponse.json({ success: false, error: dbError.message }, { status: 500 });
     }
   } catch (error: any) {
     console.error('Profile API Error:', error);

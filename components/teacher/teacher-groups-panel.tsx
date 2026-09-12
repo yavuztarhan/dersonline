@@ -75,24 +75,40 @@ export function TeacherGroupsPanel({
   const [reviewingTask, setReviewingTask] = useState<GroupTask | null>(null);
   const [teacherFeedbackInput, setTeacherFeedbackInput] = useState('');
 
+  const teacherName = currentUser?.name || 'Öğretmen';
+  const teacherId = currentUser?.id || 'tch-current';
+
+  // Visible students for this teacher
+  const visibleStudents = getVisibleStudents(currentUser);
+  const visibleStudentIds = new Set(visibleStudents.map((s) => s.id));
+  const visibleStudentNumbers = new Set(visibleStudents.map((s) => s.studentNumber));
+
+  // Visible students for this teacher in selected class
+  const classStudents = visibleStudents.filter(
+    (s) => s.classSection === selectedClass || selectedClass === 'Tümü'
+  );
+
   const reloadData = () => {
     const classGroups = getGroupsForClass(selectedClass);
-    const allTasks = getStoredGroupTasks().filter((t) => t.classSection === selectedClass || selectedClass === 'Tümü');
-    setGroups(classGroups);
+    // Filter groups so that only groups belonging to this teacher or having members from visible students are loaded
+    const teacherGroups = classGroups.filter((g) => {
+      if (currentUser?.id && g.teacherId === currentUser.id) return true;
+      return g.members.some((m) => visibleStudentIds.has(m.id) || visibleStudentNumbers.has(m.studentNumber));
+    });
+
+    const teacherGroupIds = new Set(teacherGroups.map((g) => g.id));
+    const allTasks = getStoredGroupTasks().filter(
+      (t) =>
+        (t.classSection === selectedClass || selectedClass === 'Tümü') &&
+        (teacherGroupIds.has(t.groupId) || (currentUser?.id && t.teacherId === currentUser.id))
+    );
+    setGroups(teacherGroups);
     setTasks(allTasks);
   };
 
   useEffect(() => {
     reloadData();
-  }, [selectedClass]);
-
-  const teacherName = currentUser?.name || 'Öğretmen';
-  const teacherId = currentUser?.id || 'tch-101';
-
-  // Visible students for this teacher in selected class
-  const classStudents = getVisibleStudents(currentUser).filter(
-    (s) => s.classSection === selectedClass || selectedClass === 'Tümü'
-  );
+  }, [selectedClass, visibleStudents.length]);
 
   // 1. Handle Auto Group Creation
   const handleCreateAutoGroups = () => {

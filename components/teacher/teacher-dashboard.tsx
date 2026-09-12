@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth, splitFullName } from '@/lib/auth-store';
+import { useAuth, splitFullName, generateRandomStudentPassword } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import Link from 'next/link';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { getOutcomeById } from '@/lib/curriculum-data';
-import { LessonPlanModal } from '@/components/lesson-plan-modal';
 import { TeacherRubricAnalytics } from '@/components/teacher/teacher-rubric-analytics';
 import { TeacherFormsAnalyticsReport } from '@/components/teacher/teacher-forms-analytics-report';
 import { TeacherGroupsPanel } from '@/components/teacher/teacher-groups-panel';
@@ -14,6 +12,7 @@ import { TeacherBoardParticipationReport } from '@/components/teacher/teacher-bo
 import {
   ClassroomFileRecord,
   getStoredClassroomFiles,
+  getVisibleClassroomFilesForTeacher,
   deleteClassroomFile,
   publishFileToClass,
   exportClassroomFileToPdf
@@ -24,6 +23,7 @@ import { ClassLeaderboard } from '@/components/gamification/class-leaderboard';
 import { StudentOutcomeDetailModal } from '@/components/gamification/student-outcome-detail-modal';
 import { FeedbackButton } from '@/components/feedback/feedback-button';
 import { ExcelStudentImportModal } from '@/components/teacher/excel-student-import-modal';
+import { SuspendedTeacherView } from '@/components/teacher/suspended-teacher-view';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -55,15 +55,49 @@ import {
   Filter,
   Eye,
   Trophy,
-  Flame
+  Flame,
+  KeyRound,
+  Copy,
+  Check,
+  Lock,
+  ChevronDown,
+  AlertTriangle,
+  RefreshCw
 } from 'lucide-react';
 
+const GRADE_OPTIONS = ['5', '6', '7', '8'];
+const BRANCH_OPTIONS = [
+  'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'H', 'I', 'İ',
+  'J', 'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş',
+  'T', 'U', 'Ü', 'V', 'Y', 'Z'
+];
+
 export function TeacherDashboard() {
-  const { currentUser, students, getVisibleStudents, addStudent, deleteStudent, addClassToTeacher, awardPointsToStudent } = useAuth();
+  const {
+    currentUser,
+    students,
+    getVisibleStudents,
+    addStudent,
+    deleteStudent,
+    addClassToTeacher,
+    deleteClassFromTeacher,
+    awardPointsToStudent,
+    classrooms,
+    getClassCodeForClass
+  } = useAuth();
   const { setSelectedOutcome, playSound } = useApp();
-  const [activePlanOutcome, setActivePlanOutcome] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState<'analytics' | 'forms' | 'students' | 'groups' | 'leaderboard' | 'plans' | 'files' | 'board'>('board');
+  const [activeSection, setActiveSection] = useState<'analytics' | 'forms' | 'students' | 'groups' | 'leaderboard' | 'files' | 'board'>('board');
   const [selectedStudentForDetail, setSelectedStudentForDetail] = useState<any | null>(null);
+
+  // Class code & password copy state
+  const [copiedClassCode, setCopiedClassCode] = useState(false);
+  const [copiedPasswordStuId, setCopiedPasswordStuId] = useState<string | null>(null);
+  const [lastAddedStudent, setLastAddedStudent] = useState<{
+    name: string;
+    number: string;
+    classCode: string;
+    password: string;
+  } | null>(null);
 
   // Classroom Files State
   const [classroomFiles, setClassroomFiles] = useState<ClassroomFileRecord[]>([]);
@@ -80,10 +114,18 @@ export function TeacherDashboard() {
     setClassroomFiles(getStoredClassroomFiles());
   }, []);
 
+  // Sınıf dosyaları sekmesinde sadece bu öğretmenin oluşturduğu, düzenlediği veya kaydettiği beyaz tahta ders notları ve sınıfa gönderilen etkinlik kağıtları gösterilir.
+  // Yeni kayıtlı öğretmenin sınıf dosyaları boştur.
+  const visibleClassFiles = getVisibleClassroomFilesForTeacher(
+    currentUser?.id,
+    currentUser?.name,
+    classroomFiles
+  );
+
   // If current user is teacher
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
-  const teacherClasses = teacher?.assignedClasses && teacher.assignedClasses.length > 0
-    ? teacher.assignedClasses
+  const teacherClasses: string[] = teacher?.assignedClasses && teacher.assignedClasses.length > 0
+    ? (teacher.assignedClasses as string[])
     : ['5-A', '5-B'];
 
   const [selectedClass, setSelectedClass] = useState(teacherClasses[0] || '5-A');
@@ -94,9 +136,17 @@ export function TeacherDashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showExcelImportModal, setShowExcelImportModal] = useState(false);
 
-  // Sınıf Ekleme Modalı State
+  // Sınıf Ekleme Modalı State (2 Dropdown: Seviye ve Şube)
   const [showAddClassModal, setShowAddClassModal] = useState(false);
-  const [newClassNameInput, setNewClassNameInput] = useState('');
+  const [newClassGrade, setNewClassGrade] = useState('5');
+  const [newClassBranch, setNewClassBranch] = useState('A');
+
+  // Sınıf Silme Modalı State (Yüksek Güvenlikli)
+  const [showDeleteClassModal, setShowDeleteClassModal] = useState(false);
+  const [classToDelete, setClassToDelete] = useState('');
+  const [isDeleteRiskAccepted, setIsDeleteRiskAccepted] = useState(false);
+  const [deleteSecurityCode, setDeleteSecurityCode] = useState('');
+  const [inputDeleteSecurityCode, setInputDeleteSecurityCode] = useState('');
 
   // Keep selectedClass synchronized if classes change
   useEffect(() => {
@@ -116,16 +166,19 @@ export function TeacherDashboard() {
     const targetClass = newStudentClass || selectedClass;
     const { firstName, lastName } = splitFullName(newStudentName.trim());
     const avatar = newStudentGender === 'Kız' ? '👩‍🎓' : newStudentGender === 'Erkek' ? '👨‍🎓' : '🎓';
+    const classCode = getClassCodeForClass(targetClass, teacher?.id);
+    const generatedPassword = generateRandomStudentPassword(6);
 
     const newStudent = {
       id: `stu-${Date.now()}`,
       firstName: firstName || 'Öğrenci',
       lastName: lastName || '',
       name: newStudentName.trim(),
-      email: `${newStudentNumber.trim()}@okul.meb.k12.tr`,
       role: 'student' as const,
       avatar,
       studentNumber: newStudentNumber.trim(),
+      classCode,
+      password: generatedPassword,
       gender: newStudentGender || undefined,
       gradeLevel: parseInt(targetClass.charAt(0)) || 5,
       classSection: targetClass,
@@ -140,6 +193,12 @@ export function TeacherDashboard() {
 
     addStudent(newStudent);
     playSound('success');
+    setLastAddedStudent({
+      name: newStudentName.trim(),
+      number: newStudentNumber.trim(),
+      classCode,
+      password: generatedPassword
+    });
     setNewStudentName('');
     setNewStudentNumber('');
     setNewStudentGender('');
@@ -147,18 +206,58 @@ export function TeacherDashboard() {
     setSelectedClass(targetClass);
   };
 
+  const targetNewClassName = `${newClassGrade}-${newClassBranch}`;
+  const isClassAlreadyAdded = teacherClasses.includes(targetNewClassName);
+
   const handleAddClass = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = newClassNameInput.trim().toUpperCase();
-    if (!trimmed) return;
+    const target = `${newClassGrade}-${newClassBranch}`;
+    if (!target || isClassAlreadyAdded) return;
 
     if (teacher?.id) {
-      addClassToTeacher(teacher.id, trimmed);
+      addClassToTeacher(teacher.id, target);
     }
     playSound('click');
-    setSelectedClass(trimmed);
-    setNewClassNameInput('');
+    setSelectedClass(target);
     setShowAddClassModal(false);
+  };
+
+  const generateRandomSecurityCode = (className: string) => {
+    const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    let suffix = '';
+    for (let i = 0; i < 4; i++) {
+      suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const cleanClass = className.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+    return `SIL-${cleanClass}-${suffix}`;
+  };
+
+  const handleOpenDeleteClassModal = (className?: string) => {
+    const target = className || selectedClass || teacherClasses[0] || '';
+    if (!target) return;
+    setClassToDelete(target);
+    setIsDeleteRiskAccepted(false);
+    setInputDeleteSecurityCode('');
+    setDeleteSecurityCode(generateRandomSecurityCode(target));
+    setShowDeleteClassModal(true);
+  };
+
+  const handleConfirmDeleteClass = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!teacher?.id || !classToDelete) return;
+    if (!isDeleteRiskAccepted) return;
+    if (inputDeleteSecurityCode.trim().toUpperCase() !== deleteSecurityCode) return;
+
+    const result = deleteClassFromTeacher(teacher.id, classToDelete);
+    playSound('clear');
+
+    const remainingClasses = teacherClasses.filter((c: string) => c !== classToDelete);
+    setSelectedClass(remainingClasses[0] || '');
+
+    setShowDeleteClassModal(false);
+    setClassToDelete('');
+    setIsDeleteRiskAccepted(false);
+    setInputDeleteSecurityCode('');
   };
 
   const handleDeleteStudent = (stuId: string, stuName: string) => {
@@ -189,6 +288,11 @@ export function TeacherDashboard() {
       setDownloadingFileId(null);
     }
   };
+
+  // Suspension Guard: If teacher account is suspended, render restricted appeal view
+  if (currentUser?.role === 'teacher' && (currentUser?.accountStatus === 'beklemede' || currentUser?.status === 'suspended' || (currentUser as any)?.status === 'SUSPENDED')) {
+    return <SuspendedTeacherView />;
+  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
@@ -285,8 +389,8 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* Executive Module Switcher (8 Primary Sections) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
+      {/* Executive Module Switcher (7 Primary Sections) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
         {/* 0. Tahtaya Kalkma & Derse Katılım Raporu (NumPad) */}
         <button
           type="button"
@@ -515,45 +619,7 @@ export function TeacherDashboard() {
           )}
         </button>
 
-        {/* 4. Ders Planları & Akıllı Tahta Akışları */}
-        <button
-          type="button"
-          onClick={() => {
-            playSound('select');
-            setActiveSection('plans');
-          }}
-          className={`relative p-3.5 rounded-2xl transition-all duration-200 cursor-pointer text-left flex flex-col justify-between border-2 ${
-            activeSection === 'plans'
-              ? 'bg-white shadow-md border-emerald-500 ring-2 ring-emerald-500/10'
-              : 'bg-white/60 hover:bg-white border-transparent hover:border-slate-300/70 text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
-                activeSection === 'plans' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-50 text-emerald-700'
-              }`}
-            >
-              <BookOpen className="w-5 h-5" />
-            </div>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">
-              5. Sınıf
-            </span>
-          </div>
-          <div>
-            <div className={`font-black text-xs leading-snug tracking-tight ${activeSection === 'plans' ? 'text-emerald-950' : 'text-slate-800'}`}>
-              Ders Planları
-            </div>
-            <div className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-              Akıllı Tahta Akışları
-            </div>
-          </div>
-          {activeSection === 'plans' && (
-            <div className="absolute -bottom-[2px] left-4 right-4 h-1 bg-emerald-600 rounded-full" />
-          )}
-        </button>
-
-        {/* 5. Sınıf Dosyaları & Ders Notları */}
+        {/* Sınıf Dosyaları & Ders Notları */}
         <button
           type="button"
           onClick={() => {
@@ -576,7 +642,7 @@ export function TeacherDashboard() {
               <FolderOpen className="w-5 h-5" />
             </div>
             <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase border border-teal-200">
-              {classroomFiles.length} Dosya
+              {visibleClassFiles.length} Dosya
             </span>
           </div>
           <div>
@@ -601,7 +667,11 @@ export function TeacherDashboard() {
       {/* SECTION: CLASS LEADERBOARD & XP RANKINGS */}
       {activeSection === 'leaderboard' && (
         <div className="space-y-6 animate-in fade-in duration-300">
-          <ClassLeaderboard initialClassSection={selectedClass} showTeacherControls={true} />
+          <ClassLeaderboard
+            initialClassSection={selectedClass}
+            showTeacherControls={true}
+            availableClasses={teacherClasses}
+          />
         </div>
       )}
 
@@ -687,7 +757,53 @@ export function TeacherDashboard() {
                       <Plus className="w-3.5 h-3.5" />
                       <span>Sınıf Ekle</span>
                     </button>
+
+                    {/* Sınıf Sil Butonu */}
+                    {teacherClasses.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenDeleteClassModal(selectedClass)}
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-100/70 transition-colors flex items-center gap-1 cursor-pointer"
+                        title={`${selectedClass} Sınıfını ve Tüm Verilerini Sil`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                        <span>Sınıfı Sil</span>
+                      </button>
+                    )}
                   </div>
+
+                  {/* Sınıf Kodu Rozeti */}
+                  {(() => {
+                    const code = getClassCodeForClass(selectedClass, teacher?.id);
+                    return (
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-900 text-xs font-bold shadow-xs">
+                        <KeyRound className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                        <span className="text-[11px] text-indigo-600 font-semibold">{selectedClass} Kodu:</span>
+                        <span className="font-mono font-black tracking-widest text-indigo-950 bg-white px-2 py-0.5 rounded border border-indigo-200">
+                          {code}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (navigator.clipboard) {
+                              navigator.clipboard.writeText(code);
+                            }
+                            playSound('click');
+                            setCopiedClassCode(true);
+                            setTimeout(() => setCopiedClassCode(false), 2000);
+                          }}
+                          className="p-1 hover:bg-indigo-100 rounded text-indigo-600 transition-colors cursor-pointer"
+                          title="Sınıf Kodunu Kopyala"
+                        >
+                          {copiedClassCode ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    );
+                  })()}
 
                   <div className="flex items-center gap-2">
                     <button
@@ -715,6 +831,46 @@ export function TeacherDashboard() {
                 </div>
               </div>
 
+              {/* Son Eklenen Öğrenci Şifre Kartı */}
+              {lastAddedStudent && (
+                <div className="p-4 bg-indigo-50/90 border border-indigo-200 rounded-2xl flex items-start justify-between gap-3 animate-in fade-in">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+                      🎓
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-xs text-indigo-950">
+                        Öğrenci Başarıyla Eklendi: {lastAddedStudent.name}
+                      </h5>
+                      <p className="text-[11px] text-indigo-700 mt-0.5">
+                        Öğrenci sisteme e-posta olmadan bu 3 parametre ile giriş yapabilir:
+                      </p>
+                      <div className="flex items-center gap-2 mt-2 flex-wrap text-xs">
+                        <span className="bg-white px-2.5 py-1 rounded-lg border border-indigo-200 text-slate-800">
+                          <strong className="text-slate-500">1. Sınıf Kodu:</strong>{' '}
+                          <code className="font-mono font-black text-indigo-900 ml-1">{lastAddedStudent.classCode}</code>
+                        </span>
+                        <span className="bg-white px-2.5 py-1 rounded-lg border border-indigo-200 text-slate-800">
+                          <strong className="text-slate-500">2. Okul No:</strong>{' '}
+                          <code className="font-mono font-bold text-slate-900 ml-1">{lastAddedStudent.number}</code>
+                        </span>
+                        <span className="bg-white px-2.5 py-1 rounded-lg border border-indigo-200 text-slate-800">
+                          <strong className="text-slate-500">3. Şifre:</strong>{' '}
+                          <code className="font-mono font-black text-emerald-700 ml-1">{lastAddedStudent.password}</code>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setLastAddedStudent(null)}
+                    className="text-slate-400 hover:text-slate-700 text-xs font-bold cursor-pointer p-1"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
               {/* Students Table */}
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-slate-700">
@@ -722,6 +878,8 @@ export function TeacherDashboard() {
                     <tr className="bg-slate-50 text-slate-400 uppercase font-black tracking-wider text-[10px] border-b border-slate-200">
                       <th className="py-2.5 px-3">No</th>
                       <th className="py-2.5 px-3">Öğrenci Adı</th>
+                      <th className="py-2.5 px-3">Sınıf Kodu</th>
+                      <th className="py-2.5 px-3">Giriş Şifresi</th>
                       <th className="py-2.5 px-3">Okul</th>
                       <th className="py-2.5 px-3">Puan (XP)</th>
                       <th className="py-2.5 px-3">İlerleme</th>
@@ -731,7 +889,7 @@ export function TeacherDashboard() {
                   <tbody className="divide-y divide-slate-100">
                     {classStudents.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="py-8 text-center text-slate-400">
+                        <td colSpan={8} className="py-8 text-center text-slate-400">
                           <div className="space-y-3">
                             <div className="text-3xl">🎓</div>
                             <div className="space-y-1">
@@ -767,80 +925,116 @@ export function TeacherDashboard() {
                         </td>
                       </tr>
                     ) : (
-                      classStudents.map((stu) => (
-                        <tr
-                          key={stu.id}
-                          onClick={() => {
-                            playSound('select');
-                            setSelectedStudentForDetail(stu);
-                          }}
-                          className="hover:bg-teal-50/50 transition-colors cursor-pointer group"
-                          title="Öğrencinin Detaylı Kazanım ve Rubrik Karnesini Aç"
-                        >
-                          <td className="py-3 px-3 font-mono font-black text-slate-900">#{stu.studentNumber}</td>
-                          <td className="py-3 px-3">
-                            <div className="font-bold text-slate-900 group-hover:text-teal-800 transition-colors flex items-center gap-1.5 flex-wrap">
-                              <span>{stu.name}</span>
-                              {stu.gender && (
-                                <span
-                                  className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-md ${
-                                    stu.gender === 'Kız'
-                                      ? 'bg-pink-100 text-pink-700'
-                                      : stu.gender === 'Erkek'
-                                      ? 'bg-blue-100 text-blue-700'
-                                      : 'bg-slate-100 text-slate-600'
-                                  }`}
-                                  title={`Cinsiyet: ${stu.gender}`}
-                                >
-                                  {stu.gender}
+                      classStudents.map((stu) => {
+                        const studentCode = stu.classCode || getClassCodeForClass(selectedClass, teacher?.id);
+                        const stuPass = stu.password || 'admin';
+                        return (
+                          <tr
+                            key={stu.id}
+                            onClick={() => {
+                              playSound('select');
+                              setSelectedStudentForDetail(stu);
+                            }}
+                            className="hover:bg-teal-50/50 transition-colors cursor-pointer group"
+                            title="Öğrencinin Detaylı Kazanım ve Rubrik Karnesini Aç"
+                          >
+                            <td className="py-3 px-3 font-mono font-black text-slate-900">#{stu.studentNumber}</td>
+                            <td className="py-3 px-3">
+                              <div className="font-bold text-slate-900 group-hover:text-teal-800 transition-colors flex items-center gap-1.5 flex-wrap">
+                                <span>{stu.name}</span>
+                                {stu.gender && (
+                                  <span
+                                    className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-md ${
+                                      stu.gender === 'Kız'
+                                        ? 'bg-pink-100 text-pink-700'
+                                        : stu.gender === 'Erkek'
+                                        ? 'bg-blue-100 text-blue-700'
+                                        : 'bg-slate-100 text-slate-600'
+                                    }`}
+                                    title={`Cinsiyet: ${stu.gender}`}
+                                  >
+                                    {stu.gender}
+                                  </span>
+                                )}
+                                <BarChart2 className="w-3 h-3 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                              <div className="text-[10px] text-slate-400">{stu.classSection} Şubesi</div>
+                            </td>
+                            <td className="py-3 px-3">
+                              <span className="font-mono font-black tracking-widest text-[11px] bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-md">
+                                {studentCode}
+                              </span>
+                            </td>
+                            <td className="py-3 px-3" onClick={(e) => e.stopPropagation()}>
+                              <div className="inline-flex items-center gap-1 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+                                <Lock className="w-3 h-3 text-slate-400" />
+                                <span className="font-mono font-bold text-xs text-slate-800 tracking-wider">
+                                  {stuPass}
                                 </span>
-                              )}
-                              <BarChart2 className="w-3 h-3 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                            <div className="text-[10px] text-slate-400">{stu.classSection} Şubesi</div>
-                          </td>
-                          <td className="py-3 px-3 text-[11px] text-slate-600 truncate max-w-[140px]">
-                            {stu.school || teacher?.school}
-                          </td>
-                          <td className="py-3 px-3 font-black text-amber-600">+{stu.points} XP</td>
-                          <td className="py-3 px-3">
-                            <div className="w-24 bg-slate-100 h-2 rounded-full overflow-hidden">
-                              <div
-                                className="bg-teal-500 h-full rounded-full"
-                                style={{ width: `${Math.min(100, (stu.points / 500) * 100)}%` }}
-                              />
-                            </div>
-                          </td>
-                          <td className="py-3 px-3 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  playSound('select');
-                                  setSelectedStudentForDetail(stu);
-                                }}
-                                className="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
-                                title="Kazanım Karnesini Aç"
-                              >
-                                <BarChart2 className="w-3 h-3 text-teal-600" />
-                                <span>Karne</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteStudent(stu.id, stu.name);
-                                }}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                                title="Öğrenciyi Sil"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (navigator.clipboard) {
+                                      navigator.clipboard.writeText(stuPass);
+                                    }
+                                    playSound('click');
+                                    setCopiedPasswordStuId(stu.id);
+                                    setTimeout(() => setCopiedPasswordStuId(null), 2000);
+                                  }}
+                                  className="p-0.5 hover:bg-slate-200 rounded text-slate-500 transition-colors cursor-pointer"
+                                  title="Şifreyi Kopyala"
+                                >
+                                  {copiedPasswordStuId === stu.id ? (
+                                    <Check className="w-3 h-3 text-emerald-600" />
+                                  ) : (
+                                    <Copy className="w-3 h-3" />
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-[11px] text-slate-600 truncate max-w-[140px]">
+                              {stu.school || teacher?.school}
+                            </td>
+                            <td className="py-3 px-3 font-black text-amber-600">+{stu.points} XP</td>
+                            <td className="py-3 px-3">
+                              <div className="w-24 bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div
+                                  className="bg-teal-500 h-full rounded-full"
+                                  style={{ width: `${Math.min(100, (stu.points / 500) * 100)}%` }}
+                                />
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    playSound('select');
+                                    setSelectedStudentForDetail(stu);
+                                  }}
+                                  className="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                                  title="Kazanım Karnesini Aç"
+                                >
+                                  <BarChart2 className="w-3 h-3 text-teal-600" />
+                                  <span>Karne</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteStudent(stu.id, stu.name);
+                                  }}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                                  title="Öğrenciyi Sil"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </table>
@@ -852,7 +1046,10 @@ export function TeacherDashboard() {
             {showAddClassModal && (
               <div className="p-5 rounded-3xl bg-teal-950 text-white space-y-4 animate-in fade-in border border-teal-800 shadow-xl">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-black text-teal-300">Yeni Sınıf / Şube Tanımla</h4>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🏫</span>
+                    <h4 className="text-sm font-black text-teal-300">Yeni Sınıf / Şube Tanımla</h4>
+                  </div>
                   <button
                     onClick={() => setShowAddClassModal(false)}
                     className="text-xs text-slate-400 hover:text-white"
@@ -861,22 +1058,246 @@ export function TeacherDashboard() {
                   </button>
                 </div>
 
-                <form onSubmit={handleAddClass} className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Sınıf Adı (Örn: 5-C, 6-A, 7-B)"
-                    value={newClassNameInput}
-                    onChange={(e) => setNewClassNameInput(e.target.value)}
-                    className="flex-1 p-2.5 rounded-xl bg-slate-800 border border-teal-700 text-xs text-white outline-none focus:border-teal-400 uppercase font-bold"
-                  />
+                <form onSubmit={handleAddClass} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* 1. Menü: Sınıf Seçimi (5, 6, 7, 8) */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-teal-200/80 mb-1.5">
+                        1. Sınıf Seviyesi
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={newClassGrade}
+                          onChange={(e) => setNewClassGrade(e.target.value)}
+                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-teal-700 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
+                        >
+                          {GRADE_OPTIONS.map((grade) => (
+                            <option key={grade} value={grade} className="bg-slate-900 text-white">
+                              {grade}. Sınıf
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-teal-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* 2. Menü: Şube Seçimi (A, B, C ... Z) */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-teal-200/80 mb-1.5">
+                        2. Şube Seçimi
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={newClassBranch}
+                          onChange={(e) => setNewClassBranch(e.target.value)}
+                          className="w-full p-2.5 rounded-xl bg-slate-800 border border-teal-700 text-xs font-bold text-white outline-none focus:border-teal-400 appearance-none cursor-pointer pr-8"
+                        >
+                          {BRANCH_OPTIONS.map((branch) => (
+                            <option key={branch} value={branch} className="bg-slate-900 text-white">
+                              {branch} Şubesi
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-teal-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Alt Kısım: Önizleme ve Butonlar */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 border-t border-teal-800/60">
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-slate-400">Eklenecek Sınıf:</span>
+                      <span className="font-black px-2.5 py-1 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/40 text-sm">
+                        {targetNewClassName}
+                      </span>
+                      {isClassAlreadyAdded && (
+                        <span className="text-amber-400 text-[11px] font-bold">
+                          ⚠️ Bu sınıf listenizde zaten mevcut
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddClassModal(false)}
+                        className="flex-1 sm:flex-none py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                      >
+                        Vazgeç
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isClassAlreadyAdded}
+                        className={`flex-1 sm:flex-none py-2.5 px-5 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-1.5 ${
+                          isClassAlreadyAdded
+                            ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                            : 'bg-teal-500 hover:bg-teal-400 text-slate-950 cursor-pointer shadow-lg shadow-teal-500/20'
+                        }`}
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>{targetNewClassName} Sınıfını Ekle</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* SINIF SİL MODAL (YÜKSEK GÜVENLİKLİ VE KOD DOĞRULAMALI) */}
+            {showDeleteClassModal && (
+              <div className="p-6 rounded-3xl bg-slate-950 text-white space-y-5 animate-in fade-in border-2 border-rose-600/80 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-600 via-amber-500 to-rose-600 animate-pulse" />
+                
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0">
+                      <AlertTriangle className="w-5 h-5 text-rose-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-base font-black text-rose-400">
+                        Sınıfı ve Tüm Verilerini Kalıcı Olarak Sil
+                      </h4>
+                      <p className="text-xs text-slate-400">
+                        Bu işlem geri alınamaz ve sınıfa ait tüm öğrenci kayıtlarını kalıcı olarak siler.
+                      </p>
+                    </div>
+                  </div>
                   <button
-                    type="submit"
-                    className="py-2.5 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    onClick={() => setShowDeleteClassModal(false)}
+                    className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
                   >
-                    <Plus className="w-4 h-4" />
-                    <span>Sınıfı Ekle</span>
+                    ✕ Kapat
                   </button>
+                </div>
+
+                {/* Sınıf Seçimi / Teyidi */}
+                <div className="bg-rose-950/40 border border-rose-800/60 rounded-2xl p-4 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-xs text-slate-300 font-bold">Silinecek Sınıf / Şube:</span>
+                    <select
+                      value={classToDelete}
+                      onChange={(e) => {
+                        const newTarget = e.target.value;
+                        setClassToDelete(newTarget);
+                        setDeleteSecurityCode(generateRandomSecurityCode(newTarget));
+                        setInputDeleteSecurityCode('');
+                        setIsDeleteRiskAccepted(false);
+                      }}
+                      className="p-2 rounded-xl bg-slate-900 border border-rose-700 text-xs font-black text-rose-300 outline-none cursor-pointer"
+                    >
+                      {teacherClasses.map((cls: string) => (
+                        <option key={cls} value={cls}>
+                          {cls} Şubesi
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {(() => {
+                    const studentsInTarget = visibleStudents.filter((s) => s.classSection === classToDelete);
+                    return (
+                      <div className="text-xs text-rose-200/90 leading-relaxed bg-rose-950/70 p-3 rounded-xl border border-rose-900/80">
+                        ⚠️ <strong>{classToDelete}</strong> şubesinde kayıtlı toplam <span className="font-black underline text-white">{studentsInTarget.length} öğrenci</span> bulunmaktadır. Sınıf silindiğinde bu öğrencilerin tüm hesapları, şifreleri, ders içi XP puanları, öz değerlendirme/rubrik karneleri ve akıllı tahta katılım geçmişleri <span className="underline font-bold">kalıcı olarak silinecektir</span>.
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                <form onSubmit={handleConfirmDeleteClass} className="space-y-4">
+                  {/* ADIM 1: Risk Kabul Onay Kutusu */}
+                  <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      id="acceptClassDeleteRisk"
+                      checked={isDeleteRiskAccepted}
+                      onChange={(e) => setIsDeleteRiskAccepted(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 rounded border-rose-600 text-rose-600 focus:ring-rose-500 cursor-pointer accent-rose-600"
+                    />
+                    <label htmlFor="acceptClassDeleteRisk" className="text-xs text-slate-300 font-semibold cursor-pointer select-none">
+                      <strong className="text-rose-400 font-bold">{classToDelete}</strong> şubesindeki tüm öğrenci hesaplarının ve geçmiş etkinlik verilerinin geri getirilemeyecek şekilde silineceğini anladım ve kabul ediyorum.
+                    </label>
+                  </div>
+
+                  {/* ADIM 2: Güvenlik Kodu Doğrulaması */}
+                  <div className={`p-4 rounded-2xl border transition-all space-y-3 ${
+                    isDeleteRiskAccepted
+                      ? 'bg-slate-900/90 border-teal-700/60 shadow-md'
+                      : 'bg-slate-900/40 border-slate-800 opacity-60 pointer-events-none'
+                  }`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <label className="text-xs font-bold text-slate-300">
+                        Güvenlik Doğrulama Kodu:
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-black text-sm tracking-widest px-3 py-1 rounded-xl bg-amber-400 text-slate-950 shadow-sm select-all">
+                          {deleteSecurityCode}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeleteSecurityCode(generateRandomSecurityCode(classToDelete));
+                            setInputDeleteSecurityCode('');
+                          }}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs transition-colors cursor-pointer"
+                          title="Yeni Kod Üret"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] text-slate-400 mb-1.5">
+                        Silme işlemini onaylamak için yukarıdaki güvenlik kodunu kutucuğa aynen yazınız:
+                      </p>
+                      <input
+                        type="text"
+                        disabled={!isDeleteRiskAccepted}
+                        placeholder={deleteSecurityCode}
+                        value={inputDeleteSecurityCode}
+                        onChange={(e) => setInputDeleteSecurityCode(e.target.value.toUpperCase().trim())}
+                        className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono font-bold tracking-wider text-white outline-none focus:border-rose-500 uppercase"
+                      />
+                    </div>
+
+                    {/* Kod Eşleşme Durumu */}
+                    {inputDeleteSecurityCode && (
+                      <div className="text-[11px] font-bold flex items-center gap-1.5">
+                        {inputDeleteSecurityCode === deleteSecurityCode ? (
+                          <span className="text-emerald-400 flex items-center gap-1">
+                            <Check className="w-3.5 h-3.5" /> Güvenlik kodu doğrulandı, silme işlemi yapılabilir.
+                          </span>
+                        ) : (
+                          <span className="text-rose-400">
+                            ✕ Girilen kod güvenlik koduyla eşleşmiyor.
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Butonlar */}
+                  <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2 border-t border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteClassModal(false)}
+                      className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                    >
+                      İptal Et
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={!isDeleteRiskAccepted || inputDeleteSecurityCode !== deleteSecurityCode}
+                      className={`w-full sm:w-auto py-2.5 px-6 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2 ${
+                        isDeleteRiskAccepted && inputDeleteSecurityCode === deleteSecurityCode
+                          ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 cursor-pointer animate-pulse'
+                          : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>{classToDelete} Sınıfını ve Tüm Verilerini Kalıcı Olarak Sil</span>
+                    </button>
+                  </div>
                 </form>
               </div>
             )}
@@ -932,21 +1353,27 @@ export function TeacherDashboard() {
                     ))}
                   </select>
 
-                  <div className="sm:col-span-5 flex items-center justify-end gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddModal(false)}
-                      className="py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold"
-                    >
-                      Vazgeç
-                    </button>
-                    <button
-                      type="submit"
-                      className="py-2 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>Öğrenciyi Kaydet</span>
-                    </button>
+                  <div className="sm:col-span-5 flex items-center justify-between gap-2 pt-1 flex-wrap">
+                    <div className="text-[11px] text-teal-300 flex items-center gap-1.5 font-medium">
+                      <KeyRound className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                      <span>Sistem öğrenci için otomatik şifre ve 6 haneli sınıf kodu üretecektir. E-posta gerekmez.</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddModal(false)}
+                        className="py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold"
+                      >
+                        Vazgeç
+                      </button>
+                      <button
+                        type="submit"
+                        className="py-2 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Öğrenciyi Kaydet</span>
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -983,135 +1410,7 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* SECTION 3: LESSON PLANS & CURRICULUM */}
-      {activeSection === 'plans' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-300">
-          
-          {/* Outcome 1 Card */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-teal-600 text-white">
-                  MAT.5.3.1 (1. Hafta)
-                </span>
-                <Link
-                  href="/lesson/MAT.5.3.1"
-                  className="text-xs text-teal-800 font-bold hover:underline flex items-center gap-1"
-                >
-                  <span>Derse Git</span>
-                  <span>➔</span>
-                </Link>
-              </div>
-              <div className="font-black text-sm text-slate-900">
-                Temel Geometrik Çizimler ve Sembolik Gösterimler
-              </div>
-              <div className="text-xs text-slate-500">
-                4 Aşama: Hikaye, Atölye, Kelime Avı, 8 Soru Test, Rubrik Öz Değerlendirme
-              </div>
-            </div>
 
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const out = getOutcomeById('MAT.5.3.1');
-                  if (out) {
-                    playSound('select');
-                    setActivePlanOutcome(out);
-                  }
-                }}
-                className="w-full py-2.5 px-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <FileText className="w-4 h-4 text-teal-600" />
-                <span>Günlük Planı İndir (PDF)</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Outcome 2 Card */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-indigo-600 text-white">
-                  MAT.5.3.2 (2. Hafta)
-                </span>
-                <Link
-                  href="/lesson/MAT.5.3.2"
-                  className="text-xs text-indigo-800 font-bold hover:underline flex items-center gap-1"
-                >
-                  <span>Derse Git</span>
-                  <span>➔</span>
-                </Link>
-              </div>
-              <div className="font-black text-sm text-slate-900">
-                Geometrik İnşa ve Çıkarım: Cetvel, Pergel, Gönye
-              </div>
-              <div className="text-xs text-slate-500">
-                Ölçüsüz Cetvel, Pergel ile Eşit Parçalar, Gönye ile Tek Dikme & Paralellik
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const out = getOutcomeById('MAT.5.3.2');
-                  if (out) {
-                    playSound('select');
-                    setActivePlanOutcome(out);
-                  }
-                }}
-                className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <FileText className="w-4 h-4 text-indigo-600" />
-                <span>Günlük Planı İndir (PDF)</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Outcome 3 Card: MAT.5.3.3 */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-amber-600 text-white">
-                  MAT.5.3.3 (3. Hafta)
-                </span>
-                <Link
-                  href="/lesson/MAT.5.3.3"
-                  className="text-xs text-amber-800 font-bold hover:underline flex items-center gap-1"
-                >
-                  <span>Derse Git</span>
-                  <span>➔</span>
-                </Link>
-              </div>
-              <div className="font-black text-sm text-slate-900">
-                Açı Çeşitleri, İletki ile Ölçüm & Radar Simülasyonu
-              </div>
-              <div className="text-xs text-slate-500">
-                İnteraktif Açı Laboratuvarı, Açı Radarı Oyunu, 5 Düzeyli Öz Değerlendirme Rubriği
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const out = getOutcomeById('MAT.5.3.3');
-                  if (out) {
-                    playSound('select');
-                    setActivePlanOutcome(out);
-                  }
-                }}
-                className="w-full py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <FileText className="w-4 h-4 text-amber-600" />
-                <span>Günlük Planı İndir (PDF)</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-      )}
 
       {/* SECTION 4: CLASSROOM FILES & WHITEBOARD NOTES */}
       {activeSection === 'files' && (
@@ -1125,7 +1424,7 @@ export function TeacherDashboard() {
                 <span>Sınıf Dosyaları & Dijital Beyaz Tahta Notları</span>
               </h3>
               <p className="text-xs text-slate-500">
-                Akıllı tahtada ders esnasında yazılıp çizilen veya sisteme eklenen A4 ders notları, öğrenme çıktısı ve şube etiketleriyle burada arşivlenir. Öğrenciler de kendi panellerinden bu notları PDF olarak indirebilir.
+                Akıllı tahtada ders esnasında yazılıp çizilen veya sınıfa gönderilen düzenlenmiş A4 etkinlik kağıtları ve ders notları, öğrenme çıktısı ve şube etiketleriyle burada arşivlenir. Öğrenciler de kendi panellerinden bu notları PDF olarak indirebilir.
               </p>
             </div>
 
@@ -1164,7 +1463,7 @@ export function TeacherDashboard() {
               >
                 <option value="all">Tüm Türler</option>
                 <option value="whiteboard_note">📐 Beyaz Tahta Notları</option>
-                <option value="activity_sheet">📝 Etkinlik Kağıtları</option>
+                <option value="activity_sheet">📝 Sınıfa Gönderilen Etkinlik Kağıtları</option>
               </select>
             </div>
 
@@ -1200,7 +1499,7 @@ export function TeacherDashboard() {
 
           {/* Files Grid */}
           {(() => {
-            const filtered = classroomFiles.filter((f) => {
+            const filtered = visibleClassFiles.filter((f) => {
               const isSheet =
                 f.fileType === 'activity_sheet' ||
                 f.tags?.includes('Etkinlik Kağıdı') ||
@@ -1233,7 +1532,7 @@ export function TeacherDashboard() {
                     Aramanıza Uygun Dosya Bulunamadı
                   </div>
                   <p className="text-xs text-slate-500 max-w-md mx-auto">
-                    Henüz bu filtreye ait bir beyaz tahta ders notu veya etkinlik kağıdı kaydedilmemiş.
+                    Henüz bu filtreye ait bir beyaz tahta ders notu veya sınıfa gönderilmiş etkinlik kağıdı kaydedilmemiş.
                   </p>
                   <button
                     type="button"
@@ -1284,7 +1583,7 @@ export function TeacherDashboard() {
                               </span>
                             )}
                           </div>
-                          <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                          <span className="text-[11px] text-slate-400 font-extrabold flex items-center gap-1">
                             <Layers className="w-3.5 h-3.5" />
                             <span>{file.pageCount} Sayfa</span>
                           </span>
@@ -1298,7 +1597,7 @@ export function TeacherDashboard() {
                               type="button"
                               onClick={() => {
                                 const newStatus = !file.isPublishedToClass;
-                                publishFileToClass(file.id, newStatus);
+                                publishFileToClass(file.id, newStatus, currentUser?.id);
                                 setClassroomFiles(getStoredClassroomFiles());
                                 playSound(newStatus ? 'success' : 'click');
                               }}
@@ -1417,14 +1716,7 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* Lesson Plan PDF Modal */}
-      {activePlanOutcome && (
-        <LessonPlanModal
-          isOpen={!!activePlanOutcome}
-          onClose={() => setActivePlanOutcome(null)}
-          outcome={activePlanOutcome}
-        />
-      )}
+
 
       {/* Dashboard Whiteboard Modal (Editable Mode) */}
       {dashboardWhiteboardOpen && (
