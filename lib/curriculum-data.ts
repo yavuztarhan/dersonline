@@ -3206,6 +3206,7 @@ export const CURRICULUM_DATA: Grade[] = [
       }
     ]
   },
+  /*
   {
     id: 'grade-8',
     level: 8,
@@ -3227,6 +3228,7 @@ export const CURRICULUM_DATA: Grade[] = [
       }
     ]
   }
+  */
 ];
 
 export function getAllOutcomes(): Outcome[] {
