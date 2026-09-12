@@ -318,8 +318,20 @@ export async function DELETE(req: NextRequest) {
         );
       }
       const dbTeacherProfileId = tProf.id;
+      const targetSchool = tProf.school;
 
-      // 2. Delete Classroom record
+      // Check if another teacher in the same school has this class
+      const otherTeachersClassCount = await prisma.classroom.count({
+        where: {
+          name: cleanName,
+          teacherId: { not: dbTeacherProfileId },
+          ...(targetSchool ? { school: { equals: targetSchool, mode: 'insensitive' as const } } : {})
+        }
+      });
+
+      const isSharedWithOtherTeachers = otherTeachersClassCount > 0;
+
+      // 2. Delete Classroom record for this teacher
       if (dbTeacherProfileId) {
         await prisma.classroom.deleteMany({
           where: {
@@ -329,73 +341,80 @@ export async function DELETE(req: NextRequest) {
         });
       }
 
-      // 3. Find students belonging to this class section
-      const studentProfiles = await prisma.studentProfile.findMany({
-        where: {
-          classSection: cleanName,
-          ...(dbTeacherProfileId ? { teacherId: dbTeacherProfileId } : {})
-        },
-        select: { id: true, userId: true, studentNumber: true }
-      });
-
-      const userIdsToDelete = studentProfiles.map((sp) => sp.userId);
-      const studentProfileIds = studentProfiles.map((sp) => sp.id);
-
-      // 4. Cascade delete student-related records
-      if (studentProfileIds.length > 0) {
-        await prisma.selfAssessmentSubmission.deleteMany({
+      // 3. If NOT shared with any other teacher, delete students and associated records
+      let userIdsToDelete: string[] = [];
+      if (!isSharedWithOtherTeachers) {
+        const studentProfiles = await prisma.studentProfile.findMany({
           where: {
-            OR: [
-              { classSection: cleanName },
-              { studentId: { in: studentProfileIds } }
-            ]
-          }
+            classSection: cleanName,
+            ...(targetSchool ? { school: { equals: targetSchool, mode: 'insensitive' as const } } : {})
+          },
+          select: { id: true, userId: true, studentNumber: true }
         });
 
-        await prisma.learningJournal.deleteMany({
-          where: {
-            OR: [
-              { classSection: cleanName },
-              { studentId: { in: studentProfileIds } }
-            ]
-          }
-        });
+        userIdsToDelete = studentProfiles.map((sp) => sp.userId);
+        const studentProfileIds = studentProfiles.map((sp) => sp.id);
 
-        await prisma.peerEvaluationSubmission.deleteMany({
-          where: {
-            OR: [
-              { classSection: cleanName },
-              { evaluatorStudentId: { in: studentProfileIds } },
-              { targetStudentId: { in: studentProfileIds } }
-            ]
-          }
-        });
+        // 4. Cascade delete student-related records
+        if (studentProfileIds.length > 0) {
+          await prisma.selfAssessmentSubmission.deleteMany({
+            where: {
+              OR: [
+                { classSection: cleanName },
+                { studentId: { in: studentProfileIds } }
+              ]
+            }
+          }).catch(() => {});
 
-        await prisma.boardParticipation.deleteMany({
-          where: {
-            OR: [
-              { classSection: cleanName },
-              { studentId: { in: studentProfileIds } }
-            ]
-          }
-        });
+          await prisma.learningJournal.deleteMany({
+            where: {
+              OR: [
+                { classSection: cleanName },
+                { studentId: { in: studentProfileIds } }
+              ]
+            }
+          }).catch(() => {});
 
-        // 5. Delete student profiles and user accounts
-        await prisma.studentProfile.deleteMany({
-          where: { id: { in: studentProfileIds } }
-        });
+          await prisma.peerEvaluationSubmission.deleteMany({
+            where: {
+              OR: [
+                { classSection: cleanName },
+                { evaluatorStudentId: { in: studentProfileIds } },
+                { targetStudentId: { in: studentProfileIds } }
+              ]
+            }
+          }).catch(() => {});
 
-        await prisma.user.deleteMany({
-          where: {
-            id: { in: userIdsToDelete },
-            role: Role.STUDENT
-          }
-        });
+          await prisma.boardParticipation.deleteMany({
+            where: {
+              OR: [
+                { classSection: cleanName },
+                { studentId: { in: studentProfileIds } }
+              ]
+            }
+          }).catch(() => {});
+
+          // 5. Delete student profiles and user accounts
+          await prisma.studentProfile.deleteMany({
+            where: { id: { in: studentProfileIds } }
+          }).catch(() => {});
+
+          await prisma.user.deleteMany({
+            where: {
+              id: { in: userIdsToDelete },
+              role: Role.STUDENT
+            }
+          }).catch(() => {});
+        }
       }
 
       return NextResponse.json({
         success: true,
-        message: `${cleanName} sınıfı ve ilgili ${userIdsToDelete.length} öğrenci başarıyla silindi.`
+        isShared: isSharedWithOtherTeachers,
+        deletedStudentCount: userIdsToDelete.length,
+        message: isSharedWithOtherTeachers
+          ? `${cleanName} sınıfı listenizden kaldırıldı. (Diğer öğretmenlerde kayıtlı olduğu için korundu.)`
+          : `${cleanName} sınıfı ve ilgili ${userIdsToDelete.length} öğrenci başarıyla silindi.`
       });
     } catch (dbError: any) {
       console.warn('[Students API] Database delete note (proceeding with local store):', dbError);

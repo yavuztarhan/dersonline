@@ -173,6 +173,8 @@ export function TeacherDashboard() {
   const [newClassBranch, setNewClassBranch] = useState('A');
   const [addStudentError, setAddStudentError] = useState<string | null>(null);
   const [isGeneratingCardsPdf, setIsGeneratingCardsPdf] = useState(false);
+  const [dbSchoolClasses, setDbSchoolClasses] = useState<string[]>([]);
+  const [isLoadingSchoolClasses, setIsLoadingSchoolClasses] = useState(false);
 
   // Sınıf Silme Modalı State (Yüksek Güvenlikli)
   const [showDeleteClassModal, setShowDeleteClassModal] = useState(false);
@@ -181,10 +183,29 @@ export function TeacherDashboard() {
   const [deleteSecurityCode, setDeleteSecurityCode] = useState('');
   const [inputDeleteSecurityCode, setInputDeleteSecurityCode] = useState('');
 
-  // Okulun tüm kayıtlı sınıfları (Ortak Havuz)
+  // Veritabanından okulun tüm sınıflarını canlı sorgula
+  useEffect(() => {
+    if (showAddClassModal && teacher?.school) {
+      setIsLoadingSchoolClasses(true);
+      fetch(`/api/classrooms?school=${encodeURIComponent(teacher.school)}&email=${encodeURIComponent(currentUser?.email || '')}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && Array.isArray(data.schoolClasses)) {
+            setDbSchoolClasses(data.schoolClasses);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setIsLoadingSchoolClasses(false));
+    }
+  }, [showAddClassModal, teacher?.school, currentUser?.email]);
+
+  // Okulun tüm kayıtlı sınıfları (Ortak Havuz - Veritabanı ve Yerel Kayıtlar Birleştirilmiş)
   const schoolPoolClasses: string[] = useMemo(() => {
-    return getSchoolClasses ? getSchoolClasses(teacher?.school) : [];
-  }, [getSchoolClasses, teacher?.school, classrooms, teachers, students]);
+    const local = getSchoolClasses ? getSchoolClasses(teacher?.school) : [];
+    const merged = Array.from(new Set([...dbSchoolClasses, ...local]));
+    return merged.sort((a, b) => a.localeCompare(b, 'tr-TR', { numeric: true }));
+  }, [getSchoolClasses, teacher?.school, dbSchoolClasses, classrooms, teachers, students]);
+
 
   // Keep selectedClass synchronized if classes change
   useEffect(() => {
@@ -1232,10 +1253,14 @@ export function TeacherDashboard() {
                           <h4 className="text-xs font-black uppercase tracking-wider text-teal-300 flex items-center gap-1.5">
                             <Users className="w-3.5 h-3.5 text-teal-400" />
                             <span>1. Okulunuzda Kayıtlı Sınıflar (Ortak Havuz)</span>
+                            {isLoadingSchoolClasses && (
+                              <Loader2 className="w-3 h-3 text-teal-400 animate-spin" />
+                            )}
                           </h4>
                           <p className="text-[11px] text-slate-400 mt-0.5">
                             Okulunuzdaki öğretmenlerin açtığı sınıfları işaretleyerek listenize ekleyin:
                           </p>
+
                         </div>
                         {selectedPoolClasses.length > 0 && (
                           <span className="px-2 py-0.5 rounded-full bg-teal-500/20 border border-teal-400 text-teal-300 font-black text-[11px]">

@@ -56,7 +56,8 @@ interface AuthContextType {
   addClassToTeacher: (teacherId: string, className: string) => void;
   addClassesToTeacher: (teacherId: string, classNames: string[]) => void;
   getSchoolClasses: (schoolName?: string) => string[];
-  deleteClassFromTeacher: (teacherId: string, className: string) => { deletedStudentCount: number };
+  deleteClassFromTeacher: (teacherId: string, className: string) => { deletedStudentCount: number; isShared?: boolean };
+
   getClassCodeForClass: (className: string, teacherId?: string) => string;
 
   // Student Registration Flow
@@ -1717,51 +1718,140 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           assignedClasses: updatedClasses.length > 0 ? updatedClasses : cleanList,
         }),
       }).catch((err) => console.warn('[addClassesToTeacher] DB sync note:', err));
+
+      fetch('/api/classrooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teacherId,
+          email: syncEmail,
+          school: teacherSchool,
+          classNames: cleanList
+        })
+      }).catch((err) => console.warn('[addClassesToTeacher] /api/classrooms sync note:', err));
     }
   };
 
-  const deleteClassFromTeacher = (teacherId: string, className: string): { deletedStudentCount: number } => {
+  const deleteClassFromTeacher = (teacherId: string, className: string): { deletedStudentCount: number; isShared?: boolean } => {
     const trimmed = className.trim().toUpperCase();
-    if (!trimmed) return { deletedStudentCount: 0 };
+    if (!trimmed) return { deletedStudentCount: 0, isShared: false };
 
-    // 1. Identify all students in this class belonging to this teacher
-    const targetTeacher = teachers.find((t) => t.id === teacherId);
-    const teacherSchool = targetTeacher?.school;
+    // 1. Identify all teachers and school
+    const targetTeacher = teachers.find((t) => t.id === teacherId || (currentUser?.email && t.email?.toLowerCase() === currentUser.email.toLowerCase()));
+    const teacherSchool = targetTeacher?.school || (currentUser as any)?.school;
 
-    const studentsToDelete = students.filter(
-      (s) =>
-        s.classSection.toUpperCase() === trimmed &&
-        (!s.teacherId || s.teacherId === teacherId || (teacherSchool && s.school === teacherSchool))
+    // Check if any other teacher in the same school has this class assigned
+    const otherTeachersWithThisClass = teachers.filter(
+      (t) =>
+        t.id !== targetTeacher?.id &&
+        (!teacherSchool || !t.school || t.school.trim().toLowerCase() === teacherSchool.trim().toLowerCase()) &&
+        (t.assignedClasses || []).some((c) => c.toUpperCase() === trimmed)
     );
-    const studentIdsToDelete = new Set(studentsToDelete.map((s) => s.id));
-    const studentNumbersToDelete = new Set(studentsToDelete.map((s) => s.studentNumber));
 
-    // 2. Remove students from state and localStorage
-    setStudents((prev) => {
-      const nextStudents = prev.filter((s) => !studentIdsToDelete.has(s.id));
-      try {
-        localStorage.setItem('maarif_students', JSON.stringify(nextStudents));
-      } catch (e) {}
-      return nextStudents;
-    });
+    const isSharedWithOtherTeachers = otherTeachersWithThisClass.length > 0;
+    let deletedStudentCount = 0;
 
-    // 3. Remove classroom from classrooms state and localStorage
-    setClassrooms((prev) => {
-      const nextClassrooms = prev.filter(
-        (c) => !(c.name.toUpperCase() === trimmed && (!c.teacherId || c.teacherId === teacherId))
+    // 2. If NOT shared with other teachers, delete students from state and localStorage
+    if (!isSharedWithOtherTeachers) {
+      const studentsToDelete = students.filter(
+        (s) =>
+          s.classSection.toUpperCase() === trimmed &&
+          (!s.teacherId || s.teacherId === teacherId || (teacherSchool && s.school === teacherSchool))
       );
-      try {
-        localStorage.setItem('maarif_classrooms', JSON.stringify(nextClassrooms));
-      } catch (e) {}
-      return nextClassrooms;
-    });
+      const studentIdsToDelete = new Set(studentsToDelete.map((s) => s.id));
+      const studentNumbersToDelete = new Set(studentsToDelete.map((s) => s.studentNumber));
+      deletedStudentCount = studentIdsToDelete.size;
 
-    // 4. Remove class from teacher's assignedClasses
+      setStudents((prev) => {
+        const nextStudents = prev.filter((s) => !studentIdsToDelete.has(s.id));
+        try {
+          localStorage.setItem('maarif_students', JSON.stringify(nextStudents));
+        } catch (e) {}
+        return nextStudents;
+      });
+
+      // Remove classroom from classrooms state and localStorage
+      setClassrooms((prev) => {
+        const nextClassrooms = prev.filter(
+          (c) => !(c.name.toUpperCase() === trimmed && (!teacherSchool || !c.school || c.school.trim().toLowerCase() === teacherSchool.trim().toLowerCase()))
+        );
+        try {
+          localStorage.setItem('maarif_classrooms', JSON.stringify(nextClassrooms));
+        } catch (e) {}
+        return nextClassrooms;
+      });
+
+      // Clean up associated stores
+      try {
+        const rubricsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_rubric_submissions_v1') : null;
+        if (rubricsRaw) {
+          const rubrics = JSON.parse(rubricsRaw);
+          const filteredRubrics = rubrics.filter(
+            (r: any) =>
+              !(
+                r.classSection?.toUpperCase() === trimmed &&
+                (r.teacherId === teacherId || studentNumbersToDelete.has(r.studentNumber))
+              )
+          );
+          localStorage.setItem('maarif_rubric_submissions_v1', JSON.stringify(filteredRubrics));
+        }
+
+        const journalsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_learning_journals_v1') : null;
+        if (journalsRaw) {
+          const journals = JSON.parse(journalsRaw);
+          const filteredJournals = journals.filter((j: any) => j.classSection?.toUpperCase() !== trimmed);
+          localStorage.setItem('maarif_learning_journals_v1', JSON.stringify(filteredJournals));
+        }
+
+        const boardRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_board_participations_v1') : null;
+        if (boardRaw) {
+          const board = JSON.parse(boardRaw);
+          const filteredBoard = board.filter(
+            (b: any) =>
+              !(
+                b.classSection?.toUpperCase() === trimmed &&
+                (b.teacherId === teacherId || studentNumbersToDelete.has(b.studentNumber))
+              )
+          );
+          localStorage.setItem('maarif_board_participations_v1', JSON.stringify(filteredBoard));
+        }
+
+        const peerRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_peer_evaluations_v1') : null;
+        if (peerRaw) {
+          const peer = JSON.parse(peerRaw);
+          const filteredPeer = peer.filter((p: any) => p.classSection?.toUpperCase() !== trimmed);
+          localStorage.setItem('maarif_peer_evaluations_v1', JSON.stringify(filteredPeer));
+        }
+
+        const groupsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_teacher_groups_v1') : null;
+        if (groupsRaw) {
+          const groups = JSON.parse(groupsRaw);
+          const filteredGroups = groups.filter((g: any) => g.classSection?.toUpperCase() !== trimmed);
+          localStorage.setItem('maarif_teacher_groups_v1', JSON.stringify(filteredGroups));
+        }
+      } catch (cleanErr) {
+        console.warn('[deleteClassFromTeacher] Error cleaning related stores:', cleanErr);
+      }
+    } else {
+      // If shared with other teachers, remove only this teacher's classroom entry
+      setClassrooms((prev) => {
+        const nextClassrooms = prev.filter(
+          (c) => !(c.name.toUpperCase() === trimmed && c.teacherId === teacherId)
+        );
+        try {
+          localStorage.setItem('maarif_classrooms', JSON.stringify(nextClassrooms));
+        } catch (e) {}
+        return nextClassrooms;
+      });
+    }
+
+    // 3. Remove class from teacher's assignedClasses
+    const remainingClasses = (targetTeacher?.assignedClasses || []).filter((c) => c.toUpperCase() !== trimmed);
     const updatedTeachers = teachers.map((t) => {
-      if (t.id === teacherId) {
+      if (t.id === teacherId || (targetTeacher?.email && t.email?.toLowerCase() === targetTeacher.email.toLowerCase())) {
         return {
           ...t,
-          assignedClasses: (t.assignedClasses || []).filter((c) => c.toUpperCase() !== trimmed)
+          assignedClasses: remainingClasses
         };
       }
       return t;
@@ -1771,8 +1861,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('maarif_teachers', JSON.stringify(updatedTeachers));
     } catch (e) {}
 
-    if (currentUser && currentUser.id === teacherId) {
-      const target = updatedTeachers.find((t) => t.id === teacherId);
+    if (currentUser && (currentUser.id === teacherId || (targetTeacher?.email && currentUser.email?.toLowerCase() === targetTeacher.email.toLowerCase()))) {
+      const target = updatedTeachers.find((t) => t.id === teacherId || (targetTeacher?.email && t.email?.toLowerCase() === targetTeacher.email.toLowerCase()));
       if (target) {
         setCurrentUser(target);
         try {
@@ -1781,76 +1871,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // 5. Clean up associated data in related localStorage stores
+    // 4. Asynchronously sync class deletion to backend database
     try {
-      // Rubrics / self assessment submissions
-      const rubricsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_rubric_submissions_v1') : null;
-      if (rubricsRaw) {
-        const rubrics = JSON.parse(rubricsRaw);
-        const filteredRubrics = rubrics.filter(
-          (r: any) =>
-            !(
-              r.classSection?.toUpperCase() === trimmed &&
-              (r.teacherId === teacherId || studentNumbersToDelete.has(r.studentNumber))
-            )
-        );
-        localStorage.setItem('maarif_rubric_submissions_v1', JSON.stringify(filteredRubrics));
-      }
+      const syncEmail = targetTeacher?.email || currentUser?.email;
+      fetch('/api/classrooms', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teacherId,
+          email: syncEmail,
+          className: trimmed,
+          school: teacherSchool
+        })
+      }).catch((err) => console.warn('[deleteClassFromTeacher] /api/classrooms deletion sync note:', err));
 
-      // Learning journals
-      const journalsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_learning_journals_v1') : null;
-      if (journalsRaw) {
-        const journals = JSON.parse(journalsRaw);
-        const filteredJournals = journals.filter((j: any) => j.classSection?.toUpperCase() !== trimmed);
-        localStorage.setItem('maarif_learning_journals_v1', JSON.stringify(filteredJournals));
-      }
-
-      // Board participations
-      const boardRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_board_participations_v1') : null;
-      if (boardRaw) {
-        const board = JSON.parse(boardRaw);
-        const filteredBoard = board.filter(
-          (b: any) =>
-            !(
-              b.classSection?.toUpperCase() === trimmed &&
-              (b.teacherId === teacherId || studentNumbersToDelete.has(b.studentNumber))
-            )
-        );
-        localStorage.setItem('maarif_board_participations_v1', JSON.stringify(filteredBoard));
-      }
-
-      // Peer evaluations
-      const peerRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_peer_evaluations_v1') : null;
-      if (peerRaw) {
-        const peer = JSON.parse(peerRaw);
-        const filteredPeer = peer.filter((p: any) => p.classSection?.toUpperCase() !== trimmed);
-        localStorage.setItem('maarif_peer_evaluations_v1', JSON.stringify(filteredPeer));
-      }
-
-      // Teacher groups
-      const groupsRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_teacher_groups_v1') : null;
-      if (groupsRaw) {
-        const groups = JSON.parse(groupsRaw);
-        const filteredGroups = groups.filter((g: any) => g.classSection?.toUpperCase() !== trimmed);
-        localStorage.setItem('maarif_teacher_groups_v1', JSON.stringify(filteredGroups));
-      }
-    } catch (cleanErr) {
-      console.warn('[deleteClassFromTeacher] Error cleaning related stores:', cleanErr);
-    }
-
-    // 6. Asynchronously sync class deletion to backend database
-    try {
       fetch('/api/students', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           teacherId,
-          className: trimmed
+          email: syncEmail,
+          className: trimmed,
+          school: teacherSchool
         })
-      }).catch((err) => console.warn('[deleteClassFromTeacher] DB deletion sync note:', err));
+      }).catch((err) => console.warn('[deleteClassFromTeacher] /api/students deletion sync note:', err));
 
-      const remainingClasses = (targetTeacher?.assignedClasses || []).filter((c) => c.toUpperCase() !== trimmed);
-      const syncEmail = targetTeacher?.email || currentUser?.email;
       if (syncEmail) {
         fetch('/api/user/profile', {
           method: 'POST',
@@ -1863,10 +1908,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (e) {}
 
-    return { deletedStudentCount: studentsToDelete.length };
+    return { deletedStudentCount, isShared: isSharedWithOtherTeachers };
   };
 
   const addStudent = (student: StudentUser): { success: boolean; error?: string; student?: StudentUser } => {
+
     const fName = student.firstName || splitFullName(student.name || '').firstName || 'Öğrenci';
     const lName = student.lastName || splitFullName(student.name || '').lastName || '';
     const fullName = formatFullName(fName, lName, student.name || 'Öğrenci');
