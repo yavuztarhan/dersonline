@@ -55,83 +55,64 @@ function createPageHTML(
 
       return `
         <div style="
-          border: 1.5px dashed #64748b;
-          border-radius: 10px;
+          border: 1.5px dashed #94a3b8;
+          border-radius: 8px;
           background: #f8fafc;
           padding: 8px 10px;
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          height: 182px;
-          position: relative;
+          height: 100%;
+          overflow: hidden;
         ">
-          <!-- Cut Scissors Indicator Top -->
+          <!-- Card Header & Website -->
           <div style="
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 8.5px;
-            color: #64748b;
-            font-weight: 700;
-            border-bottom: 1px dashed #cbd5e1;
-            padding-bottom: 4px;
-            margin-bottom: 4px;
+            padding-bottom: 3px;
+            margin-bottom: 2px;
+            border-bottom: 1px solid #e2e8f0;
           ">
-            <span>✂️ KESİM ÇİZGİSİ</span>
-            <span style="letter-spacing: 2px;">- - - - - - - - - - - - - - - - - - - -</span>
-            <span style="color: #0284c7; font-weight: 800;">maarifakademi.com.tr</span>
+            <span style="font-size: 10.5px; font-weight: 800; color: #0284c7;">
+              maarifakademi.com.tr
+            </span>
+            <span style="font-size: 9px; font-weight: 800; color: #475569; background: #e2e8f0; padding: 1px 5px; border-radius: 4px;">
+              Öğrenci Giriş Kartı
+            </span>
           </div>
 
-          <!-- Card Header & Student Name -->
-          <div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-              <span style="
-                background: #0f172a;
-                color: #ffffff;
-                font-size: 9px;
-                font-weight: 900;
-                padding: 1.5px 6px;
-                border-radius: 5px;
-                letter-spacing: 0.5px;
-              ">
-                🎓 MAARİF DERS SİSTEMİ
-              </span>
-              <span style="font-size: 9px; font-weight: 700; color: #475569;">
-                Öğrenci Giriş Kartı
-              </span>
-            </div>
-
-            <div style="font-size: 13px; font-weight: 900; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              ${stuName}
-            </div>
+          <!-- Student Name -->
+          <div style="font-size: 12.5px; font-weight: 900; color: #0f172a; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${stuName}
           </div>
 
           <!-- Key Credentials Badges (4 parameters) -->
           <div style="
             display: grid;
-            grid-template-columns: 1fr 1fr 1.3fr 1.3fr;
+            grid-template-columns: 1fr 1fr 1.25fr 1.25fr;
             gap: 4px;
-            margin: 4px 0;
+            margin: 3px 0;
           ">
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 3px 4px; text-align: center;">
-              <div style="font-size: 7.5px; color: #64748b; font-weight: 700; text-transform: uppercase;">Şube</div>
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 2.5px 3px; text-align: center;">
+              <div style="font-size: 7px; color: #64748b; font-weight: 700; text-transform: uppercase;">Şube</div>
               <div style="font-size: 10px; font-weight: 900; color: #0f172a;">${classSection}</div>
             </div>
 
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 3px 4px; text-align: center;">
-              <div style="font-size: 7.5px; color: #64748b; font-weight: 700; text-transform: uppercase;">Okul No</div>
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 2.5px 3px; text-align: center;">
+              <div style="font-size: 7px; color: #64748b; font-weight: 700; text-transform: uppercase;">Okul No</div>
               <div style="font-size: 10px; font-weight: 900; color: #0f172a;">#${stuNumber}</div>
             </div>
 
-            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 3px 4px; text-align: center;">
-              <div style="font-size: 7.5px; color: #1e40af; font-weight: 700; text-transform: uppercase;">Sınıf Kodu</div>
-              <div style="font-size: 11px; font-weight: 900; font-family: monospace; color: #1e3a8a; letter-spacing: 0.5px;">${classCode}</div>
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px; padding: 2.5px 3px; text-align: center;">
+              <div style="font-size: 7px; color: #1e40af; font-weight: 700; text-transform: uppercase;">Sınıf Kodu</div>
+              <div style="font-size: 10.5px; font-weight: 900; font-family: monospace; color: #1e3a8a;">${classCode}</div>
             </div>
 
-            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 3px 4px; text-align: center;">
-              <div style="font-size: 7.5px; color: #065f46; font-weight: 700; text-transform: uppercase;">Şifre</div>
-              <div style="font-size: 11px; font-weight: 900; font-family: monospace; color: #047857;">${password}</div>
+            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 5px; padding: 2.5px 3px; text-align: center;">
+              <div style="font-size: 7px; color: #065f46; font-weight: 700; text-transform: uppercase;">Şifre</div>
+              <div style="font-size: 10.5px; font-weight: 900; font-family: monospace; color: #047857;">${password}</div>
             </div>
           </div>
 
@@ -139,23 +120,21 @@ function createPageHTML(
           <div style="
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 4px 7px;
-            font-size: 8px;
-            line-height: 1.25;
+            border-radius: 5px;
+            padding: 4px 6px;
+            font-size: 7.5px;
+            line-height: 1.3;
             color: #334155;
+            margin-top: 2px;
           ">
-            <div style="font-weight: 800; color: #0f172a; margin-bottom: 2px;">
-              📌 Sisteme Nasıl Giriş Yapılır?
+            <div style="font-weight: 800; color: #0f172a; margin-bottom: 1.5px;">
+              Giriş Yönergesi:
             </div>
             <div>
               <strong>1.</strong> Tarayıcınızdan <strong style="color: #0284c7;">maarifakademi.com.tr</strong> adresine girin.
             </div>
             <div>
-              <strong>2.</strong> <strong>"Öğrenci Girişi"</strong> butonuna tıklayıp <strong>Sınıf Kodu (${classCode})</strong>, <strong>Okul No (#${stuNumber})</strong> ve <strong>Şifrenizi</strong> yazın.
-            </div>
-            <div>
-              <strong>3.</strong> Akıllı tahta oyunlarına, ödevlere ve haftalık ders içeriklerine katılın!
+              <strong>2.</strong> <strong>Öğrenci Girişi</strong> ekranında <strong>Sınıf Kodu</strong> (${classCode}), <strong>Okul No</strong> (#${stuNumber}) ve <strong>Şifreniz</strong> ile giriş yapın.
             </div>
           </div>
         </div>
@@ -175,7 +154,7 @@ function createPageHTML(
     ">
       <div>
         <div style="font-size: 9px; font-weight: 800; letter-spacing: 1px; color: #64748b; text-transform: uppercase;">
-          T.C. MİLLÎ EĞİTİM BAKANLIĞI • MAARİF DERS SİSTEMİ
+          T.C. MİLLÎ EĞİTİM BAKANLIĞI
         </div>
         <div style="font-size: 15px; font-weight: 900; color: #0f172a; margin-top: 1px;">
           ${options.schoolName || 'Okul Bilgisi'}
@@ -210,8 +189,10 @@ function createPageHTML(
     <div style="
       display: grid;
       grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(5, 1fr);
       gap: 10px;
       flex: 1;
+      min-height: 0;
     ">
       ${cardsHtml}
     </div>
@@ -229,10 +210,10 @@ function createPageHTML(
       font-weight: 600;
     ">
       <div>
-        ✂️ <strong>Öğretmen Bilgilendirmesi:</strong> Lütfen her bir öğrenciye ait kartı kesikli çizgilerden keserek dağıtınız.
+        <strong>Öğretmen Bilgilendirmesi:</strong> Lütfen her bir öğrenciye ait kartı kesikli çizgilerden ayırarak dağıtınız.
       </div>
       <div>
-        <strong>maarifakademi.com.tr</strong> • Maarif Eğitim Portalı
+        <strong>maarifakademi.com.tr</strong>
       </div>
       <div>
         Sayfa ${pageIndex + 1} / ${totalPages} (Toplam ${options.students.length} Öğrenci)
