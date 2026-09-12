@@ -149,6 +149,12 @@ export function enrichUser(u: any): any {
   if (!u.name) {
     u.name = formatFullName(u.firstName, u.lastName, 'Kullanıcı');
   }
+  // Sanitize student password: never allow raw bcrypt hash or raw ciphertext on client
+  if (u.role === 'student' && typeof u.password === 'string') {
+    if (u.password.startsWith('$2') || u.password.startsWith('enc:') || u.password.length > 25) {
+      u.password = u.studentNumber || '123456';
+    }
+  }
   return u;
 }
 
@@ -1639,6 +1645,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           classNames: cleanList
         })
       }).catch((err) => console.warn('[addClassesToTeacher] /api/classrooms sync note:', err));
+
+      // Live sync students from database for the added class with decrypted passwords
+      fetch('/api/students')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && Array.isArray(data.students)) {
+            const enriched = data.students.map(enrichUser);
+            setStudents(enriched);
+            try {
+              localStorage.setItem('maarif_students', JSON.stringify(enriched));
+            } catch (e) {}
+          }
+        })
+        .catch((err) => console.warn('[addClassesToTeacher] /api/students sync note:', err));
     }
   };
 

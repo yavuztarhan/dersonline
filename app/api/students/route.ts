@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Role } from '@prisma/client';
-import { hashPassword, isPasswordHashed } from '@/lib/password';
+import {
+  hashPassword,
+  isPasswordHashed,
+  encryptStudentPassword,
+  decryptStudentPassword,
+  isEncryptedStudentPassword
+} from '@/lib/password';
 
 export async function GET(req: NextRequest) {
   try {
@@ -40,13 +46,27 @@ export async function GET(req: NextRequest) {
 
       const formatted = dbStudents.map((u) => {
         const sp = u.studentProfile;
+        const rawPass = u.password || '';
+        let decryptedPass = '';
+        if (isEncryptedStudentPassword(rawPass)) {
+          decryptedPass = decryptStudentPassword(rawPass);
+        } else if (isPasswordHashed(rawPass)) {
+          // If legacy bcrypt hash exists, fallback to student number or default so raw hash is NEVER exposed
+          decryptedPass = sp?.studentNumber || '123456';
+        } else {
+          decryptedPass = rawPass || '123456';
+        }
+        if (!decryptedPass || decryptedPass.trim().length === 0) {
+          decryptedPass = sp?.studentNumber || '123456';
+        }
+
         return {
           id: u.id,
           name: u.name,
           firstName: u.firstName,
           lastName: u.lastName,
           email: u.email || undefined,
-          password: u.password || 'admin',
+          password: decryptedPass,
           role: 'student',
           avatar: u.avatar || '🎓',
           studentNumber: sp?.studentNumber || '',
@@ -83,7 +103,9 @@ export async function POST(req: NextRequest) {
     if (action === 'update_password' && (studentId || studentNumber)) {
       try {
         const cleanPass = (newPassword || '').trim();
-        const finalHashedPassword = isPasswordHashed(cleanPass) ? cleanPass : await hashPassword(cleanPass);
+        const finalStoredPassword = isEncryptedStudentPassword(cleanPass)
+          ? cleanPass
+          : encryptStudentPassword(cleanPass);
         const studentUser = await prisma.user.findFirst({
           where: {
             role: Role.STUDENT,
@@ -99,7 +121,7 @@ export async function POST(req: NextRequest) {
           await prisma.user.update({
             where: { id: studentUser.id },
             data: {
-              password: finalHashedPassword,
+              password: finalStoredPassword,
               studentProfile: {
                 update: {
                   isPasswordChangedByStudent: Boolean(isPasswordChangedByStudent)
@@ -183,9 +205,14 @@ export async function POST(req: NextRequest) {
 
         const fullName = st.name || `${st.firstName || ''} ${st.lastName || ''}`.trim() || 'Öğrenci';
         const cleanPassword = (st.password || 'admin').trim();
-        const finalHashedPassword = isPasswordHashed(cleanPassword)
-          ? cleanPassword
-          : await hashPassword(cleanPassword);
+        let finalStoredPassword = cleanPassword;
+        if (isEncryptedStudentPassword(cleanPassword)) {
+          finalStoredPassword = cleanPassword;
+        } else if (isPasswordHashed(cleanPassword)) {
+          finalStoredPassword = cleanPassword;
+        } else {
+          finalStoredPassword = encryptStudentPassword(cleanPassword);
+        }
         const cleanSection = (st.classSection || '5-A').trim().toUpperCase();
         const cleanClassCode = st.classCode ? String(st.classCode).trim().toUpperCase() : null;
 
@@ -221,7 +248,7 @@ export async function POST(req: NextRequest) {
               name: fullName,
               firstName: st.firstName || existingUser.firstName,
               lastName: st.lastName || existingUser.lastName,
-              password: finalHashedPassword,
+              password: finalStoredPassword,
               gender: st.gender || existingUser.gender,
               studentProfile: {
                 update: {
@@ -245,7 +272,7 @@ export async function POST(req: NextRequest) {
               name: fullName,
               firstName: st.firstName || fullName.split(' ')[0] || '',
               lastName: st.lastName || fullName.split(' ').slice(1).join(' ') || '',
-              password: finalHashedPassword,
+              password: finalStoredPassword,
               role: Role.STUDENT,
               avatar: st.avatar || '🎓',
               gender: st.gender || null,

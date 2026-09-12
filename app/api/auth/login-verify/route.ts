@@ -9,7 +9,13 @@ import {
   DeviceCategory
 } from '@/lib/device-session-service';
 import { isUserAdmin } from '@/lib/auth-options';
-import { verifyPassword, hashPassword, isPasswordHashed } from '@/lib/password';
+import {
+  verifyPassword,
+  hashPassword,
+  isPasswordHashed,
+  encryptStudentPassword,
+  isEncryptedStudentPassword
+} from '@/lib/password';
 
 export async function POST(req: NextRequest) {
   try {
@@ -127,17 +133,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Transparent migration: if stored password was plaintext, hash and update it in the database
-    if (!isPasswordHashed(dbPassword)) {
-      hashPassword(cleanPass).then((hashed) => {
+    const userRole = isUserAdmin(dbUser.email) ? 'admin' : dbUser.role.toLowerCase();
+
+    // Transparent migration:
+    // - For students: encrypt with reversible AES so teachers can always retrieve/print passwords
+    // - For teachers and admins: hash with bcrypt
+    if (userRole === 'student' || isStudentLogin) {
+      if (!isEncryptedStudentPassword(dbPassword)) {
+        const encrypted = encryptStudentPassword(cleanPass);
         prisma.user.update({
           where: { id: dbUser.id },
-          data: { password: hashed }
-        }).catch((err) => console.warn('[login-verify] Password hash migration note:', err));
-      }).catch(() => {});
+          data: { password: encrypted }
+        }).catch((err) => console.warn('[login-verify] Student encryption migration note:', err));
+      }
+    } else {
+      if (!isPasswordHashed(dbPassword)) {
+        hashPassword(cleanPass).then((hashed) => {
+          prisma.user.update({
+            where: { id: dbUser.id },
+            data: { password: hashed }
+          }).catch((err) => console.warn('[login-verify] Password hash migration note:', err));
+        }).catch(() => {});
+      }
     }
-
-    const userRole = isUserAdmin(dbUser.email) ? 'admin' : dbUser.role.toLowerCase();
     const userAgent = req.headers.get('user-agent');
     const deviceCategory: DeviceCategory = detectDeviceCategory(userAgent, clientHint);
     const config = DEVICE_SESSION_CONFIGS[deviceCategory] || DEVICE_SESSION_CONFIGS.desktop;

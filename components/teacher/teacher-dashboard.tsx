@@ -1109,7 +1109,10 @@ export function TeacherDashboard() {
                     ) : (
                       classStudents.map((stu) => {
                         const studentCode = stu.classCode || getClassCodeForClass(selectedClass, teacher?.id);
-                        const stuPass = stu.password || 'admin';
+                        const rawPass = stu.password || 'admin';
+                        const stuPass = (rawPass.startsWith('$2') || rawPass.startsWith('enc:') || rawPass.length > 25)
+                          ? (stu.studentNumber || '123456')
+                          : rawPass;
                         return (
                           <tr
                             key={stu.id}

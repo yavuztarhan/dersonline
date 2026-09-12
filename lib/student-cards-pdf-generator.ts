@@ -49,7 +49,10 @@ function createPageHTML(
     .map((student) => {
       const stuName = student.name || `${student.firstName || ''} ${student.lastName || ''}`.trim() || 'Öğrenci';
       const stuNumber = student.studentNumber || '---';
-      const password = student.password || stuNumber;
+      const rawPass = student.password || stuNumber;
+      const password = (rawPass.startsWith('$2') || rawPass.startsWith('enc:') || rawPass.length > 25)
+        ? stuNumber
+        : rawPass;
       const classCode = options.classCode || student.classCode || '------';
       const classSection = student.classSection || options.classSection || '5-A';
 
