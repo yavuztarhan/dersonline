@@ -9,6 +9,7 @@ import { StudentBadgePanel } from '@/components/student-badge-panel';
 import { LandingPage } from '@/components/landing/landing-page';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { DirectLaunchSection } from '@/components/home/direct-launch-section';
+import { TopAnnouncementDrawer } from '@/components/home/top-announcement-drawer';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   GraduationCap,
@@ -45,7 +46,8 @@ export default function HomePage() {
   // 1. If not authenticated -> Render rich Landing Page
   if (!currentUser) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <TopAnnouncementDrawer />
         <LandingPage onOpenAuth={() => setAuthModalOpen(true)} />
         <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
       </div>
@@ -71,7 +73,8 @@ export default function HomePage() {
 
   // 2. Authenticated User Experience
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 animate-in fade-in duration-300">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6 animate-in fade-in duration-300">
+      <TopAnnouncementDrawer />
       
       {/* Teacher Incomplete Profile Alert (Only shown if genuinely incomplete) */}
       {isTeacher && !isTeacherProfileComplete && (
