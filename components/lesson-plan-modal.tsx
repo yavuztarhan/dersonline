@@ -37,8 +37,13 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
   const teacher = currentUser && currentUser.role === 'teacher' ? (currentUser as any) : null;
   const admin = currentUser && currentUser.role === 'admin' ? (currentUser as any) : null;
 
-  // Determine grade level dynamically (5, 6, etc.)
-  const gradeLevel = outcome.gradeId === 'grade-6' || outcome.code.startsWith('MAT.6') ? 6 : 5;
+  // Determine grade level dynamically (5, 6, 7, etc.)
+  const gradeLevel =
+    outcome.gradeId === 'grade-7' || outcome.code.startsWith('MAT.7')
+      ? 7
+      : outcome.gradeId === 'grade-6' || outcome.code.startsWith('MAT.6')
+      ? 6
+      : 5;
   const gradeLabel = `${gradeLevel}. SINIF`;
   const gradeKademe = `${gradeLevel}. Sınıf`;
 
@@ -134,8 +139,12 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
       const printableWidth = 210 - (2 * marginX); // 190mm
       const printableHeight = 297 - marginTop - marginBottom; // 273mm
 
+      const safeOutcome = outcome.code.replace(/[^a-zA-Z0-9]/g, '_');
+
       if (pageLayoutMode === 'single') {
-        if (!singlePageRef.current) return;
+        if (!singlePageRef.current) {
+          throw new Error('Ders planı önizleme alanı bulunamadı.');
+        }
 
         const canvas = await html2canvas(singlePageRef.current, {
           scale: 2,
@@ -155,9 +164,12 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
 
         const imgData = canvas.toDataURL('image/jpeg', 0.98);
         pdf.addImage(imgData, 'JPEG', offsetX, offsetY, finalWidth, finalHeight, undefined, 'FAST');
+        pdf.save(`MEB_Maarif_Gunluk_Plan_${safeOutcome}.pdf`);
       } else {
         // Multi-page layout
-        if (!page1Ref.current || !page2Ref.current) return;
+        if (!page1Ref.current || !page2Ref.current) {
+          throw new Error('Ders planı sayfaları bulunamadı.');
+        }
 
         // Page 1
         const canvas1 = await html2canvas(page1Ref.current, {
@@ -188,7 +200,6 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
         const offsetX2 = marginX + (printableWidth - finalWidth2) / 2;
         pdf.addImage(canvas2.toDataURL('image/jpeg', 0.98), 'JPEG', offsetX2, marginTop, finalWidth2, finalHeight2, '', 'FAST');
 
-        const safeOutcome = outcome.code.replace(/[^a-zA-Z0-9]/g, '_');
         pdf.save(`MEB_Maarif_Gunluk_Plan_${safeOutcome}_2Sayfa.pdf`);
       }
 
@@ -507,7 +518,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
                       </tr>
                       <tr className="border-b border-black">
                         <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black">Öğrenme Alanı / Ünite</td>
-                        <td colSpan={3} className="p-1 px-1.5 font-bold uppercase">{annualPlan?.unite || (gradeLevel === 6 ? 'SAYILAR VE NİCELİKLER' : 'GEOMETRİK ŞEKİLLER')}</td>
+                        <td colSpan={3} className="p-1 px-1.5 font-bold uppercase">{annualPlan?.unite || (gradeLevel >= 6 ? 'SAYILAR VE NİCELİKLER' : 'GEOMETRİK ŞEKİLLER')}</td>
                       </tr>
                       <tr className="border-b border-black">
                         <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black">Konu</td>
@@ -666,7 +677,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
                         </tr>
                         <tr className="border-b border-black">
                           <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black">Öğrenme Alanı / Ünite</td>
-                          <td colSpan={3} className="p-1 px-1.5 font-bold uppercase">{annualPlan?.unite || (gradeLevel === 6 ? 'SAYILAR VE NİCELİKLER' : 'GEOMETRİK ŞEKİLLER')}</td>
+                          <td colSpan={3} className="p-1 px-1.5 font-bold uppercase">{annualPlan?.unite || (gradeLevel >= 6 ? 'SAYILAR VE NİCELİKLER' : 'GEOMETRİK ŞEKİLLER')}</td>
                         </tr>
                         <tr className="border-b border-black">
                           <td className="p-1 px-1.5 font-bold bg-slate-100 border-r border-black">Konu</td>
