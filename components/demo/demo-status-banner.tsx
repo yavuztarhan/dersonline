@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useDemoMode } from '@/lib/demo-mode-store';
 import { ALLOWED_DEMO_OUTCOMES } from '@/lib/demo-seed-data';
 import { getOutcomeByCode } from '@/lib/curriculum-data';
@@ -20,6 +20,7 @@ import {
 
 export function DemoStatusBanner() {
   const router = useRouter();
+  const pathname = usePathname();
   const {
     isDemoMode,
     demoRole,
@@ -58,6 +59,16 @@ export function DemoStatusBanner() {
     playSound('select');
     const newRole = demoRole === 'teacher' ? 'student' : 'teacher';
     switchDemoRole(newRole);
+
+    // If switching role while on a restricted route, go directly to homepage
+    if (
+      (newRole === 'student' && (pathname?.startsWith('/teacher') || pathname?.startsWith('/admin'))) ||
+      (newRole === 'teacher' && pathname?.startsWith('/student'))
+    ) {
+      window.location.href = '/';
+      return;
+    }
+
     setTimeout(() => {
       window.location.reload();
     }, 150);

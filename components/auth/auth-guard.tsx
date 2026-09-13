@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-store';
+import { useDemoMode } from '@/lib/demo-mode-store';
 import { AuthModal } from '@/components/auth/auth-modal';
 import {
   Lock,
@@ -28,9 +30,26 @@ export function AuthGuard({
   title = 'Bu İçeriğe Erişmek İçin Giriş Yapmalısınız',
   description = 'Türkiye Yüzyılı Maarif Modeli interaktif akıllı tahta ders odaları ve yönetim panellerine erişmek için lütfen giriş yapın veya yeni öğretmen kaydı oluşturun.'
 }: AuthGuardProps) {
+  const router = useRouter();
   const { currentUser } = useAuth();
+  const { isDemoMode } = useDemoMode();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [defaultTab, setDefaultTab] = useState<'login' | 'register'>('login');
+
+  const isRoleMismatch = Boolean(
+    currentUser && requiredRole && currentUser.role !== requiredRole && currentUser.role !== 'admin'
+  );
+
+  useEffect(() => {
+    if (isDemoMode && isRoleMismatch) {
+      router.replace('/');
+    }
+  }, [isDemoMode, isRoleMismatch, router]);
+
+  // In demo mode, if there is a role mismatch, silently redirect to homepage without showing unauthorized warning
+  if (isDemoMode && isRoleMismatch) {
+    return null;
+  }
 
   // 1. Not logged in -> Show Auth Gate
   if (!currentUser) {
