@@ -4000,6 +4000,412 @@ export const CURRICULUM_DATA: Grade[] = [
                                                   }
                                         }
                               ]
+                    },
+                    {
+                      "id": "topic-7-rasyonel-4",
+                      "unitId": "unit-7-sayilar",
+                      "title": "Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri",
+                      "description": "Aynı ve farklı paydalı rasyonel sayılarda toplama ve çıkarma, ortak payda mantığı, sayı doğrusunda yönlü adımlama, ters eleman ve etkisiz eleman özellikleri.",
+                      "outcomes": [
+                        {
+                          "id": "MAT.7.1.3",
+                          "code": "MAT.7.1.3",
+                          "title": "Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri",
+                          "shortTitle": "Rasyonel Sayılarla Toplama ve Çıkarma",
+                          "description": "Rasyonel sayılarla toplama ve çıkarma işlemlerini yapar; ortak payda belirleme mantığını açıklar; sayı doğrusu ve alan modelleriyle işlemleri anlamlandırır; toplama işleminin değişme, birleşme, ters eleman ve etkisiz eleman özelliklerini kullanarak pratik stratejiler geliştirir; gerçek yaşam durumlarında (yakıt tüketimi, ısı sapması, yükseklik farkı) rasyonel hesaplamaları yorumlar.",
+                          "gradeId": "grade-7",
+                          "subjectId": "mat-7",
+                          "unitId": "unit-7-sayilar",
+                          "topicId": "topic-7-rasyonel-4",
+                          "durationMinutes": 40,
+                          "pedagogyGuide": {
+                            "maarifSDBs": [
+                              "SDB1.2: Kendini Düzenleme / Öz Düzenleme (Kesirlerde payda eşitlemeden payları toplamama kuralını ve çıkarma işleminde çıkan sayının işaretini ters çevirme kuralını bilinçli denetleme)",
+                              "SDB2.2: İş Birliği ve Akran Öğrenmesi (Gökbey havacılık ve yakıt ikmal senaryosunda depo dengesini sağlamak için akranlarıyla ortak rasyonel strateji belirleme)",
+                              "SDB3.3: Matematiksel Muhakeme ve Problem Çözme (Toplama ve çıkarma işlemlerini sayı doğrusunda pozitif ve negatif yönlü oklarla görselleştirerek cebirsel gerekçelendirme)"
+                            ],
+                            "processComponents": [
+                              "a) Paydaları eşit rasyonel sayılarda payların toplanıp/çıkarılıp ortak paydanın aynen yazıldığını modellerle açıklar.",
+                              "b) Paydaları farklı rasyonel sayılarda genişletme veya sadeleştirme ile ortak paydada buluşma mantığını yürütür.",
+                              "c) Zıt işaretli rasyonel sayılarda toplama işlemini tam sayılardaki işaret kuralı ve mutlak değer farkıyla ilişkilendirir.",
+                              "ç) Rasyonel sayılarda çıkarma işlemini, çıkan sayının toplama işlemine göre tersiyle toplanması olarak açıklar (a - b = a + (-b))."
+                            ],
+                            "learningGoals": [
+                              "Paydaları eşit pozitif ve negatif rasyonel sayıları toplar ve çıkarır.",
+                              "Paydaları farklı olan rasyonel sayıların paydalarını en küçük ortak katta (EKOK) eşitleyerek işlem yapar.",
+                              "Bir rasyonel sayının toplama işlemine göre tersinin zıt işaretlisi olduğunu kavrar (Örn: 3/5'in tersi -3/5'tir; toplamları 0'dır).",
+                              "Çıkarma işlemini ters işaretli toplama işlemine dönüştürerek işlem hatalarını önler.",
+                              "Gerçek yaşam problemlerinde rasyonel değerlerle net artış/azalış hesaplamaları yapar."
+                            ],
+                            "teacherTips": [
+                              "Derse Gökbey helikopteri ve uydu yer istasyonu yakıt-itki dengesi senaryosuyla başlayınız; depoya yakıt ekleme (+3/8 ton) ve tüketim (-1/4 ton) modellerini kurunuz.",
+                              "Öğrencilere 'Paydalar neden toplanmaz?' sorusunu somutlaştırınız: 1 çeyrek pasta ile 2 çeyrek pasta toplandığında dilim boyutu (çeyrek/4) değişmez, sadece dilim sayısı (1+2=3) artar.",
+                              "Çıkarma işleminde eksi işaretinin dağılma mantığını vurgulayınız: 2/3 - (-1/3) = 2/3 + 1/3 = 3/3 = 1 olduğunu sayı doğrusunda geriye doğru dönüp geri adım atmak benzetmesiyle kavratınız.",
+                              "Tam sayılı rasyonel sayılarda tam kısımları ayrı, kesir kısımlarını ayrı toplama veya bileşik kesre çevirme stratejilerini karşılaştırınız."
+                            ],
+                            "misconceptions": [
+                              "Rasyonel sayıları toplarken payları kendi arasında, paydaları kendi arasında toplamak (Örn: 1/3 + 1/2 = 2/5 yanılgısı; oysa 2/6 + 3/6 = 5/6).",
+                              "Çıkarma işleminde çıkan sayının negatif işaretini göz ardı etmek (Örn: 3/4 - (-1/4) işlemini 2/4 olarak bulmak; oysa 3/4 + 1/4 = 4/4 = 1).",
+                              "Tam sayılı kesirlerde çıkarma yaparken tam kısımları çıkarıp kesir kısımlarını yanlış yönde işleme sokmak.",
+                              "Rasyonel sayının önündeki eksi işaretinin sadece paya, sadece paydaya veya kesir çizgisi önüne yazılabileceğini unutarak iki kez eksi kabul etmek (-a/b = -(a/b) = a/(-b))."
+                            ],
+                            "keyQuestions": [
+                              "İki kesri toplarken neden dilim sayılarını (payları) topluyoruz da dilim büyüklüğünü (paydaları) toplamıyoruz?",
+                              "Bir uzay aracının itki motoru +5/6 kN güç üretirken karşı rüzgar -1/3 kN direnç uyguluyorsa net itkiyi payda eşitlemeden nasıl tahmin edersiniz?",
+                              "Çıkarma işlemi neden aslında 'ters işaretlisini eklemek' demektir?"
+                            ]
+                          },
+                          "phases": {
+                            "story": {
+                              "title": "Gökbey Uydu Yer İstasyonu ve Akıllı Yakıt Dengesi",
+                              "character": {
+                                "name": "Mühendis Selçuk & Aslı",
+                                "role": "Havacılık ve Yörünge İtki Mühendisleri",
+                                "avatar": "🚀"
+                              },
+                              "scenario": "Gökbey Yer Kontrol Merkezi'nde yeni nesil insansız hava aracı ve stratosfer uydusunun itki motorları test edilmektedir. Uçuş şefi Selçuk ve itki mühendisi Aslı, yakıt tanklarındaki sıvı seviyelerini (+3/8 ton, +1/4 ton) ve manevra tüketimlerini (-1/6 ton) anlık olarak dengelemek zorundadır. Ortak payda mantığı ve sayı doğrusunda yönlü adımlama hatasız yapılmazsa araç yörüngeden sapabilir!",
+                              "realLifeConnection": "Havacılık yakıt yönetimi, kimyasal çözelti hazırlama, su arıtma tesislerindeki seviye hesapları ve bütçe net gelir-gider analizlerinde rasyonel sayılarla toplama ve çıkarma hayati rol oynar.",
+                              "reflectionQuestion": "Bir yakıt tankına 1/4 ton ve ardından 3/8 ton yakıt eklendiğinde doğrudan payları toplayıp 4/12 diyebilir miyiz? Farklı büyüklükteki birimleri toplamadan önce neden ortak bir paydada buluşturmak zorundayız?",
+                              "keyTakeaway": "Rasyonel sayıları toplarken veya çıkarırken paydalar eşit olmalıdır. Paydaları eşit rasyonel sayılarda paylar toplanır/çıkarılır, ortak payda aynen yazılır. Çıkarma işlemi çıkan sayının ters işaretlisiyle toplanmasıdır: a - b = a + (-b).",
+                              "pages": [
+                                {
+                                  "id": "p7-w4-1",
+                                  "pageNumber": 1,
+                                  "chapterTitle": "1. Bölüm: Aynı Paydalı Rasyonel Sayılarla Yakıt Dolumu",
+                                  "conceptTitle": "Ortak Payda Hazır: Payları Topla, Paydayı Aynen Yaz",
+                                  "conceptBadge": "Temel Kural: Paylar Toplanır",
+                                  "symbolicCode": "a/c + b/c = (a + b)/c | Örn: 3/8 + 2/8 = 5/8",
+                                  "narrativeText": "Sabah test uçuşu öncesinde Mühendis Selçuk ve Aslı yakıt paneli başına geçtiler. Ana depoya birinci hattan 3/8 ton, yedek hattan ise 2/8 ton sıvı yakıt aktarıldı. Aslı göstergeleri okudu: \"Selçuk, iki hattın da ölçüm birimi sekizde bir (1/8) cinsinden. Toplam yakıtı bulmak için paydaları toplamıyoruz değil mi?\" Selçuk gülümsedi: \"Kesinlikle hayır Aslı! Payda dilim büyüklüğünü belirtir. 3 tane sekizlik ile 2 tane sekizliği birleştirirsek elimizde 5 tane sekizlik (5/8 ton) yakıt olur. Paylar toplanır (3+2=5), ortak payda (8) aynen korunur!\"",
+                                  "characterDialogue": {
+                                    "speaker": "Aslı Mühendis",
+                                    "text": "Harika bir açıklama! Dilim büyüklüğü değişmez, sadece dilimlerin adedi toplanır!"
+                                  },
+                                  "visualScene": {
+                                    "type": "fraction-tank-addition",
+                                    "caption": "Yakıt tankı: 8 eş bölmeye ayrılmış. 3 mavi bölme (+3/8) ile 2 yeşil bölme (+2/8) birleşerek toplam 5 bölmeyi (5/8) dolduruyor."
+                                  },
+                                  "interactiveAction": {
+                                    "prompt": "Dijital yakıt tankında 3/8 ile 2/8 ton yakıtı birleştirip sonucu onaylayınız!",
+                                    "actionLabel": "Yakıtı Birleştir ve Doğrula ⛽",
+                                    "feedbackRevealed": "3/8 + 2/8 = (3+2)/8 = 5/8 ton yakıt depoya başarıyla aktarıldı!"
+                                  },
+                                  "mathTakeaway": "Kural 1: Paydaları eşit olan rasyonel sayılarda paylar toplanır veya çıkarılır; ortak payda sonucun paydası olarak aynen yazılır."
+                                },
+                                {
+                                  "id": "p7-w4-2",
+                                  "pageNumber": 2,
+                                  "chapterTitle": "2. Bölüm: Farklı Paydalar ve Ortak Payda (Genişletme) İstasyonu",
+                                  "conceptTitle": "Farklı Paydalı Rasyonel Sayıları EKOK ile Eşitleme",
+                                  "conceptBadge": "Ortak Payda Stratejisi",
+                                  "symbolicCode": "1/4 + 3/8 ⟹ (1×2)/(4×2) + 3/8 = 2/8 + 3/8 = 5/8",
+                                  "narrativeText": "Öğle saatinde uydunun yönlendirici itki tankına yakıt ikmali yapılması gerekti. Tank A'dan 1/4 ton, Tank B'den ise 3/8 ton yakıt aktarıldı. Aslı ekrana baktı: \"Burada paydalar 4 ve 8; dilim büyüklükleri farklı! Farklı büyüklükteki parçaları doğrudan toplayamayız.\" Selçuk hemen genişletme panelini açtı: \"4 ve 8'in en küçük ortak katı 8'dir. 1/4 kesrini 2 ile genişletirsek hem payı hem paydayı 2 ile çarparız: 2/8 elde ederiz! Artık dilimlerimiz eşit: 2/8 + 3/8 = 5/8 ton yakıt! İşte ortak payda büyüsü budur!\"",
+                                  "characterDialogue": {
+                                    "speaker": "Selçuk Mühendis",
+                                    "text": "Unutma: Paydaları eşitlemek, kesirleri aynı birim cinsinden konuşur hale getirmektir!"
+                                  },
+                                  "visualScene": {
+                                    "type": "common-denominator-stepper",
+                                    "caption": "Genişletme istasyonu: 1/4 kesri 2 ile genişletilerek 2/8'e dönüşüyor. Ardından 3/8 ile toplanarak 5/8 sonucuna ulaşılıyor."
+                                  },
+                                  "interactiveAction": {
+                                    "prompt": "1/4 kesrini uygun çarpanla genişleterek 3/8 ile toplayınız!",
+                                    "actionLabel": "Paydaları Eşitle ve Topla ⚙️",
+                                    "feedbackRevealed": "1/4 (2 ile genişletildi: 2/8) + 3/8 = 5/8 ton. Yörünge itki tankı optimum seviyede!"
+                                  },
+                                  "mathTakeaway": "Kural 2: Paydaları farklı rasyonel sayılar toplanırken veya çıkarılırken önce paydaların en küçük ortak katı (EKOK) bulunur, kesirler genişletilerek paydalar eşitlenir."
+                                },
+                                {
+                                  "id": "p7-w4-3",
+                                  "pageNumber": 3,
+                                  "chapterTitle": "3. Bölüm: Zıt İşaretli İtkiler ve Ters Eleman Özelliği",
+                                  "conceptTitle": "Pozitif ve Negatif Rasyonel Sayıları Sayı Doğrusunda Toplama",
+                                  "conceptBadge": "Zıt İşaret & Ters Eleman",
+                                  "symbolicCode": "(+5/6) + (-1/2) = 5/6 + (-3/6) = +2/6 = +1/3 | a/b + (-a/b) = 0",
+                                  "narrativeText": "Akşam üzeri stratosfer rüzgarı uydunun dengesini sarstı. Ana itki motoru ileri yönde +5/6 kN güç verirken, rüzgar direnci aracı ters yönde -1/2 kN geri itiyordu. Aslı sordu: \"Aracın üzerindeki net itki kuvveti nedir? Biri ileri (+), diğeri geri (-) yönlü!\" Selçuk sayı doğrusu simülatörünü açtı: \"Önce paydaları 6'da eşitleyelim: -1/2 = -3/6 olur. Sıfırdan başlayıp önce sağa doğru 5/6 birim gideriz (+5/6). Ardından ters yöne doğru 3/6 birim geri adım atarız (-3/6). Ulaştığımız nokta: +2/6 yani sadeleştirirsek +1/3 kN'dir! Mutlak değeri büyük olanın (+5/6) işareti kazanır!\"",
+                                  "characterDialogue": {
+                                    "speaker": "Aslı Mühendis",
+                                    "text": "Peki ya motor +3/5 kN itip rüzgar -3/5 kN engelleseydi? Toplam 0 olurdu! Birbirini sıfırlayan sayılara 'ters eleman' deriz!"
+                                  },
+                                  "visualScene": {
+                                    "type": "signed-vector-number-line",
+                                    "caption": "Sayı doğrusunda vektörel adımlama: 0'dan sağa +5/6 mavi ok, ucundan sola -3/6 kırmızı ok. Net yeşil ok +2/6 (+1/3) noktasında duruyor."
+                                  },
+                                  "interactiveAction": {
+                                    "prompt": "Sayı doğrusunda +5/6 ve -1/2 kuvvetlerini adım adım toplayınız!",
+                                    "actionLabel": "Kuvvetleri Sayı Doğrusunda Topla 🎯",
+                                    "feedbackRevealed": "+5/6 + (-3/6) = +2/6 = +1/3 kN. Uydu ileri yönde stabil hızlanmaya geçti!"
+                                  },
+                                  "mathTakeaway": "Kural 3: Zıt işaretli rasyonel sayılar toplanırken paydalar eşitlendikten sonra mutlak değeri büyük olan paydan küçük olan pay çıkarılır, mutlak değeri büyük olanın işareti verilir. a/b + (-a/b) = 0 (Ters eleman özelliği)."
+                                },
+                                {
+                                  "id": "p7-w4-4",
+                                  "pageNumber": 4,
+                                  "chapterTitle": "4. Bölüm: Çıkarma İşlemi ve Yörünge Sapması Farkı",
+                                  "conceptTitle": "Rasyonel Sayılarda Çıkarma: Çıkanın Tersini Toplamak",
+                                  "conceptBadge": "Çıkarma Kuralı: a - b = a + (-b)",
+                                  "symbolicCode": "3/4 - (-1/2) = 3/4 + (+2/4) = 5/4 = 1 tam 1/4",
+                                  "narrativeText": "Gece yarısı yer istasyonu sıcaklık sensörleri alarm verdi. Üst yörüngedeki güneş paneli sıcaklığı +3/4 °C iken gölgedeki motor haznesi sıcaklığı -1/2 °C idi. Aslı aradaki termal farkı hesaplamalıydı: \"Selçuk, sıcaklık farkını bulmak için üst sıcaklıktan alt sıcaklığı çıkarmalıyız: 3/4 - (-1/2)! İki eksi yan yana gelince ne yapıyorduk?\" Selçuk gururla açıkladı: \"Matematikte çıkarma işlemi, çıkan sayının toplama işlemine göre tersiyle toplamaktır! -(-1/2) ifadesi +(+1/2)'ye dönüşür! Paydaları 4'te eşitlersek: 3/4 + 2/4 = 5/4 °C (1 tam 1/4 °C) sıcaklık farkı bulunur!\"",
+                                  "characterDialogue": {
+                                    "speaker": "Selçuk Mühendis",
+                                    "text": "Eksileni aynen bırak, çıkarma işaretini artı yap, çıkanın işaretini ters çevir! Bu altın kural asla hata yaptırmaz!"
+                                  },
+                                  "visualScene": {
+                                    "type": "thermal-difference-scale",
+                                    "caption": "Termometre farkı: +3/4 ile -1/2 arasındaki mesafe. -(-1/2) pozitife dönüşerek toplam açıklığın 5/4 (1 tam 1/4) olduğunu gösteriyor."
+                                  },
+                                  "interactiveAction": {
+                                    "prompt": "3/4 - (-1/2) işlemini çıkarma kuralını uygulayarak çözünüz!",
+                                    "actionLabel": "Farkı Hesapla 🌡️",
+                                    "feedbackRevealed": "3/4 - (-1/2) = 3/4 + 2/4 = 5/4 °C. Termal yalıtım kalkanı devreye sokuldu!"
+                                  },
+                                  "mathTakeaway": "Kural 4: Rasyonel sayılarda çıkarma işlemi yapılırken, eksilen sayı aynen yazılır; çıkan sayının toplama işlemine göre tersi (zıt işaretlisi) ile toplanır: a/b - c/d = a/b + (-c/d)."
+                                }
+                              ]
+                            },
+                            "lab": {
+                              "title": "Gökbey Rasyonel Yakıt Tankı ve Vektörel Sayı Doğrusu Atölyesi",
+                              "toolType": "rational-operations-bench",
+                              "instructions": "Kesir çubukları, ortak payda çarpanı ve sayı doğrusunda yönlü adımlama simülatörünü kullanarak rasyonel sayılarla toplama ve çıkarma işlemlerini modelleyiniz.",
+                              "taskGoal": "İki rasyonel sayıyı ortak paydada buluşturup toplayın veya çıkarın, sayı doğrusundaki yönlü vektörleri inceleyin ve sonucu en sade biçimine dönüştürün.",
+                              "interactiveTips": [
+                                "Paydaları farklı kesirleri eşitlemek için ortak payda sürgüsünü hareket ettiriniz.",
+                                "Negatif bir sayıyı çıkarırken iki eksinin artıya dönüştüğünü sayı doğrusundaki yön değişimiyle takip ediniz.",
+                                "Sonuç bileşik kesir çıktığında tam sayılı kesir karşılığını gözlemleyiniz."
+                              ]
+                            },
+                            "puzzle": {
+                              "title": "Rasyonel Sayılarla Toplama ve Çıkarma Oyunları",
+                              "instructions": "Kazanımları pekiştirmek için 5 interaktif oyundan birini seçiniz: Gökbey Yakıt Tankı Doldurma-Boşaltma, Kelime Avı, Hızlı Doğru/Yanlış, 3D Hafıza Kartları veya Kavram Eşleştirme.",
+                              "items": [
+                                {
+                                  "id": "rop1",
+                                  "concept": "Ortak Payda Kuralı",
+                                  "symbol": "a/c + b/c = (a+b)/c",
+                                  "definition": "Paydaları eşit rasyonel sayılarda paylar toplanır veya çıkarılır, ortak payda aynen yazılır.",
+                                  "visualType": "fraction"
+                                },
+                                {
+                                  "id": "rop2",
+                                  "concept": "Ters Eleman Özelliği",
+                                  "symbol": "a/b + (-a/b) = 0",
+                                  "definition": "Bir rasyonel sayının toplama işlemine göre tersi zıt işaretlisidir; toplamları sıfırdır.",
+                                  "visualType": "scale"
+                                },
+                                {
+                                  "id": "rop3",
+                                  "concept": "Etkisiz Eleman Özelliği",
+                                  "symbol": "a/b + 0 = a/b",
+                                  "definition": "0 sayısı rasyonel sayılarda toplama işleminin etkisiz (nötr) elemanıdır.",
+                                  "visualType": "ruler"
+                                },
+                                {
+                                  "id": "rop4",
+                                  "concept": "Çıkarma İşlemi Kuralı",
+                                  "symbol": "a/b - c/d = a/b + (-c/d)",
+                                  "definition": "Rasyonel sayılarda çıkarma, çıkan sayının toplama işlemine göre tersiyle toplanmasıdır.",
+                                  "visualType": "thermometer"
+                                },
+                                {
+                                  "id": "rop5",
+                                  "concept": "Vektörel Sayı Doğrusu",
+                                  "symbol": "Sağa (+), Sola (-)",
+                                  "definition": "Sayı doğrusunda pozitif sayılar sağa doğru ilerlemeyi, negatif sayılar sola doğru geri adımlamayı belirtir.",
+                                  "visualType": "ruler"
+                                }
+                              ]
+                            },
+                            "assessment": {
+                              "title": "Değerlendirme Testi: Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri",
+                              "instructions": "Aşağıdaki 14 soruyu dikkatle inceleyiniz. Sorular kavramsal kurallar, sayı doğrusu modellemesi ve Gökbey havacılık senaryolu gerçek yaşam problemlerinden oluşmaktadır.",
+                              "reflectionPrompt": "Rasyonel sayılarda çıkarma yaparken 'ters işaretlisini toplama' kuralı işlem hatası yapmanızı nasıl önledi? Payda eşitlemenin mantığını kendi cümlelerinizle nasıl açıklarsınız?",
+                              "questions": [
+                                {
+                                  "id": "mat713_q1",
+                                  "questionText": "3/7 + 2/7 işleminin sonucu aşağıdakilerden hangisidir?",
+                                  "options": [
+                                    "5/14",
+                                    "5/7",
+                                    "6/7",
+                                    "1 tam 1/7"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "Paydaları eşit olan rasyonel sayılarda paylar toplanır ve ortak payda aynen yazılır: 3/7 + 2/7 = (3+2)/7 = 5/7.",
+                                  "bloomLevel": "Bilgi"
+                                },
+                                {
+                                  "id": "mat713_q2",
+                                  "questionText": "1/3 + 2/5 işleminin sonucu aşağıdakilerden hangisidir?",
+                                  "options": [
+                                    "3/8",
+                                    "11/15",
+                                    "7/15",
+                                    "3/15"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "Paydaları 15'te eşitleyelim: 1/3 (5 ile genişletilir) = 5/15. 2/5 (3 ile genişletilir) = 6/15. 5/15 + 6/15 = 11/15.",
+                                  "bloomLevel": "Kavrama"
+                                },
+                                {
+                                  "id": "mat713_q3",
+                                  "questionText": "5/6 - 1/4 işleminin sonucu aşağıdakilerden hangisidir?",
+                                  "options": [
+                                    "4/2",
+                                    "7/12",
+                                    "1/2",
+                                    "4/12"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "6 ve 4'ün EKOK'u 12'dir. 5/6 (2 ile) = 10/12; 1/4 (3 ile) = 3/12. 10/12 - 3/12 = 7/12.",
+                                  "bloomLevel": "Uygulama"
+                                },
+                                {
+                                  "id": "mat713_q4",
+                                  "questionText": "(-3/8) + (+5/8) işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "-1/4",
+                                    "+1/4",
+                                    "+1",
+                                    "-1"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "Paydalar eşit (8). Payları toplayalım: -3 + 5 = +2. Sonuç: +2/8. 2 ile sadeleştirirsek +1/4 elde edilir.",
+                                  "bloomLevel": "Kavrama"
+                                },
+                                {
+                                  "id": "mat713_q5",
+                                  "questionText": "2/3 - (-1/6) işleminin en sade sonucu kaçtır?",
+                                  "options": [
+                                    "1/2",
+                                    "3/6",
+                                    "5/6",
+                                    "1/6"
+                                  ],
+                                  "correctOptionIndex": 2,
+                                  "explanation": "Çıkarma kuralı gereği eksi eksi yan yana gelince artıya dönüşür: 2/3 - (-1/6) = 2/3 + 1/6. Paydaları 6'da eşitlersek: 4/6 + 1/6 = 5/6.",
+                                  "bloomLevel": "Uygulama"
+                                },
+                                {
+                                  "id": "mat713_q6",
+                                  "questionText": "-4/9 rasyonel sayısının toplama işlemine göre tersi aşağıdakilerden hangisidir?",
+                                  "options": [
+                                    "+4/9",
+                                    "-9/4",
+                                    "+9/4",
+                                    "0"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "Bir rasyonel sayının toplama işlemine göre tersi, toplamları 0 olan zıt işaretlisidir. -4/9'un tersi +4/9'dur.",
+                                  "bloomLevel": "Bilgi"
+                                },
+                                {
+                                  "id": "mat713_q7",
+                                  "questionText": "1 tam 1/2 + 2 tam 1/4 işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "3 tam 2/6",
+                                    "3 tam 3/4",
+                                    "4 tam 1/4",
+                                    "3 tam 1/4"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "Tam kısımlar: 1 + 2 = 3. Kesir kısımları: 1/2 + 1/4 = 2/4 + 1/4 = 3/4. Toplam: 3 tam 3/4 (veya bileşik kesirle 15/4).",
+                                  "bloomLevel": "Uygulama"
+                                },
+                                {
+                                  "id": "mat713_q8",
+                                  "questionText": "Gökbey helikopterinin yakıt tankının 3/5'i doludur. Uçuş sırasında deponun 1/4'ü kadar yakıt tüketildiğine göre geriye deponun kaçta kaçı kalmıştır?",
+                                  "options": [
+                                    "2/1",
+                                    "7/20",
+                                    "2/20",
+                                    "11/20"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "3/5 - 1/4 işlemini yapalım. Paydaları 20'de eşitleyelim: 3/5 = 12/20; 1/4 = 5/20. 12/20 - 5/20 = 7/20 kalır.",
+                                  "bloomLevel": "Problem Çözme"
+                                },
+                                {
+                                  "id": "mat713_q9",
+                                  "questionText": "(-2/5) + 0 = -2/5 işleminde rasyonel sayılarda toplama işleminin hangi özelliği gösterilmiştir?",
+                                  "options": [
+                                    "Değişme özelliği",
+                                    "Birleşme özelliği",
+                                    "Etkisiz eleman özelliği",
+                                    "Ters eleman özelliği"
+                                  ],
+                                  "correctOptionIndex": 2,
+                                  "explanation": "Bir sayının 0 ile toplanması sonucunu değiştirmez; 0 sayısı toplama işleminin etkisiz elemanıdır.",
+                                  "bloomLevel": "Kavrama"
+                                },
+                                {
+                                  "id": "mat713_q10",
+                                  "questionText": "3/4 + x = 0 olduğuna göre x rasyonel sayısı kaçtır?",
+                                  "options": [
+                                    "-3/4",
+                                    "+4/3",
+                                    "-4/3",
+                                    "1"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "İki sayının toplamı 0 ise bu sayılar birbirinin toplama işlemine göre tersidir. 3/4'ün tersi x = -3/4'tür.",
+                                  "bloomLevel": "Kavrama"
+                                },
+                                {
+                                  "id": "mat713_q11",
+                                  "questionText": "Sayı doğrusunda 1/2 noktasında bulunan bir robot, sola doğru 3/4 birim ilerlerse hangi noktaya ulaşır?",
+                                  "options": [
+                                    "+1/4",
+                                    "-1/4",
+                                    "-1/2",
+                                    "-5/4"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "Sola doğru ilerlemek çıkarma yapmaktır: 1/2 - 3/4. Paydaları 4'te eşitlersek: 2/4 - 3/4 = -1/4 noktasına ulaşır.",
+                                  "bloomLevel": "Uygulama / Modelleme"
+                                },
+                                {
+                                  "id": "mat713_q12",
+                                  "questionText": "Stratosfer uydusunun gövde sıcaklığı gece -3/4 °C iken gündüz güneş panellerinin açılmasıyla sıcaklık +5/2 °C artmıştır. Uydunun gündüz sıcaklığı kaç °C olmuştur?",
+                                  "options": [
+                                    "+2 °C",
+                                    "+7/4 °C (1 tam 3/4)",
+                                    "-1/2 °C",
+                                    "+2 tam 1/2 °C"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "-3/4 + 5/2 işlemini yapalım. Paydaları 4'te eşitleyelim: 5/2 = 10/4. -3/4 + 10/4 = (+10 - 3)/4 = +7/4 °C = 1 tam 3/4 °C.",
+                                  "bloomLevel": "Problem Çözme"
+                                },
+                                {
+                                  "id": "mat713_q13",
+                                  "questionText": "(1/2 + 1/3) + 1/6 işlemini birleşme özelliğini kullanarak en pratik yoldan çözmek isteyen bir öğrenci hangi iki sayıyı önce toplamalıdır?",
+                                  "options": [
+                                    "1/2 ile 1/3'ü",
+                                    "1/3 ile 1/6'yı (çünkü toplamları 3/6 = 1/2 yapar ve 1/2 + 1/2 = 1 olur)",
+                                    "1/2 ile 1/6'yı",
+                                    "Hepsini birden 12'de eşitlemelidir"
+                                  ],
+                                  "correctOptionIndex": 1,
+                                  "explanation": "1/3 ile 1/6 toplandığında 2/6 + 1/6 = 3/6 = 1/2 olur. Ardından 1/2 + 1/2 = 1 tam olarak zihinden saniyeler içinde hesaplanır.",
+                                  "bloomLevel": "Strateji / Değerlendirme"
+                                },
+                                {
+                                  "id": "mat713_q14",
+                                  "questionText": "Yer istasyonu su arıtma tesisinde A havuzunda 7/10 ton, B havuzunda 4/5 ton su vardır. C havuzunda ise A ve B havuzlarındaki toplam su miktarından 3/4 ton daha AZ su bulunmaktadır. Buna göre C havuzunda kaç ton su vardır?",
+                                  "options": [
+                                    "3/4 ton",
+                                    "1/2 ton",
+                                    "9/10 ton",
+                                    "1 tam 1/4 ton"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "A + B: 7/10 + 4/5 = 7/10 + 8/10 = 15/10 = 3/2 ton. C havuzu: 3/2 - 3/4 = 6/4 - 3/4 = 3/4 ton su bulunur.",
+                                  "bloomLevel": "Sentez / Analiz"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
                     }
           ]
 }

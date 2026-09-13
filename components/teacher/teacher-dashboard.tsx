@@ -2325,7 +2325,6 @@ export function TeacherDashboard() {
         defaultClass={selectedClass}
         onImportSuccess={(targetClass) => {
           setSelectedClass(targetClass);
-          setShowExcelImportModal(false);
         }}
       />
 

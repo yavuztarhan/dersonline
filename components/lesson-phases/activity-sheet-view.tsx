@@ -30,7 +30,8 @@ import {
   FractionRulerActivityView,
   DensityMicroscopeActivityView,
   LaserToleranceActivityView,
-  RationalComparisonActivityView
+  RationalComparisonActivityView,
+  RationalOperationsActivityView
 } from './mat7-activity-sheets';
 import confetti from 'canvas-confetti';
 import {
@@ -63,7 +64,8 @@ import {
   Droplets,
   Microscope,
   Zap,
-  Scale
+  Scale,
+  Rocket
 } from 'lucide-react';
 
 interface ActivitySheetViewProps {
@@ -214,9 +216,19 @@ export function ActivitySheetView({
     fileRecord?.title?.includes('Karşılaştırma & Sıralama') ||
     fileRecord?.title?.includes('Karşılaştırma ve Sıralama');
 
+  // MAT.7.1.3 Activities (Operations: Addition & Subtraction)
+  const isMat713OperationsActivity =
+    selectedSheetId.includes('mat-7-1-3') ||
+    fileRecord?.id?.includes('mat-7-1-3') ||
+    fileRecord?.outcomeCode === 'MAT.7.1.3' ||
+    outcomeCode === 'MAT.7.1.3' ||
+    fileRecord?.title?.includes('Toplama ve Çıkarma') ||
+    fileRecord?.title?.includes('Rasyonel Sayılarla Toplama');
+
   const isMat7Activity =
     isMat711Activity ||
-    isMat712ComparisonActivity;
+    isMat712ComparisonActivity ||
+    isMat713OperationsActivity;
 
   const isTableHypothesisActivity =
     !isMat6Activity &&
@@ -1255,7 +1267,9 @@ export function ActivitySheetView({
       {/* 1. Header Banner & Quick Action Buttons */}
       <div
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
-          isMat712ComparisonActivity
+          isMat713OperationsActivity
+            ? 'bg-gradient-to-br from-teal-950 via-indigo-950 to-slate-950'
+            : isMat712ComparisonActivity
             ? 'bg-gradient-to-br from-sky-950 via-indigo-950 to-slate-950'
             : isMat711RulerActivity
             ? 'bg-gradient-to-br from-sky-950 via-blue-950 to-slate-950'
@@ -1297,7 +1311,9 @@ export function ActivitySheetView({
         {/* Background Decorative Patterns */}
         <div
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-            isMat712ComparisonActivity
+            isMat713OperationsActivity
+              ? 'bg-teal-500/25'
+              : isMat712ComparisonActivity
               ? 'bg-sky-500/25'
               : isMat711RulerActivity
               ? 'bg-sky-500/20'
@@ -1383,7 +1399,9 @@ export function ActivitySheetView({
           <div className="space-y-2 max-w-2xl">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
-                isMat712ComparisonActivity
+                isMat713OperationsActivity
+                  ? 'bg-teal-400/20 border-teal-300/30 text-teal-200'
+                  : isMat712ComparisonActivity
                   ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
                   : isMat711RulerActivity
                   ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
@@ -1422,7 +1440,12 @@ export function ActivitySheetView({
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
-              {isMat712ComparisonActivity ? (
+              {isMat713OperationsActivity ? (
+                <>
+                  <Rocket className="w-3.5 h-3.5 text-teal-300" />
+                  <span>Toplama ve Çıkarma (7. Sınıf - MAT.7.1.3)</span>
+                </>
+              ) : isMat712ComparisonActivity ? (
                 <>
                   <Scale className="w-3.5 h-3.5 text-sky-300" />
                   <span>Karşılaştırma &amp; Sıralama (7. Sınıf - MAT.7.1.2)</span>
@@ -1521,7 +1544,9 @@ export function ActivitySheetView({
             </div>
             
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              {isMat712ComparisonActivity
+              {isMat713OperationsActivity
+                ? 'Etkinlik 1: "RASYONEL SAYILARLA TOPLAMA VE ÇIKARMA İŞLEMLERİ"'
+                : isMat712ComparisonActivity
                 ? 'Etkinlik 1: "RASYONEL SAYILARI KARŞILAŞTIRMA VE SIRALAMA"'
                 : isMat711RulerActivity
                 ? 'Etkinlik 1: "BİLEŞİK KESİRLERDEN SAYI DOĞRUSUNA VE ARALIK DİLİMLEME"'
@@ -1561,7 +1586,13 @@ export function ActivitySheetView({
             </h2>
             
             {/* Kurgu Paneli / Açıklama */}
-            {isMat712ComparisonActivity ? (
+            {isMat713OperationsActivity ? (
+              <div className="p-3 bg-teal-950/60 border border-teal-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-teal-100 font-medium leading-relaxed">
+                  🛰️ <strong>Gökbey Uydu Yer İstasyonu:</strong> &ldquo;Uydu yakıt dengesini sağlamak ve yörünge manevralarını yönetmek için rasyonel sayılarda ortak payda, zıt işaretli toplama, çıkarma kuralı ve cebirsel özellikleri keşfediniz; çift yüzlü çalışma yaprağındaki görevleri başarıyla tamamlayınız!&rdquo;
+                </p>
+              </div>
+            ) : isMat712ComparisonActivity ? (
               <div className="p-3 bg-sky-950/60 border border-sky-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-sky-100 font-medium leading-relaxed">
                   🏔️ <strong>Palandöken Kış İstasyonu &amp; Rüzgar Santrali:</strong> &ldquo;Palandöken meteoroloji istasyonu ve rüzgar türbinlerinin verileri üzerinden payda eşitleme, yarıma/bütüne yakınlık ve negatif sıralama kurallarını keşfediniz; çift yüzlü çalışma yaprağında terazi simülasyonunu, hata dedektifliğini ve süreç rubriğini tamamlayınız!&rdquo;
@@ -1929,7 +1960,9 @@ export function ActivitySheetView({
       </div>
 
       {/* 2. BODY CONTENT: MAT.7 OR MAT.6 ACTIVITIES OR 5TH GRADE WORKSHOPS */}
-      {isMat712ComparisonActivity ? (
+      {isMat713OperationsActivity ? (
+        <RationalOperationsActivityView />
+      ) : isMat712ComparisonActivity ? (
         <RationalComparisonActivityView />
       ) : isMat711RulerActivity ? (
         <FractionRulerActivityView />

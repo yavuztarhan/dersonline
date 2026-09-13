@@ -532,6 +532,60 @@ const MAT_7_1_2_CLUES: WordClue[] = [
   }
 ];
 
+// 9. MAT.7.1.3 Clues (Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri)
+const MAT_7_1_3_CLUES: WordClue[] = [
+  {
+    id: 'mat713-k1',
+    question: 'Farklı paydalı rasyonel sayıları toplamak için kesrin hem payını hem paydasını aynı sayıyla çarpma işlemi:',
+    word: 'GENİŞLETME',
+    hint: '10 Harfli • Denk kesir elde etme',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat713-k2',
+    question: 'Rasyonel sayıları toplarken veya çıkarırken mutlaka eşitlenmesi gereken kesir çizgisi altındaki sayı:',
+    word: 'PAYDA',
+    hint: '5 Harfli • Kesrin altındaki sayı',
+    color: '#06b6d4'
+  },
+  {
+    id: 'mat713-k3',
+    question: 'Bir rasyonel sayıyla toplandığında sonucu 0 yapan, o sayının zıt işaretlisi olan büyüklük:',
+    word: 'TERS',
+    hint: '4 Harfli • Ters eleman özelliği',
+    color: '#10b981'
+  },
+  {
+    id: 'mat713-k4',
+    question: 'Rasyonel sayılarda toplama işleminde hangi sayıyla toplanırsa toplansın sonucu değiştirmeyen 0 elemanı:',
+    word: 'ETKİSİZ',
+    hint: '7 Harfli • Sıfır (0) elemanı',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat713-k5',
+    question: 'Aynı birimdeki rasyonel parçaları bir araya getirme işlemi:',
+    word: 'TOPLAMA',
+    hint: '7 Harfli • Birleştirme işlemi',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat713-k6',
+    question: 'Eksilen sayıdan çıkan sayının ters işaretlisini ekleyerek yapılan işlem:',
+    word: 'ÇIKARMA',
+    hint: '7 Harfli • Fark bulma işlemi',
+    color: '#ef4444'
+  },
+  {
+    id: 'mat713-k7',
+    question: 'Bulunan sonucun pay ve paydasını ortak bölenlerine bölerek en yalın hale getirme işlemi:',
+    word: 'SADELEŞTİRME',
+    hint: '12 Harfli • En sade biçim',
+    color: '#3b82f6'
+  }
+];
+
+
 const TURKISH_CHARS = [
   'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
   'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
@@ -642,20 +696,29 @@ export function WordSearchGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
+  const isMat713 =
+    id === 'MAT.7.1.3' ||
+    code.includes('7.1.3') ||
+    title.includes('toplama') ||
+    title.includes('çıkarma');
+
   const isMat712 =
-    id === 'MAT.7.1.2' ||
-    code.includes('7.1.2') ||
-    title.includes('karşılaştırma') ||
-    title.includes('sıralama');
+    !isMat713 && (
+      id === 'MAT.7.1.2' ||
+      code.includes('7.1.2') ||
+      title.includes('karşılaştırma') ||
+      title.includes('sıralama')
+    );
 
   const isMat711W2 =
+    !isMat713 &&
     !isMat712 && (
       id === 'MAT.7.1.1-2' ||
       id === 'MAT.7.1.1.2' ||
       title.includes('derinleşme') ||
       title.includes('yoğunluk')
     );
-  const isMat711 = !isMat712 && !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
+  const isMat711 = !isMat713 && !isMat712 && !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
   const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
   const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
   const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
@@ -665,7 +728,9 @@ export function WordSearchGame() {
   const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
   const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
 
-  const activeClues = isMat712
+  const activeClues = isMat713
+    ? MAT_7_1_3_CLUES
+    : isMat712
     ? MAT_7_1_2_CLUES
     : isMat711W2
     ? MAT_7_1_1_W2_CLUES

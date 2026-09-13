@@ -479,6 +479,58 @@ const MAT_7_1_2_TF: TFQuestion[] = [
   }
 ];
 
+// 9. MAT.7.1.3 (Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri)
+const MAT_7_1_3_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat713-q1',
+    statement: 'Paydaları eşit iki rasyonel sayı toplanırken paylar toplanır, paydalar da kendi arasında toplanarak sonuca yazılır.',
+    isTrue: false,
+    explanation: 'Yanlış! Paylar toplanır ancak ortak payda aynen yazılır, asla paydalar toplanmaz (Örn: 2/7 + 3/7 = 5/7).'
+  },
+  {
+    id: 'tf-mat713-q2',
+    statement: 'Farklı paydalı rasyonel sayılar toplanmadan önce paydaların en küçük ortak katı (EKOK) bulunarak kesirler genişletilmelidir.',
+    isTrue: true,
+    explanation: 'Doğru! Dilim büyüklükleri eşitlenmeden toplama veya çıkarma işlemi yapılamaz.'
+  },
+  {
+    id: 'tf-mat713-q3',
+    statement: 'Bir rasyonel sayının toplama işlemine göre tersi, o sayının pay ve paydasının yer değiştirmesidir.',
+    isTrue: false,
+    explanation: 'Yanlış! Pay ve paydanın yer değiştirmesi çarpmaya göre terstir. Toplamaya göre tersi o sayının zıt işaretlisidir (a/b\'nin tersi -a/b\'dir).'
+  },
+  {
+    id: 'tf-mat713-q4',
+    statement: '3/5 - (-2/5) işleminin sonucu 5/5 yani 1 tamdır.',
+    isTrue: true,
+    explanation: 'Doğru! Çıkarma kuralı gereği eksi eksi artıya dönüşür: 3/5 + 2/5 = 5/5 = 1.'
+  },
+  {
+    id: 'tf-mat713-q5',
+    statement: '0 sayısı rasyonel sayılarda toplama işleminin yutan elemanıdır.',
+    isTrue: false,
+    explanation: 'Yanlış! 0 sayısı toplama işleminin etkisiz (nötr) elemanıdır (a/b + 0 = a/b).'
+  },
+  {
+    id: 'tf-mat713-q6',
+    statement: 'Sayı doğrusunda pozitif bir rasyonel sayı eklemek sağa doğru, negatif bir rasyonel sayı eklemek sola doğru öteleme yapar.',
+    isTrue: true,
+    explanation: 'Doğru! Pozitif yön sağ (+), negatif yön sol (-) olarak vektörel adımlama yapılır.'
+  },
+  {
+    id: 'tf-mat713-q7',
+    statement: '(-4/9) + (+4/9) işleminin sonucu 0\'dır ve bu durum ters eleman özelliğidir.',
+    isTrue: true,
+    explanation: 'Doğru! Zıt işaretli iki eş rasyonel sayının toplamı 0\'dır.'
+  },
+  {
+    id: 'tf-mat713-q8',
+    statement: '1 tam 1/2 + 2 tam 1/3 işlemi yapılırken tam kısımlar toplanıp (3), kesir kısımları ortak paydada (6) eşitlenerek 3 tam 5/6 bulunabilir.',
+    isTrue: true,
+    explanation: 'Doğru! Tam kısımlar kendi arasında, kesir kısımları kendi arasında toplanabilir.'
+  }
+];
+
 export function TrueFalseGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
@@ -486,20 +538,29 @@ export function TrueFalseGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
+  const isMat713 =
+    id === 'MAT.7.1.3' ||
+    code.includes('7.1.3') ||
+    title.includes('toplama') ||
+    title.includes('çıkarma');
+
   const isMat712 =
-    id === 'MAT.7.1.2' ||
-    code.includes('7.1.2') ||
-    title.includes('karşılaştırma') ||
-    title.includes('sıralama');
+    !isMat713 && (
+      id === 'MAT.7.1.2' ||
+      code.includes('7.1.2') ||
+      title.includes('karşılaştırma') ||
+      title.includes('sıralama')
+    );
 
   const isMat711W2 =
+    !isMat713 &&
     !isMat712 && (
       id === 'MAT.7.1.1-2' ||
       id === 'MAT.7.1.1.2' ||
       title.includes('derinleşme') ||
       title.includes('yoğunluk')
     );
-  const isMat711 = !isMat712 && !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
+  const isMat711 = !isMat713 && !isMat712 && !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
   const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
   const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
   const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
@@ -509,7 +570,9 @@ export function TrueFalseGame() {
   const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
   const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
 
-  const questions = isMat712
+  const questions = isMat713
+    ? MAT_7_1_3_TF
+    : isMat712
     ? MAT_7_1_2_TF
     : isMat711W2
     ? MAT_7_1_1_W2_TF

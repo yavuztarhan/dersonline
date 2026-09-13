@@ -28,6 +28,7 @@ import {
   NegativeFreezeGame,
   TurbineSpeedSortGame
 } from '@/components/lesson-phases/mat7-w3-games';
+import { GokbeyFuelTankGame } from '@/components/lesson-phases/mat7-w4-games';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import { useAuth } from '@/lib/auth-store';
 import {
@@ -57,7 +58,8 @@ import {
   Train,
   Scale,
   Thermometer,
-  Wind
+  Wind,
+  Rocket
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -77,6 +79,7 @@ interface MatchCard {
 }
 
 export type PuzzleGameId = 
+  | 'gokbeyfueltank'
   | 'rationalscale'
   | 'negativefreeze'
   | 'turbinespeed'
@@ -238,15 +241,24 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     }
   };
 
+  const isRationalOperationsTopic =
+    selectedOutcome?.id === 'MAT.7.1.3' ||
+    selectedOutcome?.code?.includes('7.1.3') ||
+    selectedOutcome?.title?.toLowerCase().includes('toplama ve çıkarma') ||
+    data.title?.toLowerCase().includes('toplama ve çıkarma') ||
+    data.title?.toLowerCase().includes('rasyonel sayılarla toplama');
+
   const isRationalComparisonTopic =
-    selectedOutcome?.id === 'MAT.7.1.2' ||
-    selectedOutcome?.code?.includes('7.1.2') ||
-    selectedOutcome?.title?.toLowerCase().includes('karşılaştırma') ||
-    selectedOutcome?.title?.toLowerCase().includes('sıralama') ||
-    data.title?.toLowerCase().includes('karşılaştırma') ||
-    data.title?.toLowerCase().includes('sıralama');
+    !isRationalOperationsTopic &&
+    (selectedOutcome?.id === 'MAT.7.1.2' ||
+      selectedOutcome?.code?.includes('7.1.2') ||
+      selectedOutcome?.title?.toLowerCase().includes('karşılaştırma') ||
+      selectedOutcome?.title?.toLowerCase().includes('sıralama') ||
+      data.title?.toLowerCase().includes('karşılaştırma') ||
+      data.title?.toLowerCase().includes('sıralama'));
 
   const isRationalNumbersWeek2 =
+    !isRationalOperationsTopic &&
     !isRationalComparisonTopic && (
       selectedOutcome?.id === 'MAT.7.1.1-2' ||
       selectedOutcome?.id === 'MAT.7.1.1.2' ||
@@ -255,6 +267,7 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     );
 
   const isRationalNumbersTopic =
+    !isRationalOperationsTopic &&
     !isRationalComparisonTopic &&
     !isRationalNumbersWeek2 &&
     (selectedOutcome?.id === 'MAT.7.1.1' ||
@@ -329,6 +342,19 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     gradient: string;
     reward: string;
   }> = [];
+
+  if (isRationalOperationsTopic) {
+    baseGamesList.push({
+      id: 'gokbeyfueltank',
+      title: 'Gökbey Yakıt Tankı Doldurma-Boşaltma',
+      tagline: 'Hedef İtki Seviyesi & Valf Kontrolü',
+      description: 'Mevcut yakıt seviyesini hedef rasyonel seviyeye ulaştırmak için doğru kesir miktarını depoya ekle veya tahliye et!',
+      icon: <Rocket className="w-8 h-8" />,
+      badge: '4 Görev • Akıllı İtki',
+      gradient: 'from-indigo-600 via-teal-600 to-slate-900',
+      reward: '+120 XP & Yakıt Komutanı'
+    });
+  }
 
   if (isRationalComparisonTopic) {
     baseGamesList.push(
@@ -605,7 +631,9 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
   baseGamesList.push(
     {
       id: 'memorycards',
-      title: isRationalNumbersWeek2
+      title: isRationalOperationsTopic
+        ? 'Rasyonel Sayılarda Toplama-Çıkarma Hafıza Kartları'
+        : isRationalNumbersWeek2
         ? 'Rasyonel Sayılar Sayı Doğrusu & Yoğunluk Hafıza Kartları'
         : isRationalNumbersTopic
         ? 'Rasyonel Sayılar Hafıza Kartları'
@@ -619,7 +647,9 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Çarpanlar & Katlar Hafıza Kartları'
         : 'Kavram & Tanım Hafıza Kartları',
       tagline: 'Kavramsal Eşleştirme & Bellek',
-      description: isRationalNumbersWeek2
+      description: isRationalOperationsTopic
+        ? 'Ortak payda, ters eleman, etkisiz eleman, çıkarma kuralı ve sayı doğrusu modelleme kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
+        : isRationalNumbersWeek2
         ? 'Bileşik kesir, yoğunluk özelliği, sonsuz nokta, dilimleme ve mutlak değer kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
         : isRationalNumbersTopic
         ? 'Rasyonel sayı, mutlak değer, Euler şeması, gizli payda ve tanımsızlık kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
@@ -639,7 +669,9 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     },
     {
       id: 'matching',
-      title: isRationalNumbersWeek2
+      title: isRationalOperationsTopic
+        ? 'Toplama & Çıkarma Kavram Eşleştirme'
+        : isRationalNumbersWeek2
         ? 'Rasyonel Sayılar & Yoğunluk Eşleştirme'
         : isRationalNumbersTopic
         ? 'Rasyonel Sayılar & Kümeler Eşleştirme'
@@ -656,10 +688,12 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         : isAngleTopic
         ? 'Açı Çeşitleri & İletki Eşleştirme'
         : 'Kavram & Sembol Eşleştirme',
-      tagline: isRationalNumbersWeek2 || isRationalNumbersTopic || isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic
+      tagline: isRationalOperationsTopic || isRationalNumbersWeek2 || isRationalNumbersTopic || isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic
         ? 'Matematiksel Modelleri Tanı'
         : 'Geometrik Modelleri Tanı',
-      description: isRationalNumbersWeek2
+      description: isRationalOperationsTopic
+        ? 'Payda eşitleme, zıt işaretli rasyonel toplamı, çıkarma kuralı ve etkisiz eleman modellerini eşleştirin.'
+        : isRationalNumbersWeek2
         ? 'Bileşik kesir, aralık dilimleme, yoğunluk özelliği ve mutlak değer mesafe modellerini sembol ve tanımlarıyla eşleştirin.'
         : isRationalNumbersTopic
         ? 'Rasyonel sayılar, mutlak değer cetveli, Euler kümeleri ve tanımsızlık modellerini sembol ve tanımlarıyla eşleştirin.'
@@ -683,7 +717,9 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     },
     {
       id: 'wordsearch',
-      title: isRationalNumbersWeek2
+      title: isRationalOperationsTopic
+        ? 'Rasyonel İşlemler Kelime Avı'
+        : isRationalNumbersWeek2
         ? 'Rasyonel Sayılar & Yoğunluk Kelime Avı'
         : isRationalNumbersTopic
         ? 'Rasyonel Sayılar Kelime Avı'
@@ -697,7 +733,9 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Çarpan & Kat Kelime Avı'
         : 'Matematiksel Kelime Avı',
       tagline: 'Soru Odaklı Akıl Yürütme',
-      description: isRationalNumbersWeek2
+      description: isRationalOperationsTopic
+        ? 'İpuçlarını oku; genişletme, payda, ters eleman, etkisiz eleman, toplama ve çıkarma terimlerini bulmaca ızgarasında yakala!'
+        : isRationalNumbersWeek2
         ? 'İpuçlarını oku; bileşik kesir, yoğunluk, sayı doğrusu, mikroskop ve tolerans terimlerini bulmaca ızgarasında yakala!'
         : isRationalNumbersTopic
         ? 'İpuçlarını oku, gizli rasyonel sayı, mutlak değer, Euler ve gizli payda terimlerini bulmaca ızgarasında yakala!'
@@ -717,7 +755,9 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     },
     {
       id: 'truefalse',
-      title: isRationalNumbersWeek2
+      title: isRationalOperationsTopic
+        ? 'Rasyonel İşlemler Hızlı D/Y Testi'
+        : isRationalNumbersWeek2
         ? 'Rasyonel Sayılar & Sayı Doğrusu Hızlı D/Y'
         : isRationalNumbersTopic
         ? 'Rasyonel Sayılar Hızlı D/Y Testi'
@@ -731,7 +771,9 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Çarpanlar & Katlar D/Y Testi'
         : 'Hızlı Doğru / Yanlış Testi',
       tagline: 'Hız ve Kavramsal Refleks',
-      description: isRationalNumbersWeek2
+      description: isRationalOperationsTopic
+        ? 'Payda eşitleme, ters eleman, negatif rasyonel sayılarda çıkarma ve toplama özelliklerini hızla değerlendir!'
+        : isRationalNumbersWeek2
         ? 'Bileşik kesir dilimleme, yoğunluk özelliği ve mutlak değer tolerans önermelerini hızlıca değerlendir, puanları topla!'
         : isRationalNumbersTopic
         ? 'Rasyonel sayı, sayı kümeleri ve mutlak değer önermelerini hızlıca değerlendir, matematiksel gerekçeleri öğren!'
@@ -924,6 +966,13 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
 
           {/* Teacher Smart Board Student Delegation Widget */}
           <BoardStudentWidget activityTitle={currentGameInfo?.title || 'Aktif Oyun'} />
+
+          {/* FEATURED GAME: GÖKBEY YAKIT TANKI (MAT.7.1.3) */}
+          {selectedGameId === 'gokbeyfueltank' && (
+            <div className="animate-in fade-in duration-200">
+              <GokbeyFuelTankGame />
+            </div>
+          )}
 
           {/* FEATURED GAME: RASYONEL DENGE TERAZİSİ (MAT.7.1.2) */}
           {selectedGameId === 'rationalscale' && (

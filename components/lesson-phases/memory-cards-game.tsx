@@ -862,11 +862,77 @@ const MAT_7_1_1_W2_PAIRS: MemoryPair[] = [
   }
 ];
 
+const MAT_7_1_3_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat713-p1',
+    concept: 'ORTAK PAYDA KURALI',
+    symbol: 'a/c + b/c = (a+b)/c',
+    badge: '⚙️ Eşitleme',
+    definition: 'Paydaları eşit rasyonel sayılarda paylar toplanır veya çıkarılır, ortak payda aynen yazılır.',
+    example: '2/7 + 3/7 = 5/7 (Paydalar toplanmaz!)',
+    color: '#6366f1'
+  },
+  {
+    id: 'mat713-p2',
+    concept: 'TERS ELEMAN ÖZELLİĞİ',
+    symbol: 'a/b + (-a/b) = 0',
+    badge: '🔄 Ters Eleman',
+    definition: 'Bir rasyonel sayının toplama işlemine göre tersi zıt işaretlisidir; iki sayının toplamı sıfırı verir.',
+    example: '+3/5 sayısının tersi -3/5 tir ve toplamları 0 dır.',
+    color: '#10b981'
+  },
+  {
+    id: 'mat713-p3',
+    concept: 'ETKİSİZ ELEMAN',
+    symbol: 'a/b + 0 = a/b',
+    badge: '⭕ Sıfır (0)',
+    definition: 'Rasyonel sayılarda bir sayıyı 0 ile toplamak o sayının değerini değiştirmez; 0 etkisiz elemandır.',
+    example: '-4/9 + 0 = -4/9 dur.',
+    color: '#06b6d4'
+  },
+  {
+    id: 'mat713-p4',
+    concept: 'ÇIKARMA İŞLEMİ KURALI',
+    symbol: 'a/b - c/d = a/b + (-c/d)',
+    badge: '➖ Çıkarma',
+    definition: 'Çıkarma işlemi, çıkan sayının toplama işlemine göre tersiyle (zıt işaretlisiyle) toplanmasıdır.',
+    example: '3/4 - (-1/2) = 3/4 + (+1/2) = 5/4 tür.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat713-p5',
+    concept: 'VEKTÖREL SAYI DOĞRUSU',
+    symbol: 'Sağa (+), Sola (-)',
+    badge: '📏 Yönlü Adımlama',
+    definition: 'Sayı doğrusunda pozitif sayılar sağa doğru ilerlemeyi, negatif sayılar sola doğru geri adımlamayı temsil eder.',
+    example: '1/2 noktasından sola 3/4 adım gitmek 1/2 - 3/4 = -1/4 noktasına ulaştırır.',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat713-p6',
+    concept: 'SADELEŞTİRME',
+    symbol: 'a:k / b:k',
+    badge: '✂️ En Sade Biçim',
+    definition: 'İşlem sonucu bulunan kesrin pay ve paydasını ortak bölenlerine bölerek en yalın haline getirme işlemidir.',
+    example: '6/8 kesri 2 ile sadeleştiğinde 3/4 olur.',
+    color: '#3b82f6'
+  }
+];
+
 // Helper to resolve pairs and topic info
 function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTitle?: string): { code: string; title: string; pairs: MemoryPair[] } {
   const id = outcomeId || '';
   const code = outcomeCode || '';
   const title = (outcomeTitle || '').toLowerCase();
+
+  // 0. MAT.7.1.3 Check
+  if (id === 'MAT.7.1.3' || code.includes('7.1.3') || title.includes('toplama') || title.includes('çıkarma')) {
+    return {
+      code: 'MAT.7.1.3',
+      title: 'Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri',
+      pairs: MAT_7_1_3_PAIRS
+    };
+  }
 
   // 0. MAT.7.1.1-2 Check
   if (id === 'MAT.7.1.1-2' || id === 'MAT.7.1.1.2' || title.includes('derinleşme') || title.includes('yoğunluk')) {

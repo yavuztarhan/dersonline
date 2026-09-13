@@ -17,6 +17,60 @@ export interface ParseEOkulResult {
   girlsCount: number;
   boysCount: number;
   sheetName?: string;
+  detectedClass?: string;
+}
+
+/**
+ * Extracts class section name from arbitrary text (e.g. headers, sheet name, file name).
+ * Returns standardized format like '7-A', '5-B', etc.
+ */
+export function extractClassFromText(text: string): string | null {
+  if (!text) return null;
+  const str = text.trim();
+
+  // Pattern 1: Sınıf[ı] ... Şube[si] : 7 / A or 7/A or 7 - A
+  const p1 = /(?:sınıf[ı]?\s*(?:\/|\s*ve\s*)?\s*şube[si]?)\s*[:=\-]?\s*([5-8]|9|1[0-2])\s*(?:\.|\s*sınıf)?\s*[\/\-\s]\s*([A-Za-zÇĞİÖŞÜçğıöşü])/i;
+  const m1 = str.match(p1);
+  if (m1) {
+    return `${m1[1]}-${m1[2].toLocaleUpperCase('tr-TR')}`;
+  }
+
+  // Pattern 2: "7. Sınıf / A Şubesi" or "7. Sınıf A Şubesi" or "7.Sınıf A Şubesi"
+  const p2 = /\b([5-8]|9|1[0-2])\s*\.?\s*sınıf\s*(?:\/|\s*)\s*([A-Za-zÇĞİÖŞÜçğıöşü])\s*(?:şubesi)?\b/i;
+  const m2 = str.match(p2);
+  if (m2) {
+    return `${m2[1]}-${m2[2].toLocaleUpperCase('tr-TR')}`;
+  }
+
+  // Pattern 3: Standalone "7/A", "7-A", "7 - A", "7 / A" with word boundary
+  const p3 = /(?:^|[^\wçğıöşü])([5-8]|9|1[0-2])\s*[\/\-]\s*([A-Za-zÇĞİÖŞÜçğıöşü])(?:$|[^\wçğıöşü])/i;
+  const m3 = str.match(p3);
+  if (m3) {
+    return `${m3[1]}-${m3[2].toLocaleUpperCase('tr-TR')}`;
+  }
+
+  // Pattern 4: "7A" when followed by "Sınıfı" or "Şubesi"
+  const p4 = /(?:^|[^\wçğıöşü])([5-8]|9|1[0-2])\s*([A-Za-zÇĞİÖŞÜçğıöşü])\s*(?:sınıf|şube)/i;
+  const m4 = str.match(p4);
+  if (m4) {
+    return `${m4[1]}-${m4[2].toLocaleUpperCase('tr-TR')}`;
+  }
+
+  // Pattern 5: Filenames / sheet names tokens like "7A_...", "7-A_...", "(7A)", "eokul_8B.xlsx"
+  const p5 = /(?:^|[\s_\-\(\[])([5-8]|9|1[0-2])\s*[\/\-_]?\s*([A-Za-zÇĞİÖŞÜçğıöşü])(?:[\s_\-\)\]\.]|$)/i;
+  const m5 = str.match(p5);
+  if (m5) {
+    return `${m5[1]}-${m5[2].toLocaleUpperCase('tr-TR')}`;
+  }
+
+  // Pattern 6: Exact or isolated class like "7A", "7-A", "7_A", "7/A"
+  const p6 = /^\s*([5-8]|9|1[0-2])\s*[\/\-_ ]?\s*([A-Za-zÇĞİÖŞÜçğıöşü])\s*$/i;
+  const m6 = str.match(p6);
+  if (m6) {
+    return `${m6[1]}-${m6[2].toLocaleUpperCase('tr-TR')}`;
+  }
+
+  return null;
 }
 
 /**
@@ -37,7 +91,7 @@ export function toTurkishTitleCase(str: string): string {
  * Handles standard MEB e-Okul table format where headers might be located at
  * row 0 or within the first 20 rows, skipping footer summaries (e.g. Kız/Erkek öğrenci sayısı).
  */
-export function parseEOkulExcel(data: ArrayBuffer | Uint8Array): ParseEOkulResult {
+export function parseEOkulExcel(data: ArrayBuffer | Uint8Array, fileName?: string): ParseEOkulResult {
   try {
     const workbook = XLSX.read(data, { type: 'array' });
     if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
@@ -66,6 +120,17 @@ export function parseEOkulExcel(data: ArrayBuffer | Uint8Array): ParseEOkulResul
       };
     }
 
+    // Try detecting class section from file name or sheet name first
+    let detectedClass: string | undefined = undefined;
+    if (fileName) {
+      const fromFile = extractClassFromText(fileName);
+      if (fromFile) detectedClass = fromFile;
+    }
+    if (!detectedClass && firstSheetName) {
+      const fromSheet = extractClassFromText(firstSheetName);
+      if (fromSheet) detectedClass = fromSheet;
+    }
+
     // Locate header row by searching common Turkish e-Okul headers
     let headerRowIdx = -1;
     let colNo = -1;
@@ -79,8 +144,25 @@ export function parseEOkulExcel(data: ArrayBuffer | Uint8Array): ParseEOkulResul
       const row = rawRows[r];
       if (!row || !Array.isArray(row)) continue;
 
+      // Scan row for potential class section info if not yet detected
+      if (!detectedClass) {
+        const rowJoined = row.map((c) => String(c ?? '')).join(' ');
+        const foundClass = extractClassFromText(rowJoined);
+        if (foundClass) {
+          detectedClass = foundClass;
+        }
+      }
+
       for (let c = 0; c < row.length; c++) {
-        const cell = String(row[c] || '').trim().toLocaleLowerCase('tr-TR');
+        const cellRaw = String(row[c] || '').trim();
+        const cell = cellRaw.toLocaleLowerCase('tr-TR');
+
+        if (!detectedClass) {
+          const singleCellClass = extractClassFromText(cellRaw);
+          if (singleCellClass) {
+            detectedClass = singleCellClass;
+          }
+        }
         if (
           cell === 'öğrenci no' ||
           cell === 'öğrenci no.' ||
@@ -227,7 +309,8 @@ export function parseEOkulExcel(data: ArrayBuffer | Uint8Array): ParseEOkulResul
       totalDetected: students.length,
       girlsCount,
       boysCount,
-      sheetName: firstSheetName
+      sheetName: firstSheetName,
+      detectedClass
     };
   } catch (err: any) {
     return {

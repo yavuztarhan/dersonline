@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth, generateRandomStudentPassword } from '@/lib/auth-store';
 import { useApp } from '@/lib/store';
 import { StudentUser, TeacherUser } from '@/types/auth';
@@ -44,8 +44,23 @@ export function ExcelStudentImportModal({
   const [selectedClass, setSelectedClass] = useState<string>(
     defaultClass || teacherClasses[0] || ''
   );
+  const [detectedClass, setDetectedClass] = useState<string | null>(null);
+  const [classSelectError, setClassSelectError] = useState<string | null>(null);
   const [isCreatingNewClass, setIsCreatingNewClass] = useState(false);
   const [newClassName, setNewClassName] = useState('');
+
+  // Keep selectedClass synchronized whenever modal opens or defaultClass/teacherClasses change
+  useEffect(() => {
+    if (isOpen) {
+      setClassSelectError(null);
+      setParsingError(null);
+      if (defaultClass && defaultClass.trim()) {
+        setSelectedClass(defaultClass.trim().toUpperCase());
+      } else if (teacherClasses.length > 0 && (!selectedClass || !teacherClasses.includes(selectedClass))) {
+        setSelectedClass(teacherClasses[0]);
+      }
+    }
+  }, [isOpen, defaultClass, teacherClasses]);
 
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -67,6 +82,15 @@ export function ExcelStudentImportModal({
   } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const allAvailableClasses = Array.from(
+    new Set([
+      ...(teacherClasses || []),
+      ...(defaultClass ? [defaultClass.trim().toUpperCase()] : []),
+      ...(detectedClass ? [detectedClass.trim().toUpperCase()] : []),
+      ...(selectedClass ? [selectedClass.trim().toUpperCase()] : [])
+    ])
+  ).filter(Boolean).sort((a, b) => a.localeCompare(b, 'tr-TR', { numeric: true }));
 
   if (!isOpen) return null;
 
@@ -128,11 +152,17 @@ export function ExcelStudentImportModal({
           return;
         }
 
-        const res = parseEOkulExcel(buffer);
+        const res = parseEOkulExcel(buffer, file.name);
         if (!res.success) {
           setParsingError(res.error || 'e-Okul Excel dosyası ayrıştırılamadı.');
           playSound('clear');
           return;
+        }
+
+        if (res.detectedClass) {
+          setDetectedClass(res.detectedClass);
+          setSelectedClass(res.detectedClass);
+          setClassSelectError(null);
         }
 
         setRawStudents(res.students);
@@ -222,6 +252,7 @@ export function ExcelStudentImportModal({
       addClassToTeacher(teacher.id, clean);
     }
     setSelectedClass(clean);
+    setClassSelectError(null);
     setIsCreatingNewClass(false);
     setNewClassName('');
     playSound('success');
@@ -230,16 +261,19 @@ export function ExcelStudentImportModal({
   const handleImportStudents = () => {
     const targetClass = selectedClass.trim().toUpperCase();
     if (!targetClass) {
-      setParsingError('Lütfen öğrencilerin aktarılacağı sınıfı/şubeyi seçin.');
+      setClassSelectError('Lütfen öğrencilerin aktarılacağı sınıfı/şubeyi seçin veya yeni şube tanımlayın.');
+      playSound('clear');
       return;
     }
 
     const studentsToImport = parsedStudents.filter((_, i) => selectedIndices.has(i));
     if (studentsToImport.length === 0) {
-      setParsingError('Lütfen aktarılacak en az bir öğrenci seçin.');
+      setClassSelectError('Lütfen aktarılacak en az bir öğrenci seçin.');
+      playSound('clear');
       return;
     }
 
+    setClassSelectError(null);
     setIsSubmitting(true);
 
     try {
@@ -309,6 +343,8 @@ export function ExcelStudentImportModal({
     setRawStudents([]);
     setSelectedIndices(new Set());
     setParsingError(null);
+    setClassSelectError(null);
+    setDetectedClass(null);
     setSuccessResult(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -387,66 +423,138 @@ export function ExcelStudentImportModal({
           ) : (
             <>
               {/* Step 1: Class Target Selection */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <label className="text-xs font-black text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-                    <Users className="w-4 h-4 text-emerald-600" />
-                    <span>Öğrencilerin Aktarılacağı Sınıf / Şube</span>
-                  </label>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Yüklenecek öğrencilerin atanacağı sınıfı belirleyin.
-                  </p>
+              <div
+                className={`p-4 rounded-2xl border transition-all ${
+                  classSelectError
+                    ? 'bg-rose-50/70 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 ring-2 ring-rose-500/20'
+                    : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-800'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <label className="text-xs font-black text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                      <Users className="w-4 h-4 text-emerald-600" />
+                      <span>Öğrencilerin Aktarılacağı Sınıf / Şube</span>
+                    </label>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Yüklenecek öğrencilerin atanacağı sınıfı belirleyin.
+                    </p>
+                  </div>
+
+                  {!isCreatingNewClass ? (
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={selectedClass}
+                        onChange={(e) => {
+                          setSelectedClass(e.target.value);
+                          setClassSelectError(null);
+                        }}
+                        className={`px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border text-xs font-bold text-slate-800 dark:text-white outline-none shadow-sm transition-colors ${
+                          classSelectError
+                            ? 'border-rose-500 focus:border-rose-600 ring-1 ring-rose-500'
+                            : 'border-slate-300 dark:border-slate-700 focus:border-emerald-500'
+                        }`}
+                      >
+                        {!selectedClass && (
+                          <option value="">-- Lütfen Şube Seçiniz --</option>
+                        )}
+                        {allAvailableClasses.map((cls) => (
+                          <option key={cls} value={cls}>
+                            {cls} Şubesi {cls === detectedClass ? '★ (Dosyadan Algılandı)' : ''}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsCreatingNewClass(true)}
+                        className="px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                        title="Yeni Sınıf Tanımla"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Yeni Şube</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleCreateNewClass} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        required
+                        autoFocus
+                        placeholder="Örn: 7-A"
+                        value={newClassName}
+                        onChange={(e) => setNewClassName(e.target.value)}
+                        className="w-24 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500 text-xs font-bold uppercase text-slate-800 dark:text-white outline-none"
+                      />
+                      <button
+                        type="submit"
+                        className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 cursor-pointer"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Ekle</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsCreatingNewClass(false)}
+                        className="px-2.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </form>
+                  )}
                 </div>
 
-                {!isCreatingNewClass ? (
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={selectedClass}
-                      onChange={(e) => setSelectedClass(e.target.value)}
-                      className="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-emerald-500 shadow-sm"
-                    >
-                      {teacherClasses.map((cls) => (
-                        <option key={cls} value={cls}>
-                          {cls} Şubesi
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      onClick={() => setIsCreatingNewClass(true)}
-                      className="px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center gap-1 transition-colors"
-                      title="Yeni Sınıf Tanımla"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Yeni Şube</span>
-                    </button>
+                {/* Detected class banner */}
+                {detectedClass && (
+                  <div className="mt-3 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs flex items-center justify-between gap-2 animate-in fade-in">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>
+                        e-Okul dosyasından <strong>{detectedClass}</strong> şubesi otomatik algılandı ve seçildi.
+                      </span>
+                    </div>
+                    {selectedClass !== detectedClass && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedClass(detectedClass);
+                          setClassSelectError(null);
+                        }}
+                        className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 underline"
+                      >
+                        {detectedClass}&apos;a geri dön
+                      </button>
+                    )}
                   </div>
-                ) : (
-                  <form onSubmit={handleCreateNewClass} className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      required
-                      autoFocus
-                      placeholder="Örn: 5-C"
-                      value={newClassName}
-                      onChange={(e) => setNewClassName(e.target.value)}
-                      className="w-24 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500 text-xs font-bold uppercase text-slate-800 dark:text-white outline-none"
-                    />
-                    <button
-                      type="submit"
-                      className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Ekle</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsCreatingNewClass(false)}
-                      className="px-2.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold"
-                    >
-                      ✕
-                    </button>
-                  </form>
+                )}
+
+                {/* Inline Class Selection Error Message */}
+                {classSelectError && (
+                  <div className="mt-3 p-2.5 rounded-xl bg-rose-100/90 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs font-bold flex items-center gap-2 animate-in shake">
+                    <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                    <span>{classSelectError}</span>
+                  </div>
+                )}
+
+                {/* Quick Class Selection Pills if no class is selected */}
+                {!selectedClass && (
+                  <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mr-1">
+                      Hızlı Şube Seçimi:
+                    </span>
+                    {['5-A', '5-B', '6-A', '6-B', '7-A', '7-B', '8-A', '8-B'].map((cls) => (
+                      <button
+                        key={cls}
+                        type="button"
+                        onClick={() => {
+                          setSelectedClass(cls);
+                          setClassSelectError(null);
+                        }}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-emerald-500 hover:text-emerald-600 transition-colors cursor-pointer"
+                      >
+                        {cls}
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
 
@@ -659,7 +767,13 @@ export function ExcelStudentImportModal({
                                 )}
                               </td>
                               <td className="py-2.5 px-3 font-bold text-emerald-700 dark:text-emerald-400">
-                                {selectedClass}
+                                {selectedClass ? (
+                                  `${selectedClass} Şubesi`
+                                ) : (
+                                  <span className="text-amber-600 dark:text-amber-400 font-normal italic">
+                                    Seçilmedi
+                                  </span>
+                                )}
                               </td>
                             </tr>
                           );
@@ -689,7 +803,7 @@ export function ExcelStudentImportModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
             >
               Vazgeç
             </button>
@@ -697,7 +811,7 @@ export function ExcelStudentImportModal({
             {selectedFile && parsedStudents.length > 0 && (
               <button
                 type="button"
-                disabled={selectedIndices.size === 0 || isSubmitting}
+                disabled={selectedIndices.size === 0 || isSubmitting || !selectedClass.trim()}
                 onClick={handleImportStudents}
                 className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-xs shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2 cursor-pointer"
               >
@@ -710,7 +824,9 @@ export function ExcelStudentImportModal({
                   <>
                     <Check className="w-4 h-4" />
                     <span>
-                      {selectedIndices.size} Öğrenciyi {selectedClass} Sınıfına Aktar
+                      {selectedClass.trim()
+                        ? `${selectedIndices.size} Öğrenciyi ${selectedClass} Şubesine Aktar`
+                        : 'Öğrencileri Aktarmak İçin Sınıf Seçin'}
                     </span>
                   </>
                 )}

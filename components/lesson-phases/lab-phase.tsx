@@ -14,6 +14,7 @@ import {
 import { RationalNumbersBench } from '@/components/lesson-phases/rational-numbers-bench';
 import { RationalRulerDensityBench } from '@/components/lesson-phases/rational-ruler-density-bench';
 import { RationalComparisonBench } from '@/components/lesson-phases/rational-comparison-bench';
+import { RationalOperationsBench } from '@/components/lesson-phases/rational-operations-bench';
 import confetti from 'canvas-confetti';
 import {
   Shapes,
@@ -102,12 +103,20 @@ function getAngleType(deg: number): { type: 'sifir' | 'dar' | 'dik' | 'genis' | 
 export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const { playSound, unlockBadge, addPoints, selectedOutcome } = useApp();
 
+  const isRationalOperationsBench =
+    selectedOutcome?.id === 'MAT.7.1.3' ||
+    selectedOutcome?.code?.includes('7.1.3') ||
+    data.toolType === 'rational-operations-bench' ||
+    data.title.toLowerCase().includes('toplama ve çıkarma') ||
+    data.title.toLowerCase().includes('yakıt tankı');
+
   const isRationalComparisonBench =
-    selectedOutcome?.id === 'MAT.7.1.2' ||
-    selectedOutcome?.code?.includes('7.1.2') ||
-    data.toolType === 'rational-comparison-bench' ||
-    data.title.toLowerCase().includes('karşılaştırma') ||
-    data.title.toLowerCase().includes('rasyonel terazi');
+    !isRationalOperationsBench &&
+    (selectedOutcome?.id === 'MAT.7.1.2' ||
+      selectedOutcome?.code?.includes('7.1.2') ||
+      data.toolType === 'rational-comparison-bench' ||
+      data.title.toLowerCase().includes('karşılaştırma') ||
+      data.title.toLowerCase().includes('rasyonel terazi'));
 
   const isRationalNumbersWeek2 =
     !isRationalComparisonBench &&
@@ -922,6 +931,20 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       </g>
     );
   };
+
+  // ==========================================
+  // OUTCOME: MAT.7.1.3 (RATIONAL OPERATIONS BENCH)
+  // ==========================================
+  if (isRationalOperationsBench) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <RationalOperationsBench
+          onComplete={() => addPoints(100)}
+          onNextPhase={onNextPhase}
+        />
+      </div>
+    );
+  }
 
   // ==========================================
   // OUTCOME: MAT.7.1.2 (RATIONAL COMPARISON BENCH)

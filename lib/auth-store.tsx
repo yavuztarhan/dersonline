@@ -2151,6 +2151,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           added++;
         }
       }
+      try {
+        localStorage.setItem('maarif_students', JSON.stringify(next));
+        localStorage.setItem('demo_maarif_students', JSON.stringify(next));
+      } catch (e) {}
+
       return next;
     });
 

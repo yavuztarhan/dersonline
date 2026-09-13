@@ -760,6 +760,77 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk5', text: 'Karışık işaretli ve biçimli rasyonel sayıları küçükten büyüğe hatasız sıralayabilirim.' }
     ]
   },
+  'MAT.7.1.3': {
+    id: 'rubric-mat-7-1-3',
+    outcomeId: 'MAT.7.1.3',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri',
+    description:
+      'Ortak payda eşitleme, zıt işaretli rasyonel sayılarda toplama ve çıkarma ilkeleri, toplama işleminin cebirsel özellikleri ve Gökbey uydu yakıt/itki vektör modellerini dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Payda Eşitleme ve Denk Kesir Stratejisi (Ortak Kat & Genişletme)',
+        category: 'Kavramsal Anlama & Algoritma',
+        levelDescriptions: {
+          1: 'Farklı paydalı rasyonel sayıları toplarken payları kendi arasında paydaları kendi arasında topluyorum (kavram yanılgısı).',
+          2: 'Paydaları eşitlemem gerektiğini biliyorum ancak en küçük ortak katı bulmakta veya genişletmeyi paya uygulamakta zorlanıyorum.',
+          3: 'Farklı paydalara sahip rasyonel sayıların paydalarını uygun çarpanlarla genişleterek ortak paydaya ulaştırır ve işlemi doğru çözerim.',
+          4: 'Verilen kesirlerin paydalarını zihinden en küçük ortak kata genişletir, tam sayılı veya bileşik kesir geçişlerini işlem kolaylığı sağlayacak şekilde esnekçe kullanırım.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Negatif ve Zıt İşaretli Rasyonel Sayılarda Toplama (Mutlak Değer Dengesi)',
+        category: 'Sayı Hissi & Tam Sayı İlişkisi',
+        levelDescriptions: {
+          1: 'Negatif rasyonel sayıları toplarken işaret kurallarını unutuyor veya pozitif sayılar gibi işlem yapıyorum.',
+          2: 'Aynı işaretli negatif kesirleri toplayabiliyorum ancak zıt işaretli kesirlerin toplamında hangi işaretin baskın çıkacağını belirlemekte zorlanıyorum.',
+          3: 'Zıt işaretli rasyonel sayıları toplarken paydalar eşitlendikten sonra mutlak değeri büyük olanın işaretini sonuca doğru aktarırım.',
+          4: 'Negatif rasyonel toplamları termometre, irtifa kaybı ve borç-alacak dengesiyle zihinsel olarak modeller, akranlarıma hatasız gerekçelendiririm.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Çıkarma İşleminin Toplamaya Dönüştürülmesi (Ters Eleman Kuralı)',
+        category: 'Cebirsel Muhakeme & Kural Anlayışı',
+        levelDescriptions: {
+          1: 'Çıkarma işlemini yaparken çıkanın işaretini değiştirmeyi unutuyor, iki negatif işaret yan yana geldiğinde (- -) şaşırıyorum.',
+          2: 'A - B işleminin A + (-B) olduğunu ezbere biliyorum ancak kesirlerde parantez ve işaret dönüşümlerini uygularken işlem hatası yapıyorum.',
+          3: 'Rasyonel sayılarda çıkarma işlemini eksilen ile çıkanın tersinin toplamı şeklinde eksiksiz formüle eder ve doğru sonuca ulaşırım.',
+          4: 'Çıkarma işleminin fark ve mesafe mantığını sayı doğrusunda yön değiştirme vektörüyle açıklar ve ispatlarım.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Toplama İşleminin Özellikleri (Değişme, Birleşme, Etkisiz, Ters Eleman)',
+        category: 'Matematiksel Özellikler & Pratik Çözüm',
+        levelDescriptions: {
+          1: 'Toplama işleminin değişme veya birleşme özelliklerinin ne anlama geldiğini ayırt etmekte zorlanıyorum.',
+          2: 'Etkisiz elemanın 0 olduğunu biliyorum ancak ters eleman ve birleşme özelliklerini işlem adımlarını kısaltmak için kullanamıyorum.',
+          3: 'Birbirini sıfırlayan ters elemanları veya paydaları aynı olan terimleri birleşme/değişme özelliğiyle gruplayarak işlem kolaylığı sağlarım.',
+          4: 'Karmaşık çok terimli rasyonel işlemlerde cebirsel özellikleri stratejik biçimde kullanarak çözümü zihinden veya tek satırda kanıtlayarak tamamlarım.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Vektörel Sayı Doğrusu & Gökbey Yakıt/İtki Modellemesi (SDB1.2 - SDB3.3)',
+        category: 'Matematiksel Modelleme & Gerçek Yaşam',
+        levelDescriptions: {
+          1: 'Rasyonel işlemleri sayı doğrusunda yönlü oklarla modellemekte ve yakıt tankı seviyeleriyle ilişkilendirmekte zorlanıyorum.',
+          2: 'Sayı doğrusunda pozitif yönü sağa, negatifi sola çizebiliyorum ancak ara adımların başlangıç ve bitiş noktalarını birleştirmekte zorlanıyorum.',
+          3: 'Verilen rasyonel toplama/çıkarma işlemini sayı doğrusunda ardışık vektör oklarıyla doğru modeller, Gökbey uydu yakıt dolum ve tahliye miktarını hatasız hesaplarım.',
+          4: 'Gerçek mühendislik senaryolarında tolerans, debi ve net itki vektörlerini rasyonel işlemlerle modelleyip çok boyutlu karar analizi sunarım.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Farklı paydalara sahip rasyonel sayıları en küçük ortak katta genişleterek toplayabilirim.' },
+      { id: 'chk2', text: 'Zıt işaretli rasyonel sayılarda mutlak değeri büyük olanın işaretini doğru tespit ederim.' },
+      { id: 'chk3', text: 'Çıkarma işlemini çıkan sayının ters işaretlisiyle toplama şeklinde ifade edebilirim.' },
+      { id: 'chk4', text: 'Değişme, birleşme ve ters eleman özelliklerini işlem kolaylığı sağlamak için kullanabilirim.' },
+      { id: 'chk5', text: 'Sayı doğrusunda ardışık yönlü oklarla toplama ve çıkarma modellemesi yapabilirim.' }
+    ]
+  },
 };
 
 /**
@@ -1591,6 +1662,77 @@ export const PEER_OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk3', text: 'Negatif rasyonel sayıları sıfıra yakınlık ilkesine göre doğru sıraladı.' },
       { id: 'chk4', text: 'Denge terazisi ve referans metresi laboratuvarında aktif rol aldı.' },
       { id: 'chk5', text: 'Grup arkadaşlarına karşılaştırıcı ve yapıcı geri bildirimlerde bulundu.' }
+    ]
+  },
+  'MAT.7.1.3': {
+    id: 'peer-rubric-mat-7-1-3',
+    outcomeId: 'MAT.7.1.3',
+    title: 'Akran Değerlendirme Rubriği: Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri',
+    description:
+      'Takım arkadaşınızın ortak payda eşitleme, işaret kuralları, çıkarma dönüşümü, cebirsel özellikler ve sayı doğrusu modellemesi konusundaki becerilerini dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Payda Eşitleme ve İşlem Algoritması',
+        category: 'Kavramsal Anlama & Algoritma',
+        levelDescriptions: {
+          1: 'Farklı paydalı kesirleri toplarken payda eşitlemeyi unutuyor veya pay ve paydayı ayrı ayrı topluyor.',
+          2: 'Payda eşitlemeyi biliyor ancak genişletme katsayısını sadece paydaya uygulayıp payı genişletmeyi atlayabiliyor.',
+          3: 'Farklı paydalı kesirleri uygun katsayılarla genişleterek paydaları doğru eşitledi ve işlemi hatasız tamamladı.',
+          4: 'En pratik ortak katı anında bularak işlem süresini kısalttı ve akranlarına pratik yöntemler gösterdi.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'İşaret Kuralları ve Zıt İşaretli Toplama',
+        category: 'Sayı Hissi & Tam Sayı İlişkisi',
+        levelDescriptions: {
+          1: 'Negatif rasyonel sayıların işaretlerini karıştırıyor, sonuç işaretini belirlemekte zorlanıyor.',
+          2: 'Aynı işaretlileri toplayabiliyor ancak zıt işaretlilerde mutlak değer karşılaştırmasında tereddüt yaşıyor.',
+          3: 'Negatif ve zıt işaretli rasyonel toplamlarında kuralları doğru uygulayarak doğru sonuca ulaştı.',
+          4: 'İşaret mantığını borç-alacak veya yönlü vektör modelleriyle arkadaşlarına mantıklı biçimde açıkladı.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Çıkarma Kuralı (Ters Eleman Dönüşümü)',
+        category: 'Cebirsel Muhakeme',
+        levelDescriptions: {
+          1: 'Çıkarmayı doğrudan yapmaya çalışırken işaret karmaşasına düşüyor.',
+          2: 'A - B = A + (-B) kuralını hatırlıyor ancak parantez içi işaretleri düzenlerken yardıma ihtiyaç duyuyor.',
+          3: 'Çıkarma işlemini çıkanın tersiyle toplama kuralına uygun şekilde dönüştürüp doğru hesapladı.',
+          4: 'Çıkarma kuralının arkasındaki matematiksel mantığı akranlarına sayı doğrusunda geri yönelme olarak gösterdi.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Toplama Özelliklerini Kullanma',
+        category: 'İşlem Kolaylığı & Cebirsel Özellikler',
+        levelDescriptions: {
+          1: 'İşlemleri sadece soldan sağa sırayla yapıyor, özellikleri fark edemiyor.',
+          2: 'Etkisiz elemanı biliyor fakat ters eleman veya birleşme özelliğini gruplama için kullanmıyor.',
+          3: 'Birbirini sıfırlayan ters elemanları ve aynı paydalı kesirleri gruplayarak işlem kolaylığı sağladı.',
+          4: 'Cebirsel özellikleri ustaca kullanarak karmaşık işlemleri grup içinde en hızlı ve anlaşılır şekilde çözdü.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Takım Çalışması & Vektör Modellemesi',
+        category: 'İş Birliği & Modelleme',
+        levelDescriptions: {
+          1: 'Grup içinde sayı doğrusu oklarını ve simülatör görevlerini paylaşmakta zorlanıyor.',
+          2: 'Grup görevlerine katılıyor fakat modelleme çizimlerinde arkadaşlarına soru sormakta çekingen kalıyor.',
+          3: 'Sayı doğrusunda yönlü okları doğru çizdi, Gökbey uydu yakıt simülasyonunda takımına aktif katkı sundu.',
+          4: 'Takım çalışmasında liderlik üstlendi, modelleme adımlarını ve yakıt denge analizini arkadaşlarıyla paylaştı.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Paydaları genişleterek doğru eşitledi ve işlemi kuralına uygun tamamladı.' },
+      { id: 'chk2', text: 'Zıt işaretli rasyonel toplamlarında işaret sonucunu doğru belirledi.' },
+      { id: 'chk3', text: 'Çıkarma işlemini çıkanın toplama tersiyle toplama şeklinde başarıyla dönüştürdü.' },
+      { id: 'chk4', text: 'Değişme ve birleşme özellikleriyle işlem adımlarını kısalttı.' },
+      { id: 'chk5', text: 'Gökbey yakıt tankı ve sayı doğrusu vektör modellerinde takımıyla uyumlu çalıştı.' }
     ]
   },
 };

@@ -25,7 +25,8 @@ import {
   Printer,
   BookOpen,
   Layers,
-  Award
+  Award,
+  Rocket
 } from 'lucide-react';
 
 /* ========================================================================= */
@@ -2384,6 +2385,877 @@ export function RationalComparisonActivityView() {
             type="button"
             onClick={handleCheck}
             className="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-black shadow-md shadow-sky-600/20 transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+          >
+            <Check className="w-4 h-4" />
+            <span>Etkinliği Kontrol Et</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+/* ========================================================================= */
+/* 5. ETKİNLİK: RASYONEL SAYILARLA TOPLAMA VE ÇIKARMA İŞLEMLERİ (MAT.7.1.3)   */
+/* ÇİFT YÜZ (ÖN YÜZ / İÇ - ARKA YÜZ / DIŞ) MAARİF MODELİ ÇALIŞMA YAPRAĞI    */
+/* ========================================================================= */
+export function RationalOperationsActivityView() {
+  const { playSound, addPoints, unlockBadge } = useApp();
+
+  // Yüz Seçimi: 'front' (Ön Yüz / İç), 'back' (Arka Yüz / Dış), 'both' (Çift Taraflı Baskı / Tam Görünüm)
+  const [activeFace, setActiveFace] = useState<'front' | 'back' | 'both'>('front');
+
+  // İnteraktif Mini Simülatör (Yakıt Tankı & Vektör)
+  const [simValues, setSimValues] = useState<{ n1: number; d1: number; op: '+' | '-'; n2: number; d2: number }>({
+    n1: 2,
+    d1: 5,
+    op: '+',
+    n2: 1,
+    d2: 10
+  });
+
+  // Öğrenci Künyesi
+  const [studentInfo, setStudentInfo] = useState({
+    name: '',
+    classNum: '',
+    date: new Date().toLocaleDateString('tr-TR')
+  });
+
+  // Cevaplar
+  const [answers, setAnswers] = useState({
+    // Ön Yüz - Görev 1: Ortak Payda & İşlem Tahtası (30P - her biri 5P)
+    calc1: '', // 2/5 + 1/10 = 5/10 veya 1/2
+    calc2: '', // (-3/4) + (-1/8) = -7/8
+    calc3: '', // 5/6 + (-1/3) = 3/6 veya 1/2
+    calc4: '', // 7/12 - 1/4 = 4/12 veya 1/3
+    calc5: '', // (-2/5) - (-3/10) = -1/10
+    calc6: '', // 1/3 - 5/6 = -3/6 veya -1/2
+
+    // Ön Yüz - Görev 2: Vektörel Sayı Doğrusu Modellemesi (20P - her biri 5P)
+    vec1: '', // A: Sağa 3/4 birim
+    vec2: '', // A: 3/4 noktasından sola 2/4 (1/2) birim
+    vec3: '', // 1/4 veya +1/4
+    vec4: '', // A: Çıkan sayının toplama tersi yönünde hareket edilir
+
+    // Arka Yüz - Görev 3: Toplama İşleminin Cebirsel Özellikleri (20P - her biri 5P)
+    prop1: '', // Değişme
+    prop2: '', // Birleşme
+    prop3: '', // Etkisiz
+    prop4: '', // Ters
+
+    // Arka Yüz - Görev 4: Gökbey Yakıt & İtki Mühendislik Problemleri (30P - her biri 15P)
+    prob_tank: '', // 'B' (5/8 ton)
+    prob_thrust: '', // 'A' (-7/10 rad/s)
+
+    // Maarif Süreç Değerlendirme & Beceri Rubriği
+    rubric_sdb12: 4,
+    rubric_sdb22: 4,
+    rubric_sdb33: 4,
+    teacherFeedback: ''
+  });
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [pointsAwarded, setPointsAwarded] = useState(false);
+  const [revealSolutions, setRevealSolutions] = useState(false);
+
+  // Normalizer for user fraction inputs (handles spaces, +, leading zeros, equivalent simplified fractions)
+  const checkFractionEquiv = (input: string, targetNum: number, targetDen: number) => {
+    if (!input) return false;
+    const clean = input.trim().replace('+', '');
+    const parts = clean.split('/');
+    if (parts.length === 1) {
+      const val = parseFloat(parts[0]);
+      return Math.abs(val - targetNum / targetDen) < 0.0001;
+    }
+    if (parts.length === 2) {
+      const n = parseInt(parts[0], 10);
+      const d = parseInt(parts[1], 10);
+      if (isNaN(n) || isNaN(d) || d === 0) return false;
+      return n * targetDen === targetNum * d;
+    }
+    return false;
+  };
+
+  const handleCheck = () => {
+    let earned = 0;
+
+    // Görev 1 (30P)
+    if (checkFractionEquiv(answers.calc1, 1, 2)) earned += 5;
+    if (checkFractionEquiv(answers.calc2, -7, 8)) earned += 5;
+    if (checkFractionEquiv(answers.calc3, 1, 2)) earned += 5;
+    if (checkFractionEquiv(answers.calc4, 1, 3)) earned += 5;
+    if (checkFractionEquiv(answers.calc5, -1, 10)) earned += 5;
+    if (checkFractionEquiv(answers.calc6, -1, 2)) earned += 5;
+
+    // Görev 2 (20P)
+    if (answers.vec1 === 'A') earned += 5;
+    if (answers.vec2 === 'A') earned += 5;
+    if (checkFractionEquiv(answers.vec3, 1, 4)) earned += 5;
+    if (answers.vec4 === 'A') earned += 5;
+
+    // Görev 3 (20P)
+    if (answers.prop1.toLowerCase().includes('değişme')) earned += 5;
+    if (answers.prop2.toLowerCase().includes('birleşme')) earned += 5;
+    if (answers.prop3.toLowerCase().includes('etkisiz')) earned += 5;
+    if (answers.prop4.toLowerCase().includes('ters')) earned += 5;
+
+    // Görev 4 (30P)
+    if (answers.prob_tank === 'B') earned += 15;
+    if (answers.prob_thrust === 'A') earned += 15;
+
+    const finalScore = Math.min(100, Math.round(earned));
+    setScore(finalScore);
+    setIsChecked(true);
+
+    if (finalScore >= 75) {
+      playSound('success');
+      if (!pointsAwarded) {
+        addPoints(finalScore);
+        setPointsAwarded(true);
+        if (finalScore === 100) {
+          unlockBadge('rational-operations-hero');
+        }
+        try {
+          confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+        } catch (e) {}
+      }
+    } else {
+      playSound('click');
+    }
+  };
+
+  const handleReset = () => {
+    playSound('select');
+    setAnswers({
+      calc1: '',
+      calc2: '',
+      calc3: '',
+      calc4: '',
+      calc5: '',
+      calc6: '',
+      vec1: '',
+      vec2: '',
+      vec3: '',
+      vec4: '',
+      prop1: '',
+      prop2: '',
+      prop3: '',
+      prop4: '',
+      prob_tank: '',
+      prob_thrust: '',
+      rubric_sdb12: 4,
+      rubric_sdb22: 4,
+      rubric_sdb33: 4,
+      teacherFeedback: ''
+    });
+    setIsChecked(false);
+    setScore(0);
+    setRevealSolutions(false);
+  };
+
+  // Mini simülatör hesaplamaları
+  const v1 = simValues.n1 / simValues.d1;
+  const v2 = simValues.n2 / simValues.d2;
+  const vNet = simValues.op === '+' ? v1 + v2 : v1 - v2;
+
+  return (
+    <div className="space-y-6">
+
+      {/* 1. ÜST ETKİNLİK KONTROLÜ VE YÜZ SEÇİCİ */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-teal-950 rounded-3xl p-5 sm:p-6 text-white shadow-xl border border-teal-500/30">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-200 text-xs font-black tracking-wider uppercase">
+                MAT.7.1.3 • Sayılar ve Nicelikler
+              </span>
+              <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[11px] font-bold border border-emerald-500/30">
+                Çift Yüzlü Çalışma Yaprağı (100P)
+              </span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black text-white mt-1.5 flex items-center gap-2">
+              <Rocket className="w-6 h-6 text-teal-400" />
+              Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri
+            </h3>
+            <p className="text-xs sm:text-sm text-teal-100/80 mt-1">
+              Gökbey Uydu Yer İstasyonu & Akıllı İtki / Yakıt Denge Raporu (Payda Eşitleme, Sayı Doğrusu & Ters Eleman)
+            </p>
+          </div>
+
+          {/* Görünüm / Yüz Seçici Butonları */}
+          <div className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-2xl border border-white/10 self-stretch sm:self-auto">
+            <button
+              type="button"
+              onClick={() => {
+                playSound('click');
+                setActiveFace('front');
+              }}
+              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeFace === 'front'
+                  ? 'bg-teal-500 text-slate-950 shadow-md'
+                  : 'text-teal-200 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Ön Yüz (İç)</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/20 font-bold">50P</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                playSound('click');
+                setActiveFace('back');
+              }}
+              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeFace === 'back'
+                  ? 'bg-teal-500 text-slate-950 shadow-md'
+                  : 'text-teal-200 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Arka Yüz (Dış)</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/20 font-bold">50P</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                playSound('click');
+                setActiveFace('both');
+              }}
+              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeFace === 'both'
+                  ? 'bg-amber-400 text-slate-950 shadow-md'
+                  : 'text-amber-200 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Tam Baskı Görünümü</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Canlı Mini Yakıt Tankı & Vektör Simülatörü */}
+        <div className="mt-5 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-[11px] font-extrabold text-teal-300 uppercase tracking-wider flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                İnteraktif Laboratuvar Tezgâhı: Hızlı İşlem & Seviye Testi
+              </span>
+              <div className="text-xs text-slate-300 flex items-center gap-2">
+                <span>Birinci Terim:</span>
+                <span className="font-mono font-black text-white">{simValues.n1}/{simValues.d1}</span>
+                <span className="font-mono font-bold text-teal-300">{simValues.op}</span>
+                <span>İkinci Terim:</span>
+                <span className="font-mono font-black text-white">{simValues.n2}/{simValues.d2}</span>
+                <span className="text-slate-400">=</span>
+                <span className="font-mono font-black text-amber-300 text-sm">{vNet.toFixed(3)} birim</span>
+              </div>
+            </div>
+
+            {/* Simülatör Hızlı Seçim Butonları */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  playSound('click');
+                  setSimValues({ n1: 2, d1: 5, op: '+', n2: 1, d2: 10 });
+                }}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/30 cursor-pointer"
+              >
+                2/5 + 1/10
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  playSound('click');
+                  setSimValues({ n1: 5, d1: 6, op: '-', n2: 1, d2: 3 });
+                }}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/30 cursor-pointer"
+              >
+                5/6 - 1/3
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  playSound('click');
+                  setSimValues({ n1: 7, d1: 12, op: '-', n2: 1, d2: 4 });
+                }}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/30 cursor-pointer"
+              >
+                7/12 - 1/4
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. ÖĞRENCİ KÜNYESİ */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Öğrenci Adı Soyadı
+            </label>
+            <input
+              type="text"
+              placeholder="Adınızı ve soyadınızı yazınız"
+              value={studentInfo.name}
+              onChange={(e) => setStudentInfo({ ...studentInfo, name: e.target.value })}
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Sınıf / Şube / Numara
+            </label>
+            <input
+              type="text"
+              placeholder="Örn: 7-A / 452"
+              value={studentInfo.classNum}
+              onChange={(e) => setStudentInfo({ ...studentInfo, classNum: e.target.value })}
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Etkinlik Tarihi
+            </label>
+            <input
+              type="text"
+              value={studentInfo.date}
+              onChange={(e) => setStudentInfo({ ...studentInfo, date: e.target.value })}
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 3. ÖN YÜZ (İÇ) GÖREVLERİ (50 PUAN)                                         */}
+      {/* ========================================================================= */}
+      {(activeFace === 'front' || activeFace === 'both') && (
+        <div className="space-y-6">
+
+          {/* GÖREV 1: ORTAK PAYDA VE İŞLEM TAHTASI (30 PUAN) */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-md">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center font-black text-sm">
+                  1
+                </span>
+                <div>
+                  <h4 className="text-base font-black text-slate-800 dark:text-white">
+                    Görev 1: Ortak Payda & Temel İşlem Tahtası
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Paydaları eşitleyerek işlemleri yapınız. Sonuçları en sade veya denk kesir olarak yazınız (Her biri 5P - Toplam 30P).
+                  </p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-black border border-teal-200">
+                30 Puan
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Soru 1 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="text-sm font-black text-slate-800 dark:text-slate-100">
+                  1) <span className="font-mono">2/5 + 1/10</span> = ?
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Örn: 1/2"
+                    value={answers.calc1}
+                    onChange={(e) => setAnswers({ ...answers, calc1: e.target.value })}
+                    className="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-center font-black text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600">1/2 (5/10)</span>}
+                </div>
+              </div>
+
+              {/* Soru 2 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="text-sm font-black text-slate-800 dark:text-slate-100">
+                  2) <span className="font-mono">(-3/4) + (-1/8)</span> = ?
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Örn: -7/8"
+                    value={answers.calc2}
+                    onChange={(e) => setAnswers({ ...answers, calc2: e.target.value })}
+                    className="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-center font-black text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600">-7/8</span>}
+                </div>
+              </div>
+
+              {/* Soru 3 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="text-sm font-black text-slate-800 dark:text-slate-100">
+                  3) <span className="font-mono">5/6 + (-1/3)</span> = ?
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Örn: 1/2"
+                    value={answers.calc3}
+                    onChange={(e) => setAnswers({ ...answers, calc3: e.target.value })}
+                    className="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-center font-black text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600">1/2 (3/6)</span>}
+                </div>
+              </div>
+
+              {/* Soru 4 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="text-sm font-black text-slate-800 dark:text-slate-100">
+                  4) <span className="font-mono">7/12 - 1/4</span> = ?
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Örn: 1/3"
+                    value={answers.calc4}
+                    onChange={(e) => setAnswers({ ...answers, calc4: e.target.value })}
+                    className="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-center font-black text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600">1/3 (4/12)</span>}
+                </div>
+              </div>
+
+              {/* Soru 5 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="text-sm font-black text-slate-800 dark:text-slate-100">
+                  5) <span className="font-mono">(-2/5) - (-3/10)</span> = ?
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Örn: -1/10"
+                    value={answers.calc5}
+                    onChange={(e) => setAnswers({ ...answers, calc5: e.target.value })}
+                    className="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-center font-black text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600">-1/10</span>}
+                </div>
+              </div>
+
+              {/* Soru 6 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="text-sm font-black text-slate-800 dark:text-slate-100">
+                  6) <span className="font-mono">1/3 - 5/6</span> = ?
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Örn: -1/2"
+                    value={answers.calc6}
+                    onChange={(e) => setAnswers({ ...answers, calc6: e.target.value })}
+                    className="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-center font-black text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600">-1/2 (-3/6)</span>}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* GÖREV 2: VEKTÖREL SAYI DOĞRUSU MODELLEMESİ (20 PUAN) */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-md">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-black text-sm">
+                  2
+                </span>
+                <div>
+                  <h4 className="text-base font-black text-slate-800 dark:text-white">
+                    Görev 2: Vektörel Sayı Doğrusu Modellemesi
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    (+3/4) + (-1/2) işleminin sayı doğrusundaki yön okları modelini analiz ediniz (Her biri 5P - Toplam 20P).
+                  </p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-black border border-blue-200">
+                20 Puan
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Soru 2.1 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <span className="text-xs font-black text-slate-700 dark:text-slate-200 block">
+                  1) İlk terim olan (+3/4) için 0 noktasından hangi yöne kaç birim çizilir?
+                </span>
+                <div className="grid grid-cols-1 gap-1.5 text-xs">
+                  {[
+                    { key: 'A', text: 'A) Sağa doğru 3/4 birim' },
+                    { key: 'B', text: 'B) Sola doğru 3/4 birim' },
+                    { key: 'C', text: 'C) Sola doğru 1/2 birim' }
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, vec1: opt.key })}
+                      className={`px-3 py-2 rounded-xl text-left font-bold transition-all ${
+                        answers.vec1 === opt.key
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      {opt.text}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Soru 2.2 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <span className="text-xs font-black text-slate-700 dark:text-slate-200 block">
+                  2) İkinci terim (-1/2) eklenirken 3/4 noktasından nasıl ilerlenir?
+                </span>
+                <div className="grid grid-cols-1 gap-1.5 text-xs">
+                  {[
+                    { key: 'A', text: 'A) 3/4 noktasından sola doğru 2/4 (1/2) birim' },
+                    { key: 'B', text: 'B) Sıfır noktasına dönüp sola doğru 1/2 birim' },
+                    { key: 'C', text: 'C) 3/4 noktasından sağa doğru 1/2 birim' }
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, vec2: opt.key })}
+                      className={`px-3 py-2 rounded-xl text-left font-bold transition-all ${
+                        answers.vec2 === opt.key
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      {opt.text}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Soru 2.3 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <span className="text-xs font-black text-slate-700 dark:text-slate-200">
+                  3) Vektör okunun ulaştığı nihai sonuç noktası:
+                </span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Örn: 1/4"
+                    value={answers.vec3}
+                    onChange={(e) => setAnswers({ ...answers, vec3: e.target.value })}
+                    className="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-center font-black text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600">1/4</span>}
+                </div>
+              </div>
+
+              {/* Soru 2.4 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <span className="text-xs font-black text-slate-700 dark:text-slate-200 block">
+                  4) Rasyonel sayılarda çıkarma işlemi sayı doğrusunda hangi ilkeyle modellenir?
+                </span>
+                <div className="grid grid-cols-1 gap-1.5 text-xs">
+                  {[
+                    { key: 'A', text: 'A) Çıkan sayının toplama işlemine göre tersi eklenir' },
+                    { key: 'B', text: 'B) Sayı doğrusu negatif yönü sağa çevrilir' },
+                    { key: 'C', text: 'C) Yalnızca pozitif olan kısım dikkate alınır' }
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, vec4: opt.key })}
+                      className={`px-3 py-2 rounded-xl text-left font-bold transition-all ${
+                        answers.vec4 === opt.key
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      {opt.text}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 4. ARKA YÜZ (DIŞ) GÖREVLERİ (50 PUAN)                                       */}
+      {/* ========================================================================= */}
+      {(activeFace === 'back' || activeFace === 'both') && (
+        <div className="space-y-6">
+
+          {/* GÖREV 3: TOPLAMA İŞLEMİNİN CEBİRSEL ÖZELLİKLERİ (20 PUAN) */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-md">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center font-black text-sm">
+                  3
+                </span>
+                <div>
+                  <h4 className="text-base font-black text-slate-800 dark:text-white">
+                    Görev 3: Toplama İşleminin Cebirsel Özellikleri
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Aşağıdaki eşitliklerde uygulanan özelliği yazınız (Değişme, Birleşme, Etkisiz Eleman, Ters Eleman) (Her biri 5P - Toplam 20P).
+                  </p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-black border border-purple-200">
+                20 Puan
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Özellik 1 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div className="text-xs font-black text-slate-800 dark:text-slate-100 font-mono">
+                  1) 3/7 + (-2/5) = (-2/5) + 3/7
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Özellik adı..."
+                    value={answers.prop1}
+                    onChange={(e) => setAnswers({ ...answers, prop1: e.target.value })}
+                    className="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 font-bold text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600 whitespace-nowrap">Değişme</span>}
+                </div>
+              </div>
+
+              {/* Özellik 2 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div className="text-xs font-black text-slate-800 dark:text-slate-100 font-mono">
+                  2) [1/4 + 2/3] + 1/3 = 1/4 + [2/3 + 1/3]
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Özellik adı..."
+                    value={answers.prop2}
+                    onChange={(e) => setAnswers({ ...answers, prop2: e.target.value })}
+                    className="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 font-bold text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600 whitespace-nowrap">Birleşme</span>}
+                </div>
+              </div>
+
+              {/* Özellik 3 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div className="text-xs font-black text-slate-800 dark:text-slate-100 font-mono">
+                  3) 0 + (-5/9) = -5/9 (0 elemanı)
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Özellik adı..."
+                    value={answers.prop3}
+                    onChange={(e) => setAnswers({ ...answers, prop3: e.target.value })}
+                    className="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 font-bold text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600 whitespace-nowrap">Etkisiz Eleman</span>}
+                </div>
+              </div>
+
+              {/* Özellik 4 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div className="text-xs font-black text-slate-800 dark:text-slate-100 font-mono">
+                  4) 7/11 + (-7/11) = 0 (-7/11 sayısı)
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Özellik adı..."
+                    value={answers.prop4}
+                    onChange={(e) => setAnswers({ ...answers, prop4: e.target.value })}
+                    className="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 font-bold text-xs bg-white dark:bg-slate-900"
+                  />
+                  {revealSolutions && <span className="text-xs font-black text-emerald-600 whitespace-nowrap">Ters Eleman</span>}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* GÖREV 4: GÖKBEY YAKIT & İTKİ MÜHENDİSLİK PROBLEMLERİ (30 PUAN) */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-md">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-black text-sm">
+                  4
+                </span>
+                <div>
+                  <h4 className="text-base font-black text-slate-800 dark:text-white">
+                    Görev 4: Gökbey Yakıt & İtki Mühendislik Problemleri
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Gerçek uzay ve havacılık mühendisliği verilerini rasyonel işlemlerle çözünüz (Her biri 15P - Toplam 30P).
+                  </p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-black border border-amber-200">
+                30 Puan
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Problem 1 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                <div className="flex items-start gap-2">
+                  <Droplets className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
+                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <strong>Problem 1 (Yakıt Tankı):</strong> Gökbey uydusunun ana yakıt tankında <span className="font-mono font-bold">7/8</span> ton yakıt vardır. Yörünge düzeltme motoru <span className="font-mono font-bold">3/4</span> ton yakıt tüketmiş, ardından yardımcı depodan tanka <span className="font-mono font-bold">1/2</span> ton yakıt ikmali yapılmıştır. Son durumda ana tanktaki yakıt miktarı kaç tondur?
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  {[
+                    { key: 'A', text: 'A) 3/8 ton' },
+                    { key: 'B', text: 'B) 5/8 ton' },
+                    { key: 'C', text: 'C) 7/16 ton' },
+                    { key: 'D', text: 'D) 1 tam ton' }
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, prob_tank: opt.key })}
+                      className={`px-3 py-2 rounded-xl text-left font-bold transition-all ${
+                        answers.prob_tank === opt.key
+                          ? 'bg-teal-600 text-white'
+                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      {opt.text}
+                    </button>
+                  ))}
+                </div>
+                {revealSolutions && (
+                  <p className="text-[11px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 p-2 rounded-lg">
+                    Çözüm: (7/8 - 6/8) + 4/8 = 1/8 + 4/8 = 5/8 ton (Doğru Cevap: B)
+                  </p>
+                )}
+              </div>
+
+              {/* Problem 2 */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                <div className="flex items-start gap-2">
+                  <Rocket className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
+                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <strong>Problem 2 (Açısal Hız Düzeltmesi):</strong> Yörüngeden hafif sapan uydunun sağ iticisi <span className="font-mono font-bold">(-2/5)</span> rad/s, sol yardımcı iticisi ise <span className="font-mono font-bold">(-3/10)</span> rad/s hız düzeltmesi uygulamaktadır. Uydunun maruz kaldığı toplam açısal hız değişimi kaç rad/s&apos;dir?
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  {[
+                    { key: 'A', text: 'A) -7/10 rad/s' },
+                    { key: 'B', text: 'B) +1/10 rad/s' },
+                    { key: 'C', text: 'C) -1/10 rad/s' },
+                    { key: 'D', text: 'D) -5/15 rad/s' }
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setAnswers({ ...answers, prob_thrust: opt.key })}
+                      className={`px-3 py-2 rounded-xl text-left font-bold transition-all ${
+                        answers.prob_thrust === opt.key
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      {opt.text}
+                    </button>
+                  ))}
+                </div>
+                {revealSolutions && (
+                  <p className="text-[11px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 p-2 rounded-lg">
+                    Çözüm: (-4/10) + (-3/10) = -7/10 rad/s (Doğru Cevap: A)
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* MAARİF SÜREÇ DEĞERLENDİRME & RUBRİK ALANI */}
+          <div className="bg-slate-50 dark:bg-slate-900/60 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800">
+            <h5 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-teal-600" />
+              Türkiye Yüzyılı Maarif Modeli Süreç & Sosyal Duygusal Beceri (SDB) Rubriği
+            </h5>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+                <span className="font-black text-slate-800 dark:text-white block mb-1">SDB1.2 Öz Düzenleme</span>
+                <span className="text-slate-500">Paydaları eşitlerken genişletmeyi pay ve paydaya dikkatle uygulama.</span>
+              </div>
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+                <span className="font-black text-slate-800 dark:text-white block mb-1">SDB2.2 Sorumluluk</span>
+                <span className="text-slate-500">Gökbey uydu yakıt verilerini titizlikle hesaplayıp raporlama.</span>
+              </div>
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+                <span className="font-black text-slate-800 dark:text-white block mb-1">SDB3.3 Eleştirel Düşünme</span>
+                <span className="text-slate-500">Çıkarma işlemini çıkanın tersiyle toplama ilkesiyle temellendirme.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 5. ALT EYLEM ÇUBUĞU (KONTROL ET, PUAN, TEMİZLE, ÇÖZÜMLER)                 */}
+      {/* ========================================================================= */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          {isChecked ? (
+            <div className={`flex items-center gap-2 font-black text-base ${
+              score >= 75 ? 'text-emerald-600' : 'text-amber-600'
+            }`}>
+              {score >= 75 ? <CheckCircle2 className="w-5 h-5 text-emerald-600" /> : <AlertTriangle className="w-5 h-5 text-amber-600" />}
+              <span>Etkinlik Puanı: {score} / 100</span>
+            </div>
+          ) : (
+            <div className="text-xs text-slate-500 font-medium">
+              Ön ve arka yüzdeki görevleri tamamladıktan sonra &ldquo;Etkinliği Kontrol Et&rdquo; butonuna basınız.
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>Temizle</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              playSound('click');
+              setRevealSolutions(!revealSolutions);
+            }}
+            className="px-4 py-2.5 rounded-xl border border-teal-300 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <Lightbulb className="w-4 h-4 text-teal-600" />
+            <span>{revealSolutions ? 'Çözümleri Gizle' : 'Çözümleri İncele'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleCheck}
+            className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black shadow-md shadow-teal-600/20 transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
           >
             <Check className="w-4 h-4" />
             <span>Etkinliği Kontrol Et</span>

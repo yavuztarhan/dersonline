@@ -103,6 +103,13 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [freezerViewMode, setFreezerViewMode] = useState<'thermometer' | 'numberline' | 'rule'>('thermometer');
   const [turbineSortMode, setTurbineSortMode] = useState<'raw' | 'common' | 'ranked'>('raw');
 
+  // 7. Sınıf MAT.7.1.3 (4. Hafta: Toplama & Çıkarma) Story Interactive States
+  const [tankStep, setTankStep] = useState<'line1' | 'line2' | 'total'>('total');
+  const [tankPreset, setTankPreset] = useState<'3/8_2/8' | '1/6_3/6' | '2/5_1/5'>('3/8_2/8');
+  const [denomStepperActive, setDenomStepperActive] = useState<'separate' | 'expanded' | 'merged'>('merged');
+  const [vectorForcePreset, setVectorForcePreset] = useState<'flight' | 'opposite_cancel' | 'wind_dominant'>('flight');
+  const [thermalSubtractionStep, setThermalSubtractionStep] = useState<1 | 2 | 3>(3);
+
   const pages: StorybookPage[] = data.pages || [
     {
       id: 'default-p1',
@@ -4064,6 +4071,645 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   );
                 })()}
 
+                {/* 7. SINIF MAT.7.1.3 - 1. BÖLÜM: AYNI PAYDALI RASYONEL SAYILARLA YAKIT DOLUMU */}
+                {currentPage.visualScene.type === 'fraction-tank-addition' && (() => {
+                  const presetData = {
+                    '3/8_2/8': { num1: 3, num2: 2, den: 8, unit: 'ton', label1: '1. Hat (Hidrojen)', label2: '2. Hat (Kerozen)' },
+                    '1/6_3/6': { num1: 1, num2: 3, den: 6, unit: 'ton', label1: '1. Hat (Birincil)', label2: '2. Hat (Yedek)' },
+                    '2/5_1/5': { num1: 2, num2: 1, den: 5, unit: 'ton', label1: 'İtki A', label2: 'İtki B' },
+                  }[tankPreset];
+
+                  const totalFilled = tankStep === 'line1' ? presetData.num1 : tankStep === 'line2' ? presetData.num2 : presetData.num1 + presetData.num2;
+                  const totalCapacity = presetData.den;
+
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Telemetry Header */}
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center">
+                            <Gauge className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-cyan-300 uppercase tracking-wider">
+                              Gökbey 1. & 2. Hat Yakıt İkmal Paneli
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              Kural: Paylar toplanır ({presetData.num1} + {presetData.num2} = {presetData.num1 + presetData.num2}), ortak payda ({presetData.den}) aynen korunur!
+                            </div>
+                          </div>
+                        </div>
+                        <div className="px-2.5 py-1 rounded-lg bg-cyan-950/80 border border-cyan-500/40 text-cyan-200 font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                          <MathFraction value={`${presetData.num1}/${presetData.den}`} /> + <MathFraction value={`${presetData.num2}/${presetData.den}`} /> = <MathFraction value={`${presetData.num1 + presetData.num2}/${presetData.den} ton`} />
+                        </div>
+                      </div>
+
+                      {/* Scenario Presets & Tank Phase Switcher */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-800">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-slate-400 font-bold uppercase mr-1">Örnek:</span>
+                          {[
+                            { key: '3/8_2/8', label: '3/8 + 2/8 (Standart)' },
+                            { key: '1/6_3/6', label: '1/6 + 3/6 (Yedek)' },
+                            { key: '2/5_1/5', label: '2/5 + 1/5 (Roket)' },
+                          ].map((p) => (
+                            <button
+                              key={p.key}
+                              type="button"
+                              onClick={() => {
+                                setTankPreset(p.key as any);
+                                playSound('select');
+                              }}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                                tankPreset === p.key
+                                  ? 'bg-cyan-600 text-white shadow-md'
+                                  : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'
+                              }`}
+                            >
+                              {p.label}
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          {[
+                            { key: 'line1', label: `1. Hat (+${presetData.num1}/${presetData.den})`, color: 'text-blue-400' },
+                            { key: 'line2', label: `2. Hat (+${presetData.num2}/${presetData.den})`, color: 'text-emerald-400' },
+                            { key: 'total', label: `Bileşik Toplam (+${presetData.num1 + presetData.num2}/${presetData.den})`, color: 'text-cyan-300' }
+                          ].map((s) => (
+                            <button
+                              key={s.key}
+                              type="button"
+                              onClick={() => {
+                                setTankStep(s.key as any);
+                                playSound('click');
+                              }}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all ${
+                                tankStep === s.key
+                                  ? 'bg-slate-800 border-cyan-400 text-white shadow-sm'
+                                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-900'
+                              }`}
+                            >
+                              {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Main Dynamic Graphic: Cylindrical Tank with Slices */}
+                      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 relative overflow-hidden">
+                        {/* Tank Top Info */}
+                        <div className="flex items-center justify-between text-[11px] font-bold">
+                          <span className="text-blue-400 flex items-center gap-1">
+                            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" />
+                            1. Hat: +{presetData.num1}/{presetData.den} Ton
+                          </span>
+                          <span className="text-cyan-300 font-mono text-xs px-2.5 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-500/40">
+                            Net Doluluk: {totalFilled}/{totalCapacity} Ton ({Math.round((totalFilled / totalCapacity) * 100)}%)
+                          </span>
+                          <span className="text-emerald-400 flex items-center gap-1">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+                            2. Hat: +{presetData.num2}/{presetData.den} Ton
+                          </span>
+                        </div>
+
+                        {/* Visual Tank Bar Display */}
+                        <div className="relative h-20 sm:h-24 bg-slate-950 rounded-2xl border-2 border-slate-700 p-2 flex items-center overflow-hidden shadow-inner">
+                          {/* Slices Grid */}
+                          <div className="w-full h-full grid gap-1.5" style={{ gridTemplateColumns: `repeat(${totalCapacity}, minmax(0, 1fr))` }}>
+                            {Array.from({ length: totalCapacity }).map((_, i) => {
+                              const isLine1 = i < presetData.num1;
+                              const isLine2 = i >= presetData.num1 && i < presetData.num1 + presetData.num2;
+                              const isFilledInCurrentView =
+                                tankStep === 'total'
+                                  ? (isLine1 || isLine2)
+                                  : tankStep === 'line1'
+                                  ? isLine1
+                                  : isLine2;
+
+                              return (
+                                <div
+                                  key={i}
+                                  className={`h-full rounded-lg border flex flex-col items-center justify-between p-1 transition-all duration-300 ${
+                                    isFilledInCurrentView
+                                      ? isLine1 && tankStep !== 'line2'
+                                        ? 'bg-gradient-to-t from-blue-600 to-blue-400 border-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.6)] animate-pulse'
+                                        : 'bg-gradient-to-t from-emerald-600 to-emerald-400 border-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.6)] animate-pulse'
+                                      : 'bg-slate-900/60 border-slate-800 text-slate-600'
+                                  }`}
+                                >
+                                  <span className="text-[9px] font-mono font-bold">
+                                    {i + 1}
+                                  </span>
+                                  <span className="text-[8px] font-mono font-semibold opacity-80">
+                                    1/{totalCapacity}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Tank Bottom Scale Markers */}
+                        <div className="flex justify-between text-[9px] font-mono text-slate-500 px-2">
+                          <span>0 Ton (Boş)</span>
+                          <span className="text-cyan-400 font-bold">Ortak Payda: {totalCapacity} Eşit Dilim</span>
+                          <span>1.0 Ton (Tam Depo)</span>
+                        </div>
+                      </div>
+
+                      {/* Pedagogical Rule Callout */}
+                      <div className="p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-cyan-100 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                          <span>
+                            <strong>Maarif İlkesi:</strong> Paydalar toplanmaz ({presetData.den} + {presetData.den} ≠ {presetData.den * 2})! Çünkü depodaki her bir dilimin hacmi (1/{presetData.den} ton) sabittir. Sadece parça sayıları ({presetData.num1} + {presetData.num2} = {presetData.num1 + presetData.num2}) toplanır.
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 7. SINIF MAT.7.1.3 - 2. BÖLÜM: FARKLI PAYDALAR VE GENİŞLETME İSTASYONU */}
+                {currentPage.visualScene.type === 'common-denominator-stepper' && (() => {
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Telemetry Header */}
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-400 flex items-center justify-center">
+                            <Layers className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-purple-300 uppercase tracking-wider">
+                              Farklı Paydalar & Genişletme İstasyonu
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              En Küçük Ortak Kat (EKOK(4, 8) = 8): Kesirleri aynı birim cinsinden konuşur hale getirme
+                            </div>
+                          </div>
+                        </div>
+                        <div className="px-2.5 py-1 rounded-lg bg-purple-950/80 border border-purple-500/40 text-purple-200 font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                          <MathFraction value="1/4" /> + <MathFraction value="3/8" /> = <MathFraction value="5/8 ton" />
+                        </div>
+                      </div>
+
+                      {/* Step Progress Buttons */}
+                      <div className="grid grid-cols-3 gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 text-center text-[10px]">
+                        {[
+                          { key: 'separate', label: '1. Farklı Dilimler', desc: '1/4 (4 dilim) vs 3/8 (8 dilim)' },
+                          { key: 'expanded', label: '2. 1/4\'ü 2 ile Genişlet', desc: '(1×2)/(4×2) = 2/8 elde et' },
+                          { key: 'merged', label: '3. Ortak Paydada Topla', desc: '2/8 + 3/8 = 5/8 ton yakıt' }
+                        ].map((item) => (
+                          <button
+                            key={item.key}
+                            type="button"
+                            onClick={() => {
+                              setDenomStepperActive(item.key as any);
+                              playSound('select');
+                            }}
+                            className={`p-2 rounded-lg border transition-all text-left ${
+                              denomStepperActive === item.key
+                                ? 'bg-purple-600 border-purple-400 text-white font-black shadow-md'
+                                : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800'
+                            }`}
+                          >
+                            <div className="font-bold truncate">{item.label}</div>
+                            <div className="text-[9px] font-mono opacity-80 truncate">{item.desc}</div>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Comparative Fraction Bars */}
+                      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4 relative overflow-hidden">
+                        {/* Bar 1: Tank A (1/4 -> 2/8) */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between text-xs font-bold">
+                            <span className="text-amber-300 flex items-center gap-1">
+                              Tank A: {denomStepperActive === 'separate' ? '1/4 Ton (4 Eşit Dilim)' : '2/8 Ton (Genişletildi: 1/4 × 2/2)'}
+                            </span>
+                            <span className="text-[10px] font-mono text-purple-300">
+                              {denomStepperActive === 'separate' ? 'Dilim Hacmi: 1/4' : 'Eşitlenmiş Dilim Hacmi: 1/8'}
+                            </span>
+                          </div>
+
+                          <div className="h-10 bg-slate-950 rounded-xl border border-slate-700 p-1 flex gap-1">
+                            {denomStepperActive === 'separate' ? (
+                              Array.from({ length: 4 }).map((_, i) => (
+                                <div
+                                  key={i}
+                                  className={`h-full flex-1 rounded-lg border flex items-center justify-center text-xs font-mono font-bold transition-all duration-300 ${
+                                    i === 0
+                                      ? 'bg-amber-500/80 border-amber-300 text-white shadow-[0_0_10px_rgba(245,158,11,0.6)]'
+                                      : 'bg-slate-900/70 border-slate-800 text-slate-600'
+                                  }`}
+                                >
+                                  {i === 0 ? '1/4 Ton' : '1/4'}
+                                </div>
+                              ))
+                            ) : (
+                              Array.from({ length: 8 }).map((_, i) => (
+                                <div
+                                  key={i}
+                                  className={`h-full flex-1 rounded-lg border flex items-center justify-center text-[10px] font-mono font-bold transition-all duration-300 ${
+                                    i < 2
+                                      ? 'bg-purple-500/80 border-purple-300 text-white shadow-[0_0_8px_rgba(168,85,247,0.6)]'
+                                      : 'bg-slate-900/70 border-slate-800 text-slate-600'
+                                  }`}
+                                >
+                                  {i < 2 ? '1/8' : '1/8'}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Bar 2: Tank B (3/8) */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between text-xs font-bold">
+                            <span className="text-emerald-300">Tank B: 3/8 Ton (8 Eşit Dilim)</span>
+                            <span className="text-[10px] font-mono text-emerald-300">Dilim Hacmi: 1/8</span>
+                          </div>
+
+                          <div className="h-10 bg-slate-950 rounded-xl border border-slate-700 p-1 flex gap-1">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                              <div
+                                key={i}
+                                className={`h-full flex-1 rounded-lg border flex items-center justify-center text-[10px] font-mono font-bold transition-all duration-300 ${
+                                  i < 3
+                                    ? 'bg-emerald-500/80 border-emerald-300 text-white shadow-[0_0_8px_rgba(168,85,247,0.6)]'
+                                    : 'bg-slate-900/70 border-slate-800 text-slate-600'
+                                }`}
+                              >
+                                {i < 3 ? '1/8' : '1/8'}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Merged Bar (Shown when step 3 or toggle) */}
+                        {denomStepperActive === 'merged' && (
+                          <div className="space-y-1.5 pt-2 border-t border-slate-800 animate-in fade-in">
+                            <div className="flex items-center justify-between text-xs font-bold">
+                              <span className="text-cyan-300">Ortak Depoda Toplam: 2/8 (Tank A) + 3/8 (Tank B) = 5/8 Ton</span>
+                              <span className="text-cyan-300 font-mono font-black">5/8 Ton (%62.5 Dolu)</span>
+                            </div>
+
+                            <div className="h-11 bg-slate-950 rounded-xl border-2 border-cyan-500/50 p-1 flex gap-1 shadow-lg shadow-cyan-500/10">
+                              {Array.from({ length: 8 }).map((_, i) => (
+                                <div
+                                  key={i}
+                                  className={`h-full flex-1 rounded-lg border flex items-center justify-center text-[11px] font-mono font-black transition-all ${
+                                    i < 2
+                                      ? 'bg-purple-600 text-white border-purple-300'
+                                      : i < 5
+                                      ? 'bg-emerald-600 text-white border-emerald-300'
+                                      : 'bg-slate-900/60 border-slate-800 text-slate-600'
+                                  }`}
+                                >
+                                  {i < 5 ? (i < 2 ? 'A' : 'B') : ''}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Educational Takeaway */}
+                      <div className="p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/30 text-purple-100 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                          <span>
+                            <strong>Önemli Kavrayış:</strong> Farklı boyutlardaki dilimleri (1/4 ile 1/8) toplayamayız. 1/4 kesrini 2 ile genişleterek dilimleri sekizliğe böleriz. Böylece ortak dilim boyutu (1/8) elde edilir.
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 7. SINIF MAT.7.1.3 - 3. BÖLÜM: ZIT İŞARETLİ İTKİLER & VEKTÖREL SAYI DOĞRUSU */}
+                {currentPage.visualScene.type === 'signed-vector-number-line' && (() => {
+                  const forceData = {
+                    flight: {
+                      fwdFrac: '+5/6',
+                      fwdVal: 5 / 6,
+                      revFrac: '-1/2 (-3/6)',
+                      revVal: -3 / 6,
+                      netFrac: '+2/6 = +1/3 kN',
+                      netVal: 2 / 6,
+                      netType: 'İleri Yönde Hızlanma (+)',
+                      isCancel: false
+                    },
+                    opposite_cancel: {
+                      fwdFrac: '+3/5',
+                      fwdVal: 3 / 5,
+                      revFrac: '-3/5',
+                      revVal: -3 / 5,
+                      netFrac: '0 kN (Tam Denge)',
+                      netVal: 0,
+                      netType: 'Ters Eleman Özelliği: a/b + (-a/b) = 0',
+                      isCancel: true
+                    },
+                    wind_dominant: {
+                      fwdFrac: '+1/6',
+                      fwdVal: 1 / 6,
+                      revFrac: '-4/6 (-2/3)',
+                      revVal: -4 / 6,
+                      netFrac: '-3/6 = -1/2 kN',
+                      netVal: -3 / 6,
+                      netType: 'Rüzgar Baskın (Geri Yönlü)',
+                      isCancel: false
+                    }
+                  }[vectorForcePreset];
+
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Telemetry Header */}
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center">
+                            <Wind className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-amber-300 uppercase tracking-wider">
+                              Vektörel Sayı Doğrusu & Ters Eleman
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              Zıt işaretli rasyonel sayılarda mutlak değer farkı ve yön analizi
+                            </div>
+                          </div>
+                        </div>
+                        <div className="px-2.5 py-1 rounded-lg bg-amber-950/80 border border-amber-500/40 text-amber-200 font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                          Net İtki: {forceData.netFrac}
+                        </div>
+                      </div>
+
+                      {/* Preset Selector */}
+                      <div className="grid grid-cols-3 gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 text-center text-[10px]">
+                        {[
+                          { key: 'flight', label: '1. Motor vs Rüzgar (+5/6 + -1/2)', desc: 'Net: +1/3 kN (İleri)' },
+                          { key: 'opposite_cancel', label: '2. Ters Eleman (+3/5 + -3/5)', desc: 'Net: 0 (Birbirini Sıfırlar)' },
+                          { key: 'wind_dominant', label: '3. Fırtına Freni (+1/6 + -4/6)', desc: 'Net: -1/2 kN (Geri)' }
+                        ].map((item) => (
+                          <button
+                            key={item.key}
+                            type="button"
+                            onClick={() => {
+                              setVectorForcePreset(item.key as any);
+                              playSound('select');
+                            }}
+                            className={`p-2 rounded-lg border transition-all text-left ${
+                              vectorForcePreset === item.key
+                                ? 'bg-amber-600 border-amber-400 text-white font-black shadow-md'
+                                : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800'
+                            }`}
+                          >
+                            <div className="font-bold truncate">{item.label}</div>
+                            <div className="text-[9px] font-mono opacity-80 truncate">{item.desc}</div>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Number Line Visual Canvas */}
+                      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4 relative overflow-hidden">
+                        {/* Forces Badge Legend */}
+                        <div className="flex items-center justify-between text-xs font-bold">
+                          <span className="text-blue-400 flex items-center gap-1">
+                            <ArrowRight className="w-3.5 h-3.5" /> İleri İtki: {forceData.fwdFrac} kN
+                          </span>
+                          <span className="text-amber-300 font-mono text-xs px-2 py-0.5 rounded bg-amber-950/80 border border-amber-500/40">
+                            {forceData.netType}
+                          </span>
+                          <span className="text-rose-400 flex items-center gap-1">
+                            Karşı Direnç: {forceData.revFrac} kN <ArrowLeft className="w-3.5 h-3.5" />
+                          </span>
+                        </div>
+
+                        {/* Number Line Visual Axis */}
+                        <div className="relative h-28 sm:h-32 bg-slate-950 rounded-2xl border border-slate-800 flex items-center px-10">
+                          {/* Main Axis Spine */}
+                          <div className="w-full h-1.5 bg-slate-700 rounded-full relative">
+                            {/* Zero Center Line */}
+                            <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center z-10">
+                              <div className="w-1.5 h-8 bg-amber-400 rounded-full shadow-[0_0_10px_rgba(251,191,36,1)]" />
+                              <span className="text-xs font-mono font-black text-amber-300 mt-2">0</span>
+                            </div>
+
+                            {/* -1.0 Mark */}
+                            <div className="absolute left-[5%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                              <div className="w-1 h-4 bg-slate-500 rounded-full" />
+                              <span className="text-[10px] font-mono text-slate-400 mt-2">-1.0</span>
+                            </div>
+
+                            {/* +1.0 Mark */}
+                            <div className="absolute right-[5%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                              <div className="w-1 h-4 bg-slate-500 rounded-full" />
+                              <span className="text-[10px] font-mono text-slate-400 mt-2">+1.0</span>
+                            </div>
+
+                            {/* Forward Vector (Blue Arrow) from 0 */}
+                            <div
+                              className="absolute top-[-18px] left-1/2 h-3 bg-blue-500 rounded-full flex items-center justify-end pr-1 shadow-[0_0_10px_rgba(59,130,246,0.8)] transition-all duration-500"
+                              style={{
+                                width: `${Math.abs(forceData.fwdVal) * 45}%`,
+                                transform: forceData.fwdVal >= 0 ? 'none' : 'scaleX(-1)'
+                              }}
+                            >
+                              <ArrowRight className="w-3 h-3 text-white" />
+                            </div>
+
+                            {/* Backward Vector (Rose Arrow) from forward tip */}
+                            <div
+                              className="absolute top-[-34px] h-3 bg-rose-500 rounded-full flex items-center justify-start pl-1 shadow-[0_0_10px_rgba(244,63,94,0.8)] transition-all duration-500"
+                              style={{
+                                left: `${50 + (forceData.fwdVal >= 0 ? forceData.fwdVal * 45 - Math.abs(forceData.revVal) * 45 : 0)}%`,
+                                width: `${Math.abs(forceData.revVal) * 45}%`
+                              }}
+                            >
+                              <ArrowLeft className="w-3 h-3 text-white" />
+                            </div>
+
+                            {/* Net Result Vector (Emerald Arrow / Target Marker) */}
+                            <div
+                              className="absolute top-[16px] -translate-x-1/2 flex flex-col items-center z-20 transition-all duration-500"
+                              style={{ left: `${50 + forceData.netVal * 45}%` }}
+                            >
+                              <div className="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_12px_rgba(16,185,129,1)] flex items-center justify-center text-[10px] font-black">
+                                🎯
+                              </div>
+                              <span className="text-[10px] font-mono font-black text-emerald-300 mt-1 px-1.5 py-0.5 rounded bg-emerald-950/90 border border-emerald-500/50">
+                                {forceData.netFrac}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Educational Takeaway */}
+                      <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-100 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                          <span>
+                            {forceData.isCancel ? (
+                              <span>
+                                <strong>Ters Eleman Özelliği:</strong> Bir rasyonel sayının zıt işaretlisiyle toplamı daima 0&apos;dır. (+3/5 + -3/5 = 0). Toplama işleminin etkisiz elemanı 0&apos;dır.
+                              </span>
+                            ) : (
+                              <span>
+                                <strong>Zıt İşaret Kuralı:</strong> Zıt işaretli sayılar toplanırken mutlak değeri büyük olanın işareti sonuca verilir ve mutlak değerler çıkarılır.
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 7. SINIF MAT.7.1.3 - 4. BÖLÜM: TERMAL FARKI HESAPLAMA & ÇIKARMA KURALI */}
+                {currentPage.visualScene.type === 'thermal-difference-scale' && (() => {
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Telemetry Header */}
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center">
+                            <Thermometer className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-rose-300 uppercase tracking-wider">
+                              Yörünge Termal Skalası & Çıkarma Kuralı
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              Altın Kural: a/b - (-c/d) = a/b + (+c/d) (Çıkanın toplama işlemine göre tersiyle toplama)
+                            </div>
+                          </div>
+                        </div>
+                        <div className="px-2.5 py-1 rounded-lg bg-rose-950/80 border border-rose-500/40 text-rose-200 font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                          Fark = <MathFraction value="5/4 °C" /> (1 tam 1/4 °C)
+                        </div>
+                      </div>
+
+                      {/* Subtraction Rule 3-Step Transformer */}
+                      <div className="grid grid-cols-3 gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 text-center text-[10px]">
+                        {[
+                          { step: 1, label: '1. Ham Çıkarma İşlemi', desc: '3/4 - (-1/2)' },
+                          { step: 2, label: '2. Tersiyle Toplama', desc: '3/4 + (+2/4)' },
+                          { step: 3, label: '3. Net Termal Açıklık', desc: '5/4 = 1 tam 1/4 °C' }
+                        ].map((item) => (
+                          <button
+                            key={item.step}
+                            type="button"
+                            onClick={() => {
+                              setThermalSubtractionStep(item.step as any);
+                              playSound('select');
+                            }}
+                            className={`p-2 rounded-lg border transition-all text-left ${
+                              thermalSubtractionStep === item.step
+                                ? 'bg-rose-600 border-rose-400 text-white font-black shadow-md'
+                                : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800'
+                            }`}
+                          >
+                            <div className="font-bold truncate">{item.label}</div>
+                            <div className="text-[9px] font-mono opacity-80 truncate">{item.desc}</div>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Thermometer Dual Scale Visual Canvas */}
+                      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4 relative overflow-hidden">
+                        {/* Sensor Readings */}
+                        <div className="flex items-center justify-between text-xs font-bold">
+                          <span className="text-amber-400 flex items-center gap-1.5">
+                            <Sun className="w-4 h-4 text-amber-400" />
+                            Güneş Paneli: +3/4 °C (+0.75)
+                          </span>
+                          <span className="text-amber-300 font-mono text-xs px-2.5 py-0.5 rounded-md bg-amber-950/80 border border-amber-500/40">
+                            {thermalSubtractionStep === 1
+                              ? '3/4 - (-1/2)'
+                              : thermalSubtractionStep === 2
+                              ? '3/4 + (+2/4)'
+                              : 'Toplam Mesafe = 5/4 °C'}
+                          </span>
+                          <span className="text-cyan-400 flex items-center gap-1.5">
+                            Gölge Haznesi: -1/2 °C (-0.50)
+                            <Droplets className="w-4 h-4 text-cyan-400" />
+                          </span>
+                        </div>
+
+                        {/* Dual-Zone Horizontal Thermometer Gauge */}
+                        <div className="relative h-24 sm:h-28 bg-slate-950 rounded-2xl border border-slate-800 flex items-center px-10">
+                          {/* Thermometer Tube */}
+                          <div className="w-full h-4 bg-slate-800 rounded-full relative flex items-center">
+                            {/* Negative Zone (Blue) */}
+                            <div className="absolute left-0 w-1/2 h-full bg-gradient-to-r from-blue-700/60 to-slate-800 rounded-l-full" />
+                            {/* Positive Zone (Red) */}
+                            <div className="absolute right-0 w-1/2 h-full bg-gradient-to-r from-slate-800 to-rose-700/60 rounded-r-full" />
+
+                            {/* Zero Reference Line */}
+                            <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center z-10">
+                              <div className="w-1.5 h-10 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                              <span className="text-[10px] font-mono font-black text-white mt-1">0°C</span>
+                            </div>
+
+                            {/* Point -1/2 (Left at 25%) */}
+                            <div className="absolute left-[25%] top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center z-20">
+                              <div className="w-6 h-6 rounded-full bg-cyan-500 border-2 border-white shadow-[0_0_10px_rgba(6,182,212,0.8)] flex items-center justify-center text-[10px]">
+                                ❄️
+                              </div>
+                              <span className="text-[10px] font-mono font-bold text-cyan-300 mt-1">-1/2°C</span>
+                            </div>
+
+                            {/* Point +3/4 (Right at 87.5%) */}
+                            <div className="absolute left-[87.5%] top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center z-20">
+                              <div className="w-6 h-6 rounded-full bg-amber-500 border-2 border-white shadow-[0_0_10px_rgba(245,158,11,0.8)] flex items-center justify-center text-[10px]">
+                                ☀️
+                              </div>
+                              <span className="text-[10px] font-mono font-bold text-amber-300 mt-1">+3/4°C</span>
+                            </div>
+
+                            {/* Distance Span Arc (Thermal Span from 25% to 87.5% = 62.5% width) */}
+                            <div
+                              className="absolute top-[-22px] left-[25%] w-[62.5%] h-5 border-t-2 border-l-2 border-r-2 border-amber-400 rounded-t-xl flex items-center justify-center shadow-[0_-2px_8px_rgba(251,191,36,0.5)] transition-all duration-300"
+                            >
+                              <span className="bg-slate-900 px-2 py-0.5 rounded-full text-[10px] font-mono font-black text-amber-300 border border-amber-500/40">
+                                5 Çeyrek Açıklık (5/4 °C = 1 tam 1/4 °C)
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Golden Rule Formula Strip */}
+                        <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-xs flex items-center justify-around">
+                          <span className="text-slate-400">
+                            Eksilen: <span className="text-amber-400 font-bold">+3/4</span>
+                          </span>
+                          <span className="text-slate-500 font-bold">―</span>
+                          <span className="text-slate-400">
+                            Çıkan: <span className="text-cyan-400 font-bold">(-1/2)</span>
+                          </span>
+                          <span className="text-purple-400 font-bold">⟹</span>
+                          <span className="text-emerald-400 font-bold">
+                            +3/4 + (+2/4) = 5/4 °C
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Educational Takeaway */}
+                      <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-100 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                          <span>
+                            <strong>Çıkarma Kuralı:</strong> Çıkarma işlemi &quot;çıkan sayının toplama işlemine göre tersiyle (zıt işaretlisiyle) toplanmasıdır&quot;. Sıcaklık farkı hesaplanırken aradaki mesafe açılır, iki negatif işaret birbirini pozitife çevirir!
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* GENERIC GEOMETRIC CHALKBOARD SCENE FALLBACK (For any unexpected scene type) */}
                 {![
                   'point-map',
@@ -4113,7 +4759,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   'rational-comparator-scale',
                   'benchmark-reference-line',
                   'negative-freezer-scale',
-                  'turbine-speed-order'
+                  'turbine-speed-order',
+                  'fraction-tank-addition',
+                  'common-denominator-stepper',
+                  'signed-vector-number-line',
+                  'thermal-difference-scale'
                 ].includes(currentPage.visualScene.type) && (
                   <div className="w-full h-full p-5 bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 flex flex-col items-center justify-center text-center space-y-3">
                     <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border-2 border-teal-400 text-teal-300 flex items-center justify-center">
