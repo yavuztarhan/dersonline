@@ -19,6 +19,7 @@ import { MemoryCardsGame } from '@/components/lesson-phases/memory-cards-game';
 import { PuzzlePhase, PuzzleGameId } from '@/components/lesson-phases/puzzle-phase';
 import { FeedbackModal } from '@/components/feedback/feedback-modal';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
+import { AuthGuard } from '@/components/auth/auth-guard';
 import { Outcome } from '@/types';
 import {
   Gamepad2,
@@ -51,6 +52,18 @@ import {
 export default function GamesPage() {
   const { currentUser } = useAuth();
   const { studentPoints, playSound, setSelectedOutcome } = useApp();
+
+  // 0. AUTHENTICATION GUARD: Giriş yapmamış kullanıcıların oyunları görmesini ve oynamasını engelle
+  if (!currentUser) {
+    return (
+      <AuthGuard
+        title="Maarif Oyun Salonuna Giriş Yapın"
+        description="Matematik oyun salonundaki zeka ve ders oyunlarını oynamak, seviyeleri tamamlayıp puan ve rozet kazanmak için lütfen öğrenci veya öğretmen hesabınızla giriş yapınız."
+      >
+        <div />
+      </AuthGuard>
+    );
+  }
 
   // 1. MAIN TAB: 'general' (Genel Oyunlar) vs 'curriculum' (Ders Oyunları)
   const [mainTab, setMainTab] = useState<'general' | 'curriculum'>('general');
@@ -250,7 +263,11 @@ export default function GamesPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 animate-in fade-in duration-300">
+    <AuthGuard
+      title="Maarif Oyun Salonuna Giriş Yapın"
+      description="Matematik oyun salonundaki zeka ve ders oyunlarını oynamak, seviyeleri tamamlayıp puan ve rozet kazanmak için lütfen öğrenci veya öğretmen hesabınızla giriş yapınız."
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 animate-in fade-in duration-300">
       
       {/* 1. Top Navigation / Breadcrumb */}
       <div className="flex items-center justify-between gap-4">
@@ -984,6 +1001,7 @@ export default function GamesPage() {
         />
       )}
 
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

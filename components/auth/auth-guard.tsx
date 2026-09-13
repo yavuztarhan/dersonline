@@ -34,7 +34,7 @@ export function AuthGuard({
   const { currentUser } = useAuth();
   const { isDemoMode } = useDemoMode();
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [defaultTab, setDefaultTab] = useState<'login' | 'register'>('login');
+  const [defaultTab, setDefaultTab] = useState<'student' | 'login' | 'register' | 'board'>('login');
 
   const isRoleMismatch = Boolean(
     currentUser && requiredRole && currentUser.role !== requiredRole && currentUser.role !== 'admin'
@@ -80,13 +80,24 @@ export function AuthGuard({
             <div className="space-y-2.5 pt-2">
               <button
                 onClick={() => {
+                  setDefaultTab('student');
+                  setAuthModalOpen(true);
+                }}
+                className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <GraduationCap className="w-4 h-4 text-slate-950" />
+                <span>Öğrenci Girişi Yap (Sınıf Kodu & No)</span>
+              </button>
+
+              <button
+                onClick={() => {
                   setDefaultTab('login');
                   setAuthModalOpen(true);
                 }}
                 className="w-full py-3 px-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <LogIn className="w-4 h-4" />
-                <span>Giriş Yap / Google ile Bağlan</span>
+                <span>Öğretmen / Yönetici Girişi Yap</span>
               </button>
 
               <button
