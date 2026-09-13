@@ -27,6 +27,7 @@ export const DEMO_TEACHER_USER: TeacherUser = {
   name: 'Ahmet Yılmaz',
   firstName: 'Ahmet',
   lastName: 'Yılmaz',
+  phone: '0555 123 45 67',
   role: 'teacher',
   school: 'Atatürk Ortaokulu',
   city: 'Ankara',
@@ -34,6 +35,9 @@ export const DEMO_TEACHER_USER: TeacherUser = {
   branch: 'Matematik',
   assignedClasses: ['5-A', '6-B', '7-A'],
   status: 'approved',
+  isKvkkAccepted: true,
+  kvkkAcceptedAt: '2026-09-01T08:00:00.000Z',
+  isProfileComplete: true,
   createdAt: '2026-09-01T08:00:00.000Z'
 };
 
@@ -65,6 +69,8 @@ function makeDemoStudent(
       'Matematik': points
     },
     unlockedBadges,
+    isKvkkAccepted: true,
+    kvkkAcceptedAt: '2026-09-01T08:00:00.000Z',
     createdAt: '2026-09-01T08:00:00.000Z'
   };
 }

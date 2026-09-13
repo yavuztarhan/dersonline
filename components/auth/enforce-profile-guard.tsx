@@ -3,11 +3,13 @@
 import React, { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-store';
+import { useDemoMode } from '@/lib/demo-mode-store';
 import { KvkkConsentModal } from './kvkk-consent-modal';
 import { SuspendedTeacherView } from '@/components/teacher/suspended-teacher-view';
 
 export function EnforceProfileGuard() {
   const { currentUser } = useAuth();
+  const { isDemoMode } = useDemoMode();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -21,7 +23,7 @@ export function EnforceProfileGuard() {
   const isProfileComplete = Boolean((currentUser as any)?.isProfileComplete && (currentUser as any)?.school && (currentUser as any)?.phone);
 
   useEffect(() => {
-    if (!currentUser || isSuspended) return;
+    if (!currentUser || isSuspended || isDemoMode) return;
 
     // If teacher hasn't completed profile and not on profile page (and has accepted KVKK)
     if (isTeacher && hasAcceptedKvkk && !isProfileComplete) {
@@ -29,9 +31,9 @@ export function EnforceProfileGuard() {
         router.push('/profile');
       }
     }
-  }, [currentUser, isTeacher, hasAcceptedKvkk, isProfileComplete, isSuspended, pathname, router]);
+  }, [currentUser, isTeacher, hasAcceptedKvkk, isProfileComplete, isSuspended, isDemoMode, pathname, router]);
 
-  if (!currentUser) return null;
+  if (!currentUser || isDemoMode) return null;
 
   // 1. GLOBAL SUSPENSION LOCK: If account is suspended (beklemede), strictly lock entire platform
   if (isSuspended) {

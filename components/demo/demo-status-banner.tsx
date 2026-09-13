@@ -95,10 +95,6 @@ export function DemoStatusBanner() {
                 </span>
               )}
             </span>
-
-            <span className="hidden lg:inline-block bg-amber-700/40 text-amber-100 px-2 py-0.5 rounded text-[11px]">
-              Kapsam: 5, 6, 7. Sınıf 1. Kazanımları (İzole Bellek)
-            </span>
           </div>
 
           {/* Right: Role Switch, Reset & Exit Actions */}
