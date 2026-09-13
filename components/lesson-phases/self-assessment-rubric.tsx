@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
 import { useAuth } from '@/lib/auth-store';
 import { getRubricForOutcome } from '@/lib/rubric-data';
-import { saveRubricSubmission } from '@/lib/rubric-store';
+import { saveRubricSubmission, getStoredSubmissions } from '@/lib/rubric-store';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import {
   getStoredActiveBoardStudent,
@@ -114,6 +114,22 @@ export function SelfAssessmentRubricComponent({
 
   const { currentUser, awardPointsToStudent } = useAuth();
   const student = currentUser && currentUser.role === 'student' ? (currentUser as any) : null;
+
+  useEffect(() => {
+    if (student) {
+      const subs = getStoredSubmissions();
+      const existing = subs.find(
+        (s) =>
+          (s.studentId === student.id || s.studentNumber === student.studentNumber || s.studentName === student.name) &&
+          (s.outcomeCode === outcomeCode || s.outcomeId === outcomeId)
+      );
+      if (existing) {
+        setRatings(existing.ratings || {});
+        setStudentNote(existing.studentNote || '');
+        setIsSaved(true);
+      }
+    }
+  }, [student, outcomeCode, outcomeId]);
 
   const handleSelectLevel = (criterionId: string, level: number) => {
     playSound('select');

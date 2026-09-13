@@ -45,6 +45,19 @@ export function getStoredSubmissions(): RubricSubmissionRecord[] {
       return fallback;
     }
     const parsed = JSON.parse(raw);
+    if (isDemoModeActive() && Array.isArray(parsed) && parsed.length < DEMO_RUBRIC_SUBMISSIONS.length) {
+      const existingIds = new Set(parsed.map((p: any) => p.id));
+      const merged = [...parsed];
+      for (const sub of DEMO_RUBRIC_SUBMISSIONS) {
+        if (!existingIds.has(sub.id)) {
+          merged.push(sub);
+        }
+      }
+      try {
+        localStorage.setItem(key, JSON.stringify(merged));
+      } catch {}
+      return merged;
+    }
     return Array.isArray(parsed) ? parsed : (isDemoModeActive() ? DEMO_RUBRIC_SUBMISSIONS : INITIAL_SUBMISSIONS);
   } catch (e) {
     return isDemoModeActive() ? DEMO_RUBRIC_SUBMISSIONS : INITIAL_SUBMISSIONS;

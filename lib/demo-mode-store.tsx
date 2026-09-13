@@ -94,8 +94,23 @@ export function DemoModeProvider({ children }: { children: React.ReactNode }) {
       if (!localStorage.getItem(DEMO_STUDENTS_STORAGE_KEY)) {
         localStorage.setItem(DEMO_STUDENTS_STORAGE_KEY, JSON.stringify(DEMO_STUDENTS_LIST));
       }
-      if (!localStorage.getItem(DEMO_RUBRICS_STORAGE_KEY)) {
+      const existingRubricsRaw = localStorage.getItem(DEMO_RUBRICS_STORAGE_KEY);
+      if (!existingRubricsRaw) {
         localStorage.setItem(DEMO_RUBRICS_STORAGE_KEY, JSON.stringify(DEMO_RUBRIC_SUBMISSIONS));
+      } else {
+        try {
+          const parsed = JSON.parse(existingRubricsRaw);
+          if (Array.isArray(parsed) && parsed.length < DEMO_RUBRIC_SUBMISSIONS.length) {
+            const existingIds = new Set(parsed.map((p: any) => p.id));
+            const merged = [...parsed];
+            for (const sub of DEMO_RUBRIC_SUBMISSIONS) {
+              if (!existingIds.has(sub.id)) {
+                merged.push(sub);
+              }
+            }
+            localStorage.setItem(DEMO_RUBRICS_STORAGE_KEY, JSON.stringify(merged));
+          }
+        } catch {}
       }
       if (!localStorage.getItem(DEMO_PEER_STORAGE_KEY)) {
         localStorage.setItem(DEMO_PEER_STORAGE_KEY, JSON.stringify(DEMO_PEER_EVALUATIONS));

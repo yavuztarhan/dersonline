@@ -82,6 +82,65 @@ const STORAGE_ACTIVITY_KEY = 'maarif_student_activity_scores_v1';
 const SEED_STUDENT_ACTIVITIES: StudentActivityScore[] = [];
 
 export const CURRICULUM_OUTCOMES_LIST = [
+  // 7. Sınıf
+  {
+    code: 'MAT.7.1.1',
+    title: 'Rasyonel Sayılar ve Sayı Doğrusunda Gösterimi',
+    category: 'Rasyonel Sayılar',
+    description: 'Rasyonel sayıları tanır, sayı doğrusunda gösterir ve yoğunluk özelliğini modeller.'
+  },
+  {
+    code: 'MAT.7.1.2',
+    title: 'Rasyonel Sayıları Karşılaştırma ve Sıralama',
+    category: 'Rasyonel Sayılar',
+    description: 'Rasyonel sayıları sıralar, pozitif ve negatif değerleri karşılaştırır.'
+  },
+  {
+    code: 'MAT.7.1.3',
+    title: 'Rasyonel Sayılarla Dört İşlem',
+    category: 'İşlemler & Problemler',
+    description: 'Rasyonel sayılarla toplama, çıkarma, çarpma ve bölme işlemlerini yapar.'
+  },
+  {
+    code: 'MAT.7.2.1',
+    title: 'Cebirsel İfadelerle Toplama ve Çıkarma İşlemleri',
+    category: 'Cebir',
+    description: 'Cebirsel ifadelerle toplama ve çıkarma işlemlerini modeller ve geneller.'
+  },
+  {
+    code: 'MAT.7.3.1',
+    title: 'Bir Açının Açıortayı ve Doğrular Arasındaki Açı İlişkileri',
+    category: 'Geometri',
+    description: 'Bir açının açıortayını belirler, iki paralel doğruyla bir kesenin oluşturduğu açıları inceler.'
+  },
+
+  // 6. Sınıf
+  {
+    code: 'MAT.6.1.1',
+    title: 'Asal Sayılar ve Doğal Sayıların Asal Çarpanları',
+    category: 'Asal Sayılar & Çarpanlar',
+    description: 'Asal sayıları tanır, doğal sayıları asal çarpanlarına ayırır.'
+  },
+  {
+    code: 'MAT.6.1.2',
+    title: 'Bölünebilme Kuralları (2, 3, 4, 5, 6, 9, 10)',
+    category: 'Sayılar & İşlemler',
+    description: '2, 3, 4, 5, 6, 9 ve 10 ile kalansız bölünebilme kurallarını kavrar ve uygular.'
+  },
+  {
+    code: 'MAT.6.1.3',
+    title: 'Asal Sayılar ve Asal Çarpanlara Ayırma',
+    category: 'Çarpan Ağacı & Bölen Listesi',
+    description: 'Doğal sayıları çarpan ağacı ve asal çarpanlar algoritmasıyla üslü biçimde yazar.'
+  },
+  {
+    code: 'MAT.6.1.4',
+    title: 'İki Doğal Sayının Ortak Bölenleri ve Ortak Katları',
+    category: 'EBOB & EKOK Temelleri',
+    description: 'İki doğal sayının ortak bölenlerini ve ortak katlarını belirler, ilgili problemleri çözer.'
+  },
+
+  // 5. Sınıf
   {
     code: 'MAT.5.3.1',
     title: 'Doğru, Doğru Parçası ve Işın ile İlgili Temel Geometrik Çizimler',
@@ -228,8 +287,20 @@ export function getStudentPerformanceProfile(
         (j.studentName && j.studentName.trim().toLowerCase() === studentName.trim().toLowerCase()))
   );
 
+  // Determine relevant outcomes for this student based on grade level or data
+  const studentGrade = (student as any)?.gradeLevel || (classSection.startsWith('7') ? 7 : classSection.startsWith('6') ? 6 : 5);
+  const relevantOutcomes = CURRICULUM_OUTCOMES_LIST.filter((co) => {
+    const outcomeGrade = co.code.startsWith('MAT.7') ? 7 : co.code.startsWith('MAT.6') ? 6 : co.code.startsWith('MAT.5') ? 5 : null;
+    const hasData = studentSubs.some((s) => s.outcomeCode === co.code) ||
+      studentActs.some((a) => a.outcomeCode === co.code) ||
+      studentJournals.some((j) => j.outcomeCode === co.code);
+    return outcomeGrade === studentGrade || hasData;
+  });
+
+  const targetOutcomes = relevantOutcomes.length > 0 ? relevantOutcomes : CURRICULUM_OUTCOMES_LIST;
+
   // Map each outcome in the curriculum
-  const outcomeItems: OutcomePerformanceItem[] = CURRICULUM_OUTCOMES_LIST.map((curricOutcome) => {
+  const outcomeItems: OutcomePerformanceItem[] = targetOutcomes.map((curricOutcome) => {
     const matchingActs = studentActs.filter((a) => a.outcomeCode === curricOutcome.code);
     const matchingSub = studentSubs.find((s) => s.outcomeCode === curricOutcome.code) || null;
     const matchingJournal = studentJournals.find((j) => j.outcomeCode === curricOutcome.code) || null;
@@ -390,7 +461,7 @@ export function getStudentPerformanceProfile(
     overallSuccessRate,
     overallRubricRate,
     completedOutcomesCount,
-    totalOutcomesCount: CURRICULUM_OUTCOMES_LIST.length,
+    totalOutcomesCount: targetOutcomes.length,
     totalJournalsCount,
     allActivities: studentActs,
     outcomes: outcomeItems
