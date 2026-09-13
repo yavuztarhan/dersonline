@@ -108,7 +108,7 @@ import {
   getAdminUser
 } from '@/lib/auth-seed-data';
 
-import { useDemoMode, isDemoModeActive } from '@/lib/demo-mode-store';
+import { useDemoMode, isDemoModeActive, getDemoActiveRole } from '@/lib/demo-mode-store';
 import {
   DEMO_TEACHER_USER,
   DEMO_STUDENT_USER,
@@ -116,9 +116,9 @@ import {
 } from '@/lib/demo-seed-data';
 
 export const DEMO_CLASSROOMS: ClassroomInfo[] = [
-  { id: 'demo-cls-5a', name: '5-A', gradeLevel: 5, code: 'DEMO5A', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' },
-  { id: 'demo-cls-6b', name: '6-B', gradeLevel: 6, code: 'DEMO6B', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' },
-  { id: 'demo-cls-7a', name: '7-A', gradeLevel: 7, code: 'DEMO7A', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' }
+  { id: 'demo-cls-5a', name: '5-A', gradeLevel: 5, code: 'MAARİF', school: 'Atatürk Ortaokulu', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' },
+  { id: 'demo-cls-6b', name: '6-B', gradeLevel: 6, code: 'MAARİF', school: 'Atatürk Ortaokulu', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' },
+  { id: 'demo-cls-7a', name: '7-A', gradeLevel: 7, code: 'MAARİF', school: 'Atatürk Ortaokulu', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' }
 ];
 
 export function generateUniqueClassCode(existingClassrooms: ClassroomInfo[] = []): string {
@@ -615,6 +615,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const cleanPass = (pass || '').trim();
 
     if (!cleanCode || !cleanNumber || !cleanPass) return false;
+
+    // Demo Student Authentication Bypass
+    if ((isDemoModeActive() || isDemoMode || cleanCode === 'MAARİF') && (cleanPass === 'MRF01' || cleanPass === 'admin')) {
+      const currentList = students.length > 0 ? students : DEMO_STUDENTS_LIST;
+      const found = currentList.find((s) => s.studentNumber === cleanNumber);
+      if (found) {
+        setCurrentUser(found);
+        return true;
+      }
+    }
 
     // Direct Database Authentication via Prisma API
     try {
@@ -1556,6 +1566,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getClassCodeForClass = (className: string, teacherId?: string): string => {
+    if (isDemoModeActive() || isDemoMode) {
+      return 'MAARİF';
+    }
     const trimmed = (className || '').trim().toUpperCase();
     if (!trimmed) return '';
 
@@ -1902,10 +1915,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addStudent = (student: StudentUser): { success: boolean; error?: string; student?: StudentUser } => {
-
     const fName = student.firstName || splitFullName(student.name || '').firstName || 'Öğrenci';
     const lName = student.lastName || splitFullName(student.name || '').lastName || '';
     const fullName = formatFullName(fName, lName, student.name || 'Öğrenci');
+
+    if (isDemoModeActive() || isDemoMode) {
+      const normalized: StudentUser = {
+        ...student,
+        firstName: fName,
+        lastName: lName,
+        name: fullName,
+        classCode: 'MAARİF',
+        password: student.password?.trim() || 'MRF01',
+        gender: student.gender || undefined,
+        school: 'Atatürk Ortaokulu',
+        city: 'Ankara',
+        district: 'Çankaya',
+        teacherId: 'demo-teacher-01'
+      };
+      setStudents((prev) => {
+        const updated = [normalized, ...prev.filter((s) => s.id !== normalized.id)];
+        try { localStorage.setItem('demo_maarif_students', JSON.stringify(updated)); } catch {}
+        return updated;
+      });
+      return { success: true, student: normalized };
+    }
 
     const targetSchool = (student.school || (currentUser as any)?.school || '').trim().toLowerCase();
     const targetSection = (student.classSection || '').trim().toUpperCase();
@@ -2095,11 +2129,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteStudent = (studentId: string) => {
-    setStudents((prev) => prev.filter((s) => s.id !== studentId));
+    setStudents((prev) => {
+      const filtered = prev.filter((s) => s.id !== studentId);
+      if (isDemoModeActive() || isDemoMode) {
+        try { localStorage.setItem('demo_maarif_students', JSON.stringify(filtered)); } catch {}
+      }
+      return filtered;
+    });
   };
 
   const resetStudentPassword = (studentId: string): { success: boolean; newPassword?: string } => {
     if (!studentId) return { success: false };
+    if (isDemoModeActive() || isDemoMode) {
+      const newPassword = 'MRF01';
+      setStudents((prev) => {
+        const next = prev.map((s) => {
+          if (s.id === studentId) {
+            return { ...s, password: newPassword, isPasswordChangedByStudent: false };
+          }
+          return s;
+        });
+        try { localStorage.setItem('demo_maarif_students', JSON.stringify(next)); } catch {}
+        return next;
+      });
+      return { success: true, newPassword };
+    }
     const newPassword = generateRandomStudentPassword(6);
 
     setStudents((prev) => {
@@ -2224,6 +2278,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getVisibleStudents = (user?: AuthUser | null): StudentUser[] => {
+    if (isDemoModeActive() || isDemoMode) {
+      return students;
+    }
     const target = user || currentUser;
     if (!target) return [];
 
@@ -2406,6 +2463,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshData = async () => {
+    if (isDemoModeActive() || isDemoMode) {
+      const role = getDemoActiveRole() || demoRole;
+      if (role === 'teacher') {
+        setCurrentUser(DEMO_TEACHER_USER);
+      } else if (role === 'student') {
+        try {
+          const raw = localStorage.getItem('demo_maarif_students');
+          const list = raw ? JSON.parse(raw) : DEMO_STUDENTS_LIST;
+          const found = list.find((s: StudentUser) => s.id === DEMO_STUDENT_USER.id);
+          setCurrentUser(found || DEMO_STUDENT_USER);
+        } catch {
+          setCurrentUser(DEMO_STUDENT_USER);
+        }
+      }
+      setClassrooms(DEMO_CLASSROOMS);
+      setTeachers([DEMO_TEACHER_USER]);
+      try {
+        const raw = localStorage.getItem('demo_maarif_students');
+        if (raw) {
+          setStudents(JSON.parse(raw));
+        } else {
+          setStudents(DEMO_STUDENTS_LIST);
+        }
+      } catch {
+        setStudents(DEMO_STUDENTS_LIST);
+      }
+      return;
+    }
+
     try {
       // 1. Fetch classrooms from DB
       const classRes = await fetch('/api/classrooms').then(r => r.json()).catch(() => null);

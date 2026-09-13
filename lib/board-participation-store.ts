@@ -42,25 +42,34 @@ export function getSubjectFromOutcomeOrRecord(record: {
   return 'Matematik'; // default
 }
 
+import { isDemoModeActive, DEMO_BOARD_STORAGE_KEY } from '@/lib/demo-mode-store';
+import { DEMO_BOARD_PARTICIPATIONS } from '@/lib/demo-seed-data';
+
 const STORAGE_KEY = 'maarif_board_participations_v1';
 const ACTIVE_BOARD_STUDENT_KEY = 'maarif_active_board_student_v1';
+
+function getActiveBoardStorageKey(): string {
+  return isDemoModeActive() ? DEMO_BOARD_STORAGE_KEY : STORAGE_KEY;
+}
 
 // Rich seed records across days to demonstrate historical progression and trend curves
 const SEED_BOARD_PARTICIPATIONS: BoardParticipationRecord[] = [];
 
 export function getStoredBoardParticipations(): BoardParticipationRecord[] {
-  if (typeof window === 'undefined') return SEED_BOARD_PARTICIPATIONS;
+  if (typeof window === 'undefined') return isDemoModeActive() ? DEMO_BOARD_PARTICIPATIONS : SEED_BOARD_PARTICIPATIONS;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const key = getActiveBoardStorageKey();
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_BOARD_PARTICIPATIONS));
-      return SEED_BOARD_PARTICIPATIONS;
+      const fallback = isDemoModeActive() ? DEMO_BOARD_PARTICIPATIONS : SEED_BOARD_PARTICIPATIONS;
+      localStorage.setItem(key, JSON.stringify(fallback));
+      return fallback;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : SEED_BOARD_PARTICIPATIONS;
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : (isDemoModeActive() ? DEMO_BOARD_PARTICIPATIONS : SEED_BOARD_PARTICIPATIONS);
   } catch (err) {
     console.warn('Board participation read error:', err);
-    return SEED_BOARD_PARTICIPATIONS;
+    return isDemoModeActive() ? DEMO_BOARD_PARTICIPATIONS : SEED_BOARD_PARTICIPATIONS;
   }
 }
 
@@ -77,18 +86,20 @@ export function saveBoardParticipation(
   const updated = [newRecord, ...current];
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(getActiveBoardStorageKey(), JSON.stringify(updated));
       // Dispatch custom event for real-time reactivity across tabs/components
       window.dispatchEvent(new CustomEvent('maarif_board_participation_added', { detail: newRecord }));
 
-      // Asynchronous API call to persist in DB
-      fetch('/api/board-participations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newRecord)
-      }).catch((apiErr) => {
-        console.warn('Background board participation API sync warning:', apiErr);
-      });
+      // Asynchronous API call to persist in DB (disabled in demo mode)
+      if (!isDemoModeActive()) {
+        fetch('/api/board-participations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newRecord)
+        }).catch((apiErr) => {
+          console.warn('Background board participation API sync warning:', apiErr);
+        });
+      }
     } catch (err) {
       console.warn('Failed to save board participation to localStorage:', err);
     }

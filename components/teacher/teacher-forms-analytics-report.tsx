@@ -61,17 +61,33 @@ export function TeacherFormsAnalyticsReport({
   const { currentUser, students, getVisibleStudents } = useAuth();
   const { playSound } = useApp();
 
-  const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '');
-  const [selectedOutcomeCode, setSelectedOutcomeCode] = useState<string>('MAT.5.3.3');
+  const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '7-A');
+  const [selectedOutcomeCode, setSelectedOutcomeCode] = useState<string>(
+    teacherClasses[0]?.startsWith('7') ? 'MAT.7.1.1' :
+    teacherClasses[0]?.startsWith('6') ? 'MAT.6.1.1' : 'MAT.5.3.1'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudentDetail, setSelectedStudentDetail] = useState<StudentTriangulatedData | null>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   const OUTCOMES_LIST = [
-    { code: 'MAT.5.3.3', title: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme' },
+    { code: 'MAT.7.1.1', title: 'Rasyonel Sayılar ve Sayı Doğrusunda Gösterimi' },
+    { code: 'MAT.6.1.1', title: 'Asal Sayılar ve Doğal Sayıların Asal Çarpanları' },
     { code: 'MAT.5.3.1', title: 'Doğru, Doğru Parçası ve Işın ile İlgili Temel Geometrik Çizimler' },
+    { code: 'MAT.5.3.3', title: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme' },
     { code: 'MAT.5.3.2', title: 'Geometrik Şekillerin İnşası ve Pergel/Gönye Kullanımı' }
   ];
+
+  // Auto-switch outcome when selected class changes
+  useEffect(() => {
+    if (selectedClass.startsWith('7')) {
+      setSelectedOutcomeCode('MAT.7.1.1');
+    } else if (selectedClass.startsWith('6')) {
+      setSelectedOutcomeCode('MAT.6.1.1');
+    } else if (selectedClass.startsWith('5')) {
+      setSelectedOutcomeCode('MAT.5.3.1');
+    }
+  }, [selectedClass]);
 
   // Restrict to students visible to this teacher (no unassigned demo students)
   const visibleStudents = useMemo(() => {

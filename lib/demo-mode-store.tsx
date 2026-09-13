@@ -1,7 +1,20 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ALLOWED_DEMO_OUTCOMES, isDemoOutcome, DEMO_TEACHER_USER, DEMO_STUDENT_USER, DEMO_RUBRIC_SUBMISSIONS, DEMO_PEER_EVALUATIONS, DEMO_WHITEBOARD_FILES } from './demo-seed-data';
+import {
+  ALLOWED_DEMO_OUTCOMES,
+  isDemoOutcome,
+  DEMO_TEACHER_USER,
+  DEMO_STUDENT_USER,
+  DEMO_STUDENTS_LIST,
+  DEMO_RUBRIC_SUBMISSIONS,
+  DEMO_PEER_EVALUATIONS,
+  DEMO_WHITEBOARD_FILES,
+  DEMO_JOURNAL_ENTRIES,
+  DEMO_STUDENT_GROUPS,
+  DEMO_GROUP_TASKS,
+  DEMO_BOARD_PARTICIPATIONS
+} from './demo-seed-data';
 
 export type DemoRole = 'teacher' | 'student';
 
@@ -24,9 +37,14 @@ interface DemoModeContextType {
 }
 
 const DEMO_ACTIVE_ROLE_KEY = 'demo_maarif_active_role';
+export const DEMO_STUDENTS_STORAGE_KEY = 'demo_maarif_students';
 export const DEMO_RUBRICS_STORAGE_KEY = 'demo_maarif_rubric_submissions_v1';
 export const DEMO_PEER_STORAGE_KEY = 'demo_maarif_peer_evaluations_v1';
 export const DEMO_WHITEBOARD_STORAGE_KEY = 'demo_maarif_classroom_files_v1';
+export const DEMO_JOURNAL_STORAGE_KEY = 'demo_maarif_learning_journals_v1';
+export const DEMO_GROUPS_STORAGE_KEY = 'demo_maarif_student_groups_v1';
+export const DEMO_GROUP_TASKS_STORAGE_KEY = 'demo_maarif_group_tasks_v1';
+export const DEMO_BOARD_STORAGE_KEY = 'demo_maarif_board_participations_v1';
 
 export function isDemoModeActive(): boolean {
   if (typeof window === 'undefined') return false;
@@ -73,6 +91,9 @@ export function DemoModeProvider({ children }: { children: React.ReactNode }) {
   const ensureSeedData = useCallback(() => {
     if (typeof window === 'undefined') return;
     try {
+      if (!localStorage.getItem(DEMO_STUDENTS_STORAGE_KEY)) {
+        localStorage.setItem(DEMO_STUDENTS_STORAGE_KEY, JSON.stringify(DEMO_STUDENTS_LIST));
+      }
       if (!localStorage.getItem(DEMO_RUBRICS_STORAGE_KEY)) {
         localStorage.setItem(DEMO_RUBRICS_STORAGE_KEY, JSON.stringify(DEMO_RUBRIC_SUBMISSIONS));
       }
@@ -82,10 +103,29 @@ export function DemoModeProvider({ children }: { children: React.ReactNode }) {
       if (!localStorage.getItem(DEMO_WHITEBOARD_STORAGE_KEY)) {
         localStorage.setItem(DEMO_WHITEBOARD_STORAGE_KEY, JSON.stringify(DEMO_WHITEBOARD_FILES));
       }
+      if (!localStorage.getItem(DEMO_JOURNAL_STORAGE_KEY)) {
+        localStorage.setItem(DEMO_JOURNAL_STORAGE_KEY, JSON.stringify(DEMO_JOURNAL_ENTRIES));
+      }
+      if (!localStorage.getItem(DEMO_GROUPS_STORAGE_KEY)) {
+        localStorage.setItem(DEMO_GROUPS_STORAGE_KEY, JSON.stringify(DEMO_STUDENT_GROUPS));
+      }
+      if (!localStorage.getItem(DEMO_GROUP_TASKS_STORAGE_KEY)) {
+        localStorage.setItem(DEMO_GROUP_TASKS_STORAGE_KEY, JSON.stringify(DEMO_GROUP_TASKS));
+      }
+      if (!localStorage.getItem(DEMO_BOARD_STORAGE_KEY)) {
+        localStorage.setItem(DEMO_BOARD_STORAGE_KEY, JSON.stringify(DEMO_BOARD_PARTICIPATIONS));
+      }
     } catch (e) {
       console.warn('[DemoMode] Error ensuring seed data:', e);
     }
   }, []);
+
+  // Also ensure seed data on provider initialization if demo is active
+  useEffect(() => {
+    if (demoRole) {
+      ensureSeedData();
+    }
+  }, [demoRole, ensureSeedData]);
 
   const startTeacherDemo = useCallback(() => {
     try {
@@ -121,9 +161,14 @@ export function DemoModeProvider({ children }: { children: React.ReactNode }) {
 
   const resetDemoData = useCallback(() => {
     try {
+      localStorage.setItem(DEMO_STUDENTS_STORAGE_KEY, JSON.stringify(DEMO_STUDENTS_LIST));
       localStorage.setItem(DEMO_RUBRICS_STORAGE_KEY, JSON.stringify(DEMO_RUBRIC_SUBMISSIONS));
       localStorage.setItem(DEMO_PEER_STORAGE_KEY, JSON.stringify(DEMO_PEER_EVALUATIONS));
       localStorage.setItem(DEMO_WHITEBOARD_STORAGE_KEY, JSON.stringify(DEMO_WHITEBOARD_FILES));
+      localStorage.setItem(DEMO_JOURNAL_STORAGE_KEY, JSON.stringify(DEMO_JOURNAL_ENTRIES));
+      localStorage.setItem(DEMO_GROUPS_STORAGE_KEY, JSON.stringify(DEMO_STUDENT_GROUPS));
+      localStorage.setItem(DEMO_GROUP_TASKS_STORAGE_KEY, JSON.stringify(DEMO_GROUP_TASKS));
+      localStorage.setItem(DEMO_BOARD_STORAGE_KEY, JSON.stringify(DEMO_BOARD_PARTICIPATIONS));
       window.dispatchEvent(new CustomEvent('maarif:demo-reset'));
     } catch (e) {
       console.error('[DemoMode] Error resetting demo data:', e);

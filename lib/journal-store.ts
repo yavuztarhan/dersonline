@@ -18,26 +18,35 @@ export interface LearningJournalEntry {
   submittedAt: string;
 }
 
+import { isDemoModeActive, DEMO_JOURNAL_STORAGE_KEY } from '@/lib/demo-mode-store';
+import { DEMO_JOURNAL_ENTRIES } from '@/lib/demo-seed-data';
+
 const STORAGE_KEY = 'maarif_learning_journals_v1';
+
+function getActiveJournalKey(): string {
+  return isDemoModeActive() ? DEMO_JOURNAL_STORAGE_KEY : STORAGE_KEY;
+}
 
 // Initial pre-populated rich data for learning journals
 const INITIAL_JOURNAL_ENTRIES: LearningJournalEntry[] = [];
 
 export function getStoredJournalEntries(): LearningJournalEntry[] {
   if (typeof window === 'undefined') {
-    return INITIAL_JOURNAL_ENTRIES;
+    return isDemoModeActive() ? DEMO_JOURNAL_ENTRIES : INITIAL_JOURNAL_ENTRIES;
   }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const key = getActiveJournalKey();
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_JOURNAL_ENTRIES));
-      return INITIAL_JOURNAL_ENTRIES;
+      const fallback = isDemoModeActive() ? DEMO_JOURNAL_ENTRIES : INITIAL_JOURNAL_ENTRIES;
+      localStorage.setItem(key, JSON.stringify(fallback));
+      return fallback;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_JOURNAL_ENTRIES;
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : (isDemoModeActive() ? DEMO_JOURNAL_ENTRIES : INITIAL_JOURNAL_ENTRIES);
   } catch (err) {
     console.error('Error loading learning journal entries:', err);
-    return INITIAL_JOURNAL_ENTRIES;
+    return isDemoModeActive() ? DEMO_JOURNAL_ENTRIES : INITIAL_JOURNAL_ENTRIES;
   }
 }
 
@@ -52,14 +61,14 @@ export function saveJournalEntry(entry: Omit<LearningJournalEntry, 'id' | 'submi
   const updated = [newEntry, ...all];
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(getActiveJournalKey(), JSON.stringify(updated));
     } catch (err) {
       console.error('Error saving journal entry to localStorage:', err);
     }
   }
 
-  // Asynchronously persist to database API
-  if (typeof window !== 'undefined') {
+  // Asynchronously persist to database API (disabled in demo mode)
+  if (typeof window !== 'undefined' && !isDemoModeActive()) {
     fetch('/api/learning-journals', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -81,17 +90,19 @@ export function updateTeacherJournalFeedback(entryId: string, feedback: string, 
     };
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        localStorage.setItem(getActiveJournalKey(), JSON.stringify(all));
       } catch (err) {
         console.error('Error updating journal feedback in localStorage:', err);
       }
 
-      // Asynchronously update feedback on database API
-      fetch('/api/learning-journals', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: entryId, teacherFeedback: feedback, teacherLiked: liked })
-      }).catch((err) => console.warn('[journal-store] Background feedback API sync note:', err));
+      // Asynchronously update feedback on database API (disabled in demo mode)
+      if (!isDemoModeActive()) {
+        fetch('/api/learning-journals', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: entryId, teacherFeedback: feedback, teacherLiked: liked })
+        }).catch((err) => console.warn('[journal-store] Background feedback API sync note:', err));
+      }
     }
   }
 }
@@ -100,7 +111,7 @@ export function updateTeacherJournalFeedback(entryId: string, feedback: string, 
  * Synchronizes learning journals from PostgreSQL database API into localStorage.
  */
 export async function syncJournalsFromApi(classSection?: string): Promise<LearningJournalEntry[]> {
-  if (typeof window === 'undefined') return INITIAL_JOURNAL_ENTRIES;
+  if (typeof window === 'undefined' || isDemoModeActive()) return getStoredJournalEntries();
 
   try {
     const url = classSection && classSection !== 'Tümü'

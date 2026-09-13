@@ -114,8 +114,22 @@ export function TeacherRubricAnalytics({
   const [localSelectedStudentForDetail, setLocalSelectedStudentForDetail] = useState<any | null>(null);
 
   // Filters for Class & Outcome
-  const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '5-A');
-  const [selectedOutcomeCode, setSelectedOutcomeCode] = useState<string>('MAT.5.3.3');
+  const [selectedClass, setSelectedClass] = useState<string>(teacherClasses[0] || '7-A');
+  const [selectedOutcomeCode, setSelectedOutcomeCode] = useState<string>(
+    teacherClasses[0]?.startsWith('7') ? 'MAT.7.1.1' :
+    teacherClasses[0]?.startsWith('6') ? 'MAT.6.1.1' : 'MAT.5.3.1'
+  );
+
+  // Auto-switch outcome when selected class changes if outcome grade doesn't match
+  useEffect(() => {
+    if (selectedClass.startsWith('7')) {
+      setSelectedOutcomeCode('MAT.7.1.1');
+    } else if (selectedClass.startsWith('6')) {
+      setSelectedOutcomeCode('MAT.6.1.1');
+    } else if (selectedClass.startsWith('5')) {
+      setSelectedOutcomeCode('MAT.5.3.1');
+    }
+  }, [selectedClass]);
 
   // Table Filters & Pagination
   const [tableSearchTerm, setTableSearchTerm] = useState('');
@@ -167,11 +181,12 @@ export function TeacherRubricAnalytics({
 
   // Distinct Available Outcomes
   const availableOutcomes = [
+    { code: 'MAT.7.1.1', title: 'Rasyonel Sayılar ve Sayı Doğrusunda Gösterimi', grade: 7 },
+    { code: 'MAT.6.1.1', title: 'Asal Sayılar ve Doğal Sayıların Asal Çarpanları', grade: 6 },
     { code: 'MAT.5.3.1', title: 'Doğru, Doğru Parçası ve Işın ile İlgili Temel Geometrik Çizimler', grade: 5 },
     { code: 'MAT.5.3.2', title: 'Geometrik İnşa ve Çıkarım (Cetvel, Pergel, Gönye)', grade: 5 },
     { code: 'MAT.5.3.3', title: 'Açıları Ölçmek İçin Matematiksel Araç ve Teknolojiden Yararlanabilme', grade: 5 },
     { code: 'MAT.5.3.4', title: 'Düzlemde Doğruların Durumları ve Açı Çıkarımları', grade: 5 },
-    { code: 'MAT.6.1.1', title: 'Doğal Sayılarla Dört İşlem İçeren Problemler', grade: 6 },
     { code: 'MAT.6.1.2', title: 'Bölünebilme Kuralları (2, 3, 4, 5, 6, 9, 10)', grade: 6 },
     { code: 'MAT.6.1.3', title: 'Asal Sayılar ve Asal Çarpanlara Ayırma', grade: 6 },
     { code: 'MAT.6.1.4', title: 'İki Doğal Sayının Ortak Bölenleri ve Ortak Katları', grade: 6 }

@@ -43,8 +43,19 @@ export interface GroupTask {
   createdAt: string;
 }
 
+import { isDemoModeActive, DEMO_GROUPS_STORAGE_KEY, DEMO_GROUP_TASKS_STORAGE_KEY } from '@/lib/demo-mode-store';
+import { DEMO_STUDENT_GROUPS, DEMO_GROUP_TASKS } from '@/lib/demo-seed-data';
+
 const STORAGE_GROUPS_KEY = 'maarif_student_groups_v1';
 const STORAGE_GROUP_TASKS_KEY = 'maarif_group_tasks_v1';
+
+function getActiveGroupsKey(): string {
+  return isDemoModeActive() ? DEMO_GROUPS_STORAGE_KEY : STORAGE_GROUPS_KEY;
+}
+
+function getActiveGroupTasksKey(): string {
+  return isDemoModeActive() ? DEMO_GROUP_TASKS_STORAGE_KEY : STORAGE_GROUP_TASKS_KEY;
+}
 
 const GROUP_NAMES_POOL = [
   'Pisagor Kaşifleri',
@@ -75,50 +86,54 @@ const SEED_GROUPS: StudentGroup[] = [];
 const SEED_GROUP_TASKS: GroupTask[] = [];
 
 export function getStoredGroups(): StudentGroup[] {
-  if (typeof window === 'undefined') return SEED_GROUPS;
+  if (typeof window === 'undefined') return isDemoModeActive() ? DEMO_STUDENT_GROUPS : SEED_GROUPS;
   try {
-    const raw = localStorage.getItem(STORAGE_GROUPS_KEY);
+    const key = getActiveGroupsKey();
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(STORAGE_GROUPS_KEY, JSON.stringify(SEED_GROUPS));
-      return SEED_GROUPS;
+      const fallback = isDemoModeActive() ? DEMO_STUDENT_GROUPS : SEED_GROUPS;
+      localStorage.setItem(key, JSON.stringify(fallback));
+      return fallback;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : SEED_GROUPS;
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : (isDemoModeActive() ? DEMO_STUDENT_GROUPS : SEED_GROUPS);
   } catch (err) {
     console.warn('Gruplar okunurken hata oluştu:', err);
-    return SEED_GROUPS;
+    return isDemoModeActive() ? DEMO_STUDENT_GROUPS : SEED_GROUPS;
   }
 }
 
 function saveStoredGroups(groups: StudentGroup[]): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_GROUPS_KEY, JSON.stringify(groups));
+    localStorage.setItem(getActiveGroupsKey(), JSON.stringify(groups));
   } catch (err) {
     console.warn('Gruplar kaydedilirken hata oluştu:', err);
   }
 }
 
 export function getStoredGroupTasks(): GroupTask[] {
-  if (typeof window === 'undefined') return SEED_GROUP_TASKS;
+  if (typeof window === 'undefined') return isDemoModeActive() ? DEMO_GROUP_TASKS : SEED_GROUP_TASKS;
   try {
-    const raw = localStorage.getItem(STORAGE_GROUP_TASKS_KEY);
+    const key = getActiveGroupTasksKey();
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(STORAGE_GROUP_TASKS_KEY, JSON.stringify(SEED_GROUP_TASKS));
-      return SEED_GROUP_TASKS;
+      const fallback = isDemoModeActive() ? DEMO_GROUP_TASKS : SEED_GROUP_TASKS;
+      localStorage.setItem(key, JSON.stringify(fallback));
+      return fallback;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : SEED_GROUP_TASKS;
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : (isDemoModeActive() ? DEMO_GROUP_TASKS : SEED_GROUP_TASKS);
   } catch (err) {
     console.warn('Grup ödevleri okunurken hata oluştu:', err);
-    return SEED_GROUP_TASKS;
+    return isDemoModeActive() ? DEMO_GROUP_TASKS : SEED_GROUP_TASKS;
   }
 }
 
 function saveStoredGroupTasks(tasks: GroupTask[]): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_GROUP_TASKS_KEY, JSON.stringify(tasks));
+    localStorage.setItem(getActiveGroupTasksKey(), JSON.stringify(tasks));
   } catch (err) {
     console.warn('Grup ödevleri kaydedilirken hata oluştu:', err);
   }
