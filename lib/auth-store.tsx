@@ -108,6 +108,19 @@ import {
   getAdminUser
 } from '@/lib/auth-seed-data';
 
+import { useDemoMode, isDemoModeActive } from '@/lib/demo-mode-store';
+import {
+  DEMO_TEACHER_USER,
+  DEMO_STUDENT_USER,
+  DEMO_STUDENTS_LIST
+} from '@/lib/demo-seed-data';
+
+export const DEMO_CLASSROOMS: ClassroomInfo[] = [
+  { id: 'demo-cls-5a', name: '5-A', gradeLevel: 5, code: 'DEMO5A', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' },
+  { id: 'demo-cls-6b', name: '6-B', gradeLevel: 6, code: 'DEMO6B', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' },
+  { id: 'demo-cls-7a', name: '7-A', gradeLevel: 7, code: 'DEMO7A', teacherId: 'demo-teacher-01', createdAt: '2026-09-01T08:00:00.000Z' }
+];
+
 export function generateUniqueClassCode(existingClassrooms: ClassroomInfo[] = []): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
@@ -161,6 +174,7 @@ export function enrichUser(u: any): any {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { isDemoMode, demoRole } = useDemoMode();
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null); // default as unauthenticated guest
   const [admins, setAdmins] = useState<AdminUser[]>(SEED_ADMINS);
   const [teachers, setTeachers] = useState<TeacherUser[]>(SEED_TEACHERS);
@@ -173,9 +187,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     expiresAt: number;
   } | null>(null);
 
+  // Synchronize demo mode state
+  useEffect(() => {
+    if (isDemoMode) {
+      if (demoRole === 'teacher') {
+        setCurrentUser(DEMO_TEACHER_USER);
+        try {
+          const raw = localStorage.getItem('demo_maarif_students');
+          if (raw) {
+            setStudents(JSON.parse(raw));
+          } else {
+            setStudents(DEMO_STUDENTS_LIST);
+          }
+        } catch {
+          setStudents(DEMO_STUDENTS_LIST);
+        }
+      } else if (demoRole === 'student') {
+        try {
+          const raw = localStorage.getItem('demo_maarif_students');
+          if (raw) {
+            const list = JSON.parse(raw);
+            const found = list.find((s: StudentUser) => s.id === DEMO_STUDENT_USER.id);
+            setCurrentUser(found || DEMO_STUDENT_USER);
+            setStudents(list);
+          } else {
+            setCurrentUser(DEMO_STUDENT_USER);
+            setStudents(DEMO_STUDENTS_LIST);
+          }
+        } catch {
+          setCurrentUser(DEMO_STUDENT_USER);
+          setStudents(DEMO_STUDENTS_LIST);
+        }
+      }
+      setClassrooms(DEMO_CLASSROOMS);
+      setTeachers([DEMO_TEACHER_USER]);
+    }
+  }, [isDemoMode, demoRole]);
+
   // Load from localStorage on mount
   useEffect(() => {
     try {
+      if (isDemoModeActive()) {
+        setIsLoaded(true);
+        return;
+      }
 
       const savedAdmins = localStorage.getItem('maarif_admins');
       if (savedAdmins) {
@@ -590,6 +645,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
+    if (isDemoMode) {
+      try {
+        localStorage.removeItem('demo_maarif_active_role');
+      } catch (e) {}
+    }
     setCurrentUser(null);
     try {
       localStorage.removeItem('maarif_current_user');
@@ -2084,6 +2144,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const awardPointsToStudent = (studentId: string, pts: number, reason?: string, subject?: string) => {
     const activeSubject = subject || 'Matematik';
+
+    if (isDemoMode) {
+      setStudents((prev) => {
+        const updated = prev.map((s) => {
+          if (s.id !== studentId) return s;
+          const currentSubjectPoints = s.subjectPoints || {};
+          const newSubjectPts = Math.max(0, (currentSubjectPoints[activeSubject] || 0) + pts);
+          const updatedSubjectPoints = {
+            ...currentSubjectPoints,
+            [activeSubject]: newSubjectPts
+          };
+          const newTotalPoints = Math.max(0, (s.points || 0) + pts);
+          return {
+            ...s,
+            points: newTotalPoints,
+            subjectPoints: updatedSubjectPoints
+          };
+        });
+        try {
+          localStorage.setItem('demo_maarif_students', JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
+
+      if (currentUser && currentUser.id === studentId && currentUser.role === 'student') {
+        const studentUser = currentUser as StudentUser;
+        const currentSubjectPoints = studentUser.subjectPoints || {};
+        const newSubjectPts = Math.max(0, (currentSubjectPoints[activeSubject] || 0) + pts);
+        const updatedUser: StudentUser = {
+          ...studentUser,
+          points: Math.max(0, (studentUser.points || 0) + pts),
+          subjectPoints: {
+            ...currentSubjectPoints,
+            [activeSubject]: newSubjectPts
+          }
+        };
+        setCurrentUser(updatedUser);
+      }
+      return;
+    }
 
     setStudents((prev) =>
       prev.map((s) => {

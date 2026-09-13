@@ -31,9 +31,12 @@ import {
   ArrowLeft,
   FileText,
   Download,
-  ShieldCheck
+  ShieldCheck,
+  Lock
 } from 'lucide-react';
 import { LessonPlanModal } from '@/components/lesson-plan-modal';
+import { useDemoMode } from '@/lib/demo-mode-store';
+import { isDemoOutcome } from '@/lib/demo-seed-data';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   GraduationCap: <GraduationCap className="w-8 h-8" />,
@@ -49,6 +52,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 export function StepSelector() {
   const router = useRouter();
   const { currentUser } = useAuth();
+  const { isDemoMode, showLockedOutcomeModal } = useDemoMode();
   const [planModalOutcome, setPlanModalOutcome] = useState<Outcome | null>(null);
 
   const {
@@ -169,6 +173,11 @@ export function StepSelector() {
   };
 
   const handleSelectOutcome = (topic: Topic, outcome: Outcome) => {
+    if (isDemoMode && !isDemoOutcome(outcome.code)) {
+      playSound('bell');
+      showLockedOutcomeModal(outcome.code, outcome.title);
+      return;
+    }
     playSound('select');
     setSelectedTopic(topic);
     setSelectedOutcome(outcome);
@@ -490,6 +499,7 @@ export function StepSelector() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {topic.outcomes.map((outcome) => {
                     const isSelected = selectedOutcome?.id === outcome.id;
+                    const isLockedInDemo = isDemoMode && !isDemoOutcome(outcome.code);
                     return (
                       <div
                         key={outcome.id}
@@ -497,14 +507,24 @@ export function StepSelector() {
                         className={`cursor-pointer rounded-xl p-5 border-2 transition-all flex flex-col justify-between ${
                           isSelected
                             ? 'border-teal-500 bg-teal-50/50 shadow-md shadow-teal-500/10 ring-2 ring-teal-400'
+                            : isLockedInDemo
+                            ? 'border-amber-200/70 bg-slate-50/70 hover:border-amber-400 hover:bg-amber-50/20'
                             : 'border-slate-200 bg-white hover:border-teal-300 hover:shadow-sm'
                         }`}
                       >
                         <div>
                           <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className="px-2.5 py-1 rounded-md text-xs font-extrabold bg-teal-600 text-white">
-                              {outcome.code}
-                            </span>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className={`px-2.5 py-1 rounded-md text-xs font-extrabold ${isLockedInDemo ? 'bg-slate-700 text-white' : 'bg-teal-600 text-white'}`}>
+                                {outcome.code}
+                              </span>
+                              {isLockedInDemo && (
+                                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300/60 flex items-center gap-1">
+                                  <Lock className="w-3 h-3 text-amber-700" />
+                                  <span>Demo Kilitli</span>
+                                </span>
+                              )}
+                            </div>
                             <div className="flex items-center gap-1 text-xs text-slate-500 font-medium">
                               <Clock className="w-3.5 h-3.5" />
                               <span>{outcome.durationMinutes} dk</span>

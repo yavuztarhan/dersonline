@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useAuth } from '@/lib/auth-store';
+import { useDemoMode } from '@/lib/demo-mode-store';
 import { BoardQrLogin } from '@/components/auth/board-qr-login';
 import {
   X,
@@ -29,6 +30,56 @@ interface AuthModalProps {
   defaultTab?: 'student' | 'login' | 'register' | 'board';
 }
 
+function DemoLauncherCard({
+  onStartTeacher,
+  onStartStudent
+}: {
+  onStartTeacher: () => void;
+  onStartStudent: () => void;
+}) {
+  return (
+    <div className="pt-3 border-t border-slate-200/80">
+      <div className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-50 via-orange-50/40 to-amber-50 border border-amber-200 shadow-xs space-y-2 text-left">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="p-1 rounded-lg bg-amber-500 text-white shadow-xs">
+              <Sparkles className="w-3.5 h-3.5" />
+            </span>
+            <span className="text-xs font-black text-amber-950 uppercase tracking-wider">
+              Şifresiz Tanıtım / Demo Modu
+            </span>
+          </div>
+          <span className="text-[10px] font-extrabold bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full">
+            İzole Bellek
+          </span>
+        </div>
+
+        <p className="text-[11px] text-amber-800 leading-snug">
+          Kayıt olmadan veya şifre girmeden, 36 öğrencili örnek sınıflar, Maarif Modeli rubrikleri ve akran değerlendirmeleriyle panelleri hemen deneyimleyin:
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+          <button
+            type="button"
+            onClick={onStartTeacher}
+            className="w-full p-2.5 rounded-xl bg-white hover:bg-amber-100/70 border border-amber-300 text-amber-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
+          >
+            <span>👨‍🏫 Öğretmen Demosu (Ahmet Y.)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onStartStudent}
+            className="w-full p-2.5 rounded-xl bg-white hover:bg-amber-100/70 border border-amber-300 text-amber-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
+          >
+            <span>👩‍🎓 Öğrenci Demosu (Zeynep K.)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function AuthModal({
   isOpen,
   onClose,
@@ -36,6 +87,7 @@ export function AuthModal({
 }: AuthModalProps) {
   const router = useRouter();
   const { loginWithEmail, loginStudent } = useAuth();
+  const { startTeacherDemo, startStudentDemo } = useDemoMode();
 
   const [activeTab, setActiveTab] = useState<'student' | 'login' | 'register' | 'board'>(defaultTab);
   
@@ -299,6 +351,19 @@ export function AuthModal({
                 Oturum Açın
               </button>
             </div>
+
+            <DemoLauncherCard
+              onStartTeacher={() => {
+                startTeacherDemo();
+                onClose();
+                window.location.reload();
+              }}
+              onStartStudent={() => {
+                startStudentDemo();
+                onClose();
+                window.location.reload();
+              }}
+            />
           </div>
         ) : (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6">
@@ -664,6 +729,19 @@ export function AuthModal({
                 </div>
               </>
             )}
+
+            <DemoLauncherCard
+              onStartTeacher={() => {
+                startTeacherDemo();
+                onClose();
+                window.location.reload();
+              }}
+              onStartStudent={() => {
+                startStudentDemo();
+                onClose();
+                window.location.reload();
+              }}
+            />
 
         </div>
         )}

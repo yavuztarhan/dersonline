@@ -3744,6 +3744,10 @@ export function getOutcomeById(id: string): Outcome | undefined {
   return all.find((o) => o.id.toLowerCase() === id.toLowerCase() || o.code.toLowerCase() === id.toLowerCase());
 }
 
+export function getOutcomeByCode(code: string): Outcome | undefined {
+  return getOutcomeById(code);
+}
+
 export function getBreadcrumbPath(outcomeId: string) {
   for (const grade of CURRICULUM_DATA) {
     for (const subject of grade.subjects) {

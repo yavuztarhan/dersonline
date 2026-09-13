@@ -96,7 +96,14 @@ export interface ClassroomFileRecord {
   tags: string[];
 }
 
+import { isDemoModeActive, DEMO_WHITEBOARD_STORAGE_KEY } from '@/lib/demo-mode-store';
+import { DEMO_WHITEBOARD_FILES } from '@/lib/demo-seed-data';
+
 const STORAGE_KEY = 'maarif_classroom_files_v1';
+
+function getActiveWhiteboardStorageKey(): string {
+  return isDemoModeActive() ? DEMO_WHITEBOARD_STORAGE_KEY : STORAGE_KEY;
+}
 
 // Seed Classroom Files for instant demo & rich student/teacher experience
 const INITIAL_FILES: ClassroomFileRecord[] = [
@@ -3630,17 +3637,19 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 ];
 
 export function getStoredClassroomFiles(): ClassroomFileRecord[] {
-  if (typeof window === 'undefined') return INITIAL_FILES;
+  const seedFiles = isDemoModeActive() ? [...DEMO_WHITEBOARD_FILES, ...INITIAL_FILES] : INITIAL_FILES;
+  if (typeof window === 'undefined') return seedFiles;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const key = getActiveWhiteboardStorageKey();
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_FILES));
-      return INITIAL_FILES;
+      localStorage.setItem(key, JSON.stringify(seedFiles));
+      return seedFiles;
     }
     const parsed: ClassroomFileRecord[] = JSON.parse(raw);
     
     // Always keep system seed activity files up-to-date
-    const initialMap = new Map(INITIAL_FILES.map((f) => [f.id, f]));
+    const initialMap = new Map(seedFiles.map((f) => [f.id, f]));
     let hasChange = false;
 
     // Update existing system files with latest code templates
@@ -3668,11 +3677,11 @@ export function getStoredClassroomFiles(): ClassroomFileRecord[] {
     });
 
     if (hasChange) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
+      localStorage.setItem(key, JSON.stringify(updatedList));
     }
     return updatedList;
   } catch (e) {
-    return INITIAL_FILES;
+    return seedFiles;
   }
 }
 
@@ -3714,7 +3723,8 @@ export function saveClassroomFile(
 
   const updated = [newRecord, ...current];
   if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    const key = getActiveWhiteboardStorageKey();
+    localStorage.setItem(key, JSON.stringify(updated));
   }
   return newRecord;
 }
@@ -3739,7 +3749,8 @@ export function updateClassroomFile(
   updatedList[index] = updatedRecord;
 
   if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
+    const key = getActiveWhiteboardStorageKey();
+    localStorage.setItem(key, JSON.stringify(updatedList));
   }
   return updatedRecord;
 }
@@ -3833,7 +3844,8 @@ export function deleteClassroomFile(fileId: string): void {
   const current = getStoredClassroomFiles();
   const updated = current.filter((f) => f.id !== fileId);
   if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    const key = getActiveWhiteboardStorageKey();
+    localStorage.setItem(key, JSON.stringify(updated));
   }
 }
 

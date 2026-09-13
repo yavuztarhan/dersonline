@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AppProvider } from '@/lib/store';
 import { AuthProvider } from '@/lib/auth-store';
+import { DemoModeProvider } from '@/lib/demo-mode-store';
+import { DemoStatusBanner } from '@/components/demo/demo-status-banner';
 import { SessionProvider } from '@/components/providers/session-provider';
 import { Navbar } from '@/components/navbar';
 import { RandomStudentPickerModal } from '@/components/random-student-picker';
@@ -54,17 +56,20 @@ export default function RootLayout({
     <html lang="tr" className="h-full">
       <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans antialiased selection:bg-teal-500 selection:text-white">
         <SessionProvider>
-          <AuthProvider>
-            <AppProvider>
-              <Navbar />
-              <EnforceProfileGuard />
-              <main className="flex-1 w-full">
-                {children}
-              </main>
-              <RandomStudentPickerModal />
-              <PwaInstallBanner />
-            </AppProvider>
-          </AuthProvider>
+          <DemoModeProvider>
+            <AuthProvider>
+              <AppProvider>
+                <DemoStatusBanner />
+                <Navbar />
+                <EnforceProfileGuard />
+                <main className="flex-1 w-full">
+                  {children}
+                </main>
+                <RandomStudentPickerModal />
+                <PwaInstallBanner />
+              </AppProvider>
+            </AuthProvider>
+          </DemoModeProvider>
         </SessionProvider>
       </body>
     </html>

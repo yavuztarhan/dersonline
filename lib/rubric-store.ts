@@ -22,22 +22,32 @@ export interface RubricSubmissionRecord {
   submittedAt: string;
 }
 
+import { isDemoModeActive, DEMO_RUBRICS_STORAGE_KEY } from '@/lib/demo-mode-store';
+import { DEMO_RUBRIC_SUBMISSIONS } from '@/lib/demo-seed-data';
+
 const STORAGE_KEY = 'maarif_rubric_submissions_v1';
+
+function getActiveStorageKey(): string {
+  return isDemoModeActive() ? DEMO_RUBRICS_STORAGE_KEY : STORAGE_KEY;
+}
 
 // Initial pre-populated Maarif data across classes (5-A, 5-B, 5-C) and outcomes
 const INITIAL_SUBMISSIONS: RubricSubmissionRecord[] = [];
 
 export function getStoredSubmissions(): RubricSubmissionRecord[] {
-  if (typeof window === 'undefined') return INITIAL_SUBMISSIONS;
+  if (typeof window === 'undefined') return isDemoModeActive() ? DEMO_RUBRIC_SUBMISSIONS : INITIAL_SUBMISSIONS;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const key = getActiveStorageKey();
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SUBMISSIONS));
-      return INITIAL_SUBMISSIONS;
+      const fallback = isDemoModeActive() ? DEMO_RUBRIC_SUBMISSIONS : INITIAL_SUBMISSIONS;
+      localStorage.setItem(key, JSON.stringify(fallback));
+      return fallback;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : (isDemoModeActive() ? DEMO_RUBRIC_SUBMISSIONS : INITIAL_SUBMISSIONS);
   } catch (e) {
-    return INITIAL_SUBMISSIONS;
+    return isDemoModeActive() ? DEMO_RUBRIC_SUBMISSIONS : INITIAL_SUBMISSIONS;
   }
 }
 
@@ -58,14 +68,17 @@ export function saveRubricSubmission(
 
   const updated = [newRecord, ...filtered];
   if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    const key = getActiveStorageKey();
+    localStorage.setItem(key, JSON.stringify(updated));
 
-    // Asynchronously persist to database API
-    fetch('/api/rubric-submissions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).catch((err) => console.warn('[rubric-store] Background API sync note:', err));
+    // Never sync to server database API when in demo mode
+    if (!isDemoModeActive()) {
+      fetch('/api/rubric-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).catch((err) => console.warn('[rubric-store] Background API sync note:', err));
+    }
   }
   return newRecord;
 }
@@ -74,14 +87,17 @@ export function updateTeacherFeedbackInStore(submissionId: string, feedback: str
   const current = getStoredSubmissions();
   const updated = current.map((s) => (s.id === submissionId ? { ...s, teacherFeedback: feedback } : s));
   if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    const key = getActiveStorageKey();
+    localStorage.setItem(key, JSON.stringify(updated));
 
-    // Asynchronously update feedback on database API
-    fetch('/api/rubric-submissions', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ submissionId, teacherFeedback: feedback })
-    }).catch((err) => console.warn('[rubric-store] Background feedback API sync note:', err));
+    // Never sync to server database API when in demo mode
+    if (!isDemoModeActive()) {
+      fetch('/api/rubric-submissions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissionId, teacherFeedback: feedback })
+      }).catch((err) => console.warn('[rubric-store] Background feedback API sync note:', err));
+    }
   }
 }
 
@@ -89,7 +105,7 @@ export function updateTeacherFeedbackInStore(submissionId: string, feedback: str
  * Synchronizes rubric submissions from PostgreSQL database API into localStorage.
  */
 export async function syncRubricSubmissionsFromApi(classSection?: string): Promise<RubricSubmissionRecord[]> {
-  if (typeof window === 'undefined') return INITIAL_SUBMISSIONS;
+  if (typeof window === 'undefined' || isDemoModeActive()) return getStoredSubmissions();
 
   try {
     const url = classSection && classSection !== 'Tümü'

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '@/lib/store';
 import { useAuth } from '@/lib/auth-store';
+import { useDemoMode } from '@/lib/demo-mode-store';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { MessageInboxModal } from '@/components/messages/message-inbox-modal';
@@ -39,6 +40,7 @@ export function Navbar() {
   } = useApp();
 
   const { currentUser, logout } = useAuth();
+  const { isDemoMode, startTeacherDemo } = useDemoMode();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalDefaultTab, setAuthModalDefaultTab] = useState<'student' | 'login' | 'register' | 'board'>('login');
@@ -283,6 +285,20 @@ export function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-2 flex-nowrap shrink-0">
+                {!isDemoMode && (
+                  <button
+                    onClick={() => {
+                      playSound('click');
+                      startTeacherDemo();
+                      window.location.reload();
+                    }}
+                    className="hidden sm:flex px-3 py-2 rounded-xl text-amber-900 bg-amber-100/80 hover:bg-amber-200 font-black text-xs transition-colors items-center gap-1.5 border border-amber-300 shadow-xs cursor-pointer active:scale-95"
+                    title="Şifresiz Öğretmen ve Öğrenci Demosunu Başlat"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
+                    <span>Demo Modu</span>
+                  </button>
+                )}
                 <button
                   onClick={handleOpenStudentLogin}
                   className="hidden sm:flex px-3 py-2 rounded-xl text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 font-bold text-xs transition-colors items-center gap-1.5 border border-indigo-200 cursor-pointer"

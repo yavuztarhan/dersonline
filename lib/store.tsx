@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Role, Grade, Subject, Unit, Topic, Outcome, StudentBadge } from '@/types';
+import { useDemoMode } from '@/lib/demo-mode-store';
+import { isDemoOutcome } from '@/lib/demo-seed-data';
 
 interface AppContextType {
   role: Role;
@@ -107,15 +109,31 @@ const INITIAL_BADGES: StudentBadge[] = [
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const { isDemoMode, demoRole, showLockedOutcomeModal } = useDemoMode();
   const [role, setRole] = useState<Role>('teacher');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Sync role with active demo role
+  useEffect(() => {
+    if (isDemoMode && demoRole) {
+      setRole(demoRole);
+    }
+  }, [isDemoMode, demoRole]);
 
   const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [selectedOutcome, setSelectedOutcome] = useState<Outcome | null>(null);
+
+  const handleSetSelectedOutcome = (outcome: Outcome | null) => {
+    if (isDemoMode && outcome && !isDemoOutcome(outcome.code)) {
+      showLockedOutcomeModal(outcome.code, outcome.title);
+      return;
+    }
+    setSelectedOutcome(outcome);
+  };
 
   const [showAnswers, setShowAnswers] = useState(false);
   const [teacherDrawerOpen, setTeacherDrawerOpen] = useState(false);
@@ -261,7 +279,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         selectedTopic,
         setSelectedTopic,
         selectedOutcome,
-        setSelectedOutcome,
+        setSelectedOutcome: handleSetSelectedOutcome,
         resetSelection,
         showAnswers,
         setShowAnswers,

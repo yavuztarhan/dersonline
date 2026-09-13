@@ -27,31 +27,41 @@ export interface PeerEvaluationRecord {
   submittedAt: string;
 }
 
+import { isDemoModeActive, DEMO_PEER_STORAGE_KEY } from '@/lib/demo-mode-store';
+import { DEMO_PEER_EVALUATIONS } from '@/lib/demo-seed-data';
+
 const STORAGE_PEER_EVALUATIONS_KEY = 'maarif_peer_evaluations_v1';
+
+function getActivePeerStorageKey(): string {
+  return isDemoModeActive() ? DEMO_PEER_STORAGE_KEY : STORAGE_PEER_EVALUATIONS_KEY;
+}
 
 // Pre-populated Seed Peer Evaluations for 5-A students
 const SEED_PEER_EVALUATIONS: PeerEvaluationRecord[] = [];
 
 export function getStoredPeerEvaluations(): PeerEvaluationRecord[] {
-  if (typeof window === 'undefined') return SEED_PEER_EVALUATIONS;
+  if (typeof window === 'undefined') return isDemoModeActive() ? DEMO_PEER_EVALUATIONS : SEED_PEER_EVALUATIONS;
   try {
-    const raw = localStorage.getItem(STORAGE_PEER_EVALUATIONS_KEY);
+    const key = getActivePeerStorageKey();
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(STORAGE_PEER_EVALUATIONS_KEY, JSON.stringify(SEED_PEER_EVALUATIONS));
-      return SEED_PEER_EVALUATIONS;
+      const fallback = isDemoModeActive() ? DEMO_PEER_EVALUATIONS : SEED_PEER_EVALUATIONS;
+      localStorage.setItem(key, JSON.stringify(fallback));
+      return fallback;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : SEED_PEER_EVALUATIONS;
+    return Array.isArray(parsed) ? parsed : (isDemoModeActive() ? DEMO_PEER_EVALUATIONS : SEED_PEER_EVALUATIONS);
   } catch (err) {
     console.warn('Akran değerlendirmeleri yüklenirken hata:', err);
-    return SEED_PEER_EVALUATIONS;
+    return isDemoModeActive() ? DEMO_PEER_EVALUATIONS : SEED_PEER_EVALUATIONS;
   }
 }
 
 export function saveStoredPeerEvaluations(evaluations: PeerEvaluationRecord[]): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_PEER_EVALUATIONS_KEY, JSON.stringify(evaluations));
+    const key = getActivePeerStorageKey();
+    localStorage.setItem(key, JSON.stringify(evaluations));
   } catch (err) {
     console.warn('Akran değerlendirmeleri kaydedilirken hata:', err);
   }
@@ -78,8 +88,8 @@ export function savePeerEvaluation(record: Omit<PeerEvaluationRecord, 'id' | 'su
   const updated = [newRecord, ...filtered];
   saveStoredPeerEvaluations(updated);
 
-  // Asynchronously persist to database API
-  if (typeof window !== 'undefined') {
+  // Asynchronously persist to database API (Bypassed in demo mode)
+  if (typeof window !== 'undefined' && !isDemoModeActive()) {
     fetch('/api/peer-evaluations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -94,7 +104,7 @@ export function savePeerEvaluation(record: Omit<PeerEvaluationRecord, 'id' | 'su
  * Synchronizes peer evaluations from PostgreSQL database API into localStorage.
  */
 export async function syncPeerEvaluationsFromApi(classSection?: string): Promise<PeerEvaluationRecord[]> {
-  if (typeof window === 'undefined') return getStoredPeerEvaluations();
+  if (typeof window === 'undefined' || isDemoModeActive()) return getStoredPeerEvaluations();
 
   try {
     const url = classSection && classSection !== 'Tümü'
