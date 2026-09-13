@@ -39,8 +39,8 @@ interface AuthContextType {
   
   // Auth Operations
   loginAsRole: (role: UserRole) => void;
-  loginWithEmail: (emailOrIdentifier: string, pass?: string) => Promise<boolean>;
-  loginStudent: (classCode: string, studentNumber: string, pass?: string) => Promise<boolean>;
+  loginWithEmail: (emailOrIdentifier: string, pass?: string) => Promise<{ success: boolean; error?: string } | boolean>;
+  loginStudent: (classCode: string, studentNumber: string, pass?: string) => Promise<{ success: boolean; error?: string } | boolean>;
   loginWithGoogle: (profile: { name: string; email: string; avatar?: string }) => { isNewUser: boolean; user: AuthUser };
   loginWithBoardSession: (user: AuthUser, sessionToken: string, expiresAt: number, deviceCategory: string) => void;
   logout: () => void;
@@ -507,17 +507,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const { data: session } = useSession();
 
-  // Sync live NextAuth OAuth session
+  // Sync live NextAuth OAuth session directly from PostgreSQL Database
   useEffect(() => {
     if (!isLoaded) return;
     if (session?.user?.email) {
-      const email = session.user.email;
-      if (!currentUser || (currentUser.email && currentUser.email.toLowerCase() !== email.toLowerCase())) {
-        loginWithGoogle({
-          name: session.user.name || 'Google Kullanıcısı',
-          email: session.user.email,
-          avatar: session.user.image || '✨'
-        });
+      const email = session.user.email.trim().toLowerCase();
+      if (!currentUser || (currentUser.email && currentUser.email.toLowerCase() !== email)) {
+        fetch(`/api/user/profile?email=${encodeURIComponent(email)}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.success && data?.user) {
+              const dbUser = enrichUser(data.user);
+              setCurrentUser(dbUser);
+              registerDeviceSession(dbUser);
+              try {
+                localStorage.setItem('maarif_current_user', JSON.stringify(dbUser));
+              } catch (e) {}
+            } else {
+              loginWithGoogle({
+                name: session.user?.name || 'Google Kullanıcısı',
+                email: session.user?.email || email,
+                avatar: session.user?.image || '✨'
+              });
+            }
+          })
+          .catch(() => {
+            loginWithGoogle({
+              name: session.user?.name || 'Google Kullanıcısı',
+              email: session.user?.email || email,
+              avatar: session.user?.image || '✨'
+            });
+          });
       }
     }
   }, [session, isLoaded]);
@@ -634,10 +654,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginWithEmail = async (identifier: string, pass?: string): Promise<boolean> => {
+  const loginWithEmail = async (identifier: string, pass?: string): Promise<{ success: boolean; error?: string }> => {
     const trimmed = (identifier || '').trim().toLowerCase();
     const cleanPass = (pass || '').trim();
-    if (!trimmed || !cleanPass) return false;
+    if (!trimmed || !cleanPass) return { success: false, error: 'E-posta ve şifre gereklidir.' };
 
     // Direct Database Authentication via Prisma API
     try {
@@ -658,21 +678,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem('maarif_current_user', JSON.stringify(verifiedUser));
           } catch (e) {}
         }
-        return true;
+        return { success: true };
       }
-    } catch (e) {
+      return { success: false, error: data?.error || 'Kullanıcı bilgileri veya şifre hatalı.' };
+    } catch (e: any) {
       console.warn('[loginWithEmail] Database login error:', e);
+      return { success: false, error: 'Sunucuya bağlanılamadı. Lütfen PostgreSQL/Docker servisinizin çalıştığından emin olun.' };
     }
-
-    return false;
   };
 
-  const loginStudent = async (classCode: string, studentNumber: string, pass?: string): Promise<boolean> => {
+  const loginStudent = async (classCode: string, studentNumber: string, pass?: string): Promise<{ success: boolean; error?: string }> => {
     const cleanCode = (classCode || '').trim().toUpperCase();
     const cleanNumber = (studentNumber || '').trim();
     const cleanPass = (pass || '').trim();
 
-    if (!cleanCode || !cleanNumber || !cleanPass) return false;
+    if (!cleanCode || !cleanNumber || !cleanPass) return { success: false, error: 'Tüm alanları doldurunuz.' };
 
     // Demo Student Authentication Bypass
     if ((isDemoModeActive() || isDemoMode || cleanCode === 'MAARİF') && (cleanPass === 'MRF01' || cleanPass === 'admin')) {
@@ -680,7 +700,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const found = currentList.find((s) => s.studentNumber === cleanNumber);
       if (found) {
         setCurrentUser(found);
-        return true;
+        return { success: true };
       }
     }
 
@@ -703,13 +723,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem('maarif_current_user', JSON.stringify(verifiedUser));
           } catch (e) {}
         }
-        return true;
+        return { success: true };
       }
-    } catch (e) {
+      return { success: false, error: data?.error || 'Sınıf kodu, okul numarası veya şifre hatalı.' };
+    } catch (e: any) {
       console.warn('[loginStudent] Database login error:', e);
+      return { success: false, error: 'Sunucuya bağlanılamadı. Lütfen veritabanı bağlantısını kontrol edin.' };
     }
-
-    return false;
   };
 
   const logout = () => {
@@ -1015,108 +1035,96 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const trimmed = profile.email.trim().toLowerCase();
     const { firstName, lastName } = splitFullName(profile.name || 'Google Kullanıcısı');
     const fullName = formatFullName(firstName, lastName, profile.name || 'Google Kullanıcısı');
+    const isAdmin = checkIsAdmin(trimmed);
 
-    // 1. Check if admin
-    if (checkIsAdmin(trimmed)) {
-      const foundAdmin = admins.find((a) => a.email.toLowerCase() === trimmed);
-      let existingStorageUser: any = null;
-      try {
-        const savedUserRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_current_user') : null;
-        if (savedUserRaw) {
-          const parsed = JSON.parse(savedUserRaw);
-          if (parsed.email?.toLowerCase() === trimmed) {
-            existingStorageUser = parsed;
+    // Synchronize directly with PostgreSQL database as single source of truth
+    fetch(`/api/user/profile?email=${encodeURIComponent(trimmed)}`)
+      .then((res) => res.json())
+      .then(async (data) => {
+        if (data?.success && data?.user) {
+          const dbUser = enrichUser(data.user);
+          setCurrentUser(dbUser);
+          registerDeviceSession(dbUser);
+          try {
+            localStorage.setItem('maarif_current_user', JSON.stringify(dbUser));
+          } catch (e) {}
+
+          if (dbUser.role === 'teacher') {
+            setTeachers((prev) => {
+              const exists = prev.some((t) => t.email.toLowerCase() === trimmed);
+              return exists
+                ? prev.map((t) => (t.email.toLowerCase() === trimmed ? { ...t, ...dbUser } : t))
+                : [...prev, dbUser as TeacherUser];
+            });
+          }
+        } else {
+          // If not yet in PostgreSQL, persist to DB immediately
+          const postRes = await fetch('/api/user/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: trimmed,
+              firstName: firstName || 'Google',
+              lastName: lastName || 'Kullanıcısı',
+              name: fullName,
+              school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+              branch: 'Matematik',
+              role: isAdmin ? 'ADMIN' : 'TEACHER',
+            }),
+          });
+          const postData = await postRes.json();
+          if (postData?.success && postData?.user) {
+            const created = enrichUser(postData.user);
+            setCurrentUser(created);
+            registerDeviceSession(created);
+            try {
+              localStorage.setItem('maarif_current_user', JSON.stringify(created));
+            } catch (e) {}
+            if (created.role === 'teacher') {
+              setTeachers((prev) => [...prev, created as TeacherUser]);
+            }
           }
         }
-      } catch (e) {}
+      })
+      .catch((err) => {
+        console.warn('[loginWithGoogle] Database sync note:', err);
+      });
 
-      const adminUser: AdminUser = {
-        ...(foundAdmin || getAdminUser(trimmed, profile.name, profile.avatar)),
-        ...(existingStorageUser || {}),
-        role: 'admin',
-        avatar: profile.avatar || existingStorageUser?.avatar || foundAdmin?.avatar || '👑',
-      };
-      setCurrentUser(adminUser);
-      registerDeviceSession(adminUser);
-      return { isNewUser: false, user: adminUser };
-    }
-
-    // 2. Check if student
-    const existingStudent = students.find((s) => s.email && s.email.toLowerCase() === trimmed);
-    if (existingStudent) {
-      setCurrentUser(existingStudent);
-      registerDeviceSession(existingStudent);
-      return { isNewUser: false, user: existingStudent };
-    }
-
-    // 3. Check if teacher exists
-    const existingTeacher = teachers.find((t) => t.email.toLowerCase() === trimmed);
-    if (existingTeacher) {
-      let existingStorageUser: any = null;
-      try {
-        const savedUserRaw = typeof window !== 'undefined' ? localStorage.getItem('maarif_current_user') : null;
-        if (savedUserRaw) {
-          const parsed = JSON.parse(savedUserRaw);
-          if (parsed.email?.toLowerCase() === trimmed) {
-            existingStorageUser = parsed;
-          }
+    // Immediate initial user state while DB response resolves
+    const initialUser: AuthUser = (isAdmin
+      ? {
+          id: `usr-${trimmed.replace(/[^a-z0-9]/g, '_')}`,
+          firstName: firstName || 'Google',
+          lastName: lastName || 'Kullanıcısı',
+          name: fullName,
+          email: trimmed,
+          role: 'admin',
+          avatar: profile.avatar || '👑',
+          createdAt: new Date().toISOString().split('T')[0],
+          permissions: ['all', 'approve_teachers', 'manage_users', 'view_reports'],
         }
-      } catch (e) {}
-
-      const mergedTeacher: TeacherUser = {
-        ...existingTeacher,
-        ...(existingStorageUser || {}),
-        role: 'teacher',
-        avatar: profile.avatar || existingStorageUser?.avatar || existingTeacher.avatar || '👨‍🏫',
-      };
-      setCurrentUser(mergedTeacher);
-      registerDeviceSession(mergedTeacher);
-      return { isNewUser: false, user: mergedTeacher };
-    }
-
-    // 4. If new teacher user, create profile with pre-verified email (since Google validates email ownership)
-    // and status 'pending_admin_approval'
-    const newTeacher: TeacherUser = {
-      id: `tch-g-${Date.now()}`,
-      firstName: firstName || 'Google',
-      lastName: lastName || 'Kullanıcısı',
-      name: fullName,
-      email: profile.email,
-      password: '',
-      role: 'teacher',
-      avatar: profile.avatar || '👨‍🏫',
-      city: '',
-      district: '',
-      school: '',
-      branch: 'Matematik',
-      status: 'pending_admin_approval',
-      verifiedAt: new Date().toISOString().split('T')[0],
-      createdAt: new Date().toISOString().split('T')[0],
-      assignedClasses: [],
-      isProfileComplete: false
-    };
-
-    const updated = [...teachers, newTeacher];
-    setTeachers(updated);
-    setCurrentUser(newTeacher);
-    registerDeviceSession(newTeacher);
-
-    // Sync newly logged in Google teacher to PostgreSQL DB
-    fetch('/api/user/profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: profile.email,
-        firstName: firstName || 'Google',
-        lastName: lastName || 'Kullanıcısı',
-        name: fullName,
-        school: 'Edirne Selimiye İmam Hatip Ortaokulu',
-        branch: 'Matematik',
-        assignedClasses: [],
-      }),
-    }).catch((e) => console.warn('Google teacher sync note:', e));
-
-    return { isNewUser: true, user: newTeacher };
+      : {
+          id: `usr-${trimmed.replace(/[^a-z0-9]/g, '_')}`,
+          firstName: firstName || 'Google',
+          lastName: lastName || 'Kullanıcısı',
+          name: fullName,
+          email: trimmed,
+          password: '',
+          role: 'teacher',
+          avatar: profile.avatar || '👨‍🏫',
+          city: '',
+          district: '',
+          school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+          branch: 'Matematik',
+          status: 'approved',
+          verifiedAt: new Date().toISOString().split('T')[0],
+          createdAt: new Date().toISOString().split('T')[0],
+          assignedClasses: [],
+          isProfileComplete: false,
+        }) as AuthUser;
+    setCurrentUser(initialUser);
+    registerDeviceSession(initialUser);
+    return { isNewUser: false, user: initialUser };
   };
 
   const startTeacherRegistration = (data: TeacherRegistrationPayload): { code: string; success: boolean } => {

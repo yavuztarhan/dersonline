@@ -161,14 +161,18 @@ export function AuthModal({
 
     setIsSubmitting(true);
     try {
-      const success = await loginWithEmail(identifierInput, passwordInput);
-      if (success) {
+      const res: any = await loginWithEmail(identifierInput, passwordInput);
+      const isSuccess = typeof res === 'boolean' ? res : res?.success;
+      if (isSuccess) {
         onClose();
       } else {
-        setLoginError('Kullanıcı bilgileri veya şifre hatalı. Lütfen bilgilerinizi kontrol ediniz.');
+        const errorMsg = (typeof res === 'object' && res?.error)
+          ? res.error
+          : 'Kullanıcı bilgileri veya şifre hatalı. Lütfen bilgilerinizi kontrol ediniz.';
+        setLoginError(errorMsg);
       }
-    } catch (err) {
-      setLoginError('Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyiniz.');
+    } catch (err: any) {
+      setLoginError(err?.message || 'Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyiniz.');
     } finally {
       setIsSubmitting(false);
     }
@@ -202,14 +206,18 @@ export function AuthModal({
 
     setIsSubmitting(true);
     try {
-      const success = await loginStudent(cleanCode, cleanNo, cleanPass);
-      if (success) {
+      const res: any = await loginStudent(cleanCode, cleanNo, cleanPass);
+      const isSuccess = typeof res === 'boolean' ? res : res?.success;
+      if (isSuccess) {
         onClose();
       } else {
-        setStudentLoginError('Sınıf kodu, okul numarası veya şifre hatalı. Lütfen bilgilerinizi kontrol ediniz.');
+        const errorMsg = (typeof res === 'object' && res?.error)
+          ? res.error
+          : 'Sınıf kodu, okul numarası veya şifre hatalı. Lütfen bilgilerinizi kontrol ediniz.';
+        setStudentLoginError(errorMsg);
       }
-    } catch (err) {
-      setStudentLoginError('Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyiniz.');
+    } catch (err: any) {
+      setStudentLoginError(err?.message || 'Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyiniz.');
     } finally {
       setIsSubmitting(false);
     }

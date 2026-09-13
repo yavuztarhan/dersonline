@@ -536,6 +536,23 @@ export function AppDrawer({
                   </div>
                   <ChevronRight className="w-3.5 h-3.5 opacity-60" />
                 </button>
+
+
+                {/* Geçici olarak yoruma alındı:
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('/tanitim')}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-amber-900 bg-amber-50 hover:bg-amber-100/80 border border-amber-200 transition-all cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    <span>📸 Instagram Tanıtım Kiti</span>
+                  </div>
+                  <span className="text-[9px] bg-amber-500 text-white font-black px-1.5 py-0.5 rounded-full">
+                    10 Slayt
+                  </span>
+                </button>
+                */}
               </div>
 
               {/* Öğretmen Modülleri Hızlı Bilgilendirme */}
@@ -725,6 +742,22 @@ export function AppDrawer({
                   </div>
                   <ChevronRight className="w-3.5 h-3.5 opacity-60" />
                 </button>
+
+                {/* Geçici olarak yoruma alındı:
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('/tanitim')}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-amber-900 bg-amber-50 hover:bg-amber-100/80 border border-amber-200 transition-all cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    <span>📸 Instagram Tanıtım Kiti</span>
+                  </div>
+                  <span className="text-[9px] bg-amber-500 text-white font-black px-1.5 py-0.5 rounded-full">
+                    10 Slayt
+                  </span>
+                </button>
+                */}
               </div>
             </div>
           )}

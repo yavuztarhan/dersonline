@@ -9,6 +9,8 @@ import { Navbar } from '@/components/navbar';
 import { RandomStudentPickerModal } from '@/components/random-student-picker';
 import { EnforceProfileGuard } from '@/components/auth/enforce-profile-guard';
 import { PwaInstallBanner } from '@/components/pwa-install-banner';
+import { OnboardingProvider } from '@/components/onboarding/onboarding-context';
+import { OnboardingManager } from '@/components/onboarding/onboarding-manager';
 
 export const viewport: Viewport = {
   themeColor: '#0d9488',
@@ -59,14 +61,17 @@ export default function RootLayout({
           <DemoModeProvider>
             <AuthProvider>
               <AppProvider>
-                <DemoStatusBanner />
-                <Navbar />
-                <EnforceProfileGuard />
-                <main className="flex-1 w-full">
-                  {children}
-                </main>
-                <RandomStudentPickerModal />
-                <PwaInstallBanner />
+                <OnboardingProvider>
+                  <DemoStatusBanner />
+                  <Navbar />
+                  <EnforceProfileGuard />
+                  <main className="flex-1 w-full">
+                    {children}
+                  </main>
+                  <RandomStudentPickerModal />
+                  <PwaInstallBanner />
+                  <OnboardingManager />
+                </OnboardingProvider>
               </AppProvider>
             </AuthProvider>
           </DemoModeProvider>

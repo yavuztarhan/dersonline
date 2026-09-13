@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getOutcomeById, getBreadcrumbPath } from '@/lib/curriculum-data';
 import { LessonPhaseId } from '@/types';
@@ -29,14 +29,29 @@ import { isDemoOutcome } from '@/lib/demo-seed-data';
 export default function LessonRoomPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const outcomeId = typeof params?.outcomeId === 'string' ? params.outcomeId : '';
+
+  const phaseParam = searchParams.get('phase');
+  const getResolvedPhase = (p: string | null): LessonPhaseId => {
+    if (p === 'rubric' || p === 'assessment') return 'assessment';
+    if (p === 'lab') return 'lab';
+    if (p === 'puzzle') return 'puzzle';
+    return 'story';
+  };
 
   const { playSound, role, setSelectedOutcome, setDrawingActive, setShowAnswers } = useApp();
   const { isDemoMode } = useDemoMode();
-  const [activePhase, setActivePhase] = useState<LessonPhaseId>('story');
+  const [activePhase, setActivePhase] = useState<LessonPhaseId>(() => getResolvedPhase(phaseParam));
 
   const outcome = getOutcomeById(outcomeId);
   const pathInfo = getBreadcrumbPath(outcomeId);
+
+  useEffect(() => {
+    if (phaseParam) {
+      setActivePhase(getResolvedPhase(phaseParam));
+    }
+  }, [phaseParam]);
 
   useEffect(() => {
     setDrawingActive(false);
@@ -46,7 +61,8 @@ export default function LessonRoomPage() {
         setSelectedOutcome(outcome);
       }
     }
-  }, [outcomeId, outcome, isDemoMode, setSelectedOutcome, setDrawingActive, setShowAnswers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outcomeId]);
 
   // If outcome not found
   if (!outcome) {
@@ -97,7 +113,7 @@ export default function LessonRoomPage() {
             <span>Kazanım Listesi</span>
           </Link>
           <Link
-            href="/lesson/mat-7-1-1"
+            href="/lesson/MAT.7.1.1"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-xs shadow-md transition-colors"
           >
             <Sparkles className="w-4 h-4" />

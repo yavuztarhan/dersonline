@@ -442,7 +442,7 @@ export function TeacherDashboard() {
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
       
       {/* Teacher Profile Banner */}
-      <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white p-6 sm:p-8 rounded-3xl border border-teal-800/40 shadow-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+      <div id="onboarding-teacher-banner" className="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white p-6 sm:p-8 rounded-3xl border border-teal-800/40 shadow-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div className="flex items-start sm:items-center gap-4 flex-1">
           <UserAvatar
             avatar={teacher?.avatar}
@@ -501,6 +501,7 @@ export function TeacherDashboard() {
           </Link>
 
           <Link
+            id="onboarding-teacher-start-lesson"
             href="/lesson/MAT.5.3.1"
             className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center gap-2 active:scale-95 shrink-0"
           >
@@ -534,7 +535,7 @@ export function TeacherDashboard() {
       )}
 
       {/* Executive Module Switcher (7 Primary Sections) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
+      <div id="onboarding-teacher-nav-tabs" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 p-2 bg-slate-200/60 rounded-3xl border border-slate-300/70 shadow-inner">
         {/* 0. Tahtaya Kalkma & Derse Katılım Raporu (NumPad) */}
         <button
           type="button"
@@ -651,6 +652,7 @@ export function TeacherDashboard() {
 
         {/* 2. Sınıfım & Öğrenci Listesi */}
         <button
+          id="onboarding-teacher-students-tab"
           type="button"
           onClick={() => {
             playSound('select');

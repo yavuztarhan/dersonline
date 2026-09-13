@@ -62,7 +62,9 @@ import {
 
 interface PuzzlePhaseProps {
   data: PuzzlePhaseData;
-  onNextPhase: () => void;
+  onNextPhase?: () => void;
+  initialGameId?: PuzzleGameId | null;
+  onBackToHub?: () => void;
 }
 
 interface MatchCard {
@@ -95,12 +97,18 @@ export type PuzzleGameId =
   | 'wordsearch'
   | 'truefalse';
 
-export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
+export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToHub }: PuzzlePhaseProps) {
   const { playSound, unlockBadge, addPoints, role, selectedOutcome } = useApp();
   const { currentUser, awardPointsToStudent } = useAuth();
 
   // null means showing the cards menu only
-  const [selectedGameId, setSelectedGameId] = useState<PuzzleGameId | null>(null);
+  const [selectedGameId, setSelectedGameId] = useState<PuzzleGameId | null>(initialGameId);
+
+  React.useEffect(() => {
+    if (initialGameId !== undefined) {
+      setSelectedGameId(initialGameId);
+    }
+  }, [initialGameId]);
 
   // Matching game states
   const [conceptCards, setConceptCards] = useState<MatchCard[]>([]);
@@ -768,16 +776,33 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
               </p>
             </div>
 
-            <button
-              onClick={() => {
-                playSound('select');
-                onNextPhase();
-              }}
-              className="px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 active:scale-95 shrink-0"
-            >
-              <span>4. Aşamaya Geç (Değerlendirme)</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2.5">
+              {onBackToHub && (
+                <button
+                  onClick={() => {
+                    playSound('click');
+                    onBackToHub();
+                  }}
+                  className="px-5 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 active:scale-95 shrink-0 cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Oyun Salonuna Dön</span>
+                </button>
+              )}
+
+              {onNextPhase && (
+                <button
+                  onClick={() => {
+                    playSound('select');
+                    onNextPhase();
+                  }}
+                  className="px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 active:scale-95 shrink-0 cursor-pointer"
+                >
+                  <span>4. Aşamaya Geç (Değerlendirme)</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Teacher Smart Board Student Delegation Widget */}
@@ -847,17 +872,32 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
           {/* Top Control Bar with Back Button */}
           <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
             
-            {/* BACK TO GAME CARDS BUTTON */}
-            <button
-              onClick={() => {
-                playSound('click');
-                setSelectedGameId(null);
-              }}
-              className="px-4 py-2.5 rounded-2xl bg-teal-50 hover:bg-teal-100 text-teal-900 font-extrabold text-xs sm:text-sm border border-teal-200 transition-all flex items-center gap-2 active:scale-95 shadow-xs"
-            >
-              <ArrowLeft className="w-4 h-4 text-teal-700" />
-              <span>⬅️ GERİ (Oyun Menüsü)</span>
-            </button>
+            {/* BACK TO GAME CARDS / HUB BUTTON */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  playSound('click');
+                  setSelectedGameId(null);
+                }}
+                className="px-4 py-2.5 rounded-2xl bg-teal-50 hover:bg-teal-100 text-teal-900 font-extrabold text-xs sm:text-sm border border-teal-200 transition-all flex items-center gap-2 active:scale-95 shadow-xs cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4 text-teal-700" />
+                <span>⬅️ GERİ (Kazanım Oyunları)</span>
+              </button>
+
+              {onBackToHub && (
+                <button
+                  onClick={() => {
+                    playSound('click');
+                    onBackToHub();
+                  }}
+                  className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs sm:text-sm border border-slate-200 transition-all flex items-center gap-2 active:scale-95 shadow-xs cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4 text-slate-600" />
+                  <span>🎮 Oyun Salonuna Dön</span>
+                </button>
+              )}
+            </div>
 
             {/* Current Game Title Tag */}
             <div className="flex items-center gap-2">
@@ -867,17 +907,19 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
               </span>
             </div>
 
-            {/* Phase 4 Jump Button */}
-            <button
-              onClick={() => {
-                playSound('select');
-                onNextPhase();
-              }}
-              className="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95"
-            >
-              <span>4. Aşamaya Geç</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {/* Phase 4 Jump Button (if in lesson flow) */}
+            {onNextPhase && (
+              <button
+                onClick={() => {
+                  playSound('select');
+                  onNextPhase();
+                }}
+                className="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              >
+                <span>4. Aşamaya Geç</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           {/* Teacher Smart Board Student Delegation Widget */}

@@ -30,18 +30,36 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user }) {
       if (user?.email) {
-        const isAdmin = isUserAdmin(user.email);
+        const cleanEmail = user.email.trim().toLowerCase();
+        const isAdmin = isUserAdmin(cleanEmail);
+        const rawName = (user.name || '').trim();
+        let firstName = '';
+        let lastName = '';
+        if (rawName) {
+          const parts = rawName.split(/\s+/);
+          if (parts.length === 1) {
+            firstName = parts[0];
+          } else {
+            lastName = parts.pop() || '';
+            firstName = parts.join(' ');
+          }
+        }
+
         try {
           const dbUser = await prisma.user.upsert({
-            where: { email: user.email.toLowerCase() },
+            where: { email: cleanEmail },
             update: {
-              name: user.name || 'Google Kullanıcısı',
+              name: rawName || 'Google Kullanıcısı',
+              ...(firstName ? { firstName } : {}),
+              ...(lastName ? { lastName } : {}),
               avatar: user.image || undefined,
               ...(isAdmin ? { role: 'ADMIN' } : {}),
             },
             create: {
-              email: user.email.toLowerCase(),
-              name: user.name || 'Google Kullanıcısı',
+              email: cleanEmail,
+              name: rawName || 'Google Kullanıcısı',
+              firstName: firstName || '',
+              lastName: lastName || '',
               avatar: user.image || undefined,
               role: isAdmin ? 'ADMIN' : 'TEACHER',
             },
@@ -76,23 +94,39 @@ export const authOptions: NextAuthOptions = {
               },
             },
           });
+
+          console.log(`[NextAuth signIn] Google user ${cleanEmail} synced to PostgreSQL successfully (DB ID: ${dbUser.id})`);
         } catch (e) {
-          console.warn('NextAuth Prisma upsert note:', e);
+          console.error('[NextAuth signIn] Error upserting Google user to PostgreSQL:', e);
         }
       }
       return true;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.sub;
+        (session.user as any).id = token.id || token.sub;
         (session.user as any).role = token.role || (isUserAdmin(session.user.email) ? 'admin' : 'teacher');
+        (session.user as any).status = token.status || 'approved';
       }
       return session;
     },
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = isUserAdmin(user.email) ? 'admin' : 'teacher';
+      if (user?.email) {
+        const cleanEmail = user.email.trim().toLowerCase();
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: cleanEmail },
+            include: { teacherProfile: true }
+          });
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.sub = dbUser.id;
+            token.role = dbUser.role === 'ADMIN' || isUserAdmin(cleanEmail) ? 'admin' : dbUser.role.toLowerCase();
+            token.status = dbUser.teacherProfile?.status?.toLowerCase() || 'approved';
+          }
+        } catch (e) {
+          console.error('[NextAuth jwt] Error retrieving DB user:', e);
+        }
       }
       return token;
     },

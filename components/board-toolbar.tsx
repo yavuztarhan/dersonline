@@ -85,11 +85,9 @@ export function BoardToolbar({
   const [whiteboardOpen, setWhiteboardOpen] = useState(false);
   const [phaseMenuOpen, setPhaseMenuOpen] = useState(false);
 
-  // Küçük ekranlarda veya mobil cihazlarda kalem aracını başlangıçta saklı konuma al
+  // Araç çubuğu başlangıçta açık olsun
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      setToolbarCollapsed(true);
-    }
+    setToolbarCollapsed(false);
   }, []);
 
   const handleToolSelect = (tool: 'pen' | 'highlighter' | 'eraser') => {
@@ -105,7 +103,7 @@ export function BoardToolbar({
   return (
     <>
       {/* Top Smart Board Header Navigation */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs px-4 sm:px-6 py-3">
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs px-4 sm:px-6 py-3">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           
           {/* Outcome Info */}
@@ -233,6 +231,20 @@ export function BoardToolbar({
                 </>
               )}
             </div>
+
+            {/* Quick Digital Pen (Dijital Kalem) Button for Smart Board */}
+            <button
+              onClick={() => handleToolSelect('pen')}
+              title={drawingActive ? 'Dijital Kalem Çizimini Kapat' : 'Dijital Kalemi Aç (Ekrana Çiz)'}
+              className={`px-3.5 py-2.5 rounded-2xl font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 ${
+                drawingActive
+                  ? 'bg-teal-500 text-slate-950 shadow-md ring-2 ring-teal-300 scale-102'
+                  : 'bg-teal-700 hover:bg-teal-600 text-white shadow-teal-700/20'
+              }`}
+            >
+              <PenTool className="w-4 h-4" />
+              <span>{drawingActive ? 'Kalem Açık' : 'Dijital Kalem'}</span>
+            </button>
 
             {/* Fullscreen (Tam Ekran) Button for Smart Board */}
             <button

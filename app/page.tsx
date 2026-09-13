@@ -97,7 +97,7 @@ export default function HomePage() {
       )}
 
       {/* Unified Professional Hero Welcome Card */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-4 sm:p-8 lg:p-10 text-white shadow-xl border border-slate-800">
+      <div id="onboarding-home-hero" className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-4 sm:p-8 lg:p-10 text-white shadow-xl border border-slate-800">
         <div className="absolute -right-10 -top-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute right-1/3 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -179,10 +179,14 @@ export default function HomePage() {
       )}
 
       {/* Step-by-Step Cascading Selection Wizard */}
-      <StepSelector />
+      <div id="onboarding-home-step-selector">
+        <StepSelector />
+      </div>
 
       {/* Dersi Doğrudan Başlat: Takvime Dayalı Hızlı Başlatma Kartları (Mobilde Gizli) */}
-      <DirectLaunchSection />
+      <div id="onboarding-home-direct-launch">
+        <DirectLaunchSection />
+      </div>
 
     </div>
   );

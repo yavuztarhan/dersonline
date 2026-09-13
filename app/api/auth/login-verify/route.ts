@@ -240,6 +240,30 @@ export async function POST(req: NextRequest) {
     });
   } catch (e: any) {
     console.error('[LoginVerify API] Database authentication error:', e);
-    return NextResponse.json({ success: false, error: 'Sunucu bağlantı hatası.' }, { status: 500 });
+    const isConnRefused =
+      e?.code === 'ECONNREFUSED' ||
+      e?.code === 'P1001' ||
+      e?.code === 'EPERM' ||
+      String(e?.message || '').includes('ECONNREFUSED') ||
+      String(e?.message || '').includes('EPERM') ||
+      String(e?.message || '').includes("Can't reach database server");
+
+    if (isConnRefused) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Veritabanı bağlantısı kurulamadı. Lütfen PostgreSQL servisini (npm run db:up) çalıştırın.'
+        },
+        { status: 503 }
+      );
+    }
+    const cleanError = e?.message?.includes('Invalid `prisma.')
+      ? 'Veritabanı bağlantı veya sorgu hatası oluştu.'
+      : (e?.message || 'Sunucu bağlantı hatası oluştu.');
+
+    return NextResponse.json(
+      { success: false, error: cleanError },
+      { status: 500 }
+    );
   }
 }

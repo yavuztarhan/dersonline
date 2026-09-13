@@ -201,7 +201,48 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      return NextResponse.json({ success: true, user });
+      const completeUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+          teacherProfile: {
+            include: { classrooms: true },
+          },
+          studentProfile: true,
+        },
+      });
+
+      const assignedClassesList = completeUser?.teacherProfile?.classrooms?.map((c) => c.name) || [];
+
+      return NextResponse.json({
+        success: true,
+        user: {
+          id: completeUser?.id || user.id,
+          email: completeUser?.email || user.email,
+          firstName: completeUser?.firstName || user.firstName,
+          lastName: completeUser?.lastName || user.lastName,
+          name: completeUser?.name || user.name,
+          gender: (completeUser as any)?.gender || '',
+          role: (completeUser?.role || user.role).toLowerCase(),
+          avatar: completeUser?.avatar || user.avatar,
+          phone: completeUser?.teacherProfile?.phone || '',
+          city: completeUser?.teacherProfile?.city || '',
+          district: completeUser?.teacherProfile?.district || '',
+          school: completeUser?.teacherProfile?.school || completeUser?.studentProfile?.school || '',
+          branch: completeUser?.teacherProfile?.branch || 'Matematik',
+          principalName: completeUser?.teacherProfile?.principalName || '',
+          hasPassword: Boolean(completeUser?.password),
+          assignedClasses: assignedClassesList,
+          accountStatus: completeUser?.accountStatus || 'aktif',
+          status: completeUser?.teacherProfile?.status?.toLowerCase() || (completeUser?.accountStatus === 'beklemede' ? 'suspended' : 'approved'),
+          isKvkkAccepted: completeUser?.isKvkkAccepted || Boolean(completeUser?.kvkkAcceptedAt),
+          kvkkAcceptedAt: completeUser?.kvkkAcceptedAt ? completeUser?.kvkkAcceptedAt.toISOString() : undefined,
+          isProfileComplete: Boolean(
+            completeUser?.firstName &&
+            completeUser?.lastName &&
+            (completeUser?.role !== 'TEACHER' || (completeUser?.teacherProfile?.phone && completeUser?.teacherProfile?.school))
+          ),
+        },
+      });
     } catch (dbError: any) {
       console.error('[Profile API] Database update error:', dbError);
       return NextResponse.json({ success: false, error: dbError.message }, { status: 500 });

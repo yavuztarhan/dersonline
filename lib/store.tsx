@@ -127,13 +127,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [selectedOutcome, setSelectedOutcome] = useState<Outcome | null>(null);
 
-  const handleSetSelectedOutcome = (outcome: Outcome | null) => {
+  const handleSetSelectedOutcome = React.useCallback((outcome: Outcome | null) => {
     if (isDemoMode && outcome && !isDemoOutcome(outcome.code)) {
       showLockedOutcomeModal(outcome.code, outcome.title);
       return;
     }
     setSelectedOutcome(outcome);
-  };
+  }, [isDemoMode, showLockedOutcomeModal]);
 
   const [showAnswers, setShowAnswers] = useState(false);
   const [teacherDrawerOpen, setTeacherDrawerOpen] = useState(false);

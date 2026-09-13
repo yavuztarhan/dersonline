@@ -4145,7 +4145,22 @@ export function getFilteredCurriculum(user?: {
 
 export function getOutcomeById(id: string): Outcome | undefined {
   const all = getAllOutcomes();
-  return all.find((o) => o.id.toLowerCase() === id.toLowerCase() || o.code.toLowerCase() === id.toLowerCase());
+  const directMatch = all.find((o) => o.id.toLowerCase() === id.toLowerCase() || o.code.toLowerCase() === id.toLowerCase());
+  if (directMatch) return directMatch;
+
+  // Fallback: Check if id corresponds to a topic, return its first outcome
+  for (const grade of CURRICULUM_DATA) {
+    for (const subject of grade.subjects) {
+      for (const unit of subject.units) {
+        const topic = unit.topics.find((t) => t.id.toLowerCase() === id.toLowerCase());
+        if (topic && topic.outcomes.length > 0) {
+          return topic.outcomes[0];
+        }
+      }
+    }
+  }
+
+  return undefined;
 }
 
 export function getOutcomeByCode(code: string): Outcome | undefined {
@@ -4162,6 +4177,9 @@ export function getBreadcrumbPath(outcomeId: string) {
           );
           if (outcome) {
             return { grade, subject, unit, topic, outcome };
+          }
+          if (topic.id.toLowerCase() === outcomeId.toLowerCase() && topic.outcomes.length > 0) {
+            return { grade, subject, unit, topic, outcome: topic.outcomes[0] };
           }
         }
       }

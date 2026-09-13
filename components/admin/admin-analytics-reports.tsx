@@ -71,74 +71,74 @@ export function AdminAnalyticsReports() {
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [tableTab, setTableTab] = useState<'schools' | 'teachers' | 'students'>('schools');
 
-  // Generate or aggregate deterministic data per city
+  // Compute real analytics per city based on actual data from auth store
   const cityAnalyticsMap = useMemo(() => {
     const map = new Map<string, CityAnalyticsData>();
 
-    // Deterministic pseudo-random seed based on city name string
-    const getHash = (str: string) => {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) - hash + str.charCodeAt(i);
-        hash |= 0;
-      }
-      return Math.abs(hash);
-    };
-
     ALL_81_PROVINCES.forEach((city) => {
-      // Find real registered users from authStore for this city
-      const realTeachersInCity = teachers.filter((t) => t.city?.toLocaleLowerCase('tr') === city.toLocaleLowerCase('tr'));
-      const realStudentsInCity = students.filter((s) => s.city?.toLocaleLowerCase('tr') === city.toLocaleLowerCase('tr'));
+      // Teachers in this city
+      const teachersInCity = teachers.filter(
+        (t) => t.city?.toLocaleLowerCase('tr') === city.toLocaleLowerCase('tr')
+      );
+      const totalTeachers = teachersInCity.length;
+      const schoolSet = new Set<string>();
+      teachersInCity.forEach((t) => {
+        if (t.school) schoolSet.add(t.school);
+      });
+      const totalSchools = schoolSet.size;
 
-      const h = getHash(city);
-      const baseSchoolCount = 12 + (h % 65);
-      const baseTeacherCount = 45 + (h % 220) + realTeachersInCity.length;
-      const baseStudentCount = 380 + (h % 2400) + realStudentsInCity.length;
-      
-      const activeRate = 65 + (h % 28); // 65% - 93%
-      const activeStudentsCount = Math.round((baseStudentCount * activeRate) / 100);
-      const avgSession = 25 + (h % 30); // 25 - 55 mins
-      
-      // Growth & Retention
-      const growth = ((h % 40) - 10) / 2; // -5% to +15%
-      const retention = 60 + (h % 35); // 60% - 95%
-      const dropOff = 100 - retention;
-      
-      let trendStatus: 'growing' | 'stable' | 'attention_needed' = 'stable';
-      if (growth > 5 && retention > 75) trendStatus = 'growing';
-      else if (growth < 0 || retention < 65) trendStatus = 'attention_needed';
+      // Students in this city
+      const studentsInCity = students.filter(
+        (s) => s.city?.toLocaleLowerCase('tr') === city.toLocaleLowerCase('tr')
+      );
+      const totalStudents = studentsInCity.length;
+      const activeStudentsCount = studentsInCity.filter(
+        (s) => s.points && s.points > 0
+      ).length;
+      const activeStudentRate = totalStudents
+        ? Math.round((activeStudentsCount / totalStudents) * 100)
+        : 0;
 
-      // 4 Core Domain Success Rates
-      const gameSuccess = 70 + (h % 26);
-      const selfAssessment = 72 + ((h + 5) % 25);
-      const peerAssessment = 68 + ((h + 10) % 27);
-      const testSuccess = 65 + ((h + 15) % 30);
+      // Placeholder values where we don't have real data, fallback to 0 or neutral values
+      const avgSessionDurationMinutes = 0; // No session duration data available client-side
+      const weeklyGrowthRate = 0;
+      const retentionRate = 0;
+      const dropOffRate = 100 - retentionRate;
+      const trendStatus: 'growing' | 'stable' | 'attention_needed' = 'stable';
 
-      // Weekly Cohort Activity
+      // Core academic domain success rates – not available, set to 0
+      const gameSuccessRate = 0;
+      const selfAssessmentSuccessRate = 0;
+      const peerAssessmentSuccessRate = 0;
+      const assessmentTestSuccessRate = 0;
+
+
+
+      // Weekly cohort placeholder
       const weeklyCohort = [
-        { week: '1. Hafta (Başlangıç)', users: baseStudentCount, activeRate: 100 },
-        { week: '2. Hafta', users: Math.round(baseStudentCount * (0.85 + (h % 10) / 100)), activeRate: Math.round(85 + (h % 10)) },
-        { week: '3. Hafta', users: Math.round(baseStudentCount * (0.78 + (h % 12) / 100)), activeRate: Math.round(78 + (h % 12)) },
-        { week: '4. Hafta (Düzenli)', users: Math.round(baseStudentCount * (retention / 100)), activeRate: retention }
+        { week: '1. Hafta (Başlangıç)', users: totalStudents, activeRate: 100 },
+        { week: '2. Hafta', users: totalStudents, activeRate: 0 },
+        { week: '3. Hafta', users: totalStudents, activeRate: 0 },
+        { week: '4. Hafta (Düzenli)', users: totalStudents, activeRate: retentionRate },
       ];
 
       map.set(city, {
         city,
-        totalSchools: baseSchoolCount,
-        totalTeachers: baseTeacherCount,
-        totalStudents: baseStudentCount,
+        totalSchools,
+        totalTeachers,
+        totalStudents,
         activeStudentsCount,
-        activeStudentRate: activeRate,
-        avgSessionDurationMinutes: avgSession,
-        weeklyGrowthRate: Number(growth.toFixed(1)),
-        retentionRate: retention,
-        dropOffRate: dropOff,
+        activeStudentRate,
+        avgSessionDurationMinutes,
+        weeklyGrowthRate,
+        retentionRate,
+        dropOffRate,
         trendStatus,
-        gameSuccessRate: gameSuccess,
-        selfAssessmentSuccessRate: selfAssessment,
-        peerAssessmentSuccessRate: peerAssessment,
-        assessmentTestSuccessRate: testSuccess,
-        weeklyCohort
+        gameSuccessRate,
+        selfAssessmentSuccessRate,
+        peerAssessmentSuccessRate,
+        assessmentTestSuccessRate,
+        weeklyCohort,
       });
     });
 
@@ -268,54 +268,47 @@ interface SchoolReportItem {
   overallScore: number;
   retentionStatus: string;
 }
-
-  // Synthetic Sample Schools for the School Table
+  // Schools for the School Table – derived from teachers (matches KPI count)
   const displaySchools = useMemo(() => {
-    const list: SchoolReportItem[] = [];
-    const targetCities = selectedProvince === 'Tümü' 
-      ? ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya', 'Edirne', 'Trabzon', 'Diyarbakır']
-      : [selectedProvince];
+    // Unique school names from teachers only (same source as totalSchools KPI)
+    const schoolSet = new Set<string>();
+    teachers.forEach((t) => {
+      if (t.school) schoolSet.add(t.school);
+    });
 
-    targetCities.forEach((c) => {
-      const d = cityAnalyticsMap.get(c);
-      const schoolNames = [
-        `${c} Atatürk Ortaokulu`,
-        `${c} Fatih Ortaokulu`,
-        `${c} Mehmet Akif Ersoy Ortaokulu`,
-        `${c} Cumhuriyet Ortaokulu`
-      ];
+    // Build report items using city analytics when available
+    const list: SchoolReportItem[] = Array.from(schoolSet).map((schoolName, idx) => {
+      const city = schoolName.split(' ')[0];
+      const data = cityAnalyticsMap.get(city) || cityAnalyticsMap.get('Tüm Türkiye (81 İl)');
+      const totalStudents = data?.totalStudents ?? 0;
+      const totalTeachers = data?.totalTeachers ?? 0;
+      const activePct = data?.activeStudentRate ?? 0;
+      const avgMins = data?.avgSessionDurationMinutes ?? 0;
+      const overallScore = data?.gameSuccessRate ?? 0;
 
-      schoolNames.forEach((sName, idx) => {
-        const studentCount = Math.round((d?.totalStudents || 400) / 12) + (idx * 25);
-        const teacherCount = Math.round((d?.totalTeachers || 30) / 10) + idx + 1;
-        const activePct = Math.min(98, Math.max(55, (d?.activeStudentRate || 75) + (idx % 2 === 0 ? 5 : -4)));
-        const avgMins = Math.min(65, (d?.avgSessionDurationMinutes || 35) + idx * 2);
-        const score = Math.min(98, (d?.gameSuccessRate || 80) + idx);
-
-        list.push({
-          id: `${c}-${idx}`,
-          name: sName,
-          city: c,
-          district: 'Merkez',
-          teacherCount,
-          studentCount,
-          activePct,
-          avgMins,
-          overallScore: score,
-          retentionStatus: activePct > 75 ? 'Yüksek Süreklilik' : 'Orta Düzey'
-        });
-      });
+      return {
+        id: `${schoolName}-${idx}`,
+        name: schoolName,
+        city,
+        district: '',
+        teacherCount: totalTeachers,
+        studentCount: totalStudents,
+        activePct,
+        avgMins,
+        overallScore,
+        retentionStatus: activePct > 75 ? 'Yüksek Süreklilik' : 'Orta Düzey',
+      };
     });
 
     if (searchKeyword) {
-      return list.filter((sc) => 
-        sc.name.toLocaleLowerCase('tr').includes(searchKeyword.toLocaleLowerCase('tr')) ||
-        sc.city.toLocaleLowerCase('tr').includes(searchKeyword.toLocaleLowerCase('tr'))
+      return list.filter(
+        (sc) =>
+          sc.name.toLocaleLowerCase('tr').includes(searchKeyword.toLocaleLowerCase('tr')) ||
+          sc.city.toLocaleLowerCase('tr').includes(searchKeyword.toLocaleLowerCase('tr'))
       );
     }
-
     return list;
-  }, [selectedProvince, cityAnalyticsMap, searchKeyword]);
+  }, [teachers, cityAnalyticsMap, searchKeyword]);
 
   const handlePrint = () => {
     window.print();

@@ -14,6 +14,7 @@ import { AppDrawer } from '@/components/navigation/app-drawer';
 import { FeedbackModal } from '@/components/feedback/feedback-modal';
 import { getUnreadMessageCount, syncMessagesWithDatabase } from '@/lib/message-store';
 import { TeacherBoardAuthModal } from '@/components/teacher/teacher-board-auth-modal';
+import { OnboardingNavbarButton } from '@/components/onboarding/onboarding-navbar-button';
 import {
   Award,
   Gamepad2,
@@ -121,6 +122,7 @@ export function Navbar() {
             
             {/* Left Drawer Toggle Button */}
             <button
+              id="onboarding-nav-drawer"
               type="button"
               onClick={() => {
                 playSound('click');
@@ -203,6 +205,9 @@ export function Navbar() {
                   <Gamepad2 className={`w-4 h-4 shrink-0 ${pathname === '/games' ? 'text-white' : 'text-indigo-600'}`} />
                   <span className="hidden md:inline">Oyunlar</span>
                 </Link>
+
+                {/* Onboarding / Sayfa Rehberi Mini Butonu */}
+                <OnboardingNavbarButton />
 
                 {/* Teacher Smart Board Fast Authorization Button (Single Compact Action) */}
                 {(currentUser.role === 'teacher' || currentUser.role === 'admin') && (

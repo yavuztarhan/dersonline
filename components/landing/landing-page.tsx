@@ -114,6 +114,17 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
                 <GraduationCap className="w-4 h-4 text-teal-400" />
                 <span>Öğretmen Kaydı</span>
               </button>
+
+
+              {/* Geçici olarak yoruma alındı:
+              <Link
+                href="/tanitim"
+                className="px-4 py-3 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-black text-xs sm:text-sm border border-amber-500/30 transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>📸 Instagram Tanıtım Kiti</span>
+              </Link>
+              */}
             </div>
 
             {/* Key Indicators */}
