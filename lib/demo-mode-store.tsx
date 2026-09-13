@@ -195,6 +195,15 @@ export function DemoModeProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem(DEMO_ACTIVE_ROLE_KEY);
       setDemoRole(null);
       setLockedOutcomeInfo(null);
+      try {
+        const saved = localStorage.getItem('maarif_current_user');
+        if (saved) {
+          const u = JSON.parse(saved);
+          if (u?.id?.startsWith('demo-') || u?.isDemoUser || u?.email?.includes('demo.') || u?.school?.includes('Atatürk Ortaokulu')) {
+            localStorage.removeItem('maarif_current_user');
+          }
+        }
+      } catch {}
       window.dispatchEvent(new CustomEvent('maarif:demo-change', { detail: { isDemo: false, role: null } }));
     } catch (e) {
       console.error('[DemoMode] Error exiting demo:', e);

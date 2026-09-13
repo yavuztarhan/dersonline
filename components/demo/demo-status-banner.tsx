@@ -49,10 +49,16 @@ export function DemoStatusBanner() {
   const handleExit = () => {
     playSound('select');
     exitDemo();
-    router.push('/');
-    setTimeout(() => {
-      window.location.reload();
-    }, 150);
+    try {
+      const saved = localStorage.getItem('maarif_current_user');
+      if (saved) {
+        const u = JSON.parse(saved);
+        if (u?.id?.startsWith('demo-') || u?.isDemoUser || u?.email?.includes('demo.') || u?.school?.includes('Atatürk Ortaokulu')) {
+          localStorage.removeItem('maarif_current_user');
+        }
+      }
+    } catch {}
+    window.location.href = '/';
   };
 
   const handleRoleToggle = () => {

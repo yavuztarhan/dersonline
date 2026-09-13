@@ -221,8 +221,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setClassrooms(DEMO_CLASSROOMS);
       setTeachers([DEMO_TEACHER_USER]);
+    } else {
+      // Demo is not active: purge any demo user that might have been retained in state or storage
+      setCurrentUser((prev) => {
+        if (prev && (prev.id?.startsWith('demo-') || (prev as any).isDemoUser || prev.email?.includes('demo.') || (prev as any).school?.includes('Atatürk Ortaokulu'))) {
+          try {
+            localStorage.removeItem('maarif_current_user');
+          } catch {}
+          return null;
+        }
+        return prev;
+      });
     }
   }, [isDemoMode, demoRole]);
+
+  // Listen to maarif:demo-change event for immediate cleanup upon exiting demo
+  useEffect(() => {
+    const handleDemoChange = (e: any) => {
+      const isDemo = e?.detail?.isDemo;
+      if (!isDemo) {
+        setCurrentUser((prev) => {
+          if (prev && (prev.id?.startsWith('demo-') || (prev as any).isDemoUser || prev.email?.includes('demo.') || (prev as any).school?.includes('Atatürk Ortaokulu'))) {
+            return null;
+          }
+          return prev;
+        });
+        try {
+          const saved = localStorage.getItem('maarif_current_user');
+          if (saved) {
+            const u = JSON.parse(saved);
+            if (u?.id?.startsWith('demo-') || u?.isDemoUser || u?.email?.includes('demo.') || u?.school?.includes('Atatürk Ortaokulu')) {
+              localStorage.removeItem('maarif_current_user');
+            }
+          }
+        } catch {}
+        setTeachers(SEED_TEACHERS);
+        setStudents(SEED_STUDENTS);
+        setClassrooms(SEED_CLASSROOMS);
+      }
+    };
+    window.addEventListener('maarif:demo-change', handleDemoChange);
+    return () => window.removeEventListener('maarif:demo-change', handleDemoChange);
+  }, []);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -320,11 +360,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const savedUser = localStorage.getItem('maarif_current_user');
       if (savedUser) {
-        const parsedUser = enrichUser(JSON.parse(savedUser));
-        setCurrentUser(parsedUser);
+        try {
+          const rawParsed = JSON.parse(savedUser);
+          if (rawParsed?.id?.startsWith('demo-') || rawParsed?.isDemoUser || rawParsed?.email?.includes('demo.') || rawParsed?.school?.includes('Atatürk Ortaokulu')) {
+            // NEVER restore demo user as real authenticated user
+            localStorage.removeItem('maarif_current_user');
+          } else {
+            const parsedUser = enrichUser(rawParsed);
+            setCurrentUser(parsedUser);
 
-        // Background server sync: fetch updated profile from DB if available
-        if (parsedUser.email) {
+            // Background server sync: fetch updated profile from DB if available
+            if (parsedUser.email) {
           fetch(`/api/user/profile?email=${encodeURIComponent(parsedUser.email)}`)
             .then((res) => res.json())
             .then((data) => {
@@ -399,12 +445,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .catch(() => {});
         }
       }
-    } catch (e) {
-      console.warn('LocalStorage error:', e);
-    } finally {
-      setIsLoaded(true);
+    } catch (err) {
+      console.warn('Error parsing savedUser:', err);
     }
-  }, []);
+  }
+} catch (e) {
+  console.warn('LocalStorage error:', e);
+} finally {
+  setIsLoaded(true);
+}
+}, []);
 
   // Save changes to localStorage only after initial load completed
   useEffect(() => {
@@ -438,6 +488,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoaded) return;
+    // CRITICAL: Never write demo user into maarif_current_user!
+    if (
+      isDemoModeActive() ||
+      isDemoMode ||
+      (currentUser && (currentUser.id?.startsWith('demo-') || (currentUser as any).isDemoUser || currentUser.email?.includes('demo.') || (currentUser as any).school?.includes('Atatürk Ortaokulu')))
+    ) {
+      return;
+    }
     try {
       if (currentUser) {
         localStorage.setItem('maarif_current_user', JSON.stringify(currentUser));
@@ -445,7 +503,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('maarif_current_user');
       }
     } catch (e) {}
-  }, [currentUser, isLoaded]);
+  }, [currentUser, isLoaded, isDemoMode]);
 
   const { data: session } = useSession();
 
