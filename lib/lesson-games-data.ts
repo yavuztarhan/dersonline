@@ -1,4 +1,5 @@
 import { PuzzleGameId } from '@/components/lesson-phases/puzzle-phase';
+import { getAllOutcomes, getOutcomeById } from '@/lib/curriculum-data';
 
 export interface LessonGameItem {
   id: string;
@@ -21,7 +22,7 @@ export interface LessonGameItem {
   isAvailable: boolean;
 }
 
-export const LESSON_GAMES: LessonGameItem[] = [
+export const CURATED_LESSON_GAMES: LessonGameItem[] = [
   // =========================================================================
   // 5. SINIF - MAT.5.3.1
   // =========================================================================
@@ -1424,8 +1425,234 @@ export const LESSON_GAMES: LessonGameItem[] = [
     difficulty: 'Tüm Seviyeler',
     gradient: 'from-purple-600 via-pink-700 to-rose-800',
     isAvailable: true
+  },
+
+  // =========================================================================
+  // 7. SINIF - MAT.7.1.3
+  // =========================================================================
+  {
+    id: 'mat-7-1-3-gokbeyfueltank',
+    gameType: 'gokbeyfueltank',
+    title: 'Gökbey Yakıt Tankı Doldurma-Boşaltma',
+    tagline: 'Hedef İtki Seviyesi & Valf Kontrolü',
+    description: 'Mevcut yakıt seviyesini hedef rasyonel seviyeye ulaştırmak için doğru kesir miktarını depoya ekle veya tahliye et!',
+    category: 'arcade',
+    categoryLabel: 'Uzay & İtki Simülasyonu',
+    categoryIcon: '🚀',
+    grade: 7,
+    gradeLabel: '7. Sınıf',
+    outcomeId: 'MAT.7.1.3',
+    outcomeCode: 'MAT.7.1.3',
+    outcomeTitle: 'Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri',
+    badge: '4 Görev • Akıllı İtki',
+    reward: '+120 XP & Yakıt Komutanı',
+    difficulty: 'Orta',
+    gradient: 'from-indigo-600 via-teal-600 to-slate-900',
+    isAvailable: true
+  },
+  {
+    id: 'mat-7-1-3-memory',
+    gameType: 'memorycards',
+    title: 'Rasyonel Toplama-Çıkarma 3D Hafıza Kartları',
+    tagline: 'Kavramsal Eşleştirme & Bellek',
+    description: 'Ortak payda, ters eleman, etkisiz eleman, çıkarma kuralı ve sayı doğrusu modelleme kavramlarını tanımlarıyla 3D kartları çevirerek eşleştirin.',
+    category: 'memory',
+    categoryLabel: '3D Hafıza Kartı',
+    categoryIcon: '🃏',
+    grade: 7,
+    gradeLabel: '7. Sınıf',
+    outcomeId: 'MAT.7.1.3',
+    outcomeCode: 'MAT.7.1.3',
+    outcomeTitle: 'Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri',
+    badge: '10 Kart • 3D Çevirme',
+    reward: '+80 XP & Rozet',
+    difficulty: 'Kolay',
+    gradient: 'from-cyan-600 via-teal-700 to-blue-900',
+    isAvailable: true
+  },
+  {
+    id: 'mat-7-1-3-matching',
+    gameType: 'matching',
+    title: 'Toplama-Çıkarma Kavram & Sembol Eşleştirme',
+    tagline: 'İşlem Özelliklerini Tanı',
+    description: 'Ortak payda, ters eleman, etkisiz eleman ve çıkarma kuralını sembolik gösterimleri ve tanımlarıyla eşleştirin.',
+    category: 'puzzle',
+    categoryLabel: 'Eşleştirme Bulmacası',
+    categoryIcon: '🧩',
+    grade: 7,
+    gradeLabel: '7. Sınıf',
+    outcomeId: 'MAT.7.1.3',
+    outcomeCode: 'MAT.7.1.3',
+    outcomeTitle: 'Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri',
+    badge: '5 Çift • Eşleştirme',
+    reward: '+60 XP & Rozet',
+    difficulty: 'Kolay',
+    gradient: 'from-teal-600 via-emerald-700 to-slate-900',
+    isAvailable: true
+  },
+  {
+    id: 'mat-7-1-3-wordsearch',
+    gameType: 'wordsearch',
+    title: 'Rasyonel Toplama-Çıkarma Kelime Avı',
+    tagline: 'Kavram Dedektifi',
+    description: 'İpuçlarını oku; payda, ekok, ters eleman, etkisiz eleman ve çıkarma terimlerini dinamik harf ızgarasında yakala!',
+    category: 'puzzle',
+    categoryLabel: 'Kelime Bulmacası',
+    categoryIcon: '🔍',
+    grade: 7,
+    gradeLabel: '7. Sınıf',
+    outcomeId: 'MAT.7.1.3',
+    outcomeCode: 'MAT.7.1.3',
+    outcomeTitle: 'Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri',
+    badge: '5 Soru • Dinamik Izgara',
+    reward: '+70 XP & Rozet',
+    difficulty: 'Orta',
+    gradient: 'from-blue-600 via-indigo-700 to-slate-900',
+    isAvailable: true
+  },
+  {
+    id: 'mat-7-1-3-truefalse',
+    gameType: 'truefalse',
+    title: 'Rasyonel İşlemler Hızlı D/Y Testi',
+    tagline: 'Hız ve Kavramsal Refleks',
+    description: 'Paylar toplanır mı? İki eksi artı yapar mı? Rasyonel işlem önermelerini hızlıca değerlendir, pedagojik açıklamalarla puanları topla!',
+    category: 'speed',
+    categoryLabel: 'Hız & Refleks',
+    categoryIcon: '⚡',
+    grade: 7,
+    gradeLabel: '7. Sınıf',
+    outcomeId: 'MAT.7.1.3',
+    outcomeCode: 'MAT.7.1.3',
+    outcomeTitle: 'Rasyonel Sayılarla Toplama ve Çıkarma İşlemleri',
+    badge: '6 Önerme • Süreli',
+    reward: '+100 XP',
+    difficulty: 'Tüm Seviyeler',
+    gradient: 'from-purple-600 via-pink-700 to-rose-800',
+    isAvailable: true
   }
 ];
+
+/**
+ * Otomatik Oyun Derleyici:
+ * CURATED_LESSON_GAMES içerisindeki özel tasarlanmış oyunları alır.
+ * Ayrıca müfredattaki (CURRICULUM_DATA) tüm kazanımları tarar;
+ * Eğer henüz manuel oyun eklenmemiş yeni bir kazanım varsa, o kazanımın
+ * 4 temel Maarif oyununu (Hafıza Kartları, Eşleştirme, Kelime Avı, Hızlı D/Y)
+ * otomatik olarak üretip kataloğa katar.
+ * Böylece yeni bir ders tasarlandığında manuel ekleme zorunluluğu ortadan kalkar.
+ */
+function buildAllLessonGames(): LessonGameItem[] {
+  const games: LessonGameItem[] = [...CURATED_LESSON_GAMES];
+  const registeredOutcomeIds = new Set(games.map((g) => g.outcomeId));
+
+  try {
+    const allOutcomes = getAllOutcomes();
+    allOutcomes.forEach((outcome) => {
+      // Eğer kazanımın puzzle aşaması tanımlıysa ve henüz oyun listesinde yoksa otomatik üret
+      if (outcome.phases?.puzzle && !registeredOutcomeIds.has(outcome.id)) {
+        const gradeNum: 5 | 6 | 7 =
+          outcome.gradeId === 'grade-7' || outcome.code.startsWith('MAT.7')
+            ? 7
+            : outcome.gradeId === 'grade-6' || outcome.code.startsWith('MAT.6')
+            ? 6
+            : 5;
+        const gradeLabel = `${gradeNum}. Sınıf`;
+
+        const autoGames: LessonGameItem[] = [
+          {
+            id: `${outcome.id.toLowerCase().replace(/[^a-z0-9]/g, '-')}-memory`,
+            gameType: 'memorycards',
+            title: `${outcome.shortTitle} 3D Hafıza Kartları`,
+            tagline: 'Kavramsal Eşleştirme & Bellek',
+            description: `${outcome.title} kavram ve tanımlarını 3D kartları çevirerek eşleştirin.`,
+            category: 'memory',
+            categoryLabel: '3D Hafıza Kartı',
+            categoryIcon: '🃏',
+            grade: gradeNum,
+            gradeLabel,
+            outcomeId: outcome.id,
+            outcomeCode: outcome.code,
+            outcomeTitle: outcome.title,
+            badge: `${outcome.phases.puzzle.items?.length ? outcome.phases.puzzle.items.length * 2 : 10} Kart • 3D Çevirme`,
+            reward: '+80 XP & Rozet',
+            difficulty: 'Kolay',
+            gradient: 'from-cyan-600 via-teal-700 to-blue-900',
+            isAvailable: true
+          },
+          {
+            id: `${outcome.id.toLowerCase().replace(/[^a-z0-9]/g, '-')}-matching`,
+            gameType: 'matching',
+            title: `${outcome.shortTitle} Kavram & Sembol Eşleştirme`,
+            tagline: 'Kavramları Tanı & Eşleştir',
+            description: `${outcome.shortTitle} kavramlarını sembolik gösterimleri ve tanımlarıyla eşleştirin.`,
+            category: 'puzzle',
+            categoryLabel: 'Eşleştirme Bulmacası',
+            categoryIcon: '🧩',
+            grade: gradeNum,
+            gradeLabel,
+            outcomeId: outcome.id,
+            outcomeCode: outcome.code,
+            outcomeTitle: outcome.title,
+            badge: `${outcome.phases.puzzle.items?.length || 4} Çift • Eşleştirme`,
+            reward: '+50 XP & Rozet',
+            difficulty: 'Kolay',
+            gradient: 'from-teal-600 via-emerald-700 to-slate-900',
+            isAvailable: true
+          },
+          {
+            id: `${outcome.id.toLowerCase().replace(/[^a-z0-9]/g, '-')}-wordsearch`,
+            gameType: 'wordsearch',
+            title: `${outcome.shortTitle} Kelime Avı`,
+            tagline: 'Kavram Avcısı',
+            description: `${outcome.shortTitle} ile ilgili temel terimleri dinamik harf ızgarasında yakalayın!`,
+            category: 'puzzle',
+            categoryLabel: 'Kelime Bulmacası',
+            categoryIcon: '🔍',
+            grade: gradeNum,
+            gradeLabel,
+            outcomeId: outcome.id,
+            outcomeCode: outcome.code,
+            outcomeTitle: outcome.title,
+            badge: `${outcome.phases.puzzle.items?.length || 5} Terim • Harf Avı`,
+            reward: '+60 XP & Rozet',
+            difficulty: 'Orta',
+            gradient: 'from-blue-600 via-indigo-700 to-slate-900',
+            isAvailable: true
+          },
+          {
+            id: `${outcome.id.toLowerCase().replace(/[^a-z0-9]/g, '-')}-truefalse`,
+            gameType: 'truefalse',
+            title: `${outcome.shortTitle} Hızlı D/Y Testi`,
+            tagline: 'Hız ve Kavramsal Refleks',
+            description: `${outcome.shortTitle} konusundaki önermeleri hızlıca değerlendirip puanları toplayın!`,
+            category: 'speed',
+            categoryLabel: 'Hız & Refleks',
+            categoryIcon: '⚡',
+            grade: gradeNum,
+            gradeLabel,
+            outcomeId: outcome.id,
+            outcomeCode: outcome.code,
+            outcomeTitle: outcome.title,
+            badge: '6 Önerme • Süreli',
+            reward: '+100 XP',
+            difficulty: 'Tüm Seviyeler',
+            gradient: 'from-purple-600 via-pink-700 to-rose-800',
+            isAvailable: true
+          }
+        ];
+
+        games.push(...autoGames);
+        registeredOutcomeIds.add(outcome.id);
+      }
+    });
+  } catch (err) {
+    console.warn('Otomatik ders oyunları üretilirken hata oluştu:', err);
+  }
+
+  return games;
+}
+
+export const LESSON_GAMES: LessonGameItem[] = buildAllLessonGames();
 
 export interface OutcomeFilterOption {
   id: string;
@@ -1435,33 +1662,55 @@ export interface OutcomeFilterOption {
   count: number;
 }
 
-export const OUTCOME_FILTER_OPTIONS: OutcomeFilterOption[] = [
-  { id: 'all', code: 'TÜMÜ', shortTitle: 'Tüm Kazanımlar', grade: 5, count: LESSON_GAMES.length },
-  // 5. Sınıf
-  { id: 'MAT.5.3.1', code: 'MAT.5.3.1', shortTitle: 'Doğru, Doğru Parçası ve Işın', grade: 5, count: 4 },
-  { id: 'MAT.5.3.2', code: 'MAT.5.3.2', shortTitle: 'Temel Çizim Çıkarımları & İnşa', grade: 5, count: 5 },
-  { id: 'MAT.5.3.3', code: 'MAT.5.3.3', shortTitle: 'Açı Ölçme & Açı Radarı', grade: 5, count: 5 },
-  { id: 'MAT.5.3.4', code: 'MAT.5.3.4', shortTitle: 'Doğrular ve Açılar & Kavşak Mimarı', grade: 5, count: 5 },
-  // 6. Sınıf
-  { id: 'MAT.6.1.1', code: 'MAT.6.1.1', shortTitle: 'Çarpanlar ve Katlar & Kolileme', grade: 6, count: 7 },
-  { id: 'MAT.6.1.2', code: 'MAT.6.1.2', shortTitle: 'Bölünebilme Kriterleri & Lazer Tasnifi', grade: 6, count: 7 },
-  { id: 'MAT.6.1.3', code: 'MAT.6.1.3', shortTitle: 'Asal Sayılar & Eratosthenes Parkuru', grade: 6, count: 7 },
-  { id: 'MAT.6.1.4', code: 'MAT.6.1.4', shortTitle: 'Ortak Kat & Ortak Bölen', grade: 6, count: 7 },
-  // 7. Sınıf
-  { id: 'MAT.7.1.1', code: 'MAT.7.1.1', shortTitle: 'Tam Sayılardan Rasyonellere & Küme Ayıklama', grade: 7, count: 7 },
-  { id: 'MAT.7.1.1-2', code: 'MAT.7.1.1-2', shortTitle: 'Sayı Doğrusunda Derinleşme & Metro Hattı', grade: 7, count: 7 },
-  { id: 'MAT.7.1.2', code: 'MAT.7.1.2', shortTitle: 'Rasyonel Karşılaştırma & Denge Terazisi', grade: 7, count: 7 }
-];
+/**
+ * Filtre Menüsü Seçeneklerini Otomatik Üretir:
+ * LESSON_GAMES dizisindeki oyunların kazanımlarını ve oyun sayılarını
+ * dinamik olarak gruplayıp listeler.
+ */
+function buildOutcomeFilterOptions(): OutcomeFilterOption[] {
+  const options: OutcomeFilterOption[] = [
+    { id: 'all', code: 'TÜMÜ', shortTitle: 'Tüm Kazanımlar', grade: 5, count: LESSON_GAMES.length }
+  ];
+
+  const outcomeOrder: string[] = [];
+  const countMap: Record<string, number> = {};
+  const gameMap: Record<string, LessonGameItem> = {};
+
+  LESSON_GAMES.forEach((game) => {
+    if (!countMap[game.outcomeId]) {
+      outcomeOrder.push(game.outcomeId);
+      countMap[game.outcomeId] = 0;
+      gameMap[game.outcomeId] = game;
+    }
+    countMap[game.outcomeId]++;
+  });
+
+  outcomeOrder.forEach((outcomeId) => {
+    const firstGame = gameMap[outcomeId];
+    const outcome = getOutcomeById(outcomeId);
+    options.push({
+      id: outcomeId,
+      code: firstGame.outcomeCode,
+      shortTitle: outcome?.shortTitle || firstGame.outcomeTitle,
+      grade: firstGame.grade,
+      count: countMap[outcomeId]
+    });
+  });
+
+  return options;
+}
+
+export const OUTCOME_FILTER_OPTIONS: OutcomeFilterOption[] = buildOutcomeFilterOptions();
 
 export function getSystemGameStatistics() {
-  const totalLessonGames = LESSON_GAMES.length; // 68
-  const standaloneGamesCount = 2; // Matematik Çarkı + Çarpım Tablosu (var olan ana genel oyunlar)
-  const totalGamesCount = totalLessonGames + standaloneGamesCount; // 70
-  const uniqueOutcomesCount = 11; // 11 tam akış kazanımı
+  const totalLessonGames = LESSON_GAMES.length;
+  const standaloneGamesCount = 3; // Matematik Çarkı + Çarpım Tablosu + 3D Hafıza Kartları
+  const totalGamesCount = totalLessonGames + standaloneGamesCount;
+  const uniqueOutcomesCount = new Set(LESSON_GAMES.map((g) => g.outcomeId)).size;
 
-  const grade5Count = LESSON_GAMES.filter(g => g.grade === 5).length; // 19
-  const grade6Count = LESSON_GAMES.filter(g => g.grade === 6).length; // 28
-  const grade7Count = LESSON_GAMES.filter(g => g.grade === 7).length; // 21
+  const grade5Count = LESSON_GAMES.filter((g) => g.grade === 5).length;
+  const grade6Count = LESSON_GAMES.filter((g) => g.grade === 6).length;
+  const grade7Count = LESSON_GAMES.filter((g) => g.grade === 7).length;
 
   return {
     totalGames: totalGamesCount,
@@ -1471,7 +1720,7 @@ export function getSystemGameStatistics() {
     grade5Games: grade5Count,
     grade6Games: grade6Count,
     grade7Games: grade7Count,
-    totalPointsAvailable: 8650,
-    totalBadgesCount: 38
+    totalPointsAvailable: totalGamesCount * 120,
+    totalBadgesCount: uniqueOutcomesCount * 3
   };
 }
