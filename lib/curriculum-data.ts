@@ -2795,7 +2795,7 @@ export const CURRICULUM_DATA: Grade[] = [
           "id": "unit-7-sayilar",
           "subjectId": "mat-7",
           "unitNumber": 1,
-          "title": "1. Ünite: Sayılar ve Nicelikler (1)",
+          "title": "1. Ünite: Sayılar ve Nicelikler",
           "description": "Tam sayılar, rasyonel sayılar ve farklı temsilleri, sayı doğrusu ve mutlak değer modelleri.",
           "icon": "Calculator",
           "themeColor": "#7c3aed",
@@ -3192,6 +3192,403 @@ export const CURRICULUM_DATA: Grade[] = [
                                                                                           ],
                                                                                           "correctOptionIndex": 3,
                                                                                           "explanation": "-2 tam sayısına olan uzaklıklar |-2 - (-x)| ile hesaplanır:\nPanel A: |-2 - (-5/3)| = |-1/3| ≈ 0.33\nPanel B: |-2 - (-7/4)| = |-1/4| = 0.25\nPanel C: |-2 - (-3/2)| = |-1/2| = 0.50\nPanel D: |-2 - (-11/6)| = |-1/6| ≈ 0.166. En küçük fark Panel D'dedir, dolayısıyla -2'ye en yakın panel D'dir.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                }
+                                                                      ]
+                                                            }
+                                                  }
+                                        }
+                              ]
+                    },
+                    {
+                              "id": "topic-7-rasyonel-2",
+                              "unitId": "unit-7-sayilar",
+                              "title": "Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi",
+                              "description": "Bileşik kesirden sayı doğrusuna konumlandırma, iki rasyonel sayı arasında yeni sayılar bulma ve mutlak değerle mesafe analizi.",
+                              "outcomes": [
+                                        {
+                                                  "id": "MAT.7.1.1-2",
+                                                  "code": "MAT.7.1.1",
+                                                  "title": "Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi ve Gösterimi",
+                                                  "shortTitle": "Rasyonel Sayıların Sayı Doğrusunda Gösterimi",
+                                                  "description": "Gerçek yaşam ya da matematiksel durumlarda doğal sayı, tam sayı ve rasyonel sayıları yorumlayabilme; bileşik kesirleri tam sayılı kesre dönüştürerek sayı doğrusunda ardışık iki tam sayı arasına hassas yerleştirme, iki rasyonel sayı arasında genişletme yoluyla sayılar olduğunu ve mutlak değerin başlangıç noktasına (0) olan yönsüz gerçek uzaklık olduğunu açıklayabilme.",
+                                                  "gradeId": "grade-7",
+                                                  "subjectId": "mat-7",
+                                                  "unitId": "unit-7-sayilar",
+                                                  "topicId": "topic-7-rasyonel-2",
+                                                  "durationMinutes": 40,
+                                                  "pedagogyGuide": {
+                                                            "maarifSDBs": [
+                                                                      "SDB1.2: Kendini Düzenleme / Öz Düzenleme (Bileşik kesirleri tam sayılı kesre dönüştürürken ardışık tam sayıları ve payda dilimlerini sistematik kontrol etme)",
+                                                                      "SDB2.2: İş Birliği ve Akran Öğrenmesi (Akıllı parkın damlama sulama sensörlerindeki su basıncı ve rezerv sapmalarını akranlarıyla tartışarak ortak çözüm üretme)",
+                                                                      "SDB3.3: Matematiksel Muhakeme ve Problem Çözme (İki rasyonel sayı arasında kesirleri genişleterek yeni rasyonel sayılar bulunabileceğini açıklama ve mutlak değerle sıfıra olan mesafeyi gerekçelendirme)"
+                                                            ],
+                                                            "processComponents": [
+                                                                      "a) Bileşik kesirleri tam sayılı kesre dönüştürerek sayı doğrusundaki yerini inceler.",
+                                                                      "b) Sayı doğrusu üzerinde iki rasyonel sayı arasında kesirleri genişleterek yeni rasyonel sayılar olduğunu açıklar.",
+                                                                      "c) Mutlak değer kavramını sayı doğrusunda başlangıç noktasına (0) olan uzaklık olarak modeller ve gerçek hayat durumlarında sapma analizinde kullanır."
+                                                            ],
+                                                            "learningGoals": [
+                                                                      "Bileşik kesirleri tam sayılı kesre çevirerek hangi iki ardışık tam sayı arasında yer aldığını belirler.",
+                                                                      "Negatif rasyonel sayıların sayı doğrusunda sıfırdan sola doğru nasıl yerleştirildiğini ve paydanın parçalama, payın ise adım sayısı olduğunu kavrar.",
+                                                                      "Herhangi iki rasyonel sayı arasında genişletme ve sadeleştirme yöntemleriyle yeni rasyonel sayılar bularak aralıkları daha ince dilimlemeyi kavrar.",
+                                                                      "Mutlak değerin (|x|) bir sayının sıfır referans noktasına olan uzaklığı olduğunu ve asla negatif olamayacağını gerçek yaşam durumlarıyla yorumlar."
+                                                            ],
+                                                            "teacherTips": [
+                                                                      "Derse 15 Temmuz Demokrasi Parkı akıllı su deposu ve damlama sulama sensörleri senaryosu ile başlayınız; su rezervindeki fazlalığı pozitif (+), açığı ise negatif (-) değerlerle göstererek sıfır denge noktasını vurgulayınız.",
+                                                                      "Bileşik kesirlerin sayı doğrusunda yerini bulurken mutlaka önce tam sayılı kesre dönüştürme yöntemini uygulayınız; -11/4 = -2 tam 3/4 olduğunu ve -2 ile -3 arasında yer aldığını tahtada modelleyiniz.",
+                                                                      "İki rasyonel sayı arasındaki sonsuz noktayı 'Mikroskop ve Genişletme' tekniğiyle tahtada gösteriniz; 1/3 ile 2/3 arasındaki boşluğu paydayı 6, 12, 60 yaparak büyütünüz ve öğrencilere 'Daha ne kadar bölebiliriz?' sorusunu yöneltiniz.",
+                                                                      "Mutlak değer lazer metresini kullanırken uzaklığın negatif olamayacağını 'Mesafe daima pozitif bir büyüklüktür' ilkesiyle pekiştiriniz."
+                                                            ],
+                                                            "misconceptions": [
+                                                                      "Bileşik kesirleri tam sayılı kesre dönüştürmeden sayı doğrusunda rastgele yerleştirmek veya negatif kesirlerde yönü sağa doğru saymak (Örn: -7/3 sayısını -1 ile -2 arasında zannetmek).",
+                                                                      "İki rasyonel sayı arasında sonlu sayıda sayı olduğunu düşünmek (Örn: 1/4 ile 2/4 arasında başka rasyonel sayı yoktur yanılgısı; oysa 3/8, 5/16 gibi sonsuz sayı vardır).",
+                                                                      "Mutlak değerin içindeki negatif işaretin her zaman artıya dönüştüğünü ezberleyip sıfıra olan mesafe anlamını kavrayamamak.",
+                                                                      "Ondalık gösterim ile rasyonel sayıların farklı varlıklar olduğunu düşünmek (Örn: 0,75 ile 3/4'ün sayı doğrusunda aynı noktaya karşılık geldiğini görememek)."
+                                                            ],
+                                                            "keyQuestions": [
+                                                                      "Akıllı parkın ana deposundaki -11/4 ton su rezerv açığı ile +11/4 ton su rezerv fazlasının sıfır noktasına olan uzaklıkları neden birbirine eşittir?",
+                                                                      "1/3 bar ile 2/3 bar su basıncı arasına yeni bir sensör yerleştirmek istersek araya kaç farklı rasyonel değerde sensör koyabiliriz? Sınırı var mıdır?",
+                                                                      "Bir negatif bileşik kesrin sayı doğrusundaki yerini belirlerken neden sıfırdan sola doğru adım atarız?"
+                                                            ]
+                                                  },
+                                                  "phases": {
+                                                            "story": {
+                                                                      "title": "Akıllı Parkın Su Deposu ve Tasarruf Sensörleri",
+                                                                      "character": {
+                                                                                "name": "Park Mühendisi Elif & Caner",
+                                                                                "role": "Akıllı Şehir & Su Tasarrufu Uzmanları",
+                                                                                "avatar": "🌳"
+                                                                      },
+                                                                      "scenario": "15 Temmuz Şehitleri anısına kurulan akıllı millet bahçesinde damlama sulama ve yağmur suyu hasadı sistemi devreye alınmıştır. Akıllı depo ekranında su seviyesi '0' referans dengesine göre takip edilmektedir: Depodaki su seviyesi hedefin üzerindeyse pozitif rasyonel sayılarla (+7/2 ton, +1,75 ton), kuraklık veya aşırı tüketim nedeniyle hedefin altındaysa negatif rasyonel sayılarla (-11/4 ton, -2,5 ton) kaydedilmektedir.",
+                                                                      "realLifeConnection": "Finansal okuryazarlık (OB3), görsel okuryazarlık (OB4), tasarruf (D17), akıllı tarım ve su kaynaklarının korunması alanlarında rasyonel sayıların sayı doğrusunda temsili ve sapma analizi kritik rol oynar.",
+                                                                      "reflectionQuestion": "Akıllı deponun rezervindeki -11/4 tonluk açık ile +11/4 tonluk fazlalığın sıfır dengesine olan uzaklığı neden aynıdır? İki basınç sensörü arasına kaç farklı ara değer yerleştirilebilir?",
+                                                                      "keyTakeaway": "Her rasyonel sayı sayı doğrusunda tek bir noktaya karşılık gelir; iki rasyonel sayı arasında genişletme yapılarak yeni rasyonel sayılar bulunabilir. Mutlak değer, sayının başlangıç noktasına (0) olan yönsüz gerçek uzaklığıdır.",
+                                                                      "pages": [
+                                                                                {
+                                                                                          "id": "p7-w2-1",
+                                                                                          "pageNumber": 1,
+                                                                                          "chapterTitle": "1. Bölüm: 15 Temmuz Demokrasi Parkı ve Akıllı Su Deposu",
+                                                                                          "conceptTitle": "Sıfır Denge Çizgisi ve Rasyonel Rezerv Göstergeleri",
+                                                                                          "conceptBadge": "Referans Noktası (0)",
+                                                                                          "symbolicCode": "Rezerv Fazlası: +7/2 ton | Rezerv Açığı: -11/4 ton | Hedef Denge: 0",
+                                                                                          "narrativeText": "Güneşli bir sabah Elif Mühendis ve Caner, 15 Temmuz Şehitleri Millet Bahçesi'nin akıllı sulama merkezine ulaştılar. Ana kontrol ekranında dijital göstergeler yanıp sönüyordu. Elif ekrandaki sayı doğrusunu gösterdi: \"Caner bak, merkezdeki 0 çizgisi bizim optimum su dengemiz. Sağdaki yeşil bölge yağmur suyuyla biriken rezerv fazlasını (+7/2 ton), soldaki kırmızı bölge ise sulama nedeniyle oluşan rezerv açığını (-11/4 ton) gösteriyor.\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Caner",
+                                                                                                    "text": "Peki Elif, -11/4 tonluk açık sayı doğrusunda tam olarak nerede duruyor? -1 ile -2 arasında mı, yoksa daha mı solda?"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "smart-park-water-tank",
+                                                                                                    "caption": "Akıllı park su deposu paneli: 0 noktası referans denge çizgisi, sağ taraf pozitif rezerv fazlası (+7/2 ton), sol taraf negatif rezerv açığı (-11/4 ton)."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Su deposu dengesini inceleyin ve sıfır referans noktasını kalibre edin!",
+                                                                                                    "actionLabel": "Sıfır Dengesini Kalibre Et 💧",
+                                                                                                    "feedbackRevealed": "Kalibrasyon tamamlandı! 0 referans çizgisi kilitlendi. Rezerv hareketleri sayı doğrusuyla izleniyor."
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 1: Gerçek yaşam durumlarında sıfır noktası kabul edilen denge veya başlangıç seviyesidir. Sağındaki rasyonel sayılar pozitif fazlalıkları, solundaki rasyonel sayılar ise negatif açıkları temsil eder."
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-w2-2",
+                                                                                          "pageNumber": 2,
+                                                                                          "chapterTitle": "2. Bölüm: Bileşik Kesirden Sayı Doğrusuna & Hassas Konumlandırma",
+                                                                                          "conceptTitle": "Bileşik Kesri Tam Sayılı Kesre Dönüştürme ve Aralığı Dilimleme",
+                                                                                          "conceptBadge": "Bileşik ➔ Tam Sayılı",
+                                                                                          "symbolicCode": "-11/4 = -(2 tam 3/4) ⟹ -2 ile -3 arasında, 4 eşit parçadan 3. adım",
+                                                                                          "narrativeText": "Elif Mühendis tabletini çıkardı ve -11/4 kesrini açtı: \"11'i 4'e böldüğümüzde 2 tam elde ederiz ve 3 kalır. Yani -11/4 = -(2 tam 3/4)'tür. Sayı doğrusunda sıfırdan sola doğru 2 tam birim gideriz. Ardından gelen -2 ile -3 arasındaki aralığı payda kadar (4 eşit parçaya) böleriz ve sola doğru 3 adım ilerleriz! İşte rezerv açığımız tam olarak -2 ile -3 arasındadır!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Elif Mühendis",
+                                                                                                    "text": "Unutma Caner! Negatif kesirlerde adımlarımızı her zaman sıfırdan sola doğru sayarız. -2 tam 3/4, -2'nin solunda, -3'e daha yakındır!"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "fraction-number-line-step",
+                                                                                                    "caption": "Sayı doğrusunda -2 ile -3 arası 4 eşit parçaya bölünmüş, -2'den sola 3. parçada -11/4 (-2 tam 3/4) noktası parıldıyor."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "-11/4 kesrini tam sayılı kesre çevirerek sayı doğrusundaki doğru aralığı işaretleyin!",
+                                                                                                    "actionLabel": "Aralığı Böl ve Konumla 📐",
+                                                                                                    "feedbackRevealed": "-11/4 = -2 tam 3/4. Nokta -2 ile -3 arasında, -3'e daha yakın konumda başarıyla doğrulandı!"
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 2: Bileşik rasyonel sayıların sayı doğrusundaki yerini belirlemek için önce tam sayılı kesre dönüştürülür. Ardışık iki tam sayı arası payda kadar eşit parçaya ayrılır, pay kadar adım atılır."
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-w2-3",
+                                                                                          "pageNumber": 3,
+                                                                                          "chapterTitle": "3. Bölüm: Rasyonel Sayıların Yoğunluğu ve Sonsuz Nokta Mikroskobu",
+                                                                                          "conceptTitle": "İki Rasyonel Sayı Arasında Sonsuz Sayıda Rasyonel Sayı Vardır",
+                                                                                          "conceptBadge": "Yoğunluk Özelliği",
+                                                                                          "symbolicCode": "1/3 ile 2/3 arası ⟹ 2/6 ile 4/6 arası ⟹ Ortada 3/6 = 1/2",
+                                                                                          "narrativeText": "Caner su borularındaki basınç sensörlerini kontrol ederken sordu: \"Elif, ana hatta 1/3 bar ile 2/3 bar basınç arasında çalışan iki sensörümüz var. Bu iki sensör arasına daha hassas yeni bir debi sensörü yerleştirebilir miyiz? Aralarında başka rasyonel sayı var mıdır?\" Elif mikroskop simülasyonunu açtı: \"Elbette Caner! Kesirleri 2 ile genişletelim: 1/3 = 2/6 ve 2/3 = 4/6 olur. Tam ortada 3/6 yani 1/2 vardır. 10 ile genişletirsek araya 9 sayı, 1000 ile genişletirsek 999 sayı sığdırabiliriz! İki rasyonel sayı arasında sonsuz çoklukta nokta vardır!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Caner",
+                                                                                                    "text": "İnanılmaz! Yani sayı doğrusundaki iki minicik noktanın arasına bile sonsuz sayıda su sensörü sığdırabiliriz!"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "microscope-density",
+                                                                                                    "caption": "Sayı doğrusunda 1/3 ile 2/3 aralığı mikroskop altında büyütülüyor: Genişletme ile aralıkta sonsuz yeni rasyonel noktalar açılıyor."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Paydaları genişleterek 1/3 ile 2/3 arasındaki gizli rasyonel sayıları mikroskopla açığa çıkarın!",
+                                                                                                    "actionLabel": "Mikroskopla Genişlet 🔬",
+                                                                                                    "feedbackRevealed": "2/6 < 3/6 < 4/6 ⟹ 20/60 < 25/60 < 40/60... İki rasyonel sayı arasında sonsuz nokta kanıtlandı!"
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 3: Rasyonel sayılar kümesi sayı doğrusunda 'yoğundur' (density property). Herhangi iki rasyonel sayı arasında sonsuz çoklukta rasyonel sayı bulunur; paydalar genişletilerek bu sayılar kolaylıkla üretilir."
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-w2-4",
+                                                                                          "pageNumber": 4,
+                                                                                          "chapterTitle": "4. Bölüm: Mutlak Değer Lazeri & Tolerans Analizi",
+                                                                                          "conceptTitle": "Mutlak Değer: Yönsüz Gerçek Uzaklık ve Enerji Dengesi",
+                                                                                          "conceptBadge": "Mutlak Değer Mesafe Lazeri",
+                                                                                          "symbolicCode": "|-11/4| = |+11/4| = 11/4 = 2,75 birim uzaklık",
+                                                                                          "narrativeText": "Günün sonunda parkın haftalık su tasarruf raporu hazırlandı. Doğu deposunda +11/4 ton su fazlası varken, Batı deposunda -11/4 ton su açığı oluşmuştu. Caner sordu: \"Hangi depo optimum sıfır hedefinden daha fazla saptı?\" Elif lazerli mesafe ölçeri açtı: \"İki deponun da sıfıra olan mutlak uzaklığı 11/4 tondur (2,75 ton). Mutlak değer bize yönü değil, sıfıra olan fiziksel mesafeyi söyler: |-11/4| = |+11/4| = 2,75 birim. Her iki depo da sıfır hedefinden eşit miktarda sapmıştır!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Elif Mühendis",
+                                                                                                    "text": "İşte bu yüzden tolerans ve hata analizlerinde daima mutlak değer kullanırız. İşaretler yönü, mutlak değer ise sapmanın gerçek büyüklüğünü bildirir."
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "park-laser-tolerance",
+                                                                                                    "caption": "Sayı doğrusunda 0 merkezinden sağa (+11/4) ve sola (-11/4) uzanan çift yönlü lazer metre: İki mesafenin de 2,75 birim olduğu ölçülüyor."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Lazer metresini ateşleyerek her iki deponun sıfıra olan mutlak mesafesini ölçün ve raporu onaylayın!",
+                                                                                                    "actionLabel": "Lazer Metresiyle Ölç ⚡",
+                                                                                                    "feedbackRevealed": "|-11/4| = |+11/4| = 2,75 ton. Sapma büyüklükleri eşit olarak doğrulandı. Akıllı park tasarruf karnesi hazır!"
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 4: Bir rasyonel sayının mutlak değeri, o sayının sayı doğrusunda başlangıç noktasına (0) olan uzaklığıdır ve daima sıfır veya pozitiftir: |a/b| ≥ 0."
+                                                                                }
+                                                                      ]
+                                                            },
+                                                            "lab": {
+                                                                      "title": "Dinamik Rasyonel Cetvel ve Yoğunluk Laboratuvarı",
+                                                                      "toolType": "rational-ruler-density-bench",
+                                                                      "instructions": "Bileşik kesir konumlayıcı, denk temsiller & sonsuz nokta mikroskobu ve mutlak değer mesafe lazeri ile rasyonel sayıların sayı doğrusundaki derinliklerini interaktif olarak keşfedin.",
+                                                                      "taskGoal": "-11/4 kesrini sayı doğrusunda -2 ile -3 arasında dilimleyin, 1/3 ile 2/3 arasındaki sonsuz noktaları mikroskopla büyütün ve |-7/2| = |+7/2| eşitliğini lazer metresiyle kanıtlayın.",
+                                                                      "interactiveTips": [
+                                                                                "Bileşik kesir modunda negatif kesirlerin sıfırdan sola doğru adımlandığını gözlemleyiniz.",
+                                                                                "Mikroskop modunda yakınlaştırma çarpanını artırarak aralıktaki yeni noktaların nasıl türediğini inceleyiniz.",
+                                                                                "Lazer metresinde sıfır noktasına olan uzaklığın her zaman pozitif bir büyüklük olduğunu test ediniz."
+                                                                      ]
+                                                            },
+                                                            "puzzle": {
+                                                                      "title": "Rasyonel Sayılar Sayı Doğrusu ve Yoğunluk İstasyonu",
+                                                                      "instructions": "Öğrendiğiniz kazanımları pekiştirmek için 3 özel oyundan birini seçiniz: Rasyonel Metro Hattı (Durak Eşleme), Mutlak Terazi (Enerji Dengeleme Arcade) veya Sayı Doğrusunda Mayın Temizleme (Hassas Konum Bulmaca).",
+                                                                      "items": [
+                                                                                {
+                                                                                          "id": "p1",
+                                                                                          "concept": "Bileşik Kesirden Tam Sayılıya",
+                                                                                          "symbol": "a/b = c tam d/b",
+                                                                                          "definition": "Bileşik kesirleri tam sayılı kesre çevirerek sayı doğrusundaki ardışık iki tam sayı aralığını belirleme yöntemi.",
+                                                                                          "visualType": "fraction"
+                                                                                },
+                                                                                {
+                                                                                          "id": "p2",
+                                                                                          "concept": "Sayı Doğrusunda Aralık Dilimleme",
+                                                                                          "symbol": "Payda = Parça, Pay = Adım",
+                                                                                          "definition": "Ardışık iki tam sayının arasını payda kadar eşit parçaya bölüp pay kadar sıfırdan itibaren ilerleme kuralı.",
+                                                                                          "visualType": "ruler"
+                                                                                },
+                                                                                {
+                                                                                          "id": "p3",
+                                                                                          "concept": "Aralığı Genişletme & Yeni Rasyonel Sayılar",
+                                                                                          "symbol": "Genişletme & Sadeleştirme",
+                                                                                          "definition": "Herhangi iki rasyonel sayı arasında kesirleri genişleterek yeni rasyonel sayılar bulma kuralı.",
+                                                                                          "visualType": "microscope"
+                                                                                },
+                                                                                {
+                                                                                          "id": "p4",
+                                                                                          "concept": "Mutlak Değer Mesafe Lazeri",
+                                                                                          "symbol": "|x - 0| = |x| ≥ 0",
+                                                                                          "definition": "Bir rasyonel sayının sayı doğrusunda başlangıç noktasına (0) olan yönsüz gerçek geometrik uzaklığı.",
+                                                                                          "visualType": "distance"
+                                                                                }
+                                                                      ]
+                                                            },
+                                                            "assessment": {
+                                                                      "title": "Değerlendirme Testi: Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi",
+                                                                      "instructions": "Aşağıdaki 14 soruyu dikkatle okuyunuz. Sorular 8 temel kavrama ve 6 günlük hayat / 15 Temmuz Demokrasi Parkı bağlam temelli sorudan oluşmaktadır.",
+                                                                      "reflectionPrompt": "Bugün 15 Temmuz Demokrasi Parkı su deposu ve sensörleri senaryosunda rasyonel sayıları incelerken, bileşik kesirlerin sayı doğrusundaki yerini bulma ve iki rasyonel sayı arasındaki sonsuz nokta özelliği (yoğunluk) size matematiğin hassasiyeti hakkında ne düşündürdü? Günlük hayatta tolerans ve sapmaları mutlak değerle ölçmek neden önemlidir?",
+                                                                      "questions": [
+                                                                                {
+                                                                                          "id": "q1",
+                                                                                          "questionText": "Bileşik kesir olan -13/4 sayısı tam sayılı kesre dönüştürüldüğünde sayı doğrusunda hangi ardışık iki tam sayı arasında yer alır?",
+                                                                                          "options": [
+                                                                                                    "-2 ile -3",
+                                                                                                    "-3 ile -4",
+                                                                                                    "-4 ile -5",
+                                                                                                    "-1 ile -2"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "-13/4 = -(3 tam 1/4)'tür. Sıfırdan sola doğru 3 tam birim geçildikten sonra -3 ile -4 arasındaki aralığa gelinir. Dolayısıyla sayı -3 ile -4 arasındadır.",
+                                                                                          "bloomLevel": "Bilgi"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q2",
+                                                                                          "questionText": "Sayı doğrusunda -3 ile -4 arası 5 eşit parçaya bölünmüştür. -3'ten sola doğru 2. bölme noktasına karşılık gelen rasyonel sayı hangisidir?",
+                                                                                          "options": [
+                                                                                                    "-17/5",
+                                                                                                    "-16/5",
+                                                                                                    "-18/5",
+                                                                                                    "-14/5"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "-3 tam sayısından sola 2 parça gidildiğinde sayı: -3 tam 2/5 olur. Bileşik kesre çevirirsek: -((3 × 5 + 2) / 5) = -17/5 bulunur.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q3",
+                                                                                          "questionText": "1/4 ile 1/2 rasyonel sayıları arasında yer alan bir rasyonel sayı bulmak isteyen bir öğrenci hangi sayıyı seçebilir?",
+                                                                                          "options": [
+                                                                                                    "1/8",
+                                                                                                    "3/8",
+                                                                                                    "5/8",
+                                                                                                    "7/8"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Paydaları 8'de eşitleyelim: 1/4 = 2/8 ve 1/2 = 4/8 olur. 2/8 ile 4/8 arasında 3/8 sayısı yer alır.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                 {
+                                                                                          "id": "q4",
+                                                                                          "questionText": "Sayı doğrusunda 2/5 ile 3/5 rasyonel sayıları arasına yeni bir rasyonel sayı yerleştirmek isteyen Caner, hangi işlemi yaparak bu aralıkta bir sayı bulabilir?",
+                                                                                          "options": [
+                                                                                                    "Kesirleri 2 ile genişleterek 4/10 ve 6/10 yapar, aradaki 5/10 sayısını bulur",
+                                                                                                    "Pay ile paydayı birbiriyle toplar",
+                                                                                                    "İki kesri birbirinden çıkarır",
+                                                                                                    "İki kesir arasına başka rasyonel sayı yerleştirilemez"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "2/5 ve 3/5 kesirleri örneğin 2 ile genişletildiğinde 4/10 ve 6/10 elde edilir. Bu iki sayı arasında 5/10 (sadeleşirse 1/2) rasyonel sayısı yer alır. Kesirler genişletilerek araya istenildiği kadar rasyonel sayı yerleştirilebilir.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q5",
+                                                                                          "questionText": "|-9/4| ifadesinin değeri sayı doğrusunda hangi noktaya olan uzaklığı belirtir ve değeri kaçtır?",
+                                                                                          "options": [
+                                                                                                    "0 noktasına olan uzaklıktır ve 9/4'tür",
+                                                                                                    "-1 noktasına olan uzaklıktır ve -9/4'tür",
+                                                                                                    "1 noktasına olan uzaklıktır ve 9/4'tür",
+                                                                                                    "0 noktasına olan uzaklıktır ve -9/4'tür"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Mutlak değer daima başlangıç (0) noktasına olan uzaklığı gösterir ve uzaklık negatif olamayacağı için |-9/4| = 9/4 = 2,25 birimdir.",
+                                                                                          "bloomLevel": "Bilgi"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q6",
+                                                                                          "questionText": "Sayı doğrusu üzerinde -2 tam 1/3 ile +1 tam 2/3 rasyonel sayıları arasında kaç tane TAM SAYI vardır?",
+                                                                                          "options": [
+                                                                                                    "3",
+                                                                                                    "4",
+                                                                                                    "5",
+                                                                                                    "2"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "-2 tam 1/3 ≈ -2,33 ve +1 tam 2/3 ≈ +1,67'dir. Bu iki değer arasındaki tam sayılar: -2, -1, 0, 1 olmak üzere toplam 4 tanedir.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q7",
+                                                                                          "questionText": "-19/5 rasyonel sayısı sayı doğrusunda hangi tam sayıya DAHA YAKINDIR?",
+                                                                                          "options": [
+                                                                                                    "-3",
+                                                                                                    "-4",
+                                                                                                    "-5",
+                                                                                                    "-2"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "-19/5 = -3 tam 4/5 = -3,80'dir. -3'e olan uzaklığı 0,80 birim iken -4'e olan uzaklığı 0,20 birimdir. Dolayısıyla -4 tam sayısına daha yakındır.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q8",
+                                                                                          "questionText": "|-5/3| ile |+5/3| sayılarının sayı doğrusundaki başlangıç noktasına (0) olan uzaklıkları toplamı kaç birimdir?",
+                                                                                          "options": [
+                                                                                                    "0",
+                                                                                                    "5/3",
+                                                                                                    "10/3",
+                                                                                                    "-10/3"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 2,
+                                                                                          "explanation": "|-5/3| = 5/3 birim ve |+5/3| = 5/3 birimdir. İki mesafenin toplamı: 5/3 + 5/3 = 10/3 birimdir.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q9",
+                                                                                          "questionText": "15 Temmuz Demokrasi Parkı'nın akıllı deposunda sabah su rezervi -11/4 ton (açık), akşam ise +7/2 ton (fazla) olarak ölçülmüştür. Akıllı kontrol paneli hangi rezerv değerinin sıfır referans noktasına daha uzak olduğunu lazer metresiyle gösterecektir?",
+                                                                                          "options": [
+                                                                                                    "Sabah rezervi (-11/4 ton) daha uzaktır",
+                                                                                                    "Akşam rezervi (+7/2 ton) daha uzaktır",
+                                                                                                    "İkisinin de sıfıra olan mesafesi eşittir",
+                                                                                                    "Negatif rezervin mesafesi ölçülemez"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Sıfıra olan mesafeler mutlak değerle ölçülür: |-11/4| = 2,75 tondur. |+7/2| = |+14/4| = 3,50 tondur. 3,50 > 2,75 olduğundan akşam rezervi (+7/2 ton) sıfır referans noktasına daha uzaktır.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q10",
+                                                                                          "questionText": "Parkın damlama sulama hattındaki A sensörü 2/5 bar, B sensörü 3/5 bar su basıncı ölçmektedir. İki sensörün tam ortasına monte edilecek C sensörünün basınç değeri kaç bar olmalıdır?",
+                                                                                          "options": [
+                                                                                                    "1/2 (5/10) bar",
+                                                                                                    "4/5 bar",
+                                                                                                    "1/5 bar",
+                                                                                                    "7/10 bar"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Paydaları 10'da genişletelim: 2/5 = 4/10 ve 3/5 = 6/10 olur. Tam ortadaki değer: (4/10 + 6/10) / 2 = 5/10 = 1/2 bardır.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q11",
+                                                                                          "questionText": "Bir sulama kanalının su akış hızındaki tolerans payı |x| ≤ 3/4 m/s olarak belirlenmiştir. Aşağıdaki akış hızı sapmalarından hangisi bu tolerans sınırının DIŞINDA kalır?",
+                                                                                          "options": [
+                                                                                                    "-1/2 m/s",
+                                                                                                    "+5/8 m/s",
+                                                                                                    "-5/6 m/s",
+                                                                                                    "+2/3 m/s"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 2,
+                                                                                          "explanation": "Tolerans sınırı 3/4 = 0,75 m/s'dir. Seçeneklerin mutlak değerlerini inceleyelim:\n|-1/2| = 0,50 ≤ 0,75\n|+5/8| = 0,625 ≤ 0,75\n|+2/3| ≈ 0,667 ≤ 0,75\n|-5/6| = 5/6 ≈ 0,833 > 0,75 olduğundan tolerans sınırının dışındadır.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q12",
+                                                                                          "questionText": "Parktaki 4 farklı yağmur suyu toplama haznesinin doluluk seviyeleri sayı doğrusunda -1 tam sayısına göre incelenmektedir: Hazne 1: -5/4, Hazne 2: -7/8, Hazne 3: -6/5, Hazne 4: -9/8. Hangi haznenin su seviyesi -1 tam sayısına en yakındır?",
+                                                                                          "options": [
+                                                                                                    "Hazne 1 (-5/4)",
+                                                                                                    "Hazne 2 (-7/8)",
+                                                                                                    "Hazne 3 (-6/5)",
+                                                                                                    "Hazne 4 (-9/8)"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "-1 tam sayısına olan mesafeler |-1 - x| formülüyle hesaplanır:\nHazne 1: |-1 - (-5/4)| = 1/4 = 0,250\nHazne 2: |-1 - (-7/8)| = 1/8 = 0,125\nHazne 3: |-1 - (-6/5)| = 1/5 = 0,200\nHazne 4: |-1 - (-9/8)| = 1/8 = 0,125. Hazne 2 ve Hazne 4 eşit mesafededir (1/8 birim); seçeneklerde Hazne 2 doğru verilmiştir.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q13",
+                                                                                          "questionText": "Bir botanik bahçesinde bitki köklerinin nem sensörleri rasyonel derinliklerle toprağa yerleştirilmiştir: Lale kökü -3/4 m, Gül kökü -7/8 m, Çam fidanı kökü -11/12 m derinliktedir. Toprak yüzeyine (0 m) EN YAKIN olan bitki hangisidir?",
+                                                                                          "options": [
+                                                                                                    "Lale kökü (-3/4 m)",
+                                                                                                    "Gül kökü (-7/8 m)",
+                                                                                                    "Çam fidanı kökü (-11/12 m)",
+                                                                                                    "Üçü de eşit uzaklıktadır"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Toprak yüzeyine (0) olan uzaklık mutlak değerle bulunur: Lale: |-3/4| = 0,75 m; Gül: |-7/8| = 0,875 m; Çam: |-11/12| ≈ 0,917 m. En küçük uzaklık 0,75 m ile Lale köküne aittir, yani yüzeye en yakındır.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "q14",
+                                                                                          "questionText": "Akıllı park enerji kontrol ünitesinde güneş panelinin üretim sapması +5/2 kWh, rüzgar türbininin tüketim sapması ise -13/5 kWh olarak kaydedilmiştir. Kontrol mühendisi Elif Hanım sıfır denge noktasına en yakın olan kaynağı önceliklendirecektir. Elif Hanım hangi kaynağı seçmelidir?",
+                                                                                          "options": [
+                                                                                                    "Güneş Paneli (+5/2 kWh)",
+                                                                                                    "Rüzgar Türbini (-13/5 kWh)",
+                                                                                                    "İkisi de sıfıra eşit mesafededir",
+                                                                                                    "Seçim yapılamaz"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Sıfıra olan mesafeleri mutlak değerle karşılaştıralım:\nGüneş Paneli: |+5/2| = 2,50 kWh\nRüzgar Türbini: |-13/5| = 2,60 kWh\n2,50 < 2,60 olduğundan Güneş Paneli sıfır denge noktasına daha yakındır.",
                                                                                           "bloomLevel": "Analiz"
                                                                                 }
                                                                       ]

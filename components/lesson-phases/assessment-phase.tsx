@@ -38,8 +38,10 @@ import {
   BookOpen,
   Ruler,
   Layers,
-  FileSpreadsheet
+  Download,
+  Printer
 } from 'lucide-react';
+import { MathText } from '@/components/ui/math-fraction';
 
 interface AssessmentPhaseProps {
   data: AssessmentPhaseData;
@@ -530,7 +532,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
 
           {/* Question Text */}
           <div className="text-lg sm:text-xl font-black text-slate-900 leading-relaxed">
-            {currentQuestion.questionText}
+            <MathText text={currentQuestion.questionText} />
           </div>
 
           {/* Options Grid (Large touch friendly cards for smart board) */}
@@ -557,7 +559,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
                   onClick={() => handleSelectOption(currentQuestion, optIdx)}
                   className={`p-5 rounded-2xl border-2 text-left transition-all duration-150 flex items-center justify-between active:scale-98 text-sm sm:text-base ${btnStyle}`}
                 >
-                  <span className="font-bold">{option}</span>
+                  <span className="font-bold"><MathText text={option} /></span>
                   {showAsCorrect && (
                     <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 ml-2" />
                   )}
@@ -582,7 +584,7 @@ export function AssessmentPhase({ data }: AssessmentPhaseProps) {
                 <Sparkles className="w-4 h-4 text-teal-600" />
                 <span>Çözüm & Pedagojik Açıklama:</span>
               </div>
-              <p className="leading-relaxed font-medium">{currentQuestion.explanation}</p>
+              <p className="leading-relaxed font-medium"><MathText text={currentQuestion.explanation} /></p>
             </div>
           )}
 

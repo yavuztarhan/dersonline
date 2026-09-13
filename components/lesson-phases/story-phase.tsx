@@ -23,6 +23,7 @@ import {
   Volume2,
   RotateCcw,
   Maximize2,
+  Minimize2,
   Gauge,
   Sliders,
   Sun,
@@ -30,9 +31,12 @@ import {
   Scale,
   ShieldAlert,
   AlertTriangle,
-  Crosshair
+  Crosshair,
+  Droplets,
+  Microscope
 } from 'lucide-react';
 import { MascotDialogueBox } from '@/components/mascot';
+import { MathFraction, MathText } from '@/components/ui/math-fraction';
 
 interface StoryPhaseProps {
   data: StoryPhaseData;
@@ -44,6 +48,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   
   const [viewMode, setViewMode] = useState<'storybook' | 'overview'>('storybook');
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [visualFocusMode, setVisualFocusMode] = useState<'split' | 'expanded'>('split');
   const [reflectionRevealed, setReflectionRevealed] = useState(false);
 
   // Interactive local states for scenes
@@ -81,6 +86,13 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [activeSliceView, setActiveSliceView] = useState<'negative' | 'positive'>('negative'); // -3/4 vs +5/2
   const [eulerActiveNum, setEulerActiveNum] = useState<string>('-4'); // -4, +5, 0, 2/3, 4/0
   const [eulerSecretRevealed, setEulerSecretRevealed] = useState<boolean>(false);
+
+  // 7. Sınıf MAT.7.1.1-2 (2. Hafta) Story Interactive States
+  const [parkWaterTankLevel, setParkWaterTankLevel] = useState<number>(-2.75); // -11/4 = -2.75 ton
+  const [parkNumberLineStep, setParkNumberLineStep] = useState<number>(1); // 1: convert, 2: bracket, 3: partition, 4: step to point
+  const [densityZoomFactor, setDensityZoomFactor] = useState<number>(2); // 2, 5, 10, 100
+  const [parkLaserActive, setParkLaserActive] = useState<boolean>(true);
+  const [parkToleranceTestVal, setParkToleranceTestVal] = useState<number>(-2.75);
 
   const pages: StorybookPage[] = data.pages || [
     {
@@ -222,21 +234,46 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-gradient-to-b from-slate-50 to-teal-50/20 rounded-3xl p-6 border-2 border-slate-200/80 shadow-lg min-h-[500px]">
             
             {/* LEFT PAGE: Interactive Illustration Scene */}
-            <div className="lg:col-span-6 bg-white rounded-2xl border-2 border-slate-200/90 p-5 shadow-xs flex flex-col justify-between space-y-4">
+            <div className={`${visualFocusMode === 'expanded' ? 'lg:col-span-12' : 'lg:col-span-7 xl:col-span-8'} bg-white rounded-2xl border-2 border-slate-200/90 p-5 shadow-xs flex flex-col justify-between space-y-4 transition-all duration-300`}>
               
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <span className="text-xs font-extrabold text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
-                  {currentPage.conceptBadge}
-                </span>
-                {currentPage.symbolicCode && (
-                  <span className="text-xs font-mono font-black bg-slate-900 text-white px-2.5 py-0.5 rounded-lg">
-                    {currentPage.symbolicCode}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-extrabold text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+                    {currentPage.conceptBadge}
                   </span>
-                )}
+                  {currentPage.symbolicCode && (
+                    <span className="text-xs font-mono font-black bg-slate-900 text-white px-2.5 py-0.5 rounded-lg">
+                      {currentPage.symbolicCode}
+                    </span>
+                  )}
+                </div>
+
+                {/* Visual View Expansion Toggle */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    playSound('click');
+                    setVisualFocusMode(visualFocusMode === 'split' ? 'expanded' : 'split');
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all border border-slate-200 shadow-2xs cursor-pointer active:scale-95"
+                  title={visualFocusMode === 'split' ? 'Görseli Tam Genişliğe Yay' : 'İki Sayfalı Görünüme Dön'}
+                >
+                  {visualFocusMode === 'split' ? (
+                    <>
+                      <Maximize2 className="w-3.5 h-3.5 text-teal-600" />
+                      <span className="hidden sm:inline">Görseli Büyüt</span>
+                    </>
+                  ) : (
+                    <>
+                      <Minimize2 className="w-3.5 h-3.5 text-teal-600" />
+                      <span className="hidden sm:inline">Standart Görünüm</span>
+                    </>
+                  )}
+                </button>
               </div>
 
               {/* Dynamic SVG Visual Scenes */}
-              <div className="relative w-full h-[300px] bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center select-none shadow-inner">
+              <div className={`relative w-full ${visualFocusMode === 'expanded' ? 'min-h-[460px] lg:min-h-[500px]' : 'min-h-[400px] lg:min-h-[440px]'} bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center select-none shadow-inner transition-all duration-300`}>
                 
                 {/* SCENE 1: POINT MAP */}
                 {currentPage.visualScene.type === 'point-map' && (
@@ -2306,7 +2343,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                       </div>
 
                       {/* Symmetrical number line with 0 at center */}
-                      <div className="relative h-14 bg-slate-950 rounded-xl border border-slate-800 flex items-center px-4">
+                      <div className="relative h-20 sm:h-24 bg-slate-950 rounded-2xl border border-slate-800 flex items-center px-6">
                         {/* Number line spine */}
                         <div className="w-full h-1 bg-slate-700 rounded-full relative">
                           {/* Center Zero */}
@@ -2420,7 +2457,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                               : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800'
                           }`}
                         >
-                          Klima: -3/4 kWh
+                          Klima: <MathFraction value="-3/4" /> kWh
                         </button>
                         <button
                           onClick={() => {
@@ -2433,7 +2470,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                               : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800'
                           }`}
                         >
-                          Güneş: +5/2 kWh
+                          Güneş: <MathFraction value="+5/2" /> kWh
                         </button>
                       </div>
                     </div>
@@ -2465,20 +2502,20 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                               <div className="absolute left-[25%] -translate-x-1/2 flex flex-col items-center">
                                 <div className="w-5 h-5 rounded-full bg-rose-500 border-2 border-white shadow-[0_0_12px_rgba(244,63,94,0.9)] animate-bounce" />
                                 <span className="text-xs font-black text-rose-300 mt-1.5 font-mono bg-rose-950/90 px-1.5 py-0.5 rounded border border-rose-500/50">
-                                  -3/4
+                                  <MathFraction value="-3/4" />
                                 </span>
                               </div>
 
                               {/* 2nd quarter: -2/4 = -1/2 */}
                               <div className="absolute left-[50%] -translate-x-1/2 flex flex-col items-center">
                                 <div className="w-3 h-3 rounded-full bg-slate-500 border-2 border-slate-950" />
-                                <span className="text-[10px] font-mono text-slate-400 mt-1">-2/4 (-1/2)</span>
+                                <span className="text-[10px] font-mono text-slate-400 mt-1 flex items-center gap-1"><MathFraction value="-2/4" /> (<MathFraction value="-1/2" />)</span>
                               </div>
 
                               {/* 3rd quarter: -1/4 */}
                               <div className="absolute left-[75%] -translate-x-1/2 flex flex-col items-center">
                                 <div className="w-3 h-3 rounded-full bg-slate-500 border-2 border-slate-950" />
-                                <span className="text-[10px] font-mono text-slate-400 mt-1">-1/4</span>
+                                <span className="text-[10px] font-mono text-slate-400 mt-1"><MathFraction value="-1/4" /></span>
                               </div>
 
                               {/* Right boundary: 0 */}
@@ -2496,7 +2533,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                               📍 2 ile 3 Tam Sayıları Arası: 2 Eşit Parçaya Bölündü
                             </span>
                             <span className="font-mono bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold">
-                              +5/2 = +2 Tam 1/2 (Bileşik ➔ Tam Sayılı)
+                              <span className="inline-flex items-center gap-1"><MathFraction value="+5/2" /> = +<MathFraction whole="2 Tam" numerator={1} denominator={2} /> (Bileşik ➔ Tam Sayılı)</span>
                             </span>
                           </div>
 
@@ -2519,8 +2556,8 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                               {/* Target: 2.5 = 5/2 */}
                               <div className="absolute left-[75%] -translate-x-1/2 flex flex-col items-center">
                                 <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_12px_rgba(16,185,129,0.9)] animate-bounce" />
-                                <span className="text-xs font-black text-emerald-300 mt-1.5 font-mono bg-emerald-950/90 px-1.5 py-0.5 rounded border border-emerald-500/50">
-                                  +5/2 (+2 1/2)
+                                <span className="text-xs font-black text-emerald-300 mt-1.5 font-mono bg-emerald-950/90 px-1.5 py-0.5 rounded border border-emerald-500/50 inline-flex items-center gap-1">
+                                  <MathFraction value="+5/2" /> (+<MathFraction whole="2" numerator={1} denominator={2} />)
                                 </span>
                               </div>
 
@@ -2682,6 +2719,731 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   </div>
                 )}
 
+                {/* 7. SINIF MAT.7.1.1-2 - 1. BÖLÜM: AKILLI PARK SU DEPOSU & SIFIR DENGESİ */}
+                {currentPage.visualScene.type === 'smart-park-water-tank' && (
+                  <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center">
+                          <Droplets className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-cyan-300 uppercase tracking-wider">15 Temmuz Parkı Su Deposu</div>
+                          <div className="text-[10px] text-slate-400">Referans Noktası: 0 Ton (Optimum Su Dengesi)</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-right">
+                        <div className="px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold flex items-center gap-1">
+                          Rezerv Fazlası: <MathFraction value="+7/2 ton" /> (+3.5)
+                        </div>
+                        <div className="px-2 py-1 rounded-lg bg-rose-950/80 border border-rose-500/40 text-rose-300 text-[10px] font-bold flex items-center gap-1">
+                          Rezerv Açığı: <MathFraction value="-11/4 ton" /> (-2.75)
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Central Tank Simulation */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 relative overflow-hidden">
+                      <div className="flex items-center justify-between text-[11px] font-bold">
+                        <span className="text-rose-400 flex items-center gap-1">
+                          <ArrowLeft className="w-3 h-3" /> Negatif Rezerv (Su Açığı)
+                        </span>
+                        <span className="text-amber-300 font-mono text-xs px-2.5 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/40 flex items-center gap-1.5 shadow-[0_0_10px_rgba(251,191,36,0.3)]">
+                          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                          0 Ton Denge Çizgisi
+                        </span>
+                        <span className="text-emerald-400 flex items-center gap-1">
+                          Pozitif Rezerv (Yağmur Hasadı) <ArrowRight className="w-3 h-3" />
+                        </span>
+                      </div>
+
+                      {/* Bilateral Tank Meter Line */}
+                      <div className="relative h-24 sm:h-28 bg-slate-950 rounded-2xl border border-slate-800 flex items-center px-6">
+                        <div className="w-1/2 h-4 sm:h-5 bg-gradient-to-l from-slate-800 to-rose-600 rounded-l-full relative overflow-hidden">
+                          {parkWaterTankLevel < 0 && (
+                            <div
+                              className="absolute top-0 right-0 h-full bg-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.9)] animate-pulse"
+                              style={{ width: `${Math.min(100, (Math.abs(parkWaterTankLevel) / 4) * 100)}%` }}
+                            />
+                          )}
+                        </div>
+
+                        {/* Center zero divider */}
+                        <div className="w-3 h-14 bg-amber-400 rounded-full shadow-[0_0_18px_rgba(251,191,36,1)] z-10 -mx-[6px] flex items-center justify-center">
+                          <span className="absolute -top-4 text-[10px] font-black text-amber-300">0</span>
+                        </div>
+
+                        <div className="w-1/2 h-4 sm:h-5 bg-gradient-to-r from-slate-800 to-emerald-500 rounded-r-full relative overflow-hidden">
+                          {parkWaterTankLevel > 0 && (
+                            <div
+                              className="absolute top-0 left-0 h-full bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.9)] animate-pulse"
+                              style={{ width: `${Math.min(100, (parkWaterTankLevel / 4) * 100)}%` }}
+                            />
+                          )}
+                        </div>
+
+                        {/* Current Value Pointer */}
+                        <div
+                          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center z-20 transition-all duration-500"
+                          style={{ left: `${50 + (parkWaterTankLevel / 4) * 44}%` }}
+                        >
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-slate-950 shadow-xl flex items-center justify-center text-xs font-black ${
+                            parkWaterTankLevel < 0
+                              ? 'bg-rose-500 text-white shadow-rose-500/50'
+                              : parkWaterTankLevel > 0
+                              ? 'bg-emerald-500 text-white shadow-emerald-500/50'
+                              : 'bg-amber-400 text-slate-950 shadow-amber-400/50'
+                          }`}>
+                            💧
+                          </div>
+                          <span className={`text-[10px] font-mono font-black mt-1 px-1.5 py-0.5 rounded-md border ${
+                            parkWaterTankLevel < 0
+                              ? 'bg-rose-950 text-rose-300 border-rose-500/50'
+                              : parkWaterTankLevel > 0
+                              ? 'bg-emerald-950 text-emerald-300 border-emerald-500/50'
+                              : 'bg-amber-950 text-amber-300 border-amber-500/50'
+                          }`}>
+                            {parkWaterTankLevel > 0 ? `+${parkWaterTankLevel}` : parkWaterTankLevel} Ton
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Scale ticks */}
+                      <div className="flex justify-between text-[9px] font-mono text-slate-500 px-3">
+                        <span>-4.0 T</span>
+                        <span className="text-rose-400 font-bold inline-flex items-center gap-0.5"><MathFraction value="-11/4" /> T (-2.75)</span>
+                        <span>-2.0 T</span>
+                        <span>-1.0 T</span>
+                        <span className="text-amber-400 font-black">0.0 (Denge)</span>
+                        <span>+1.0 T</span>
+                        <span>+2.0 T</span>
+                        <span className="text-emerald-400 font-bold inline-flex items-center gap-0.5"><MathFraction value="+7/2" /> T (+3.5)</span>
+                        <span>+4.0 T</span>
+                      </div>
+                    </div>
+
+                    {/* Interactive Presets */}
+                    <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 space-y-2">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Depo Seviyesi Seçimi:</div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setParkWaterTankLevel(-2.75);
+                            playSound('click');
+                          }}
+                          className={`p-2 rounded-xl text-center border transition-all ${
+                            parkWaterTankLevel === -2.75
+                              ? 'bg-rose-950/80 border-rose-500 text-rose-200 font-black shadow-md'
+                              : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800 text-xs'
+                          }`}
+                        >
+                          <div className="text-xs font-bold text-rose-300 flex items-center justify-center gap-1">Rezerv Açığı (<MathFraction value="-11/4 ton" />)</div>
+                          <div className="text-[9px] text-slate-400">Sıfırın 2.75 Ton Solu (Kuraklık)</div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setParkWaterTankLevel(0);
+                            playSound('select');
+                          }}
+                          className={`p-2 rounded-xl text-center border transition-all ${
+                            parkWaterTankLevel === 0
+                              ? 'bg-amber-950/80 border-amber-500 text-amber-200 font-black shadow-md'
+                              : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800 text-xs'
+                          }`}
+                        >
+                          <div className="text-xs font-bold text-amber-300">Optimum Denge (0 Ton)</div>
+                          <div className="text-[9px] text-slate-400">Hedef Referans Çizgisi</div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setParkWaterTankLevel(3.5);
+                            playSound('click');
+                          }}
+                          className={`p-2 rounded-xl text-center border transition-all ${
+                            parkWaterTankLevel === 3.5
+                              ? 'bg-emerald-950/80 border-emerald-500 text-emerald-200 font-black shadow-md'
+                              : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800 text-xs'
+                          }`}
+                        >
+                          <div className="text-xs font-bold text-emerald-300 flex items-center justify-center gap-1">Rezerv Fazlası (<MathFraction value="+7/2 ton" />)</div>
+                          <div className="text-[9px] text-slate-400">Sıfırın 3.5 Ton Sağı (Hasat)</div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.1-2 - 2. BÖLÜM: BİLEŞİK KESİRDEN SAYI DOĞRUSUNA & DİLİMLEME */}
+                {currentPage.visualScene.type === 'fraction-number-line-step' && (
+                  <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center">
+                          <Layers className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-indigo-300 uppercase tracking-wider">Bileşik Kesirden Sayı Doğrusuna</div>
+                          <div className="text-[10px] text-slate-400 flex items-center gap-1"><MathFraction value="-11/4" /> = -(<MathFraction whole="2 tam" numerator={3} denominator={4} />) Konumlandırma Aşamaları</div>
+                        </div>
+                      </div>
+                      <div className="px-2.5 py-1 rounded-lg bg-indigo-950/80 border border-indigo-500/40 text-indigo-200 font-mono text-xs font-bold flex items-center gap-1.5">
+                        <MathFraction value="-11/4" /> = -<MathFraction whole="2 tam" numerator={3} denominator={4} />
+                      </div>
+                    </div>
+
+                    {/* Interactive Step Navigator */}
+                    <div className="grid grid-cols-4 gap-1.5 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 text-center text-[10px]">
+                      {[
+                        { step: 1, label: '1. Tam Sayılıya Çevir', desc: '11 ÷ 4 = 2 tam (3 kalan)' },
+                        { step: 2, label: '2. Aralığı Belirle', desc: '-2 ile -3 arasında' },
+                        { step: 3, label: '3. Payda Kadar Dilimle', desc: '4 eşit parçaya böl' },
+                        { step: 4, label: '4. Sola 3 Adım İlerle', desc: 'Hedef: -11/4 noktası' }
+                      ].map((item) => (
+                        <button
+                          key={item.step}
+                          type="button"
+                          onClick={() => {
+                            setParkNumberLineStep(item.step);
+                            playSound('select');
+                          }}
+                          className={`p-1.5 rounded-lg border transition-all text-left ${
+                            parkNumberLineStep === item.step
+                              ? 'bg-indigo-600 border-indigo-400 text-white font-black shadow-md'
+                              : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800'
+                          }`}
+                        >
+                          <div className="font-bold truncate">{item.label}</div>
+                          <div className="text-[8px] font-mono opacity-80 truncate">{item.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Dynamic Zoomed SVG Number Line */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 relative overflow-hidden">
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                        <span>Negatif Yön (Sola Doğru Adımlar)</span>
+                        <span className="text-amber-300 font-bold">Aralık: [-3, -2] (4 Eşit Parça)</span>
+                        <span>0 Başlangıç Noktası</span>
+                      </div>
+
+                      {/* Number Line Track */}
+                      <div className="relative h-28 sm:h-36 bg-slate-950 rounded-2xl border border-slate-800 flex items-center px-8">
+                        {/* Main Spine */}
+                        <div className="w-full h-1.5 bg-slate-700 rounded-full relative">
+                          {/* Marks: -4, -3, -2, -1, 0 */}
+                          <div className="absolute left-[5%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                            <div className="w-1 h-4 bg-slate-500 rounded-full" />
+                            <span className="text-[10px] font-mono text-slate-400 mt-2">-4</span>
+                          </div>
+
+                          {/* -3 Mark */}
+                          <div className="absolute left-[30%] top-1/2 -translate-y-1/2 flex flex-col items-center z-10">
+                            <div className="w-1.5 h-6 bg-indigo-400 rounded-full shadow-[0_0_8px_rgba(129,140,248,0.8)]" />
+                            <span className="text-xs font-mono font-black text-indigo-300 mt-2">-3</span>
+                          </div>
+
+                          {/* Highlighted Slices between -3 (30%) and -2 (60%) */}
+                          {parkNumberLineStep >= 2 && (
+                            <div className="absolute left-[30%] w-[30%] top-1/2 -translate-y-1/2 h-7 sm:h-9 bg-indigo-950/70 border-2 border-indigo-500/70 rounded-lg flex shadow-inner">
+                              {/* 4 Equal quarters */}
+                              {[1, 2, 3, 4].map((q) => (
+                                <div
+                                  key={q}
+                                  className={`flex-1 border-r border-indigo-400/40 relative flex items-center justify-center ${
+                                    parkNumberLineStep >= 3 ? 'bg-indigo-500/20' : ''
+                                  }`}
+                                >
+                                  {parkNumberLineStep >= 3 && (
+                                    <span className="text-[10px] font-mono text-indigo-200 font-bold"><MathFraction numerator={1} denominator={4} /></span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* -2 Mark */}
+                          <div className="absolute left-[60%] top-1/2 -translate-y-1/2 flex flex-col items-center z-10">
+                            <div className="w-1.5 h-6 bg-indigo-400 rounded-full shadow-[0_0_8px_rgba(129,140,248,0.8)]" />
+                            <span className="text-xs font-mono font-black text-indigo-300 mt-2">-2</span>
+                          </div>
+
+                          {/* -1 Mark */}
+                          <div className="absolute left-[80%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                            <div className="w-1 h-4 bg-slate-500 rounded-full" />
+                            <span className="text-[10px] font-mono text-slate-400 mt-2">-1</span>
+                          </div>
+
+                          {/* 0 Origin Mark */}
+                          <div className="absolute left-[95%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                            <div className="w-2 h-7 bg-amber-400 rounded-full shadow-[0_0_12px_rgba(251,191,36,1)]" />
+                            <span className="text-xs font-mono font-black text-amber-300 mt-2">0</span>
+                          </div>
+
+                          {/* Target Pin on -11/4 = -2 tam 3/4 (which is at 30% + (1/4)*30% = 37.5%) */}
+                          {parkNumberLineStep >= 4 && (
+                            <div
+                              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center z-30 animate-in zoom-in duration-300 pointer-events-none"
+                              style={{ left: '37.5%' }}
+                            >
+                              {/* Large fraction badge positioned cleanly above the dot */}
+                              <div className="absolute bottom-6 px-3.5 py-1.5 rounded-xl bg-rose-950/95 text-rose-100 border-2 border-rose-500 shadow-2xl flex items-center gap-2 whitespace-nowrap">
+                                <MathFraction value="-11/4" className="text-lg font-black text-rose-200" />
+                                <span className="text-rose-300 font-bold text-sm">
+                                  (<MathFraction whole="-2" numerator={3} denominator={4} className="text-sm font-black text-rose-200" />)
+                                </span>
+                              </div>
+
+                              {/* Small precise target dot on the number line */}
+                              <div className="relative flex items-center justify-center">
+                                <div className="w-3.5 h-3.5 rounded-full bg-rose-500 border-2 border-white shadow-[0_0_14px_rgba(244,63,94,1)] z-10" />
+                                <div className="absolute w-6 h-6 rounded-full bg-rose-400/40 animate-ping" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Explanation Callout */}
+                      <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
+                        <div>
+                          <strong className="text-indigo-300">Pedagojik Not:</strong> Negatif kesirlerde adımlar sıfırdan sola doğru atılır. 
+                          -2 tam birim geçildikten sonra gelen aralık 4 parçaya bölünür, sola 3 adım atılarak <strong><MathFraction value="-11/4" /></strong> noktasına varılır.
+                        </div>
+                        <span className="text-rose-400 font-mono text-xs font-bold shrink-0 ml-2 inline-flex items-center gap-1">
+                          <MathFraction value="-11/4" isAbsolute /> = 2.75 birim
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.1-2 - 3. BÖLÜM: RASYONEL SAYILARIN YOĞUNLUĞU VE MİKROSKOP */}
+                {currentPage.visualScene.type === 'microscope-density' && (
+                  <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center">
+                          <Microscope className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-black text-emerald-300 uppercase tracking-wider">Sonsuz Nokta Mikroskobu</div>
+                          <div className="text-[10px] text-slate-400 flex items-center gap-1"><MathFraction value="1/3 bar" /> ile <MathFraction value="2/3 bar" /> Arasındaki Rasyonel Sayıların Yoğunluğu</div>
+                        </div>
+                      </div>
+                      <div className="px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 font-mono text-xs font-bold">
+                        Zoom: {densityZoomFactor}x Genişletme
+                      </div>
+                    </div>
+
+                    {/* Microscope Controls */}
+                    <div className="flex items-center gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-800">
+                      <span className="text-[11px] font-bold text-slate-400">Büyütme Çarpanı:</span>
+                      <div className="flex-1 grid grid-cols-4 gap-2">
+                        {[
+                          { zoom: 2, label: '2x Zoom (Payda 6)', note: 'Ortada 3/6 = 1/2' },
+                          { zoom: 5, label: '5x Zoom (Payda 15)', note: 'Araya 4 sayı' },
+                          { zoom: 10, label: '10x Zoom (Payda 30)', note: 'Araya 9 sayı' },
+                          { zoom: 100, label: '100x Zoom (Payda 300)', note: 'Araya 99 sayı' }
+                        ].map((btn) => (
+                          <button
+                            key={btn.zoom}
+                            type="button"
+                            onClick={() => {
+                              setDensityZoomFactor(btn.zoom);
+                              playSound('click');
+                            }}
+                            className={`p-1.5 rounded-lg border text-center transition-all ${
+                              densityZoomFactor === btn.zoom
+                                ? 'bg-emerald-600 border-emerald-400 text-white font-black shadow-md'
+                                : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800 text-[10px]'
+                            }`}
+                          >
+                            <div className="text-[10px] font-bold truncate">{btn.label}</div>
+                            <div className="text-[8px] font-mono opacity-80 truncate">{btn.note}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Microscope Circular Lens Visualization */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 relative overflow-hidden flex flex-col items-center justify-center space-y-4">
+                      {/* Lens Frame */}
+                      <div className="w-full max-w-2xl h-36 sm:h-44 rounded-3xl bg-gradient-to-r from-emerald-950/80 via-slate-950 to-emerald-950/80 border-2 border-emerald-500/50 p-6 relative flex items-center justify-between shadow-[inset_0_0_30px_rgba(16,185,129,0.4)]">
+                        {/* Left Bound (1/3) */}
+                        <div className="flex flex-col items-center z-10">
+                          <div className="w-5 h-5 rounded-full bg-cyan-400 border-2 border-slate-950 shadow-[0_0_12px_rgba(6,182,212,1)]" />
+                          <span className="text-xs font-mono font-black text-cyan-300 mt-1"><MathFraction numerator={1} denominator={3} /></span>
+                          <span className="text-[9px] font-mono text-slate-400">
+                            {densityZoomFactor === 2 ? '2/6' : densityZoomFactor === 5 ? '5/15' : densityZoomFactor === 10 ? '10/30' : '100/300'}
+                          </span>
+                        </div>
+
+                        {/* Mid Section Revealed Points */}
+                        <div className="flex-1 flex items-center justify-center gap-3 px-4 relative">
+                          <div className="w-full h-1 bg-emerald-500/40 rounded-full relative flex items-center justify-center">
+                            {densityZoomFactor === 2 && (
+                              <div className="flex flex-col items-center animate-in zoom-in duration-300">
+                                <div className="w-6 h-6 rounded-full bg-amber-400 border-2 border-slate-950 shadow-[0_0_16px_rgba(251,191,36,1)] animate-ping" />
+                                <span className="text-xs font-mono font-black text-amber-300 mt-1 bg-amber-950/90 px-1.5 py-0.5 rounded border border-amber-500/50 inline-flex items-center gap-1">
+                                  <MathFraction numerator={3} denominator={6} /> (<MathFraction numerator={1} denominator={2} unit="bar" />)
+                                </span>
+                              </div>
+                            )}
+
+                            {densityZoomFactor === 5 && (
+                              <div className="flex items-center justify-around w-full">
+                                {[6, 7, 8, 9].map((num) => (
+                                  <div key={num} className="flex flex-col items-center animate-in fade-in">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                                    <span className="text-[8px] font-mono text-emerald-300 mt-1"><MathFraction numerator={num} denominator={15} /></span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {densityZoomFactor === 10 && (
+                              <div className="flex items-center justify-around w-full">
+                                {[12, 14, 15, 16, 18].map((num) => (
+                                  <div key={num} className="flex flex-col items-center animate-in fade-in">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                                    <span className="text-[8px] font-mono text-emerald-300 mt-1"><MathFraction numerator={num} denominator={30} /></span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {densityZoomFactor === 100 && (
+                              <div className="text-center py-1">
+                                <span className="text-[11px] font-mono font-black text-emerald-300 bg-emerald-950 px-2 py-1 rounded border border-emerald-500 animate-pulse">
+                                  ✨ 99 Adet Yeni Rasyonel Sensör Değeri Açığa Çıktı!
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Right Bound (2/3) */}
+                        <div className="flex flex-col items-center z-10">
+                          <div className="w-3.5 h-3.5 rounded-full bg-cyan-400 border-2 border-slate-950 shadow-[0_0_8px_rgba(6,182,212,1)]" />
+                          <span className="text-xs font-mono font-black text-cyan-300 mt-1"><MathFraction numerator={2} denominator={3} /></span>
+                          <span className="text-[9px] font-mono text-slate-400">
+                            {densityZoomFactor === 2 ? '4/6' : densityZoomFactor === 5 ? '10/15' : densityZoomFactor === 10 ? '20/30' : '200/300'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Scientific Takeaway */}
+                      <div className="text-center">
+                        <span className="text-xs font-black text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30">
+                          Matematiksel İlke: Rasyonel sayılar kümesi yoğundur; iki rasyonel sayı arasında daima sonsuz rasyonel sayı vardır.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.1-2 - 4. BÖLÜM: MUTLAK DEĞER LAZERİ & PARK SAPMA ANALİZİ */}
+                {currentPage.visualScene.type === 'park-laser-tolerance' && (() => {
+                  const laserOptions = [
+                    {
+                      id: 'depo',
+                      val: -2.75,
+                      label: 'Su Depoları',
+                      fraction: '±11/4 ton',
+                      absText: '2.75 Ton',
+                      isTank: true,
+                      valid: true,
+                      pos: 50,
+                      title: 'Akıllı Su Depoları Çift Lazer Denge Analizi',
+                      desc: '|-11/4| = |+11/4| = 2.75 Ton (İki deponun da sıfıra yönsüz mesafesi eşittir)'
+                    },
+                    {
+                      id: 'sensor-a',
+                      val: -0.5,
+                      label: 'Sensör A',
+                      fraction: '-1/2 m/s',
+                      absText: '0.50 m/s',
+                      isTank: false,
+                      valid: true,
+                      pos: 30, // 50 - (0.5 * 40)%
+                      title: 'Sensör A Akış Sapması (-1/2 m/s)',
+                      desc: '|-1/2| = 0.50 m/s ≤ 0.75 m/s ⟹ İzin Verilen Emniyet Sınırı İçinde ✅'
+                    },
+                    {
+                      id: 'sensor-b',
+                      val: 0.625,
+                      label: 'Sensör B',
+                      fraction: '+5/8 m/s',
+                      absText: '0.625 m/s',
+                      isTank: false,
+                      valid: true,
+                      pos: 75, // 50 + (0.625 * 40)%
+                      title: 'Sensör B Akış Sapması (+5/8 m/s)',
+                      desc: '|+5/8| = 0.625 m/s ≤ 0.75 m/s ⟹ İzin Verilen Emniyet Sınırı İçinde ✅'
+                    },
+                    {
+                      id: 'sensor-c',
+                      val: -0.833,
+                      label: 'Sensör C',
+                      fraction: '-5/6 m/s',
+                      absText: '0.833 m/s',
+                      isTank: false,
+                      valid: false,
+                      pos: 16.7, // 50 - (0.833 * 40)%
+                      title: 'Sensör C Akış Sapması (-5/6 m/s)',
+                      desc: '|-5/6| ≈ 0.833 m/s > 0.75 m/s ⟹ Emniyet Sınırını Aştı! ❌'
+                    }
+                  ];
+
+                  const selectedOpt = laserOptions.find(o => Math.abs(o.val - parkToleranceTestVal) < 0.05) || laserOptions[0];
+                  const targetPos = selectedOpt.pos ?? 50;
+
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Top Scene Header */}
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all ${
+                            selectedOpt.valid
+                              ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
+                              : 'bg-rose-500/20 border-rose-500/40 text-rose-400'
+                          }`}>
+                            <Crosshair className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-amber-300 uppercase tracking-wider">
+                              {selectedOpt.title}
+                            </div>
+                            <div className="text-[10px] text-slate-400 flex items-center gap-1">
+                              {selectedOpt.desc}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="px-2.5 py-1 rounded-lg bg-amber-950/80 border border-amber-500/40 text-amber-200 font-mono text-xs font-bold flex items-center gap-1">
+                          Emniyet Sınırı: |x| ≤ <MathFraction value="3/4 m/s" /> (0.75)
+                        </div>
+                      </div>
+
+                      {/* Main Interactive Laser Board */}
+                      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4 relative overflow-hidden">
+                        
+                        {/* Tank Dual Mode */}
+                        {selectedOpt.isTank ? (
+                          <div className="space-y-3 animate-in fade-in duration-200">
+                            <div className="flex justify-between items-center px-4">
+                              <div className="flex-1 flex flex-col items-center">
+                                <span className="text-[11px] font-mono font-bold text-rose-300 mb-1 flex items-center gap-1">
+                                  Batı Deposu: <MathFraction value="-11/4" isAbsolute /> = 2.75 Ton (Açık)
+                                </span>
+                                <div className="w-full h-1 bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.9)] animate-pulse" />
+                              </div>
+                              <div className="w-10 flex justify-center">
+                                <div className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,1)]" />
+                              </div>
+                              <div className="flex-1 flex flex-col items-center">
+                                <span className="text-[11px] font-mono font-bold text-emerald-300 mb-1 flex items-center gap-1">
+                                  Doğu Deposu: <MathFraction value="+11/4" isAbsolute /> = 2.75 Ton (Fazlalık)
+                                </span>
+                                <div className="w-full h-1 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.9)] animate-pulse" />
+                              </div>
+                            </div>
+
+                            {/* Dual Number Line */}
+                            <div className="relative h-16 bg-slate-950 rounded-xl border border-slate-800 flex items-center px-6">
+                              <div className="w-full h-1 bg-slate-700 rounded-full relative">
+                                {/* Left Laser Beam */}
+                                <div className="absolute top-0 right-1/2 left-[20%] h-1 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,1)] animate-pulse" />
+                                {/* Right Laser Beam */}
+                                <div className="absolute top-0 left-1/2 right-[20%] h-1 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,1)] animate-pulse" />
+
+                                {/* Center Zero */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10">
+                                  <div className="w-6 h-6 rounded-full bg-amber-400 border-2 border-slate-950 shadow-[0_0_16px_rgba(251,191,36,1)] flex items-center justify-center text-[10px] font-black text-slate-950">0</div>
+                                  <span className="text-[10px] font-black text-amber-300 mt-1 font-mono">0 (Hedef)</span>
+                                </div>
+
+                                {/* Left Target -11/4 */}
+                                <div className="absolute top-1/2 left-[20%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                                  <div className="w-4 h-4 rounded-full bg-rose-500 border-2 border-white shadow-[0_0_10px_rgba(244,63,94,1)]" />
+                                  <span className="text-[10px] font-black text-rose-300 mt-1 font-mono inline-flex items-center gap-1"><MathFraction value="-11/4" /></span>
+                                </div>
+
+                                {/* Right Target +11/4 */}
+                                <div className="absolute top-1/2 left-[80%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                                  <div className="w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_10px_rgba(16,185,129,1)]" />
+                                  <span className="text-[10px] font-black text-emerald-300 mt-1 font-mono inline-flex items-center gap-1"><MathFraction value="+11/4" /></span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          /* Sensor Single Laser Dynamic Mode */
+                          <div className="space-y-3 animate-in fade-in duration-200">
+                            <div className="flex justify-between items-center text-[11px] font-mono text-slate-400 px-2">
+                              <span>Negatif Sapma (Sola Lazer)</span>
+                              <span className="text-amber-300 font-bold">Lazer Mesafesi: |x| = {selectedOpt.absText}</span>
+                              <span>Pozitif Sapma (Sağa Lazer)</span>
+                            </div>
+
+                            {/* Dynamic Sensor Number Line */}
+                            <div className="relative h-20 bg-slate-950 rounded-xl border border-slate-800 flex items-center px-6">
+                              <div className="w-full h-1 bg-slate-700 rounded-full relative">
+                                
+                                {/* Permitted Safety Zone: [-0.75, +0.75] = [20%, 80%] */}
+                                <div
+                                  className="absolute -top-3.5 bottom-[-14px] bg-emerald-500/10 border-x-2 border-emerald-500/40 rounded-lg pointer-events-none"
+                                  style={{ left: '20%', width: '60%' }}
+                                >
+                                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-mono text-emerald-400 font-bold uppercase tracking-wider whitespace-nowrap">
+                                    Emniyet Sınırı [-3/4, +3/4]
+                                  </div>
+                                </div>
+
+                                {/* Active Laser Beam from Zero (50%) to Target (targetPos%) */}
+                                {selectedOpt.val < 0 ? (
+                                  <div
+                                    className={`absolute -top-0.5 h-2 rounded-full transition-all duration-300 ${
+                                      selectedOpt.valid
+                                        ? 'bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,1)]'
+                                        : 'bg-rose-500 shadow-[0_0_16px_rgba(244,63,94,1)] animate-pulse'
+                                    }`}
+                                    style={{
+                                      left: `${targetPos}%`,
+                                      width: `${50 - targetPos}%`
+                                    }}
+                                  />
+                                ) : (
+                                  <div
+                                    className={`absolute -top-0.5 h-2 rounded-full transition-all duration-300 ${
+                                      selectedOpt.valid
+                                        ? 'bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,1)]'
+                                        : 'bg-rose-500 shadow-[0_0_16px_rgba(244,63,94,1)] animate-pulse'
+                                    }`}
+                                    style={{
+                                      left: '50%',
+                                      width: `${targetPos - 50}%`
+                                    }}
+                                  />
+                                )}
+
+                                {/* Axis Tick: -1 (10%) */}
+                                <div className="absolute left-[10%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                                  <div className="w-1 h-3 bg-slate-500 rounded-full" />
+                                  <span className="text-[9px] font-mono text-slate-500 mt-2">-1</span>
+                                </div>
+
+                                {/* Axis Tick: -3/4 Limit (20%) */}
+                                <div className="absolute left-[20%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                                  <div className="w-1 h-4 bg-emerald-500/60 rounded-full" />
+                                  <span className="text-[9px] font-mono text-emerald-400 mt-2 font-bold">-3/4</span>
+                                </div>
+
+                                {/* Center Zero (50%) */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
+                                  <div className="w-6 h-6 rounded-full bg-amber-400 border-2 border-slate-950 shadow-[0_0_16px_rgba(251,191,36,1)] flex items-center justify-center text-[10px] font-black text-slate-950">0</div>
+                                  <span className="text-[10px] font-black text-amber-300 mt-1 font-mono">0</span>
+                                </div>
+
+                                {/* Axis Tick: +3/4 Limit (80%) */}
+                                <div className="absolute left-[80%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                                  <div className="w-1 h-4 bg-emerald-500/60 rounded-full" />
+                                  <span className="text-[9px] font-mono text-emerald-400 mt-2 font-bold">+3/4</span>
+                                </div>
+
+                                {/* Axis Tick: +1 (90%) */}
+                                <div className="absolute left-[90%] top-1/2 -translate-y-1/2 flex flex-col items-center">
+                                  <div className="w-1 h-3 bg-slate-500 rounded-full" />
+                                  <span className="text-[9px] font-mono text-slate-500 mt-2">+1</span>
+                                </div>
+
+                                {/* Target Moving Pin & Pinpoint Tag */}
+                                <div
+                                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center z-30 transition-all duration-300"
+                                  style={{ left: `${targetPos}%` }}
+                                >
+                                  {/* Floating Value Badge */}
+                                  <div className={`absolute -top-7 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-black border shadow-lg flex items-center gap-1 whitespace-nowrap ${
+                                    selectedOpt.valid
+                                      ? 'bg-emerald-950 text-emerald-200 border-emerald-400'
+                                      : 'bg-rose-950 text-rose-200 border-rose-500'
+                                  }`}>
+                                    <MathFraction value={selectedOpt.fraction} />
+                                    <span>(|x|={selectedOpt.absText})</span>
+                                  </div>
+
+                                  {/* Point Dot */}
+                                  <div className={`w-4 h-4 rounded-full border-2 border-white shadow-md ${
+                                    selectedOpt.valid ? 'bg-emerald-500' : 'bg-rose-500'
+                                  }`} />
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Live Telemetry Bar */}
+                        <div className={`p-2.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
+                          selectedOpt.valid
+                            ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
+                            : 'bg-rose-950/40 border-rose-500/40 text-rose-200'
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-white">Lazer Telemetrisi:</span>
+                            <span className="font-mono text-amber-300">
+                              |{selectedOpt.fraction}| = {selectedOpt.absText}
+                            </span>
+                          </div>
+                          <div className="font-bold flex items-center gap-1.5">
+                            {selectedOpt.valid ? (
+                              <span className="text-emerald-300">✓ Emniyet Sınırı İçinde (Sapma Kabul Edilebilir)</span>
+                            ) : (
+                              <span className="text-rose-300 font-black">⚠ Sınır Değer Aşıldı (0.833 &gt; 0.75)</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* 4 Interactive Test Buttons */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                          {laserOptions.map((opt) => {
+                            const isSelected = selectedOpt.id === opt.id;
+
+                            return (
+                              <button
+                                key={opt.id}
+                                type="button"
+                                onClick={() => {
+                                  setParkToleranceTestVal(opt.val);
+                                  playSound(opt.valid ? 'success' : 'click');
+                                }}
+                                className={`p-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${
+                                  isSelected
+                                    ? opt.valid
+                                      ? 'bg-emerald-600 border-emerald-400 text-white font-black shadow-lg scale-102 ring-2 ring-emerald-400/40'
+                                      : 'bg-rose-600 border-rose-400 text-white font-black shadow-lg scale-102 ring-2 ring-rose-400/40'
+                                    : 'bg-slate-900/90 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-white'
+                                }`}
+                              >
+                                <div className="font-bold flex items-center gap-1">
+                                  <span>{opt.label}:</span>
+                                  <MathFraction value={opt.fraction} />
+                                </div>
+                                <div className="text-[10px] font-mono opacity-90">
+                                  |x| = {opt.absText}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* GENERIC GEOMETRIC CHALKBOARD SCENE FALLBACK (For any unexpected scene type) */}
                 {![
                   'point-map',
@@ -2723,7 +3485,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   'smart-home-meter',
                   'absolute-value-laser',
                   'fractional-energy-slices',
-                  'euler-diagram-sets'
+                  'euler-diagram-sets',
+                  'smart-park-water-tank',
+                  'fraction-number-line-step',
+                  'microscope-density',
+                  'park-laser-tolerance'
                 ].includes(currentPage.visualScene.type) && (
                   <div className="w-full h-full p-5 bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 flex flex-col items-center justify-center text-center space-y-3">
                     <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border-2 border-teal-400 text-teal-300 flex items-center justify-center">
@@ -2748,9 +3514,9 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
             </div>
 
             {/* RIGHT PAGE: Story Narrative, Character Dialogue & Action */}
-            <div className="lg:col-span-6 bg-white rounded-2xl border-2 border-slate-200/90 p-6 shadow-xs flex flex-col justify-between space-y-5">
+            <div className={`${visualFocusMode === 'expanded' ? 'lg:col-span-12' : 'lg:col-span-5 xl:col-span-4'} bg-white rounded-2xl border-2 border-slate-200/90 p-6 shadow-xs flex flex-col justify-between space-y-5 transition-all duration-300`}>
               
-              <div className="space-y-4">
+              <div className={visualFocusMode === 'expanded' ? 'grid grid-cols-1 md:grid-cols-2 gap-4 items-start' : 'space-y-4'}>
                 
                 {/* Character Dialogue Bubble (Powered by Mascot Architecture) */}
                 {currentPage.characterDialogue && (
@@ -2762,20 +3528,22 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   />
                 )}
 
-                {/* Narrative Text */}
-                <div className="text-slate-800 text-sm sm:text-base font-medium leading-relaxed bg-slate-50/70 p-4 rounded-2xl border border-slate-200">
-                  {currentPage.narrativeText}
-                </div>
-
-                {/* Mathematical Takeaway Badge */}
-                <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white p-4 rounded-2xl shadow-xs space-y-1">
-                  <div className="flex items-center gap-1.5 text-teal-100 text-xs font-black uppercase tracking-wider">
-                    <CheckCircle2 className="w-4 h-4 text-teal-200" />
-                    <span>Maarif Modeli Geometri İlkesi:</span>
+                <div className="space-y-3">
+                  {/* Narrative Text */}
+                  <div className="text-slate-800 text-sm sm:text-base font-medium leading-relaxed bg-slate-50/70 p-4 rounded-2xl border border-slate-200">
+                    <MathText text={currentPage.narrativeText} />
                   </div>
-                  <p className="text-xs sm:text-sm font-bold leading-snug">
-                    {currentPage.mathTakeaway}
-                  </p>
+
+                  {/* Mathematical Takeaway Badge */}
+                  <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white p-4 rounded-2xl shadow-xs space-y-1">
+                    <div className="flex items-center gap-1.5 text-teal-100 text-xs font-black uppercase tracking-wider">
+                      <CheckCircle2 className="w-4 h-4 text-teal-200" />
+                      <span>Maarif Modeli İlkesi:</span>
+                    </div>
+                    <p className="text-xs sm:text-sm font-bold leading-snug">
+                      <MathText text={currentPage.mathTakeaway} />
+                    </p>
+                  </div>
                 </div>
 
               </div>

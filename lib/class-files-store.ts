@@ -3400,6 +3400,233 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
       }
     ]
   }
+,
+  {
+    id: 'file-activity-mat-7-1-1-ruler',
+    title: 'Etkinlik 1: Bileşik Kesirleri Tam Sayılı Kesre Dönüştürme & Sayı Doğrusu Dilimleme (MAT.7.1.1)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.7.1.1',
+    outcomeTitle: 'Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi ve Farklı Temsilleri',
+    authorId: 'system',
+    authorName: 'T.C. Millî Eğitim Bakanlığı',
+    authorRole: 'system',
+    school: 'Maarif Modeli Matematik Laboratuvarı',
+    pageCount: 1,
+    createdAt: '2026-09-12T10:00:00Z',
+    fileSizeKb: 135,
+    tags: ['Etkinlik Kağıdı', 'Bileşik Kesir', 'Tam Sayılı Kesir', 'Sayı Doğrusu Dilimleme'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: sans-serif; color: #0f172a; max-width: 800px; margin: 0 auto;">
+  <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase;">MAT.7.1.1 • 1. Aşama</span>
+      <h2 style="margin: 6px 0 0 0; color: #0369a1; font-size: 18px; font-weight: 900;">BİLEŞİK KESİRLERDEN SAYI DOĞRUSUNA VE ARALIK DİLİMLEME</h2>
+      <p style="margin: 2px 0 0 0; font-size: 11px; color: #64748b;">15 Temmuz Demokrasi Parkı Akıllı Su Deposu Rezerv Açığı ve Sayı Doğrusu Modeli</p>
+    </div>
+    <div style="text-align: right; font-size: 11px; color: #64748b;">
+      <div>Adı Soyadı: .......................................</div>
+      <div>Sınıf / No: 7 / ...... &nbsp; Tarih: ..../..../2026</div>
+    </div>
+  </div>
+
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+    <h3 style="margin: 0 0 8px 0; font-size: 13px; color: #0f172a; font-weight: 800;">💧 Görev 1: Akıllı Depo Rezerv Açığı (<span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span><span style="margin-left:3px; font-size:0.9em;">Ton</span></span>) Sayı Doğrusunda Nerede?</h3>
+    <p style="margin: 0 0 10px 0; font-size: 11px; color: #334155; line-height: 1.5;">
+      Parkın ana deposunda <strong><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span><span style="margin-left:3px; font-size:0.9em;">ton</span></span></strong> su rezerv açığı tespit edilmiştir. Bu değeri sayı doğrusunda hassas olarak konumlandırınız.
+    </p>
+    <div style="background: white; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; font-size: 11px; font-family: monospace; margin-bottom: 8px;">
+      1. Adım: <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span></span> kesrini tam sayılı kesre çeviriniz: <strong><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span></span> = -(..... tam <span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px;">.....</span><span style="padding-top:1px;">.....</span></span>)</strong><br/>
+      2. Adım: Sayı hangi iki ardışık tam sayı arasındadır? <strong>(..... ile ..... arasında)</strong><br/>
+      3. Adım: Bu iki tam sayı arasını kaç eşit parçaya böleceksiniz? <strong>(..... eşit parça)</strong><br/>
+      4. Adım: Sıfırdan sola doğru kaç birim adım atacaksınız? <strong>(..... adım)</strong>
+    </div>
+  </div>
+
+  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+    <h3 style="margin: 0 0 8px 0; font-size: 13px; color: #166534; font-weight: 800;">📐 Görev 2: Aşağıdaki Sayıları Sayı Doğrusunda Eşleyiniz</h3>
+    <p style="margin: 0 0 8px 0; font-size: 11px; color: #166534;">
+      Verilen sayıları tam sayılı kesre çevirip sayı doğrusundaki doğru aralığı ve noktayı işaretleyiniz:
+    </p>
+    <ul style="margin: 0; padding-left: 18px; font-size: 11px; color: #1e293b; line-height: 1.6;">
+      <li><strong>A = <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">7</span><span style="padding-top:1px; font-weight:800;">2</span></span><span style="margin-left:3px; font-size:0.9em;">ton</span></span></strong> ⟹ -3 tam <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">1</span><span style="padding-top:1px; font-weight:800;">2</span></span></span> ( -3 ile -4 arası, 2 eşit parçadan 1.si )</li>
+      <li><strong>B = <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">+</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">13</span><span style="padding-top:1px; font-weight:800;">4</span></span><span style="margin-left:3px; font-size:0.9em;">ton</span></span></strong> ⟹ +3 tam <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">1</span><span style="padding-top:1px; font-weight:800;">4</span></span></span> ( +3 ile +4 arası, 4 eşit parçadan 1.si )</li>
+      <li><strong>C = <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">5</span><span style="padding-top:1px; font-weight:800;">3</span></span><span style="margin-left:3px; font-size:0.9em;">ton</span></span></strong> ⟹ -1 tam <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">2</span><span style="padding-top:1px; font-weight:800;">3</span></span></span> ( -1 ile -2 arası, 3 eşit parçadan 2.si )</li>
+    </ul>
+  </div>
+
+  <div style="padding: 8px 12px; background: #e0f2fe; border: 1px solid #7dd3fc; border-radius: 8px; font-size: 10px; color: #0369a1; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Değerlendirme:</strong> Dönüşüm Doğruluğu (40P) + Sayı Doğrusu Dilimleme (60P) = 100 Puan. (MAT.7.1.1)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-7-1-1-density',
+    title: 'Etkinlik 2: Rasyonel Sayıların Yoğunluğu ve Sonsuz Nokta Mikroskobu (MAT.7.1.1)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.7.1.1',
+    outcomeTitle: 'Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi ve Farklı Temsilleri',
+    authorId: 'system',
+    authorName: 'T.C. Millî Eğitim Bakanlığı',
+    authorRole: 'system',
+    school: 'Maarif Modeli Matematik Laboratuvarı',
+    pageCount: 1,
+    createdAt: '2026-09-12T10:00:00Z',
+    fileSizeKb: 140,
+    tags: ['Etkinlik Kağıdı', 'Yoğunluk Özelliği', 'Genişletme', 'Sonsuz Nokta'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: sans-serif; color: #0f172a; max-width: 800px; margin: 0 auto;">
+  <div style="border-bottom: 2px solid #6366f1; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase;">MAT.7.1.1 • 2. Aşama</span>
+      <h2 style="margin: 6px 0 0 0; color: #4338ca; font-size: 18px; font-weight: 900;">RASYONEL SAYILARIN YOĞUNLUK ÖZELLİĞİ & MİKROSKOP ANALİZİ</h2>
+      <p style="margin: 2px 0 0 0; font-size: 11px; color: #64748b;">İki Basınç Sensörü (<span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">1</span><span style="padding-top:1px; font-weight:800;">3</span></span><span style="margin-left:3px; font-size:0.9em;">bar</span></span> ve <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">2</span><span style="padding-top:1px; font-weight:800;">3</span></span><span style="margin-left:3px; font-size:0.9em;">bar</span></span>) Arasındaki Sonsuz Nokta Kanıtı</p>
+    </div>
+    <div style="text-align: right; font-size: 11px; color: #64748b;">
+      <div>Adı Soyadı: .......................................</div>
+      <div>Sınıf / No: 7 / ...... &nbsp; Tarih: ..../..../2026</div>
+    </div>
+  </div>
+
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+    <h3 style="margin: 0 0 8px 0; font-size: 13px; color: #0f172a; font-weight: 800;">🔬 Keşif: Genişlettikçe Ortaya Çıkan Gizli Sayılar</h3>
+    <p style="margin: 0 0 10px 0; font-size: 11px; color: #334155; line-height: 1.5;">
+      Damlama sulama ana hattında iki basınç sensörü <strong><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">1</span><span style="padding-top:1px; font-weight:800;">3</span></span><span style="margin-left:3px; font-size:0.9em;">bar</span></span></strong> ve <strong><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">2</span><span style="padding-top:1px; font-weight:800;">3</span></span><span style="margin-left:3px; font-size:0.9em;">bar</span></span></strong> değerlerini ölçmektedir. Bu iki değer arasına yeni sensörler yerleştiriniz:
+    </p>
+    <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 8px;">
+      <tr style="background: #e0e7ff; color: #3730a3; text-align: left;">
+        <th style="padding: 6px 8px; border: 1px solid #cbd5e1;">Genişletme Katı</th>
+        <th style="padding: 6px 8px; border: 1px solid #cbd5e1;">Alt Sınır (<span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">1</span><span style="padding-top:1px; font-weight:800;">3</span></span></span>)</th>
+        <th style="padding: 6px 8px; border: 1px solid #cbd5e1;">Üst Sınır (<span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">2</span><span style="padding-top:1px; font-weight:800;">3</span></span></span>)</th>
+        <th style="padding: 6px 8px; border: 1px solid #cbd5e1;">Aralıktaki Rasyonel Sayılar</th>
+      </tr>
+      <tr>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><strong>2 ile genişlet</strong></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">2</span><span style="padding-top:1px; font-weight:800;">6</span></span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">4</span><span style="padding-top:1px; font-weight:800;">6</span></span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #4338ca; font-weight: bold;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">3</span><span style="padding-top:1px; font-weight:800;">6</span></span></span> (yani <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">1</span><span style="padding-top:1px; font-weight:800;">2</span></span></span>)</td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><strong>10 ile genişlet</strong></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">10</span><span style="padding-top:1px; font-weight:800;">30</span></span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">20</span><span style="padding-top:1px; font-weight:800;">30</span></span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #4338ca;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">30</span></span></span>, <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">12</span><span style="padding-top:1px; font-weight:800;">30</span></span></span>, <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">13</span><span style="padding-top:1px; font-weight:800;">30</span></span></span>, ... (9 sayı)</td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><strong>100 ile genişlet</strong></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">100</span><span style="padding-top:1px; font-weight:800;">300</span></span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">200</span><span style="padding-top:1px; font-weight:800;">300</span></span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #4338ca;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">101</span><span style="padding-top:1px; font-weight:800;">300</span></span></span> ... <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">199</span><span style="padding-top:1px; font-weight:800;">300</span></span></span> (99 sayı)</td>
+      </tr>
+    </table>
+    <div style="background: white; border: 1px dashed #6366f1; border-radius: 8px; padding: 10px; font-size: 11px; color: #3730a3;">
+      <strong>Matematiksel Çıkarım:</strong> Bu işlemi sonsuza kadar sürdürebilir miyiz? <em>Evet!</em> O halde herhangi iki rasyonel sayı arasında <strong>sonsuz çoklukta</strong> rasyonel sayı vardır.
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px; background: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 8px; font-size: 10px; color: #3730a3; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Kazanım Değerlendirmesi:</strong> Tablo Tamamlama (50P) + Yoğunluk İspatı (50P) = 100 Puan. (MAT.7.1.1)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  },
+  {
+    id: 'file-activity-mat-7-1-1-laser-tolerance',
+    title: 'Etkinlik 3: Mutlak Değer Lazer Metresi ve Akıllı Park Tolerans Analizi (MAT.7.1.1)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.7.1.1',
+    outcomeTitle: 'Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi ve Farklı Temsilleri',
+    authorId: 'system',
+    authorName: 'T.C. Millî Eğitim Bakanlığı',
+    authorRole: 'system',
+    school: 'Maarif Modeli Matematik Laboratuvarı',
+    pageCount: 1,
+    createdAt: '2026-09-12T10:00:00Z',
+    fileSizeKb: 138,
+    tags: ['Etkinlik Kağıdı', 'Mutlak Değer', 'Tolerans Analizi', 'Akıllı Park Su Deposu'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: sans-serif; color: #0f172a; max-width: 800px; margin: 0 auto;">
+  <div style="border-bottom: 2px solid #f59e0b; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="background: #fef3c7; color: #b45309; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase;">MAT.7.1.1 • 3. Aşama</span>
+      <h2 style="margin: 6px 0 0 0; color: #b45309; font-size: 18px; font-weight: 900;">MUTLAK DEĞER İLE TOLERANS & MESAFE ANALİZİ</h2>
+      <p style="margin: 2px 0 0 0; font-size: 11px; color: #64748b;">Sıfıra Olan Geometrik Mesafe ve Enerji-Su Dengeleme Raporu</p>
+    </div>
+    <div style="text-align: right; font-size: 11px; color: #64748b;">
+      <div>Adı Soyadı: .......................................</div>
+      <div>Sınıf / No: 7 / ...... &nbsp; Tarih: ..../..../2026</div>
+    </div>
+  </div>
+
+  <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+    <h3 style="margin: 0 0 8px 0; font-size: 13px; color: #92400e; font-weight: 800;">⚡ Problem: Hangi Depo Denge Çizgisinden Daha Fazla Saptı?</h3>
+    <p style="margin: 0 0 10px 0; font-size: 11px; color: #78350f; line-height: 1.5;">
+      Doğu deposunda <strong><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">+</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span><span style="margin-left:3px; font-size:0.9em;">ton</span></span></strong> su fazlası, Batı deposunda ise <strong><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span><span style="margin-left:3px; font-size:0.9em;">ton</span></span></strong> su açığı oluşmuştur.
+    </p>
+    <div style="background: white; border: 1px dashed #f59e0b; border-radius: 8px; padding: 10px; font-size: 11px; line-height: 1.6; color: #1e293b;">
+      • Doğu Deposunun sıfıra uzaklığı: <strong><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="font-size:1.15em; opacity:0.8;">|</span><span style="margin-right:2px; font-weight:800;">+</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span><span style="font-size:1.15em; opacity:0.8;">|</span></span> = <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span></span> = 2,75 ton</strong><br/>
+      • Batı Deposunun sıfıra uzaklığı: <strong><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="font-size:1.15em; opacity:0.8;">|</span><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span><span style="font-size:1.15em; opacity:0.8;">|</span></span> = <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">11</span><span style="padding-top:1px; font-weight:800;">4</span></span></span> = 2,75 ton</strong><br/>
+      • <strong>Sonuç:</strong> İki depo da optimum denge noktasından (0) <strong>eşit mesafede</strong> sapmıştır!
+    </div>
+  </div>
+
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+    <h3 style="margin: 0 0 8px 0; font-size: 13px; color: #0f172a; font-weight: 800;">🔍 Tolerans Kontrolü: |x| ≤ <span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">3</span><span style="padding-top:1px; font-weight:800;">4</span></span><span style="margin-left:3px; font-size:0.9em;">m/s</span></span></h3>
+    <p style="margin: 0 0 8px 0; font-size: 11px; color: #334155;">
+      Aşağıdaki sensör sapma değerlerinin tolerans sınırında olup olmadığını mutlak değerle inceleyip işaretleyiniz:
+    </p>
+    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+      <tr style="background: #f1f5f9; text-align: left;">
+        <th style="padding: 6px 8px; border: 1px solid #cbd5e1;">Sensör</th>
+        <th style="padding: 6px 8px; border: 1px solid #cbd5e1;">Sapma Değeri</th>
+        <th style="padding: 6px 8px; border: 1px solid #cbd5e1;">Mutlak Uzaklık |x|</th>
+        <th style="padding: 6px 8px; border: 1px solid #cbd5e1;">Durum (≤ 0.75 m/s)</th>
+      </tr>
+      <tr>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Sensör A</td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">1</span><span style="padding-top:1px; font-weight:800;">2</span></span><span style="margin-left:3px; font-size:0.9em;">m/s</span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="font-size:1.15em; opacity:0.8;">|</span><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">1</span><span style="padding-top:1px; font-weight:800;">2</span></span><span style="font-size:1.15em; opacity:0.8;">|</span></span> = 0.50 m/s</td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #16a34a; font-weight: bold;">Tolerans İçi ✅</td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Sensör B</td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">5</span><span style="padding-top:1px; font-weight:800;">6</span></span><span style="margin-left:3px; font-size:0.9em;">m/s</span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="font-size:1.15em; opacity:0.8;">|</span><span style="margin-right:2px; font-weight:800;">-</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">5</span><span style="padding-top:1px; font-weight:800;">6</span></span><span style="font-size:1.15em; opacity:0.8;">|</span></span> ≈ 0.83 m/s</td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #dc2626; font-weight: bold;">Tolerans Dışı ❌</td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Sensör C</td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="margin-right:2px; font-weight:800;">+</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">5</span><span style="padding-top:1px; font-weight:800;">8</span></span><span style="margin-left:3px; font-size:0.9em;">m/s</span></span></td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1;"><span style="display:inline-flex; align-items:center; vertical-align:middle;"><span style="font-size:1.15em; opacity:0.8;">|</span><span style="margin-right:2px; font-weight:800;">+</span><span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.85em; line-height:1; margin:0 2px;"><span style="border-bottom:1.5px solid currentColor; padding-bottom:1px; font-weight:800;">5</span><span style="padding-top:1px; font-weight:800;">8</span></span><span style="font-size:1.15em; opacity:0.8;">|</span></span> = 0.625 m/s</td>
+        <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #16a34a; font-weight: bold;">Tolerans İçi ✅</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="padding: 8px 12px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; font-size: 10px; color: #b45309; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Denge Problemi (40P) + Tolerans Tablosu (60P) = 100 Puan. (MAT.7.1.1)</span>
+    <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
+  </div>
+</div>`
+      }
+    ]
+  }
 ];
 
 export function getStoredClassroomFiles(): ClassroomFileRecord[] {
@@ -3453,7 +3680,7 @@ export function getActivitySheetsForOutcome(outcomeCode: string): ClassroomFileR
   const files = getStoredClassroomFiles();
   return files.filter(
     (f) =>
-      f.outcomeCode === outcomeCode &&
+      (f.outcomeCode === outcomeCode || (outcomeCode === 'MAT.7.1.1-2' && f.outcomeCode === 'MAT.7.1.1') || (outcomeCode === 'MAT.7.1.1' && f.outcomeCode === 'MAT.7.1.1-2')) &&
       (f.tags?.includes('Etkinlik Kağıdı') || f.title.toLowerCase().includes('etkinlik') || f.title.toLowerCase().includes('görev'))
   );
 }

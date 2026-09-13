@@ -12,6 +12,7 @@ import {
   Award,
   ArrowRight
 } from 'lucide-react';
+import { MathText } from '@/components/ui/math-fraction';
 
 interface TFQuestion {
   id: string;
@@ -386,6 +387,52 @@ const MAT_7_1_1_TF: TFQuestion[] = [
   }
 ];
 
+// 7. MAT.7.1.1-2 (Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi)
+const MAT_7_1_1_W2_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat712-1',
+    statement: 'Bileşik kesir olan -11/4 sayısı tam sayılı kesre çevrildiğinde sayı doğrusunda -1 ile -2 arasında yer alır.',
+    isTrue: false,
+    explanation: 'Yanlış! -11/4 = -(2 tam 3/4)\'tür. Sıfırdan sola doğru -2 tam birim geçildikten sonra -3\'e doğru 3 parça ilerlenir; sayı -2 ile -3 arasındadır.'
+  },
+  {
+    id: 'tf-mat712-2',
+    statement: '1/3 ile 2/3 rasyonel sayıları arasında hiçbir rasyonel sayı yoktur çünkü 1 ile 2 ardışık doğal sayılardır.',
+    isTrue: false,
+    explanation: 'Yanlış! Paydalar genişletilerek (örneğin 2 ile genişletilip 2/6 ve 4/6 yapıldığında ortada 3/6 = 1/2 bulunur) iki rasyonel sayı arasında yeni rasyonel sayılar bulunabilir.'
+  },
+  {
+    id: 'tf-mat712-3',
+    statement: 'Sayı doğrusunda ardışık iki tam sayının arası dilimlenirken bölünecek parça sayısını kesrin paydası belirler.',
+    isTrue: true,
+    explanation: 'Doğru! Kesrin paydası aralığın kaç eşit parçaya bölüneceğini, pay ise sıfırdan itibaren kaç adım atılacağını gösterir.'
+  },
+  {
+    id: 'tf-mat712-4',
+    statement: '|-11/4| ile |+11/4| sayılarının sayı doğrusundaki 0 başlangıç noktasına olan uzaklıkları birbirine eşittir.',
+    isTrue: true,
+    explanation: 'Doğru! Mutlak değer yönsüz mesafedir: |-11/4| = |+11/4| = 11/4 = 2,75 birimdir.'
+  },
+  {
+    id: 'tf-mat712-5',
+    statement: 'Bir rasyonel kesrin pay ve paydası aynı pozitif tam sayıyla çarpıldığında elde edilen denk kesir sayı doğrusunda aynı noktayı gösterir.',
+    isTrue: true,
+    explanation: 'Doğru! Genişletme veya sadeleştirme kesrin değerini değiştirmez; elde edilen denk kesir sayı doğrusunda aynı konuma karşılık gelir.'
+  },
+  {
+    id: 'tf-mat712-6',
+    statement: 'Sayı doğrusunda -3/4 sayısının 0 başlangıç noktasına olan geometrik uzaklığı negatif bir sayı ile ifade edilebilir.',
+    isTrue: false,
+    explanation: 'Yanlış! Sayı doğrusunda uzaklık (mutlak değer) hiçbir zaman negatif olamaz; |-3/4| = 3/4 birim pozitif bir büyüklüktür.'
+  },
+  {
+    id: 'tf-mat712-7',
+    statement: 'Sayı doğrusunda negatif bir bileşik kesir işaretlenirken sıfırdan sağa doğru adım atılır.',
+    isTrue: false,
+    explanation: 'Yanlış! Negatif rasyonel sayılarda sıfır referans noktası kabul edilerek sola doğru ilerlenir.'
+  }
+];
+
 export function TrueFalseGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
@@ -393,7 +440,12 @@ export function TrueFalseGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
-  const isMat711 = id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel');
+  const isMat711W2 =
+    id === 'MAT.7.1.1-2' ||
+    id === 'MAT.7.1.1.2' ||
+    title.includes('derinleşme') ||
+    title.includes('yoğunluk');
+  const isMat711 = !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
   const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
   const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
   const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
@@ -403,7 +455,9 @@ export function TrueFalseGame() {
   const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
   const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
 
-  const questions = isMat711
+  const questions = isMat711W2
+    ? MAT_7_1_1_W2_TF
+    : isMat711
     ? MAT_7_1_1_TF
     : isMat614
     ? MAT_6_1_4_TF
@@ -495,7 +549,7 @@ export function TrueFalseGame() {
           
           {/* Statement */}
           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-lg font-bold text-slate-800 text-center leading-relaxed">
-            "{currentQ.statement}"
+            &ldquo;<MathText text={currentQ.statement} />&rdquo;
           </div>
 
           {/* Action Buttons */}
@@ -542,7 +596,7 @@ export function TrueFalseGame() {
                 <Sparkles className="w-4 h-4 text-teal-600" />
                 <span>Pedagojik Gerekçe:</span>
               </div>
-              <p>{currentQ.explanation}</p>
+              <p><MathText text={currentQ.explanation} /></p>
             </div>
           )}
 

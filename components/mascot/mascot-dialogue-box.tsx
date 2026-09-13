@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { MASCOT_CONFIG, MascotPose, isMascotEnabled } from "@/lib/mascot-config";
 import { Sparkles, MessageCircle } from "lucide-react";
+import { MathText } from "@/components/ui/math-fraction";
 
 export interface MascotDialogueBoxProps {
   pose?: MascotPose;
@@ -69,7 +70,7 @@ export function MascotDialogueBox({
         </div>
 
         <p className="text-xs sm:text-sm font-semibold text-slate-800 italic leading-relaxed">
-          "{dialogue || MASCOT_CONFIG.quotes.storyIntro}"
+          &ldquo;<MathText text={dialogue || MASCOT_CONFIG.quotes.storyIntro} />&rdquo;
         </p>
       </div>
     </div>

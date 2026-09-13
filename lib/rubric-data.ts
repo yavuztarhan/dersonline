@@ -629,6 +629,66 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk5', text: 'Günlük hayattaki tasarruf veya tüketim sapmalarını mutlak değer kullanarak analiz edebilirim.' }
     ]
   },
+  'MAT.7.1.1-2': {
+    id: 'rubric-mat-7-1-1-2',
+    outcomeId: 'MAT.7.1.1-2',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi ve Yoğunluğu',
+    description:
+      'Bileşik kesirleri tam sayılı kesre dönüştürme, sayı doğrusunda hassas dilimleme, iki rasyonel sayı arasındaki yoğunluk (sonsuz nokta) özelliği ve mutlak değerle tolerans/sapma analizini dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Bileşik Kesirden Sayı Doğrusuna Konumlandırma',
+        category: 'Matematiksel Temsil & Sayı Doğrusu',
+        levelDescriptions: {
+          1: 'Bileşik kesirleri tam sayılı kesre çevirmekte ve sayı doğrusunda hangi iki tam sayı arasında olduğunu bulmakta zorlanıyorum.',
+          2: 'Bileşik kesirleri tam sayılı kesre çevirebiliyorum fakat negatif kesirlerin yönünü belirlerken hata yapıyorum.',
+          3: 'Bileşik kesirleri tam sayılı kesre dönüştürerek ardışık iki tam sayıyı belirler, payda kadar eşit parçaya bölüp noktayı hatasız konumlandırırım.',
+          4: 'Bileşik, tam sayılı ve ondalık temsiller arasındaki dönüşümleri zihinden ilişkilendirir; sayı doğrusundaki hassas konumlarını gerekçelendirerek savunurum.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Rasyonel Sayıların Yoğunluk Özelliği (Sonsuz Nokta)',
+        category: 'Kavramsal Muhakeme & Yoğunluk',
+        levelDescriptions: {
+          1: 'İki rasyonel sayı arasında başka bir rasyonel sayı olamayacağını veya sonlu sayıda sayı olduğunu düşünüyorum.',
+          2: 'İki kesir arasında sayı bulmak için paydaları eşitlemem gerektiğini biliyorum fakat sonsuz çoklukta sayı türetme mantığını kuramıyorum.',
+          3: 'Herhangi iki rasyonel sayı arasında genişletme yoluyla yeni rasyonel sayılar bularak aralarında sonsuz nokta bulunduğunu açıklarım.',
+          4: 'Yoğunluk özelliğini mikroskop modeliyle açıklar; iki rasyonel sayının aritmetik ortalamasının daima bu aralıkta yer aldığını matematiksel olarak ispatlarım.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Mutlak Değer ve Mesafe Analizi',
+        category: 'Matematiksel Muhakeme & Mutlak Değer',
+        levelDescriptions: {
+          1: 'Mutlak değerin yalnızca işareti silme işlemi olduğunu düşünüyor, sıfır noktasına olan uzaklık kavramını kullanamıyorum.',
+          2: 'Sıfıra olan mesafenin yönü olmadığını biliyorum fakat rasyonel sayılarda mutlak değer karşılaştırmalarında zorlanıyorum.',
+          3: 'Bir rasyonel sayının mutlak değerinin başlangıç noktasına (0) olan uzaklık olduğunu bilir, |-a/b| = |a/b| eşitliğini sayı doğrusunda modellerim.',
+          4: 'Mutlak değeri tolerans, hata payı ve kalite kontrol analizlerinde bir karar verme aracı olarak başarıyla uygularım.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Gerçek Yaşam ve Çevre Modellemesi (15 Temmuz Parkı / Tasarruf)',
+        category: 'Gerçek Yaşam Modellemesi & Tasarruf',
+        levelDescriptions: {
+          1: 'Su deposu rezerv verilerini ve sensör değerlerini rasyonel sayılarla ilişkilendirmekte zorlanıyorum.',
+          2: 'Depodaki su açığını ve fazlasını rasyonel sayılarla ifade edebiliyorum fakat sıfır dengesini analiz etmekte desteğe ihtiyaç duyuyorum.',
+          3: 'Su deposundaki rezerv açığı/fazlasını ve basınç sensörü verilerini rasyonel sayılarla modeller, tasarruf ve tolerans durumlarını doğru yorumlarım.',
+          4: 'Akıllı park ve çevre yönetiminde su tasarrufu, kaynak verimliliği ve sensör kalibrasyonu için matematiksel temelli sürdürülebilir modeller öneririm.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Bileşik kesirleri tam sayılı kesre dönüştürerek sayı doğrusundaki doğru aralığı bulabilirim.' },
+      { id: 'chk2', text: 'Negatif rasyonel sayıları sayı doğrusunda sıfırdan sola doğru doğru adımlarla yerleştirebilirim.' },
+      { id: 'chk3', text: 'İki rasyonel sayı arasında genişletme yaparak sonsuz sayıda rasyonel sayı olduğunu açıklarım.' },
+      { id: 'chk4', text: 'Bir rasyonel sayının mutlak değerinin sıfır noktasına olan gerçek uzaklık olduğunu bilirim.' },
+      { id: 'chk5', text: 'Günlük hayatta su tasarrufu ve tolerans paylarını rasyonel modellerle analiz edebilirim.' }
+    ]
+  },
 };
 
 /**
@@ -1342,6 +1402,65 @@ export const PEER_OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk3', text: 'Paydası 0 olan kesirli ifadelerin tanımsız olduğunu biliyor.' },
       { id: 'chk4', text: 'Sayı doğrusunda rasyonel sayıları doğru aralığı dilimleyerek gösteriyor.' },
       { id: 'chk5', text: 'Grup çalışmalarında yapıcı ve destekleyici bir rol üstleniyor.' }
+    ]
+  },
+  'MAT.7.1.1-2': {
+    id: 'peer-rubric-mat-7-1-1-2',
+    outcomeId: 'MAT.7.1.1-2',
+    title: 'Akran Değerlendirme Rubriği: Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi',
+    description: 'Grup arkadaşınızın bileşik kesirleri sayı doğrusunda dilimleme, yoğunluk özelliğini açıklama ve mutlak değer modellerini kurma performansını değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Sayı Doğrusunda Konumlandırma ve Dilimleme',
+        category: 'Matematiksel Temsil',
+        levelDescriptions: {
+          1: 'Bileşik kesirleri tam sayılı kesre çevirip sayı doğrusunda göstermekte zorlanıyor.',
+          2: 'Pozitif kesirleri gösterebiliyor ancak negatif kesirlerin yönünü ve aralığını belirlemekte desteğe ihtiyaç duyuyor.',
+          3: 'Bileşik kesirleri ardışık iki tam sayı arasına doğru adımlarla yerleştirebiliyor.',
+          4: 'Kesirleri, tam sayılı ve ondalık halleriyle sayı doğrusunda hatasız ve açıklayıcı biçimde modelledi.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Yoğunluk Özelliği (Sonsuz Nokta) Muhakemesi',
+        category: 'Kavramsal Anlama',
+        levelDescriptions: {
+          1: 'İki kesir arasında başka rasyonel sayıların da bulunabileceğini fark etmekte zorlanıyor.',
+          2: 'İki kesir arasında sayı bulabiliyor ancak sonsuz nokta kavramını açıklamakta zorlanıyor.',
+          3: 'Genişletme yaparak iki rasyonel sayı arasında yeni sayılar bulabildi ve yoğunluğu kavradı.',
+          4: 'Yoğunluk mantığını akranlarına mikroskop ve genişletme yöntemiyle çok başarılı anlattı.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Mutlak Değer ve Mesafe Anlayışı',
+        category: 'Matematiksel Muhakeme',
+        levelDescriptions: {
+          1: 'Mutlak değerin sıfıra olan mesafe anlamını kurmakta zorlanıyor.',
+          2: 'Mesafenin yönsüz olduğunu biliyor fakat rasyonel sayılarda uygulamakta güçlük çekiyor.',
+          3: 'Sıfıra olan uzaklığı mutlak değerle doğru hesaplayıp sayı doğrusunda gösterdi.',
+          4: 'Tolerans ve sapma analizlerinde mutlak değeri bir karar aracı olarak yetkinlikle kullandı.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'İş Birliği ve Sürece Katkı',
+        category: 'Sosyal-Duygusal Beceriler',
+        levelDescriptions: {
+          1: 'Grup içi tartışmalara ve laboratuvar etkinliklerine katılımı sınırlı kaldı.',
+          2: 'Yalnızca soru sorulduğunda fikir belirtti, akranlarıyla ortak çalışma yapmakta çekingen davrandı.',
+          3: 'Grup tartışmalarına aktif katıldı ve akıllı park su deposu çözümlerine katkı sundu.',
+          4: 'Grupta yapıcı bir liderlik sergiledi, arkadaşlarına yardımcı oldu ve ortak hedefe ulaşmayı sağladı.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Bileşik kesirleri sayı doğrusunda doğru aralığı dilimleyerek gösterdi.' },
+      { id: 'chk2', text: 'İki rasyonel sayı arasında sonsuz nokta olduğunu genişleterek kanıtladı.' },
+      { id: 'chk3', text: 'Mutlak değerin başlangıç noktasına uzaklık olduğunu arkadaşlarına açıkladı.' },
+      { id: 'chk4', text: 'Laboratuvar ve oyun istasyonunda takım çalışmasına uyum sağladı.' },
+      { id: 'chk5', text: 'Farklı fikirlere saygı göstererek yapıcı geri bildirimlerde bulundu.' }
     ]
   },
 };

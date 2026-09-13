@@ -41,11 +41,14 @@ export function WhiteboardViewerModal({
 
   const [mounted, setMounted] = useState(false);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [zoomMode, setZoomMode] = useState<'fit' | 'manual'>('fit');
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [containerWidth, setContainerWidth] = useState<number>(800);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const viewerWorkspaceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -55,9 +58,40 @@ export function WhiteboardViewerModal({
   useEffect(() => {
     if (isOpen) {
       setCurrentPageIndex(0);
+      setZoomMode('fit');
       setZoomLevel(1);
     }
   }, [isOpen, file]);
+
+  // Responsive dimension tracker to snap paper to window width
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateDimensions = () => {
+      if (viewerWorkspaceRef.current) {
+        const w = viewerWorkspaceRef.current.clientWidth;
+        if (w > 0) setContainerWidth(w);
+      } else if (typeof window !== 'undefined') {
+        setContainerWidth(window.innerWidth);
+      }
+    };
+
+    updateDimensions();
+
+    const ro = new ResizeObserver(() => updateDimensions());
+    if (viewerWorkspaceRef.current) ro.observe(viewerWorkspaceRef.current);
+    window.addEventListener('resize', updateDimensions);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', updateDimensions);
+    };
+  }, [isOpen]);
+
+  const horizontalPadding = containerWidth < 640 ? 16 : 48;
+  const availableWidth = Math.max(320, containerWidth - horizontalPadding);
+  const fitWidthScale = Math.min(3.5, Math.max(0.4, Number((availableWidth / 794).toFixed(3))));
+  const effectiveZoom = zoomMode === 'fit' ? fitWidthScale : zoomLevel;
 
   // Handle ESC key
   useEffect(() => {
@@ -185,7 +219,7 @@ export function WhiteboardViewerModal({
       className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-between p-2 sm:p-4 animate-in fade-in select-none"
     >
       {/* 1. TOP VIEWER HEADER BAR */}
-      <div className="w-full max-w-6xl bg-slate-900/95 text-white rounded-2xl sm:rounded-3xl border border-slate-700/80 shadow-2xl p-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-3 shrink-0">
+      <div className="w-full bg-slate-900/95 text-white rounded-2xl sm:rounded-3xl border border-slate-700/80 shadow-2xl p-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-3 shrink-0">
         
         {/* Left: Document Info */}
         <div className="flex items-center gap-3 overflow-hidden">
@@ -249,34 +283,60 @@ export function WhiteboardViewerModal({
 
         {/* Right: Zoom, PDF Download & Close */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Zoom controls (hidden on tiny mobile) */}
-          <div className="hidden md:flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700 text-xs">
+          {/* Zoom controls */}
+          <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700 text-xs">
             <button
               type="button"
-              onClick={handleZoomOut}
+              onClick={() => {
+                setZoomMode('fit');
+                playSound('click');
+              }}
+              className={`px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                zoomMode === 'fit'
+                  ? 'bg-teal-500 text-slate-950 font-black shadow-sm'
+                  : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+              title="Pencere Genişliğine Sığdır (Sağa ve Sola Yasla)"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Genişliğe Sığdır</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setZoomMode('manual');
+                setZoomLevel((prev) => Math.max(0.4, Number((prev - 0.15).toFixed(2))));
+                playSound('click');
+              }}
               className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
               title="Uzaklaştır"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="px-1 text-[11px] font-bold text-slate-300">
-              %{Math.round(zoomLevel * 100)}
-            </span>
             <button
               type="button"
-              onClick={handleZoomIn}
+              onClick={() => {
+                setZoomMode('manual');
+                setZoomLevel(1);
+                playSound('click');
+              }}
+              className="px-1.5 text-[11px] font-bold text-teal-300 hover:text-white font-mono cursor-pointer"
+              title="Özgün Boyuta Dön (%100)"
+            >
+              %{Math.round(effectiveZoom * 100)}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setZoomMode('manual');
+                setZoomLevel((prev) => Math.min(3.5, Number((prev + 0.15).toFixed(2))));
+                playSound('click');
+              }}
               className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
               title="Yakınlaştır"
             >
               <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={handleResetZoom}
-              className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
-              title="Yakınlaştırmayı Sıfırla"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
             </button>
           </div>
 
@@ -316,16 +376,27 @@ export function WhiteboardViewerModal({
       </div>
 
       {/* 2. MAIN WHITEBOARD CANVAS / PAGE CONTAINER (Scrollable from top to bottom) */}
-      <div className="flex-1 w-full max-w-6xl overflow-y-auto overflow-x-auto my-2 p-2 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900/60 border border-slate-800 flex flex-col items-center justify-start scroll-smooth">
+      <div
+        ref={viewerWorkspaceRef}
+        className="flex-1 w-full overflow-y-auto overflow-x-auto my-2 p-2 sm:p-4 rounded-2xl sm:rounded-3xl bg-slate-900/60 border border-slate-800 flex flex-col items-center justify-start scroll-smooth"
+      >
         <div
+          className="relative flex justify-center shrink-0 mb-6 transition-all duration-100"
           style={{
-            transform: `scale(${zoomLevel})`,
-            transformOrigin: 'top center',
-            transition: 'transform 0.15s ease-out',
-            marginBottom: zoomLevel > 1 ? `${(zoomLevel - 1) * 1123}px` : '0px'
+            width: `${794 * effectiveZoom}px`,
+            minHeight: `${1123 * effectiveZoom}px`
           }}
-          className="relative w-full max-w-[794px] min-h-[1123px] bg-white rounded-2xl shadow-2xl border-2 border-slate-300 flex flex-col justify-between shrink-0 select-text overflow-hidden"
         >
+          <div
+            style={{
+              width: '794px',
+              minHeight: '1123px',
+              transform: `scale(${effectiveZoom})`,
+              transformOrigin: 'top left',
+              transition: 'transform 0.1s ease-out'
+            }}
+            className="absolute top-0 left-0 bg-white rounded-2xl shadow-2xl border-2 border-slate-300 flex flex-col justify-between shrink-0 select-text overflow-hidden"
+          >
           {/* Dynamic Whiteboard Background */}
           <div
             className="absolute inset-0 z-0 pointer-events-none"
@@ -450,10 +521,11 @@ export function WhiteboardViewerModal({
           </div>
 
         </div>
+        </div>
       </div>
 
       {/* 3. BOTTOM HELPER STRIP */}
-      <div className="w-full max-w-6xl bg-slate-900/90 text-white rounded-2xl p-2.5 px-5 flex items-center justify-between text-xs text-slate-400 shrink-0 border border-slate-800">
+      <div className="w-full bg-slate-900/90 text-white rounded-2xl p-2.5 px-5 flex items-center justify-between text-xs text-slate-400 shrink-0 border border-slate-800">
         <div className="flex items-center gap-2">
           <span>💡 İpucu: Klavye yön tuşlarıyla (← / →) sayfalar arasında geçiş yapabilir, <strong>ESC</strong> veya <strong>KAPAT</strong> ile kapatabilirsiniz.</span>
         </div>

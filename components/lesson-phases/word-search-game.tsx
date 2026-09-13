@@ -16,6 +16,7 @@ import {
   EyeOff,
   Shuffle
 } from 'lucide-react';
+import { MathText } from '@/components/ui/math-fraction';
 
 interface WordClue {
   id: string;
@@ -439,6 +440,52 @@ const MAT_7_1_1_CLUES: WordClue[] = [
   }
 ];
 
+// 7. MAT.7.1.1-2 Clues (Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi)
+const MAT_7_1_1_W2_CLUES: WordClue[] = [
+  {
+    id: 'mat712-c1',
+    question: 'Payı paydasına eşit ya da paydasından büyük olan rasyonel kesir türüne ne ad verilir?',
+    word: 'BİLEŞİK',
+    hint: '7 Harfli • Sayı doğrusunda tam sayılıya çevrilir',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat712-c2',
+    question: 'Bir tam sayı ve basit kesirden oluşan, sayı doğrusundaki aralığı doğrudan veren gösterim türü nedir?',
+    word: 'TAMSAYILI',
+    hint: '9 Harfli • -2 tam 3/4 gibi gösterilir',
+    color: '#10b981'
+  },
+  {
+    id: 'mat712-c3',
+    question: 'Rasyonel sayıların ardışık tam sayılar arasına payda kadar dilimlenerek gösterildiği cetvel çizgisine ne denir?',
+    word: 'SAYIDOĞRUSU',
+    hint: '11 Harfli • Payda kadar dilimlenir',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat712-c4',
+    question: 'Bir sayının sayı doğrusunda başlangıç noktasına (0) olan yönsüz gerçek mesafesine ne denir?',
+    word: 'MUTLAKDEĞER',
+    hint: '11 Harfli • Sembolü |x| ≥ 0',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat712-c5',
+    question: 'Genişletme veya sadeleştirme yapıldığında sayı doğrusunda aynı noktaya karşılık gelen kesirlere ne denir?',
+    word: 'DENKKESİR',
+    hint: '9 Harfli • 1/3 = 2/6 denkliği',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat712-c6',
+    question: 'Sayı doğrusunda pozitif ve negatif sayıları birbirinden ayıran 0 referans noktasına ne ad verilir?',
+    word: 'BAŞLANGIÇ',
+    hint: '9 Harfli • 0 referans noktası',
+    color: '#06b6d4'
+  }
+];
+
 const TURKISH_CHARS = [
   'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
   'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
@@ -549,7 +596,12 @@ export function WordSearchGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
-  const isMat711 = id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel');
+  const isMat711W2 =
+    id === 'MAT.7.1.1-2' ||
+    id === 'MAT.7.1.1.2' ||
+    title.includes('derinleşme') ||
+    title.includes('yoğunluk');
+  const isMat711 = !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
   const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
   const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
   const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
@@ -559,7 +611,9 @@ export function WordSearchGame() {
   const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
   const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
 
-  const activeClues = isMat711
+  const activeClues = isMat711W2
+    ? MAT_7_1_1_W2_CLUES
+    : isMat711
     ? MAT_7_1_1_CLUES
     : isMat614
     ? MAT_6_1_4_CLUES
@@ -786,13 +840,13 @@ export function WordSearchGame() {
                           >
                             {idx + 1}
                           </span>
-                          <span>{clue.question}</span>
+                          <span><MathText text={clue.question} /></span>
                         </div>
 
                         {/* Hint box */}
                         {isHintOpen && (
                           <div className="text-[11px] font-bold text-amber-800 bg-amber-100/80 px-2 py-1 rounded-md border border-amber-300 animate-in fade-in">
-                            💡 İpucu: {clue.hint}
+                            💡 İpucu: <MathText text={clue.hint} />
                           </div>
                         )}
                       </div>

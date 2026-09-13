@@ -21,6 +21,7 @@ import {
   Star,
   BookOpen
 } from 'lucide-react';
+import { MathText } from '@/components/ui/math-fraction';
 
 export interface MemoryPair {
   id: string;
@@ -804,11 +805,77 @@ const MAT_7_1_1_PAIRS: MemoryPair[] = [
   }
 ];
 
+const MAT_7_1_1_W2_PAIRS: MemoryPair[] = [
+  {
+    id: 'mat712-p1',
+    concept: 'BİLEŞİK KESİR',
+    symbol: '-11/4 = -2 tam 3/4',
+    badge: '📐 Bileşik Kesir',
+    definition: 'Payı paydasına eşit veya büyük olan kesirlerdir. Sayı doğrusundaki yerini bulmak için önce tam sayılı kesre çevrilir.',
+    example: '-11/4 = -2 tam 3/4 (-2 ile -3 arasında 4 eşit parçadan 3. adım)',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat712-p2',
+    concept: 'TAM SAYILI KESİR',
+    symbol: '-2 tam 3/4',
+    badge: '🔢 Tam Sayılı Kesir',
+    definition: 'Bir tam sayı ve bir basit kesirden oluşan rasyonel gösterimdir. Sayı doğrusunda hangi iki ardışık tam sayı arasında olduğunu doğrudan gösterir.',
+    example: '-2 tam 3/4 sayısı -2 ile -3 arasındadır ve -3 tam sayısına daha yakındır.',
+    color: '#10b981'
+  },
+  {
+    id: 'mat712-p3',
+    concept: 'SAYI DOĞRUSU DİLİMLEME',
+    symbol: 'Payda = Parça, Pay = Adım',
+    badge: '📏 Dilimleme',
+    definition: 'Sayı doğrusunda ardışık iki tam sayının arası payda kadar eşit parçaya ayrılır, pay kadar sıfırdan itibaren adım atılır.',
+    example: '-3 ile -4 arasını 5 eşit parçaya bölüp sola 2 adım gitmek: -17/5.',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat712-p4',
+    concept: 'MUTLAK DEĞER',
+    symbol: '|-11/4| = |+11/4| = 11/4',
+    badge: '⚡ Sıfıra Uzaklık',
+    definition: 'Bir rasyonel sayının sayı doğrusunda başlangıç noktasına (0) olan yönsüz gerçek mesafesidir ve asla negatif olamaz.',
+    example: '|-11/4| = |+11/4| = 11/4 birim uzaklıktadır.',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat712-p5',
+    concept: 'DENK KESİR (GENİŞLETME)',
+    symbol: '1/3 = 2/6, 2/3 = 4/6',
+    badge: '🔄 Denk Temsil',
+    definition: 'Pay ve paydanın aynı sayıyla çarpılmasıyla kesrin değeri değişmez; sayı doğrusunda aynı noktayı gösterir ve araya yeni sayılar yerleştirmeyi sağlar.',
+    example: '1/3 ve 2/3 kesirleri genişletilerek ortadaki 3/6 = 1/2 sayısı bulunur.',
+    color: '#06b6d4'
+  },
+  {
+    id: 'mat712-p6',
+    concept: 'BAŞLANGIÇ NOKTASI (0)',
+    symbol: 'Referans = 0',
+    badge: '🎯 Başlangıç Noktası',
+    definition: 'Sayı doğrusunda pozitif ve negatif sayıları birbirinden ayıran referans noktasıdır; sağında pozitif, solunda negatif rasyonel sayılar bulunur.',
+    example: 'Rezerv fazlası +7/2 ton sağda, rezerv açığı -11/4 ton soldadır.',
+    color: '#ec4899'
+  }
+];
+
 // Helper to resolve pairs and topic info
 function resolveOutcomePairs(outcomeId?: string, outcomeCode?: string, outcomeTitle?: string): { code: string; title: string; pairs: MemoryPair[] } {
   const id = outcomeId || '';
   const code = outcomeCode || '';
   const title = (outcomeTitle || '').toLowerCase();
+
+  // 0. MAT.7.1.1-2 Check
+  if (id === 'MAT.7.1.1-2' || id === 'MAT.7.1.1.2' || title.includes('derinleşme') || title.includes('yoğunluk')) {
+    return {
+      code: 'MAT.7.1.1',
+      title: 'Rasyonel Sayıların Sayı Doğrusunda Derinleşmesi ve Yoğunluğu',
+      pairs: MAT_7_1_1_W2_PAIRS
+    };
+  }
 
   // 0. MAT.7.1.1 Check
   if (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel')) {
@@ -1449,11 +1516,11 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
                 >
                   <div className="flex items-center justify-between font-black text-emerald-300">
                     <span>{p.badge}</span>
-                    <span className="font-mono text-[10px] text-white/70">{p.symbol}</span>
+                    <span className="font-mono text-[10px] text-white/70"><MathText text={p.symbol} /></span>
                   </div>
-                  <p className="text-[11px] text-slate-200 line-clamp-2 leading-relaxed">
-                    {p.definition}
-                  </p>
+                  <div className="text-[11px] text-slate-200 line-clamp-2 leading-relaxed">
+                    <MathText text={p.definition} />
+                  </div>
                 </div>
               ))}
             </div>
@@ -1554,7 +1621,7 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     ) : (
                       <span className="text-[9px] font-mono font-bold text-slate-400">
-                        {card.symbol}
+                        <MathText text={card.symbol} />
                       </span>
                     )}
                   </div>
@@ -1568,18 +1635,18 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
                         {card.conceptTitle}
                       </h4>
                       <div className="inline-block font-mono font-black text-xs text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-lg border border-teal-200">
-                        {card.symbol}
+                        <MathText text={card.symbol} />
                       </div>
                     </div>
                   ) : (
                     // DEFINITION CARD LAYOUT
                     <div className="my-auto space-y-1.5 overflow-hidden">
-                      <p className="text-xs sm:text-[13px] font-medium leading-snug text-slate-800 line-clamp-4">
-                        {card.text}
-                      </p>
+                      <div className="text-xs sm:text-[13px] font-medium leading-snug text-slate-800 line-clamp-4">
+                        <MathText text={card.text} />
+                      </div>
                       {card.example && (
                         <div className="text-[9px] text-slate-500 font-semibold italic line-clamp-1 border-t border-slate-100 pt-1">
-                          💡 {card.example}
+                          💡 <MathText text={card.example} />
                         </div>
                       )}
                     </div>

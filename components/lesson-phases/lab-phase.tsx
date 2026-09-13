@@ -12,6 +12,7 @@ import {
   CommonMultiplesDivisorsBench
 } from '@/components/lesson-phases/mat6-lab-benches';
 import { RationalNumbersBench } from '@/components/lesson-phases/rational-numbers-bench';
+import { RationalRulerDensityBench } from '@/components/lesson-phases/rational-ruler-density-bench';
 import confetti from 'canvas-confetti';
 import {
   Shapes,
@@ -100,12 +101,19 @@ function getAngleType(deg: number): { type: 'sifir' | 'dar' | 'dik' | 'genis' | 
 export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const { playSound, unlockBadge, addPoints, selectedOutcome } = useApp();
 
+  const isRationalNumbersWeek2 =
+    selectedOutcome?.id === 'MAT.7.1.1-2' ||
+    selectedOutcome?.code?.includes('7.1.1-2') ||
+    data.toolType === 'rational-ruler-density-bench';
+
   const isRationalNumbersOutcome =
-    selectedOutcome?.id === 'MAT.7.1.1' ||
+    !isRationalNumbersWeek2 &&
+    (selectedOutcome?.id === 'MAT.7.1.1' ||
     selectedOutcome?.code?.includes('7.1.1') ||
-    data.toolType === 'rational-numbers-bench';
+    data.toolType === 'rational-numbers-bench');
 
   const isDivisibilityOutcome =
+    !isRationalNumbersWeek2 &&
     !isRationalNumbersOutcome &&
     (selectedOutcome?.id === 'MAT.6.1.2' ||
     selectedOutcome?.code?.includes('6.1.2') ||
@@ -895,7 +903,51 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   };
 
   // ==========================================
-  // OUTCOME: MAT.7.1.1 (RATIONAL NUMBERS BENCH)
+  // OUTCOME: MAT.7.1.1-2 (RATIONAL RULER DENSITY BENCH - WEEK 2)
+  // ==========================================
+  if (isRationalNumbersWeek2) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold uppercase tracking-wider mb-2">
+              <FlaskConical className="w-3.5 h-3.5 text-blue-600" />
+              <span>2. Aşama: Dinamik Rasyonel Cetvel ve Yoğunluk Laboratuvarı (MAT.7.1.1 - 2. Hafta)</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-900">{data.title}</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Bileşik kesir konumlayıcı, denk temsiller mikroskobu ve mutlak değer mesafe lazeriyle rasyonel sayıları derinlemesine keşfedin!
+            </p>
+          </div>
+        </div>
+
+        {/* Rational Ruler & Density Interactive Lab Bench */}
+        <RationalRulerDensityBench />
+
+        {/* Jump to Phase 3 */}
+        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-slate-600 font-bold">
+            <CheckCircle2 className="w-4 h-4 text-blue-600" />
+            <span>Atölye çalışmalarını tamamladıktan sonra 3. Aşama Oyunlar Arenası&apos;na geçebilirsiniz.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              playSound('select');
+              onNextPhase();
+            }}
+            className="px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+          >
+            <span>3. Aşama: Oyunlar Arenası</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // OUTCOME: MAT.7.1.1 (RATIONAL NUMBERS BENCH - WEEK 1)
   // ==========================================
   if (isRationalNumbersOutcome) {
     return (

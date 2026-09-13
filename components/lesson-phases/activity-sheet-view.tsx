@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { MathFraction } from '@/components/ui/math-fraction';
 import {
   ClassroomFileRecord,
   getActivitySheetForOutcome,
@@ -25,6 +26,11 @@ import {
   CommonMultiplesActivityView,
   CoprimeGardenActivityView
 } from './mat6-activity-sheets';
+import {
+  FractionRulerActivityView,
+  DensityMicroscopeActivityView,
+  LaserToleranceActivityView
+} from './mat7-activity-sheets';
 import confetti from 'canvas-confetti';
 import {
   FileText,
@@ -52,7 +58,10 @@ import {
   BookOpen,
   RotateCcw,
   Package,
-  Truck
+  Truck,
+  Droplets,
+  Microscope,
+  Zap
 } from 'lucide-react';
 
 interface ActivitySheetViewProps {
@@ -170,8 +179,33 @@ export function ActivitySheetView({
     isCommonMultiplesActivity ||
     isCoprimeGardenActivity;
 
+  // MAT.7.1.1 Activities (Week 2 & Week 1)
+  const isMat711RulerActivity =
+    selectedSheetId.includes('mat-7-1-1-ruler') ||
+    fileRecord?.id?.includes('mat-7-1-1-ruler') ||
+    fileRecord?.title?.includes('Bileşik Kesirleri Tam Sayılı') ||
+    fileRecord?.title?.includes('Bileşik Kesir');
+
+  const isMat711DensityActivity =
+    selectedSheetId.includes('mat-7-1-1-density') ||
+    fileRecord?.id?.includes('mat-7-1-1-density') ||
+    fileRecord?.title?.includes('Rasyonel Sayıların Yoğunluğu') ||
+    fileRecord?.title?.includes('Sonsuz Nokta Mikroskobu');
+
+  const isMat711LaserActivity =
+    selectedSheetId.includes('mat-7-1-1-laser') ||
+    fileRecord?.id?.includes('mat-7-1-1-laser') ||
+    fileRecord?.title?.includes('Mutlak Değer Lazer') ||
+    fileRecord?.title?.includes('Tolerans Analizi');
+
+  const isMat711Activity =
+    isMat711RulerActivity ||
+    isMat711DensityActivity ||
+    isMat711LaserActivity;
+
   const isTableHypothesisActivity =
     !isMat6Activity &&
+    !isMat711Activity &&
     (selectedSheetId.includes('table-hypothesis') ||
       fileRecord?.id?.includes('table-hypothesis') ||
       fileRecord?.title?.includes('Varsayım ve Tablo'));
@@ -900,6 +934,18 @@ export function ActivitySheetView({
             }`}
           >
             {availableSheets.map((sheet, index) => {
+              const isMat711Ruler =
+                sheet.id.includes('mat-7-1-1-ruler') ||
+                sheet.title.includes('Bileşik Kesirleri Tam Sayılı') ||
+                sheet.title.includes('Bileşik Kesir');
+              const isMat711Density =
+                sheet.id.includes('mat-7-1-1-density') ||
+                sheet.title.includes('Rasyonel Sayıların Yoğunluğu') ||
+                sheet.title.includes('Sonsuz Nokta Mikroskobu');
+              const isMat711Laser =
+                sheet.id.includes('mat-7-1-1-laser') ||
+                sheet.title.includes('Mutlak Değer Lazer') ||
+                sheet.title.includes('Tolerans Analizi');
               const isAreaModels =
                 sheet.id.includes('area-models') ||
                 sheet.title.includes('Alan Modelleri');
@@ -949,7 +995,13 @@ export function ActivitySheetView({
                 (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
-              const icon = isAreaModels
+              const icon = isMat711Ruler
+                ? '💧'
+                : isMat711Density
+                ? '🔬'
+                : isMat711Laser
+                ? '⚡'
+                : isAreaModels
                 ? '📦'
                 : isRhythmicJumps
                 ? '🐸'
@@ -978,7 +1030,13 @@ export function ActivitySheetView({
                 : isAnatomy
                 ? '📐'
                 : '📏';
-              const title = isAreaModels
+              const title = isMat711Ruler
+                ? 'Bileşik Kesir & Sayı Doğrusu'
+                : isMat711Density
+                ? 'Yoğunluk & Sonsuz Nokta'
+                : isMat711Laser
+                ? 'Mutlak Değer & Tolerans'
+                : isAreaModels
                 ? 'Alan Modelleri & Çarpan Avı'
                 : isRhythmicJumps
                 ? 'Ritmik Sıçrama & Katlar Çizgisi'
@@ -1008,7 +1066,13 @@ export function ActivitySheetView({
                 ? 'İletkinin Anatomisi'
                 : 'Aşamalı İnşa İstasyonları';
 
-              const badge = isAreaModels
+              const badge = isMat711Ruler
+                ? '1. Etkinlik'
+                : isMat711Density
+                ? '2. Etkinlik'
+                : isMat711Laser
+                ? '3. Etkinlik'
+                : isAreaModels
                 ? '1. Etkinlik'
                 : isRhythmicJumps
                 ? '2. Etkinlik'
@@ -1038,7 +1102,13 @@ export function ActivitySheetView({
                 ? 'Aracı Tanıma'
                 : `Etkinlik ${index + 1}`;
 
-              const tag = isAreaModels
+              const tag = isMat711Ruler
+                ? <span className="inline-flex items-center gap-1"><MathFraction value="-11/4" /> Rezerv Açığı, 4 Eş Dilim</span>
+                : isMat711Density
+                ? <span className="inline-flex items-center gap-1"><MathFraction value="1/3" /> - <MathFraction value="2/3" /> Arası</span>
+                : isMat711Laser
+                ? <span className="inline-flex items-center gap-1"><MathFraction value="-11/4" isAbsolute /> Mesafe, |x| ≤ <MathFraction value="3/4" unit="Debi" /></span>
+                : isAreaModels
                 ? '24 & 36 Alanı, Çarpan İkilileri'
                 : isRhythmicJumps
                 ? '12 & 8 Katları, Ortak Katlar'
@@ -1078,7 +1148,13 @@ export function ActivitySheetView({
                   }}
                   className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer text-left border ${
                     isActive
-                      ? isAreaModels
+                      ? isMat711Ruler
+                        ? 'bg-sky-600 text-white border-sky-500 shadow-md scale-[1.01]'
+                        : isMat711Density
+                        ? 'bg-indigo-600 text-white border-indigo-500 shadow-md scale-[1.01]'
+                        : isMat711Laser
+                        ? 'bg-amber-600 text-white border-amber-500 shadow-md scale-[1.01]'
+                        : isAreaModels
                         ? 'bg-orange-600 text-white border-orange-500 shadow-md scale-[1.01]'
                         : isRhythmicJumps
                         ? 'bg-teal-600 text-white border-teal-500 shadow-md scale-[1.01]'
@@ -1149,7 +1225,13 @@ export function ActivitySheetView({
       {/* 1. Header Banner & Quick Action Buttons */}
       <div
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
-          isAreaModelsActivity
+          isMat711RulerActivity
+            ? 'bg-gradient-to-br from-sky-950 via-blue-950 to-slate-950'
+            : isMat711DensityActivity
+            ? 'bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950'
+            : isMat711LaserActivity
+            ? 'bg-gradient-to-br from-amber-950 via-orange-950 to-slate-950'
+            : isAreaModelsActivity
             ? 'bg-gradient-to-br from-orange-950 via-amber-950 to-slate-950'
             : isRhythmicJumpsActivity
             ? 'bg-gradient-to-br from-teal-950 via-emerald-950 to-slate-950'
@@ -1183,7 +1265,13 @@ export function ActivitySheetView({
         {/* Background Decorative Patterns */}
         <div
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-            isAreaModelsActivity
+            isMat711RulerActivity
+              ? 'bg-sky-500/20'
+              : isMat711DensityActivity
+              ? 'bg-indigo-500/20'
+              : isMat711LaserActivity
+              ? 'bg-amber-500/20'
+              : isAreaModelsActivity
               ? 'bg-orange-500/20'
               : isRhythmicJumpsActivity
               ? 'bg-teal-500/20'
@@ -1216,7 +1304,13 @@ export function ActivitySheetView({
         />
         <div
           className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
-            isAreaModelsActivity
+            isMat711RulerActivity
+              ? 'bg-blue-500/20'
+              : isMat711DensityActivity
+              ? 'bg-purple-500/20'
+              : isMat711LaserActivity
+              ? 'bg-orange-500/20'
+              : isAreaModelsActivity
               ? 'bg-amber-500/20'
               : isRhythmicJumpsActivity
               ? 'bg-emerald-500/20'
@@ -1253,7 +1347,13 @@ export function ActivitySheetView({
           <div className="space-y-2 max-w-2xl">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
-                isAreaModelsActivity
+                isMat711RulerActivity
+                  ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
+                  : isMat711DensityActivity
+                  ? 'bg-indigo-400/20 border-indigo-300/30 text-indigo-200'
+                  : isMat711LaserActivity
+                  ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
+                  : isAreaModelsActivity
                   ? 'bg-orange-400/20 border-orange-300/30 text-orange-200'
                   : isRhythmicJumpsActivity
                   ? 'bg-teal-400/20 border-teal-300/30 text-teal-200'
@@ -1284,7 +1384,22 @@ export function ActivitySheetView({
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
-              {isAreaModelsActivity ? (
+              {isMat711RulerActivity ? (
+                <>
+                  <Droplets className="w-3.5 h-3.5 text-sky-300" />
+                  <span>Bileşik Kesirden Sayı Doğrusuna (7. Sınıf - MAT.7.1.1)</span>
+                </>
+              ) : isMat711DensityActivity ? (
+                <>
+                  <Microscope className="w-3.5 h-3.5 text-indigo-300" />
+                  <span>Rasyonel Sayıların Yoğunluğu (7. Sınıf - MAT.7.1.1)</span>
+                </>
+              ) : isMat711LaserActivity ? (
+                <>
+                  <Zap className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Mutlak Değer &amp; Debi Toleransı (7. Sınıf - MAT.7.1.1)</span>
+                </>
+              ) : isAreaModelsActivity ? (
                 <>
                   <Package className="w-3.5 h-3.5 text-orange-300" />
                   <span>Alan Modelleri & Çarpan İkilileri (1. Hafta - MAT.6.1.1)</span>
@@ -1363,7 +1478,13 @@ export function ActivitySheetView({
             </div>
             
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              {isAreaModelsActivity
+              {isMat711RulerActivity
+                ? 'Etkinlik 1: "BİLEŞİK KESİRLERDEN SAYI DOĞRUSUNA VE ARALIK DİLİMLEME"'
+                : isMat711DensityActivity
+                ? 'Etkinlik 2: "RASYONEL SAYILARIN YOĞUNLUĞU VE SONSUZ NOKTA MİKROSKOBU"'
+                : isMat711LaserActivity
+                ? 'Etkinlik 3: "MUTLAK DEĞER LAZER METRESİ VE DEBİ TOLERANS ANALİZİ"'
+                : isAreaModelsActivity
                 ? 'Etkinlik 1: "ALAN MODELLERİ İLE ÇARPAN AVCILIĞI"'
                 : isRhythmicJumpsActivity
                 ? 'Etkinlik 2: "RİTMİK SIÇRAMA VE KATLAR ÇİZGİSİ"'
@@ -1395,7 +1516,25 @@ export function ActivitySheetView({
             </h2>
             
             {/* Kurgu Paneli / Açıklama */}
-            {isAreaModelsActivity ? (
+            {isMat711RulerActivity ? (
+              <div className="p-3 bg-sky-950/60 border border-sky-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-sky-100 font-medium leading-relaxed">
+                  💧 <strong>Su Deposu &amp; Sayı Doğrusu:</strong> &ldquo;15 Temmuz Demokrasi Parkı Akıllı Su Deposu'ndaki <MathFraction value="-11/4" unit="tonluk" /> su açığını tam sayılı kesre dönüştürünüz, sayı doğrusunda ardışık tam sayılar arasını payda kadar eş dilimlere ayırıp hassas konumlandırınız!&rdquo;
+                </p>
+              </div>
+            ) : isMat711DensityActivity ? (
+              <div className="p-3 bg-indigo-950/60 border border-indigo-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-indigo-100 font-medium leading-relaxed">
+                  🔬 <strong>Basınç Sensörleri &amp; Yoğunluk:</strong> &ldquo;Parkın damlama sulama hattındaki <MathFraction value="1/3" /> ile <MathFraction value="2/3" unit="bar" /> arasındaki basınç sensörlerini mikroskop altında inceleyiniz; paydaları genişleterek iki rasyonel sayı arasındaki sonsuz nokta varlığını ispatlayınız!&rdquo;
+                </p>
+              </div>
+            ) : isMat711LaserActivity ? (
+              <div className="p-3 bg-amber-950/60 border border-amber-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-amber-100 font-medium leading-relaxed">
+                  ⚡ <strong>Lazer Metre &amp; Debi Güvenliği:</strong> &ldquo;0 başlangıç noktasından su depolarına olan yönsüz mesafeleri mutlak değerle ölçünüz ve |x| &le; <MathFraction value="3/4" unit="m/s" /> debi tolerans kuralına göre hatların güvenliğini analiz ediniz!&rdquo;
+                </p>
+              </div>
+            ) : isAreaModelsActivity ? (
               <div className="p-3 bg-orange-950/60 border border-orange-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-orange-100 font-medium leading-relaxed">
                   📦 <strong>Alan Modelleri &amp; Çarpanlar:</strong> &ldquo;Birim kareli alan modelleri ve dikdörtgen dizilimleri üzerinden çarpan çiftlerini keşfediniz, fireli denemelerle çarpan olmayan sayıları tespit ediniz!&rdquo;
@@ -1521,7 +1660,13 @@ export function ActivitySheetView({
               <span>{outcomeCode}</span>
               <span>•</span>
               <span>
-                {isAreaModelsActivity
+                {isMat711RulerActivity
+                  ? '2 Bölüm • Dönüşüm & Dilimleme (100 Puan)'
+                  : isMat711DensityActivity
+                  ? '2 Bölüm • Genişletme & Yoğunluk İspatı (100 Puan)'
+                  : isMat711LaserActivity
+                  ? '2 Bölüm • Mutlak Mesafe & Debi Toleransı (100 Puan)'
+                  : isAreaModelsActivity
                   ? '3 Bölüm • Alan & Çarpanlar (100 Puan)'
                   : isRhythmicJumpsActivity
                   ? '3 Bölüm • Sayı Doğrusu & Katlar (100 Puan)'
@@ -1553,7 +1698,13 @@ export function ActivitySheetView({
               </span>
               <span>•</span>
               <span>
-                {isAreaModelsActivity
+                {isMat711RulerActivity
+                  ? <span className="inline-flex items-center gap-1"><MathFraction value="-11/4" />, <MathFraction value="-7/2" />, <MathFraction value="+13/4" /> Noktaları</span>
+                  : isMat711DensityActivity
+                  ? <span className="inline-flex items-center gap-1"><MathFraction value="1/3" /> ile <MathFraction value="2/3" unit="Bar" /> Sensörleri</span>
+                  : isMat711LaserActivity
+                  ? <span className="inline-flex items-center gap-1">|x| ≤ <MathFraction value="3/4" unit="m/s" /> Akış Güvenliği</span>
+                  : isAreaModelsActivity
                   ? '24 ve 36 Birimkare Modelleri'
                   : isRhythmicJumpsActivity
                   ? '12 ve 8 Katları • Ortak Seferler'
@@ -1597,7 +1748,13 @@ export function ActivitySheetView({
             >
               <Eye
                 className={`w-4 h-4 ${
-                  isAreaModelsActivity
+                  isMat711RulerActivity
+                    ? 'text-sky-300'
+                    : isMat711DensityActivity
+                    ? 'text-indigo-300'
+                    : isMat711LaserActivity
+                    ? 'text-amber-300'
+                    : isAreaModelsActivity
                     ? 'text-orange-300'
                     : isRhythmicJumpsActivity
                     ? 'text-teal-300'
@@ -1631,7 +1788,13 @@ export function ActivitySheetView({
                 setWhiteboardModalOpen(true);
               }}
               className={`px-4 py-2.5 rounded-xl font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${
-                isAreaModelsActivity
+                isMat711RulerActivity
+                  ? 'bg-sky-400 hover:bg-sky-300 text-slate-950 shadow-sky-500/20'
+                  : isMat711DensityActivity
+                  ? 'bg-indigo-400 hover:bg-indigo-300 text-slate-950 shadow-indigo-500/20'
+                  : isMat711LaserActivity
+                  ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-500/20'
+                  : isAreaModelsActivity
                   ? 'bg-orange-400 hover:bg-orange-300 text-slate-950 shadow-orange-500/20'
                   : isRhythmicJumpsActivity
                   ? 'bg-teal-400 hover:bg-teal-300 text-slate-950 shadow-teal-500/20'
@@ -1710,8 +1873,14 @@ export function ActivitySheetView({
 
       </div>
 
-      {/* 2. BODY CONTENT: MAT.6 ACTIVITIES OR 5TH GRADE WORKSHOPS */}
-      {isAreaModelsActivity ? (
+      {/* 2. BODY CONTENT: MAT.7 OR MAT.6 ACTIVITIES OR 5TH GRADE WORKSHOPS */}
+      {isMat711RulerActivity ? (
+        <FractionRulerActivityView />
+      ) : isMat711DensityActivity ? (
+        <DensityMicroscopeActivityView />
+      ) : isMat711LaserActivity ? (
+        <LaserToleranceActivityView />
+      ) : isAreaModelsActivity ? (
         <AreaModelsActivityView />
       ) : isRhythmicJumpsActivity ? (
         <RhythmicJumpsActivityView />
@@ -7537,7 +7706,13 @@ export function ActivitySheetView({
             <span>Sıradaki Aşama: Öz Değerlendirme Rubriği</span>
           </div>
           <p className="text-xs text-slate-500">
-            {isAreaModelsActivity
+            {isMat711RulerActivity
+              ? 'Bileşik kesirlerden sayı doğrusuna ve aralık dilimleme adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi rasyonel sayı becerilerinizi değerlendiriniz.'
+              : isMat711DensityActivity
+              ? 'Rasyonel sayıların yoğunluğu ve sonsuz nokta mikroskobu adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi çıkarım becerilerinizi değerlendiriniz.'
+              : isMat711LaserActivity
+              ? 'Mutlak değer lazer metresi ve debi tolerans analizi adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi modelleme becerilerinizi değerlendiriniz.'
+              : isAreaModelsActivity
               ? 'Alan Modelleri ile Çarpan Avcılığı adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi çarpan ve bölen bulma becerilerinizi değerlendiriniz.'
               : isRhythmicJumpsActivity
               ? 'Ritmik Sıçrama ve Katlar Çizgisi adımlarını tamamladıktan sonra bir sonraki adıma geçerek kendi katlar ve ortak kat hesaplama becerilerinizi değerlendiriniz.'

@@ -18,6 +18,11 @@ import {
   RationalParachuteGame,
   ZeroBalanceCenterGame
 } from '@/components/lesson-phases/mat7-games';
+import {
+  RationalMetroLineGame,
+  AbsoluteBalanceGame,
+  NumberLineMinesweeperGame
+} from '@/components/lesson-phases/mat7-w2-games';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import { useAuth } from '@/lib/auth-store';
 import {
@@ -43,7 +48,8 @@ import {
   Compass,
   Layers,
   Package,
-  Activity
+  Activity,
+  Train
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -61,6 +67,9 @@ interface MatchCard {
 }
 
 export type PuzzleGameId = 
+  | 'rationalmetro'
+  | 'absolutebalance'
+  | 'numberlineminesweeper'
   | 'setsorting'
   | 'rationalparachute'
   | 'zerobalance'
@@ -210,10 +219,17 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     }
   };
 
+  const isRationalNumbersWeek2 =
+    selectedOutcome?.id === 'MAT.7.1.1-2' ||
+    selectedOutcome?.id === 'MAT.7.1.1.2' ||
+    data.title?.toLowerCase().includes('derinleşme') ||
+    selectedOutcome?.title?.toLowerCase().includes('derinleşme');
+
   const isRationalNumbersTopic =
-    selectedOutcome?.id === 'MAT.7.1.1' ||
+    !isRationalNumbersWeek2 &&
+    (selectedOutcome?.id === 'MAT.7.1.1' ||
     selectedOutcome?.code?.includes('7.1.1') ||
-    data.title?.toLowerCase().includes('rasyonel');
+    data.title?.toLowerCase().includes('rasyonel'));
 
   const isDivisibilityTopic =
     !isRationalNumbersTopic &&
@@ -284,7 +300,40 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     reward: string;
   }> = [];
 
-  if (isRationalNumbersTopic) {
+  if (isRationalNumbersWeek2) {
+    baseGamesList.push(
+      {
+        id: 'rationalmetro',
+        title: 'Rasyonel Metro Hattı (Durak Eşleme)',
+        tagline: 'Hassas İstasyon & Temsil Eşleme',
+        description: 'Kesir, ondalık ve tam sayılı metro vagonlarını sayı doğrusundaki doğru durak koordinatlarına ulaştır!',
+        icon: <Train className="w-8 h-8" />,
+        badge: 'Hassas Eşleme • Combo Serisi',
+        gradient: 'from-blue-600 via-indigo-600 to-cyan-700',
+        reward: '+150 XP & Metro Makinist Rozeti'
+      },
+      {
+        id: 'absolutebalance',
+        title: 'Mutlak Terazi: Enerji Dengeleme',
+        tagline: 'Sıfıra Mesafe & Mutlak Değer Lazeri',
+        description: 'Lazer metresiyle sıfır noktasına olan mutlak uzaklıkları ölç! Eşit mesafedeki zıt rasyonel yükleri terazi kefelerine yerleştir.',
+        icon: <Zap className="w-8 h-8" />,
+        badge: 'Arcade Denge • 3 Seviye',
+        gradient: 'from-amber-500 via-orange-600 to-rose-700',
+        reward: '+150 XP & Denge Ustası Rozeti'
+      },
+      {
+        id: 'numberlineminesweeper',
+        title: 'Sayı Doğrusunda Mayın Temizleme',
+        tagline: 'Yoğunluk & Aralık Dedektifi',
+        description: 'İki rasyonel sayı arasında gizlenen mayınları dedektör ile tespit et! Yoğunluk kuralını kullanarak güvenli koordinatlara adım at.',
+        icon: <Crosshair className="w-8 h-8" />,
+        badge: 'Aralık & Hassasiyet • 3 Bölge',
+        gradient: 'from-emerald-600 via-teal-600 to-slate-900',
+        reward: '+150 XP & Mayın Dedektifi Rozeti'
+      }
+    );
+  } else if (isRationalNumbersTopic) {
     baseGamesList.push(
       {
         id: 'setsorting',
@@ -493,7 +542,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
   baseGamesList.push(
     {
       id: 'memorycards',
-      title: isRationalNumbersTopic
+      title: isRationalNumbersWeek2
+        ? 'Rasyonel Sayılar Sayı Doğrusu & Yoğunluk Hafıza Kartları'
+        : isRationalNumbersTopic
         ? 'Rasyonel Sayılar Hafıza Kartları'
         : isDivisibilityTopic
         ? 'Bölünebilme Kuralları Hafıza Kartları'
@@ -505,7 +556,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         ? 'Çarpanlar & Katlar Hafıza Kartları'
         : 'Kavram & Tanım Hafıza Kartları',
       tagline: 'Kavramsal Eşleştirme & Bellek',
-      description: isRationalNumbersTopic
+      description: isRationalNumbersWeek2
+        ? 'Bileşik kesir, yoğunluk özelliği, sonsuz nokta, dilimleme ve mutlak değer kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
+        : isRationalNumbersTopic
         ? 'Rasyonel sayı, mutlak değer, Euler şeması, gizli payda ve tanımsızlık kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
         : isDivisibilityTopic
         ? '2, 3, 4, 5, 6, 9, 10 bölünebilme kuralları ve basamak kavramlarını tanımlarıyla eşleştir.'
@@ -523,7 +576,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'matching',
-      title: isRationalNumbersTopic
+      title: isRationalNumbersWeek2
+        ? 'Rasyonel Sayılar & Yoğunluk Eşleştirme'
+        : isRationalNumbersTopic
         ? 'Rasyonel Sayılar & Kümeler Eşleştirme'
         : isDivisibilityTopic
         ? 'Bölünebilme Kriterleri Eşleştirme'
@@ -538,10 +593,12 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         : isAngleTopic
         ? 'Açı Çeşitleri & İletki Eşleştirme'
         : 'Kavram & Sembol Eşleştirme',
-      tagline: isRationalNumbersTopic || isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic
+      tagline: isRationalNumbersWeek2 || isRationalNumbersTopic || isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic
         ? 'Matematiksel Modelleri Tanı'
         : 'Geometrik Modelleri Tanı',
-      description: isRationalNumbersTopic
+      description: isRationalNumbersWeek2
+        ? 'Bileşik kesir, aralık dilimleme, yoğunluk özelliği ve mutlak değer mesafe modellerini sembol ve tanımlarıyla eşleştirin.'
+        : isRationalNumbersTopic
         ? 'Rasyonel sayılar, mutlak değer cetveli, Euler kümeleri ve tanımsızlık modellerini sembol ve tanımlarıyla eşleştirin.'
         : isDivisibilityTopic
         ? 'Bölünebilme kurallarını, basamak modellerini ve kalan formüllerini eşleştirin.'
@@ -563,7 +620,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'wordsearch',
-      title: isRationalNumbersTopic
+      title: isRationalNumbersWeek2
+        ? 'Rasyonel Sayılar & Yoğunluk Kelime Avı'
+        : isRationalNumbersTopic
         ? 'Rasyonel Sayılar Kelime Avı'
         : isDivisibilityTopic
         ? 'Bölünebilme Kelime Avı'
@@ -575,7 +634,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         ? 'Çarpan & Kat Kelime Avı'
         : 'Matematiksel Kelime Avı',
       tagline: 'Soru Odaklı Akıl Yürütme',
-      description: isRationalNumbersTopic
+      description: isRationalNumbersWeek2
+        ? 'İpuçlarını oku; bileşik kesir, yoğunluk, sayı doğrusu, mikroskop ve tolerans terimlerini bulmaca ızgarasında yakala!'
+        : isRationalNumbersTopic
         ? 'İpuçlarını oku, gizli rasyonel sayı, mutlak değer, Euler ve gizli payda terimlerini bulmaca ızgarasında yakala!'
         : isDivisibilityTopic
         ? 'İpuçlarını oku, gizli bölünebilme, basamak ve kalan kavramlarını bulmaca ızgarasında yakala!'
@@ -593,7 +654,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     },
     {
       id: 'truefalse',
-      title: isRationalNumbersTopic
+      title: isRationalNumbersWeek2
+        ? 'Rasyonel Sayılar & Sayı Doğrusu Hızlı D/Y'
+        : isRationalNumbersTopic
         ? 'Rasyonel Sayılar Hızlı D/Y Testi'
         : isDivisibilityTopic
         ? 'Bölünebilme Hızlı D/Y Testi'
@@ -605,7 +668,9 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
         ? 'Çarpanlar & Katlar D/Y Testi'
         : 'Hızlı Doğru / Yanlış Testi',
       tagline: 'Hız ve Kavramsal Refleks',
-      description: isRationalNumbersTopic
+      description: isRationalNumbersWeek2
+        ? 'Bileşik kesir dilimleme, yoğunluk özelliği ve mutlak değer tolerans önermelerini hızlıca değerlendir, puanları topla!'
+        : isRationalNumbersTopic
         ? 'Rasyonel sayı, sayı kümeleri ve mutlak değer önermelerini hızlıca değerlendir, matematiksel gerekçeleri öğren!'
         : isDivisibilityTopic
         ? 'Bölünebilme kriterleri önermelerini hızla değerlendir, matematiksel gerekçelerini öğren!'
@@ -762,6 +827,27 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
 
           {/* Teacher Smart Board Student Delegation Widget */}
           <BoardStudentWidget activityTitle={currentGameInfo?.title || 'Aktif Oyun'} />
+
+          {/* FEATURED GAME: RASYONEL METRO HATTI (MAT.7.1.1-2) */}
+          {selectedGameId === 'rationalmetro' && (
+            <div className="animate-in fade-in duration-200">
+              <RationalMetroLineGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: MUTLAK TERAZİ (MAT.7.1.1-2) */}
+          {selectedGameId === 'absolutebalance' && (
+            <div className="animate-in fade-in duration-200">
+              <AbsoluteBalanceGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: SAYI DOĞRUSUNDA MAYIN TEMİZLEME (MAT.7.1.1-2) */}
+          {selectedGameId === 'numberlineminesweeper' && (
+            <div className="animate-in fade-in duration-200">
+              <NumberLineMinesweeperGame />
+            </div>
+          )}
 
           {/* FEATURED GAME: KÜME AYIKLAMA İSTASYONU (MAT.7.1.1) */}
           {selectedGameId === 'setsorting' && (

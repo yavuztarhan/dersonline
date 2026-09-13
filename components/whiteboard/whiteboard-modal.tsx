@@ -53,6 +53,8 @@ import {
   Loader2,
   Shapes,
   Maximize2,
+  ZoomIn,
+  ZoomOut,
   Move,
   Lock,
   Unlock,
@@ -745,6 +747,48 @@ export function WhiteboardModal({
 
   // File Input Ref for Local Upload
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Responsive Zoom & Fit-to-Width States
+  const [zoomMode, setZoomMode] = useState<'fit' | 'manual'>('fit');
+  const [manualZoom, setManualZoom] = useState<number>(1);
+  const [containerWidth, setContainerWidth] = useState<number>(800);
+  const workspaceScrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Measure workspace container width reactively to fit window left-to-right
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateDimensions = () => {
+      if (workspaceScrollRef.current) {
+        const w = workspaceScrollRef.current.clientWidth;
+        if (w > 0) setContainerWidth(w);
+      } else if (typeof window !== 'undefined') {
+        setContainerWidth(window.innerWidth);
+      }
+    };
+
+    updateDimensions();
+
+    const ro = new ResizeObserver(() => {
+      updateDimensions();
+    });
+
+    if (workspaceScrollRef.current) {
+      ro.observe(workspaceScrollRef.current);
+    }
+
+    window.addEventListener('resize', updateDimensions);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', updateDimensions);
+    };
+  }, [isOpen]);
+
+  // Responsive scale that snaps paper to window width (left and right)
+  const horizontalPadding = containerWidth < 640 ? 16 : 48;
+  const availableWidth = Math.max(320, containerWidth - horizontalPadding);
+  const fitWidthScale = Math.min(3.5, Math.max(0.4, Number((availableWidth / 794).toFixed(3))));
+  const zoomScale = zoomMode === 'fit' ? fitWidthScale : manualZoom;
 
   // References for Drawing Canvas & Content Area
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -1490,7 +1534,13 @@ export function WhiteboardModal({
           scale: 2,
           useCORS: true,
           logging: false,
-          backgroundColor: pages[i].backgroundType === 'dark' ? '#0f172a' : '#ffffff'
+          backgroundColor: pages[i].backgroundType === 'dark' ? '#0f172a' : '#ffffff',
+          onclone: (clonedDoc) => {
+            const clonedEl = clonedDoc.querySelector(`[data-page-index="${i}"]`) as HTMLElement;
+            if (clonedEl) {
+              clonedEl.style.transform = 'none';
+            }
+          }
         });
 
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
@@ -2595,6 +2645,67 @@ export function WhiteboardModal({
               )}
             </div>
 
+            {/* Responsive Zoom & Fit-to-Width Control */}
+            <div className="flex items-center bg-slate-800/90 p-0.5 rounded-xl border border-slate-700 shadow-sm shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setZoomMode('fit');
+                  playSound('click');
+                }}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  zoomMode === 'fit'
+                    ? 'bg-teal-500 text-slate-950 font-black shadow-sm'
+                    : 'text-slate-300 hover:bg-slate-700/80 hover:text-white'
+                }`}
+                title="Pencere Genişliğine Sığdır (Sağa ve Sola Yasla)"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Genişliğe Sığdır</span>
+              </button>
+
+              <div className="w-[1px] h-3.5 bg-slate-700 mx-0.5" />
+
+              <button
+                type="button"
+                onClick={() => {
+                  setZoomMode('manual');
+                  setManualZoom((prev) => Math.max(0.4, Number((prev - 0.15).toFixed(2))));
+                  playSound('click');
+                }}
+                className="p-1.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-colors cursor-pointer"
+                title="Uzaklaştır"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setZoomMode('manual');
+                  setManualZoom(1);
+                  playSound('click');
+                }}
+                className="px-1.5 py-1 text-[11px] font-mono font-bold text-teal-300 hover:text-white hover:bg-slate-700 rounded transition-colors cursor-pointer"
+                title="Özgün Boyuta Dön (%100)"
+              >
+                %{Math.round(zoomScale * 100)}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setZoomMode('manual');
+                  setManualZoom((prev) => Math.min(3.5, Number((prev + 0.15).toFixed(2))));
+                  playSound('click');
+                }}
+                className="p-1.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-colors cursor-pointer"
+                title="Yakınlaştır"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
           </div>
 
         </div>
@@ -2611,23 +2722,30 @@ export function WhiteboardModal({
 
       {/* 2. MAIN SCROLLABLE WORKSPACE WITH MULTI-PAGE A4 SHEETS */}
       <div
+        ref={workspaceScrollRef}
         onClick={(e) => {
           const target = e.target as HTMLElement;
           if (!target.closest('.group\\/obj') && !target.closest('.z-50')) {
             setSelectedObjectId(null);
           }
         }}
-        className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-950/90 flex flex-col items-center gap-8"
+        className="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-4 md:p-6 bg-slate-950/90 flex flex-col items-center gap-8 select-text"
       >
         
         {pages.map((page, pIdx) => {
           const isCurrentActive = pIdx === activePageIndex;
 
           return (
-            <div key={page.id} className="relative group/page flex flex-col items-center">
+            <div
+              key={page.id}
+              className="relative group/page flex flex-col items-center shrink-0 transition-all duration-100"
+              style={{
+                width: `${794 * zoomScale}px`
+              }}
+            >
               
               {/* Page Number & Quick Actions Header */}
-              <div className="w-[794px] max-w-full flex items-center justify-between pb-2 text-xs text-slate-400 px-2">
+              <div className="w-full flex items-center justify-between pb-2 text-xs text-slate-400 px-2">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-md bg-slate-800 text-teal-300 font-bold font-mono">
                     Sayfa {page.pageNumber} / {pages.length}
@@ -2660,26 +2778,36 @@ export function WhiteboardModal({
                 </div>
               </div>
 
-              {/* Standard A4 Paper Container (794 x 1123 px) */}
+              {/* Scaled A4 Paper Wrapper */}
               <div
-                ref={(el) => {
-                  pageContainerRefs.current[`page-${pIdx}`] = el;
-                }}
-                onClick={(e) => {
-                  setActivePageIndex(pIdx);
-                  const target = e.target as HTMLElement;
-                  if (!target.closest('.group\\/obj') && !target.closest('.z-50')) {
-                    setSelectedObjectId(null);
-                  }
-                }}
-                className={`relative w-[794px] min-h-[1123px] rounded-2xl shadow-2xl overflow-hidden transition-all ${
-                  isCurrentActive ? 'ring-4 ring-teal-500/80' : 'ring-1 ring-slate-700'
-                }`}
+                className="relative overflow-hidden rounded-2xl shadow-2xl shrink-0"
                 style={{
-                  ...getBackgroundStyle(page.backgroundType),
-                  boxSizing: 'border-box'
+                  width: `${794 * zoomScale}px`,
+                  height: `${1123 * zoomScale}px`
                 }}
               >
+                <div
+                  ref={(el) => {
+                    pageContainerRefs.current[`page-${pIdx}`] = el;
+                  }}
+                  data-page-index={pIdx}
+                  onClick={(e) => {
+                    setActivePageIndex(pIdx);
+                    const target = e.target as HTMLElement;
+                    if (!target.closest('.group\\/obj') && !target.closest('.z-50')) {
+                      setSelectedObjectId(null);
+                    }
+                  }}
+                  className={`absolute top-0 left-0 w-[794px] h-[1123px] rounded-2xl overflow-hidden transition-all ${
+                    isCurrentActive ? 'ring-4 ring-teal-500/80' : 'ring-1 ring-slate-700'
+                  }`}
+                  style={{
+                    transform: `scale(${zoomScale})`,
+                    transformOrigin: 'top left',
+                    ...getBackgroundStyle(page.backgroundType),
+                    boxSizing: 'border-box'
+                  }}
+                >
                 
                 {/* Compact Minimalist Maarif Header on Page 1 (Can be toggled via Üstbilgi checkbox) */}
                 {pIdx === 0 && showHeader && (
@@ -2748,6 +2876,7 @@ export function WhiteboardModal({
                         width={shape.width}
                         height={shape.height}
                         rotation={shape.rotation || 0}
+                        zoomScale={zoomScale}
                         isSelected={isSelected}
                         isLocked={shape.isLocked}
                         onSelect={() => {
@@ -2767,6 +2896,7 @@ export function WhiteboardModal({
                         {shape.type === 'angle' && isSelected && !shape.isLocked && (
                           <AngleArmControlHandle
                             shape={shape}
+                            zoomScale={zoomScale}
                             onAngleChange={(deg) => {
                               updateShapeTransform(shape.id, { angleDegrees: deg });
                             }}
@@ -2992,6 +3122,7 @@ export function WhiteboardModal({
                         width={img.width}
                         height={img.height}
                         rotation={img.rotation || 0}
+                        zoomScale={zoomScale}
                         isSelected={isSelected}
                         isLocked={img.isLocked}
                         onSelect={() => {
@@ -3110,12 +3241,16 @@ export function WhiteboardModal({
                 </div>
 
               </div>
+              </div>
             </div>
           );
         })}
 
         {/* 3. BIG '+' ADD NEW A4 PAGE BUTTON AT BOTTOM */}
-        <div className="w-[794px] max-w-full flex items-center justify-center py-4">
+        <div
+          className="flex items-center justify-center py-4 shrink-0 transition-all duration-100"
+          style={{ width: `${794 * zoomScale}px` }}
+        >
           <button
             type="button"
             onClick={handleAddPage}
@@ -3164,10 +3299,11 @@ export function WhiteboardModal({
 // ---------------------------------------------------------------------------
 interface AngleArmControlHandleProps {
   shape: WhiteboardShapeItem;
+  zoomScale?: number;
   onAngleChange: (deg: number) => void;
 }
 
-function AngleArmControlHandle({ shape, onAngleChange }: AngleArmControlHandleProps) {
+function AngleArmControlHandle({ shape, zoomScale = 1, onAngleChange }: AngleArmControlHandleProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [currentDeg, setCurrentDeg] = useState<number>(shape.angleDegrees ?? 60);
 
@@ -3191,8 +3327,8 @@ function AngleArmControlHandle({ shape, onAngleChange }: AngleArmControlHandlePr
     if (!parent) return;
 
     const parentRect = parent.getBoundingClientRect();
-    const vertexClientX = parentRect.left + vX;
-    const vertexClientY = parentRect.top + vY;
+    const vertexClientX = parentRect.left + vX * zoomScale;
+    const vertexClientY = parentRect.top + vY * zoomScale;
 
     const calculateAngle = (curX: number, curY: number, shift: boolean) => {
       const deltaX = curX - vertexClientX;
@@ -3292,6 +3428,7 @@ interface TransformableObjectProps {
   width: number;
   height: number;
   rotation?: number;
+  zoomScale?: number;
   isSelected: boolean;
   isLocked?: boolean;
   onSelect: () => void;
@@ -3313,6 +3450,7 @@ function TransformableObjectWrapper({
   width,
   height,
   rotation = 0,
+  zoomScale = 1,
   isSelected,
   isLocked = false,
   onSelect,
@@ -3351,8 +3489,9 @@ function TransformableObjectWrapper({
 
     const handleMouseMove = (moveEvt: MouseEvent) => {
       if (!isDragging.current || isLocked) return;
-      const deltaX = moveEvt.clientX - startPos.current.clientX;
-      const deltaY = moveEvt.clientY - startPos.current.clientY;
+      const s = zoomScale || 1;
+      const deltaX = (moveEvt.clientX - startPos.current.clientX) / s;
+      const deltaY = (moveEvt.clientY - startPos.current.clientY) / s;
 
       onChangeTransform({
         x: Math.max(0, Math.min(794 - width, startPos.current.x + deltaX)),
@@ -3400,8 +3539,9 @@ function TransformableObjectWrapper({
       if (!isDragging.current || isLocked || moveEvt.touches.length === 0) return;
       moveEvt.preventDefault();
       const curTouch = moveEvt.touches[0];
-      const deltaX = curTouch.clientX - startPos.current.clientX;
-      const deltaY = curTouch.clientY - startPos.current.clientY;
+      const s = zoomScale || 1;
+      const deltaX = (curTouch.clientX - startPos.current.clientX) / s;
+      const deltaY = (curTouch.clientY - startPos.current.clientY) / s;
 
       onChangeTransform({
         x: Math.max(0, Math.min(794 - width, startPos.current.x + deltaX)),
@@ -3502,8 +3642,9 @@ function TransformableObjectWrapper({
 
     const processResize = (curX: number, curY: number) => {
       if (!resizeHandle.current || isLocked) return;
-      const deltaX = curX - startPos.current.clientX;
-      const deltaY = curY - startPos.current.clientY;
+      const s = zoomScale || 1;
+      const deltaX = (curX - startPos.current.clientX) / s;
+      const deltaY = (curY - startPos.current.clientY) / s;
       const dir = resizeHandle.current;
 
       let newX = startPos.current.x;
