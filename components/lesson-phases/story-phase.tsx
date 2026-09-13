@@ -33,7 +33,9 @@ import {
   AlertTriangle,
   Crosshair,
   Droplets,
-  Microscope
+  Microscope,
+  Thermometer,
+  Wind
 } from 'lucide-react';
 import { MascotDialogueBox } from '@/components/mascot';
 import { MathFraction, MathText } from '@/components/ui/math-fraction';
@@ -93,6 +95,13 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [densityZoomFactor, setDensityZoomFactor] = useState<number>(2); // 2, 5, 10, 100
   const [parkLaserActive, setParkLaserActive] = useState<boolean>(true);
   const [parkToleranceTestVal, setParkToleranceTestVal] = useState<number>(-2.75);
+
+  // 7. Sınıf MAT.7.1.2 (3. Hafta: Karşılaştırma & Sıralama) Story Interactive States
+  const [scalePreset, setScalePreset] = useState<'4/7_4/9' | '7/12_5/12' | '3/5_4/7' | '9/10_7/8'>('4/7_4/9');
+  const [benchmarkPreset, setBenchmarkPreset] = useState<'13/28_17/32' | '19/40_23/44' | '7/8_11/12' | '5/6_9/10'>('13/28_17/32');
+  const [freezerStation, setFreezerStation] = useState<'vadi' | 'gondol' | 'ejder' | 'buzul'>('vadi');
+  const [freezerViewMode, setFreezerViewMode] = useState<'thermometer' | 'numberline' | 'rule'>('thermometer');
+  const [turbineSortMode, setTurbineSortMode] = useState<'raw' | 'common' | 'ranked'>('raw');
 
   const pages: StorybookPage[] = data.pages || [
     {
@@ -3433,12 +3442,623 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                                 </div>
                                 <div className="text-[10px] font-mono opacity-90">
                                   |x| = {opt.absText}
-                                </div>
+                                 </div>
                               </button>
                             );
                           })}
                         </div>
 
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 7. SINIF MAT.7.1.2 - 1. BÖLÜM: RASYONEL DENGE TERAZİSİ (EŞİTLEME STRATEJİLERİ) */}
+                {currentPage.visualScene.type === 'rational-comparator-scale' && (() => {
+                  const presets = {
+                    '4/7_4/9': {
+                      title: 'Payları Eşit Kesirler: 4/7 vs 4/9',
+                      left: '4/7',
+                      right: '4/9',
+                      leftVal: 4 / 7,
+                      rightVal: 4 / 9,
+                      tilt: -9,
+                      sign: '>',
+                      strategy: 'Payları Eşit Kuralı',
+                      step: 'Paylar eşit (4=4). 7 eş parçaya bölünen dilimler, 9 parçaya bölünenden daha büyüktür (1/7 > 1/9). Bu sebeple 4/7 > 4/9\'dur!',
+                      leftNote: 'Daha büyük dilimler (Ağır basar)',
+                      rightNote: 'Daha küçük dilimler'
+                    },
+                    '7/12_5/12': {
+                      title: 'Paydaları Eşit Kesirler: 7/12 vs 5/12',
+                      left: '7/12',
+                      right: '5/12',
+                      leftVal: 7 / 12,
+                      rightVal: 5 / 12,
+                      tilt: -8,
+                      sign: '>',
+                      strategy: 'Paydaları Eşit Kuralı',
+                      step: 'Paydalar eşit (12=12). Eşit büyüklükteki 12 dilimden 7 tanesi, 5 tanesinden daha fazladır. Dolayısıyla 7/12 > 5/12!',
+                      leftNote: '7 adet eş dilim (Ağır basar)',
+                      rightNote: '5 adet eş dilim'
+                    },
+                    '3/5_4/7': {
+                      title: 'Payda Eşitleme Yöntemi: 3/5 vs 4/7',
+                      left: '3/5',
+                      right: '4/7',
+                      leftVal: 3 / 5,
+                      rightVal: 4 / 7,
+                      tilt: -5,
+                      sign: '>',
+                      strategy: 'Ortak Payda (35) Kuralı',
+                      step: 'Paydaları 35\'te eşitleyelim: 3/5 = (3×7)/(5×7) = 21/35 | 4/7 = (4×5)/(7×5) = 20/35. 21/35 > 20/35 olduğundan 3/5 > 4/7!',
+                      leftNote: 'Genişletilmiş: 21/35',
+                      rightNote: 'Genişletilmiş: 20/35'
+                    },
+                    '9/10_7/8': {
+                      title: 'Bütüne Yakınlık Farkı: 9/10 vs 7/8',
+                      left: '9/10',
+                      right: '7/8',
+                      leftVal: 9 / 10,
+                      rightVal: 7 / 8,
+                      tilt: -6,
+                      sign: '>',
+                      strategy: 'Bütüne (1) Yakınlık Referansı',
+                      step: 'Bütüne eksikler: 9/10 için 1/10 eksik, 7/8 için 1/8 eksik. 1/10 < 1/8 olduğundan eksiği az olan 9/10 bütüne daha yakındır (9/10 > 7/8)!',
+                      leftNote: 'Bütüne 1/10 eksik (Daha yakın)',
+                      rightNote: 'Bütüne 1/8 eksik'
+                    }
+                  };
+
+                  const cur = presets[scalePreset] || presets['4/7_4/9'];
+
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Üst Başlık & Butonlar */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-violet-500/20 border border-violet-500/40 text-violet-300 flex items-center justify-center">
+                            <Scale className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-amber-300 uppercase tracking-wider">
+                              {cur.title}
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              Strateji: <span className="text-violet-300 font-bold">{cur.strategy}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1">
+                          {[
+                            { key: '4/7_4/9', label: 'Paylar Eşit' },
+                            { key: '7/12_5/12', label: 'Paydalar Eşit' },
+                            { key: '3/5_4/7', label: 'Payda Eşitle' },
+                            { key: '9/10_7/8', label: 'Bütüne Yakın' }
+                          ].map((b) => (
+                            <button
+                              key={b.key}
+                              type="button"
+                              onClick={() => {
+                                playSound('click');
+                                setScalePreset(b.key as any);
+                              }}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                scalePreset === b.key
+                                  ? 'bg-violet-600 text-white shadow-md shadow-violet-500/30'
+                                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                              }`}
+                            >
+                              {b.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* İnteraktif Denge Terazisi Görseli */}
+                      <div className="relative flex-1 bg-gradient-to-b from-slate-900 to-slate-950 rounded-xl p-4 border border-slate-800/80 flex flex-col items-center justify-center overflow-hidden min-h-[170px]">
+                        
+                        {/* Karşılaştırma Sembolü Rozeti */}
+                        <div className="absolute top-2 px-3 py-1 rounded-full bg-violet-950/80 border border-violet-500/40 text-violet-300 font-mono text-xs font-black shadow-lg flex items-center gap-2">
+                          <MathFraction value={cur.left} />
+                          <span className="text-amber-400 text-sm font-black">{cur.sign}</span>
+                          <MathFraction value={cur.right} />
+                        </div>
+
+                        {/* Terazi Ana Gövdesi */}
+                        <div className="w-full max-w-sm relative flex flex-col items-center pt-8">
+                          
+                          {/* Dönen Terazi Kolu */}
+                          <div
+                            className="w-full h-2.5 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 rounded-full shadow-lg relative transition-transform duration-700 ease-out origin-center"
+                            style={{ transform: `rotate(${cur.tilt}deg)` }}
+                          >
+                            {/* Sol Askı ve Kefe */}
+                            <div className="absolute -left-1 top-2.5 flex flex-col items-center">
+                              <div className="w-0.5 h-12 bg-slate-400" />
+                              <div className="w-24 h-10 bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-amber-400/80 rounded-b-xl shadow-xl flex flex-col items-center justify-center -mt-1 p-1">
+                                <span className="font-mono text-xs font-black text-amber-300">
+                                  <MathFraction value={cur.left} />
+                                </span>
+                                <span className="text-[8px] text-slate-400 font-sans truncate max-w-full px-1">{cur.leftNote}</span>
+                              </div>
+                            </div>
+
+                            {/* Sağ Askı ve Kefe */}
+                            <div className="absolute -right-1 top-2.5 flex flex-col items-center">
+                              <div className="w-0.5 h-12 bg-slate-400" />
+                              <div className="w-24 h-10 bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-600 rounded-b-xl shadow-xl flex flex-col items-center justify-center -mt-1 p-1">
+                                <span className="font-mono text-xs font-black text-slate-300">
+                                  <MathFraction value={cur.right} />
+                                </span>
+                                <span className="text-[8px] text-slate-400 font-sans truncate max-w-full px-1">{cur.rightNote}</span>
+                              </div>
+                            </div>
+
+                            {/* Merkez İbre */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-amber-400 border-2 border-slate-950 shadow-md" />
+                          </div>
+
+                          {/* Terazi Destek Ayağı */}
+                          <div className="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-b-[42px] border-b-slate-700 mt-0 z-0" />
+                          <div className="w-28 h-3 bg-slate-800 rounded-full border border-slate-700 shadow-md" />
+                        </div>
+                      </div>
+
+                      {/* Açıklama Kutusu */}
+                      <div className="p-2.5 bg-violet-950/40 border border-violet-500/30 rounded-xl text-[11px] text-violet-100 flex items-start gap-2">
+                        <Sparkles className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
+                        <div>
+                          <strong>Matematiksel Çıkarım:</strong> {cur.step}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 7. SINIF MAT.7.1.2 - 2. BÖLÜM: YARIMA VE BÜTÜNE YAKINLIK REFERANS METRESİ */}
+                {currentPage.visualScene.type === 'benchmark-reference-line' && (() => {
+                  const benchData = {
+                    '13/28_17/32': {
+                      title: 'Yarıma (1/2) Yakınlık: 13/28 vs 17/32',
+                      f1: { name: '13/28', val: 13 / 28, text: '13/28 < 14/28', desc: 'Yarımdan Küçük (< 1/2)' },
+                      f2: { name: '17/32', val: 17 / 32, text: '17/32 > 16/32', desc: 'Yarımdan Büyük (> 1/2)' },
+                      result: '13/28 < 1/2 < 17/32 ⟹ 17/32 > 13/28',
+                      tip: '28 ve 32\'nin ortak katını aramaya gerek yok! 28\'in yarısı 14, 32\'nin yarısı 16\'dır. Biri yarımdan küçük, diğeri yarımdan büyükse kıyaslama anında biter.'
+                    },
+                    '19/40_23/44': {
+                      title: 'Yarıma (1/2) Yakınlık: 19/40 vs 23/44',
+                      f1: { name: '19/40', val: 19 / 40, text: '19/40 < 20/40', desc: 'Yarımdan Küçük (< 1/2)' },
+                      f2: { name: '23/44', val: 23 / 44, text: '23/44 > 22/44', desc: 'Yarımdan Büyük (> 1/2)' },
+                      result: '19/40 < 1/2 < 23/44 ⟹ 23/44 > 19/40',
+                      tip: '40\'ın yarısı 20 olduğundan 19/40 < 1/2. 44\'ün yarısı 22 olduğundan 23/44 > 1/2. Dolayısıyla 23/44 daha büyüktür.'
+                    },
+                    '7/8_11/12': {
+                      title: 'Bütüne (1) Yakınlık: 7/8 vs 11/12',
+                      f1: { name: '7/8', val: 7 / 8, text: '1 - 7/8 = 1/8 eksik', desc: 'Bütüne 1/8 uzaklıkta' },
+                      f2: { name: '11/12', val: 11 / 12, text: '1 - 11/12 = 1/12 eksik', desc: 'Bütüne 1/12 uzaklıkta' },
+                      result: '1/12 < 1/8 ⟹ 11/12 Bütüne Daha Yakındır (11/12 > 7/8)',
+                      tip: 'Her iki kesrin de bütüne (1\'e) 1 birim kesir eksiği var. 1/12 dilimi 1/8 diliminden küçük olduğundan, 11/12\'nin eksiği daha azdır ve bütüne daha yakındır!'
+                    },
+                    '5/6_9/10': {
+                      title: 'Bütüne (1) Yakınlık: 5/6 vs 9/10',
+                      f1: { name: '5/6', val: 5 / 6, text: '1 - 5/6 = 1/6 eksik', desc: 'Bütüne 1/6 uzaklıkta' },
+                      f2: { name: '9/10', val: 9 / 10, text: '1 - 9/10 = 1/10 eksik', desc: 'Bütüne 1/10 uzaklıkta' },
+                      result: '1/10 < 1/6 ⟹ 9/10 Bütüne Daha Yakındır (9/10 > 5/6)',
+                      tip: 'Eksik parçaları kıyasla: 1/10 < 1/6. Eksiği az olan pasta bütüne daha yakındır: 9/10 > 5/6.'
+                    }
+                  };
+
+                  const cur = benchData[benchmarkPreset] || benchData['13/28_17/32'];
+
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Üst Bar */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center justify-center">
+                            <Compass className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-emerald-300 uppercase tracking-wider">
+                              {cur.title}
+                            </div>
+                            <div className="text-[10px] text-slate-400">Referans Noktası Cetveli: 0 • 1/2 • 1</div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1">
+                          {[
+                            { key: '13/28_17/32', label: '13/28 vs 17/32' },
+                            { key: '19/40_23/44', label: '19/40 vs 23/44' },
+                            { key: '7/8_11/12', label: '7/8 vs 11/12' },
+                            { key: '5/6_9/10', label: '5/6 vs 9/10' }
+                          ].map((b) => (
+                            <button
+                              key={b.key}
+                              type="button"
+                              onClick={() => {
+                                playSound('click');
+                                setBenchmarkPreset(b.key as any);
+                              }}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                benchmarkPreset === b.key
+                                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30'
+                                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                              }`}
+                            >
+                              {b.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Referans Cetveli Görsel Alanı */}
+                      <div className="relative flex-1 bg-gradient-to-b from-slate-900 to-slate-950 rounded-xl p-5 border border-slate-800/80 flex flex-col justify-center min-h-[170px]">
+                        
+                        {/* Karşılaştırma Sonuç Kartı */}
+                        <div className="text-center mb-5">
+                          <span className="px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-black shadow-lg">
+                            {cur.result}
+                          </span>
+                        </div>
+
+                        {/* Cetvel Rayı */}
+                        <div className="relative w-full h-3 bg-slate-800 rounded-full border border-slate-700 my-4">
+                          
+                          {/* 0 Noktası */}
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center">
+                            <div className="w-1 h-5 bg-slate-500 rounded-full" />
+                            <span className="text-[10px] font-mono text-slate-400 font-bold mt-2">0</span>
+                          </div>
+
+                          {/* 1/2 YARIM Referans Çizgisi (Merkez %50) */}
+                          <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center z-10">
+                            <div className="w-1.5 h-8 bg-amber-400 rounded-full shadow-[0_0_12px_rgba(251,191,36,0.8)]" />
+                            <span className="text-[11px] font-mono font-black text-amber-300 mt-2 bg-amber-950/90 px-2 py-0.5 rounded border border-amber-500/40">
+                              1/2 (YARIM)
+                            </span>
+                          </div>
+
+                          {/* 1 BÜTÜN Referans Çizgisi (%100) */}
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 flex flex-col items-center z-10">
+                            <div className="w-1.5 h-7 bg-sky-400 rounded-full shadow-[0_0_10px_rgba(56,189,248,0.8)]" />
+                            <span className="text-[11px] font-mono font-black text-sky-300 mt-2 bg-sky-950/90 px-2 py-0.5 rounded border border-sky-500/40">
+                              1 (BÜTÜN)
+                            </span>
+                          </div>
+
+                          {/* Kesir 1 İbresi */}
+                          <div
+                            className="absolute -top-7 -translate-x-1/2 flex flex-col items-center transition-all duration-500"
+                            style={{ left: `${cur.f1.val * 100}%` }}
+                          >
+                            <span className="px-2 py-0.5 rounded bg-amber-500 text-slate-950 text-[10px] font-mono font-black shadow-md flex items-center gap-1">
+                              <MathFraction value={cur.f1.name} />
+                            </span>
+                            <div className="w-2 h-2 bg-amber-500 rotate-45 -mt-1" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-amber-300 animate-pulse mt-0.5" />
+                          </div>
+
+                          {/* Kesir 2 İbresi */}
+                          <div
+                            className="absolute -top-7 -translate-x-1/2 flex flex-col items-center transition-all duration-500"
+                            style={{ left: `${cur.f2.val * 100}%` }}
+                          >
+                            <span className="px-2 py-0.5 rounded bg-emerald-500 text-slate-950 text-[10px] font-mono font-black shadow-md flex items-center gap-1">
+                              <MathFraction value={cur.f2.name} />
+                            </span>
+                            <div className="w-2 h-2 bg-emerald-500 rotate-45 -mt-1" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-emerald-300 animate-pulse mt-0.5" />
+                          </div>
+                        </div>
+
+                        {/* Kesirlerin Referansa Durumları */}
+                        <div className="grid grid-cols-2 gap-3 mt-3">
+                          <div className="p-2 rounded-lg bg-amber-950/30 border border-amber-500/30 text-[11px]">
+                            <span className="font-bold text-amber-400">{cur.f1.name}:</span> {cur.f1.desc} ({cur.f1.text})
+                          </div>
+                          <div className="p-2 rounded-lg bg-emerald-950/30 border border-emerald-500/30 text-[11px]">
+                            <span className="font-bold text-emerald-400">{cur.f2.name}:</span> {cur.f2.desc} ({cur.f2.text})
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Alt İpucu */}
+                      <div className="p-2.5 bg-emerald-950/40 border border-emerald-500/30 rounded-xl text-[11px] text-emerald-100 flex items-start gap-2">
+                        <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <div>
+                          <strong>Referans Kuralı:</strong> {cur.tip}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 7. SINIF MAT.7.1.2 - 3. BÖLÜM: DONDURUCU SOĞUKLUK VE NEGATİF SIRALAMA TUZAĞI */}
+                {currentPage.visualScene.type === 'negative-freezer-scale' && (() => {
+                  const stations = {
+                    vadi: {
+                      name: 'Vadi Kapısı',
+                      temp: '-1/4 °C',
+                      val: -0.25,
+                      rank: '1. (En Sıcak / En Büyük Sayı)',
+                      color: 'text-amber-400',
+                      pos: 75, // from -1 (0%) to 0 (100%): (-0.25 + 1)*100 = 75%
+                      why: '-1/4 sayısı sayı doğrusunda 0 noktasına en yakın olan sayıdır. Sıfıra daha yakın olduğu için diğerlerinden daha büyüktür (-1/4 > -1/2 > -3/4) ve sıcaklığı en yüksektir!'
+                    },
+                    gondol: {
+                      name: 'Gondol İstasyonu',
+                      temp: '-1/2 °C',
+                      val: -0.50,
+                      rank: '2. (Ortanca Sıcaklık)',
+                      color: 'text-sky-400',
+                      pos: 50,
+                      why: '-1/2 = -2/4 °C değerindedir. Sayı doğrusunda -1/4 ile -3/4\'ün tam ortasındadır.'
+                    },
+                    ejder: {
+                      name: 'Ejder Tepesi',
+                      temp: '-3/4 °C',
+                      val: -0.75,
+                      rank: '3. (Dondurucu Soğuk)',
+                      color: 'text-indigo-400',
+                      pos: 25,
+                      why: '-3/4 sayısı 0 noktasına -1/4\'ten daha uzaktadır. Negatif sayılarda sıfırdan uzaklaştıkça sayı küçülür (-3/4 < -1/4).'
+                    },
+                    buzul: {
+                      name: 'Buzul Sırtı',
+                      temp: '-5/6 °C',
+                      val: -0.833,
+                      rank: '4. (En Soğuk / En Küçük Sayı)',
+                      color: 'text-rose-400',
+                      pos: 16.7,
+                      why: '-5/6 ≈ -0.833 °C olup -1\'e en yakın, 0\'dan en uzaktadır. Bu nedenle gruptaki EN KÜÇÜK sayıdır!'
+                    }
+                  };
+
+                  const curStation = stations[freezerStation] || stations.vadi;
+
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Üst Bar */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 flex items-center justify-center">
+                            <Thermometer className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-cyan-300 uppercase tracking-wider">
+                              Palandöken Dondurucu Sıcaklıklar &amp; Negatif Kuralı
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              Kural: Negatif kesirlerde sıfıra yakın olan daha büyüktür!
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* İstasyon Seçimi */}
+                        <div className="flex flex-wrap gap-1">
+                          {[
+                            { key: 'vadi', label: 'Vadi (-1/4)' },
+                            { key: 'gondol', label: 'Gondol (-1/2)' },
+                            { key: 'ejder', label: 'Ejder (-3/4)' },
+                            { key: 'buzul', label: 'Buzul (-5/6)' }
+                          ].map((b) => (
+                            <button
+                              key={b.key}
+                              type="button"
+                              onClick={() => {
+                                playSound('click');
+                                setFreezerStation(b.key as any);
+                              }}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                freezerStation === b.key
+                                  ? 'bg-cyan-600 text-white shadow-md shadow-cyan-500/30'
+                                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                              }`}
+                            >
+                              {b.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Sayı Doğrusu & Termometre Simülasyonu */}
+                      <div className="relative flex-1 bg-gradient-to-b from-slate-900 to-slate-950 rounded-xl p-5 border border-slate-800/80 flex flex-col justify-center min-h-[170px]">
+                        
+                        {/* Tuzak Kuralı Banner */}
+                        <div className="p-2.5 rounded-xl bg-cyan-950/50 border border-cyan-500/30 mb-4 flex items-center justify-between">
+                          <div className="text-xs">
+                            <span className="text-rose-400 line-through mr-2">3/4 &gt; 1/4 (Pozitif)</span>
+                            <span className="text-emerald-400 font-bold font-mono">➜ -1/4 &gt; -3/4 (Negatifte Tersine Döner!)</span>
+                          </div>
+                          <span className="text-[10px] px-2 py-0.5 bg-cyan-900/80 text-cyan-200 rounded font-bold">
+                            Sıfıra Yakınlık İlkesi
+                          </span>
+                        </div>
+
+                        {/* Sayı Doğrusu: -1'den 0'a */}
+                        <div className="relative w-full h-3 bg-slate-800 rounded-full border border-slate-700 my-4">
+                          
+                          {/* -1 Sınırı (0%) */}
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center">
+                            <div className="w-1 h-5 bg-slate-500 rounded-full" />
+                            <span className="text-[10px] font-mono text-slate-400 font-bold mt-2">-1 °C</span>
+                          </div>
+
+                          {/* 0 Referans Noktası (100%) */}
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 flex flex-col items-center z-10">
+                            <div className="w-2 h-7 bg-amber-400 rounded-full shadow-[0_0_14px_rgba(251,191,36,0.9)]" />
+                            <span className="text-[11px] font-mono font-black text-amber-300 mt-2 bg-amber-950 px-2 py-0.5 rounded border border-amber-500/40">
+                              0 °C (Başlangıç)
+                            </span>
+                          </div>
+
+                          {/* Tüm İstasyonların Sabit Ticks */}
+                          {Object.entries(stations).map(([k, st]) => (
+                            <div
+                              key={k}
+                              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+                              style={{ left: `${st.pos}%` }}
+                            >
+                              <div className={`w-1 h-4 rounded-full ${freezerStation === k ? 'bg-cyan-400 h-6' : 'bg-slate-600'}`} />
+                              <span className={`text-[9px] font-mono mt-1 ${freezerStation === k ? 'font-black text-cyan-300' : 'text-slate-500'}`}>
+                                <MathFraction value={st.temp.replace(' °C', '')} />
+                              </span>
+                            </div>
+                          ))}
+
+                          {/* Aktif İstasyon Dinamik İbresi */}
+                          <div
+                            className="absolute -top-8 -translate-x-1/2 flex flex-col items-center transition-all duration-500 z-20"
+                            style={{ left: `${curStation.pos}%` }}
+                          >
+                            <div className="px-2 py-0.5 rounded bg-cyan-500 text-slate-950 font-mono font-black text-[10px] shadow-lg flex items-center gap-1">
+                              <span>{curStation.name}:</span>
+                              <MathFraction value={curStation.temp.replace(' °C', '')} />
+                              <span>°C</span>
+                            </div>
+                            <div className="w-2 h-2 bg-cyan-500 rotate-45 -mt-1" />
+                            <div className="w-3 h-3 rounded-full bg-cyan-400 ring-4 ring-cyan-300/60 mt-0.5 animate-pulse" />
+                          </div>
+                        </div>
+
+                        {/* Seçili İstasyon Analizi */}
+                        <div className="mt-4 p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200">
+                          <span className={`font-bold ${curStation.color}`}>{curStation.name} ({curStation.temp}): </span>
+                          <span className="text-slate-300">{curStation.why}</span>
+                        </div>
+                      </div>
+
+                      {/* Sıralama Özeti */}
+                      <div className="p-2.5 bg-cyan-950/40 border border-cyan-500/30 rounded-xl text-[11px] text-cyan-100 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold">Küçükten Büyüğe Sıralama:</span>
+                          <span className="font-mono text-cyan-300 font-black">
+                            -5/6 &lt; -3/4 &lt; -1/2 &lt; -1/4
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-cyan-400 font-bold">(En Soğuk ➔ En Sıcak)</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 7. SINIF MAT.7.1.2 - 4. BÖLÜM: RÜZGAR TÜRBİNLERİ VE HIZ SIRALAMA KOKPİTİ */}
+                {currentPage.visualScene.type === 'turbine-speed-order' && (() => {
+                  const turbines = [
+                    { id: 't1', name: 'Türbin-1 (Kuzey)', frac: '7/12', common: '7/12', dec: 0.583, dur: '2.4s', rank: 3, rankText: '3. (En Yavaş)', color: 'text-amber-400' },
+                    { id: 't2', name: 'Türbin-2 (Doğu)', frac: '3/4', common: '9/12', dec: 0.750, dur: '1.7s', rank: 2, rankText: '2. (Ortanca)', color: 'text-sky-400' },
+                    { id: 't3', name: 'Türbin-3 (Zirve)', frac: '5/6', common: '10/12', dec: 0.833, dur: '1.2s', rank: 1, rankText: '1. (En Hızlı)', color: 'text-emerald-400' }
+                  ];
+
+                  return (
+                    <div className="w-full h-full p-4 flex flex-col justify-between space-y-3 bg-slate-950/95 text-white rounded-2xl">
+                      {/* Üst Bar */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-teal-500/20 border border-teal-500/40 text-teal-300 flex items-center justify-center">
+                            <Wind className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-teal-300 uppercase tracking-wider">
+                              Palandöken Rüzgar Santrali Hız Kokpiti
+                            </div>
+                            <div className="text-[10px] text-slate-400">Ortak Payda (12) ile Sürat Sıralaması</div>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-1">
+                          {[
+                            { key: 'raw', label: 'Orijinal Hızlar' },
+                            { key: 'common', label: 'Paydalar Eşit (12)' },
+                            { key: 'ranked', label: 'Sıralama Lideri' }
+                          ].map((b) => (
+                            <button
+                              key={b.key}
+                              type="button"
+                              onClick={() => {
+                                playSound('click');
+                                setTurbineSortMode(b.key as any);
+                              }}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                turbineSortMode === b.key
+                                  ? 'bg-teal-600 text-white shadow-md shadow-teal-500/30'
+                                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                              }`}
+                            >
+                              {b.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* 3 Türbin Kartı */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1 min-h-[170px]">
+                        {turbines.map((t) => (
+                          <div
+                            key={t.id}
+                            className={`rounded-xl p-3 border flex flex-col items-center justify-between text-center transition-all ${
+                              turbineSortMode === 'ranked' && t.rank === 1
+                                ? 'bg-emerald-950/40 border-emerald-500/60 ring-2 ring-emerald-500/20'
+                                : 'bg-slate-900/80 border-slate-800'
+                            }`}
+                          >
+                            <div className="text-xs font-bold text-slate-300 mb-1">{t.name}</div>
+                            
+                            {/* Dönen Türbin Kanadı İkonu */}
+                            <div className="relative w-14 h-14 flex items-center justify-center my-2">
+                              <div
+                                className="w-12 h-12 text-teal-400 animate-spin"
+                                style={{ animationDuration: t.dur }}
+                              >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M12 12c0-3 2-6 5-6s3 3 0 6c-3 0-5 0-5 0z" fill="currentColor" opacity="0.8" />
+                                  <path d="M12 12c-2.5 1.5-5 3.5-3.5 6s4.5 1.5 6-1.5c.5-1.5-1-3-2.5-4.5z" fill="currentColor" opacity="0.8" />
+                                  <path d="M12 12c-.5-3-3.5-5-6-3.5s-1.5 4.5 1.5 6c1.5.5 3.5-.5 4.5-2.5z" fill="currentColor" opacity="0.8" />
+                                </svg>
+                              </div>
+                              <div className="absolute w-3 h-3 rounded-full bg-slate-950 border border-teal-400" />
+                            </div>
+
+                            {/* Hız Değeri */}
+                            <div className="space-y-0.5">
+                              <div className="text-sm font-mono font-black text-amber-300">
+                                {turbineSortMode === 'common' ? (
+                                  <span className="inline-flex items-center gap-1">
+                                    <MathFraction value={t.frac} /> = <MathFraction value={t.common} unit="m/s" />
+                                  </span>
+                                ) : (
+                                  <MathFraction value={t.frac} unit="m/s" />
+                                )}
+                              </div>
+                              <div className="text-[10px] text-slate-400 font-mono">
+                                ({t.dec} m/sn)
+                              </div>
+                            </div>
+
+                            {/* Derece Rozeti */}
+                            <div className={`mt-2 px-2 py-0.5 rounded text-[10px] font-black ${
+                              t.rank === 1 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' :
+                              t.rank === 2 ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40' :
+                              'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                            }`}>
+                              {t.rankText}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Alt Sıralama Kartı */}
+                      <div className="p-2.5 bg-teal-950/40 border border-teal-500/30 rounded-xl text-[11px] text-teal-100 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold">Küçükten Büyüğe Sıralama:</span>
+                          <span className="font-mono font-black text-teal-300">
+                            7/12 &lt; 3/4 (9/12) &lt; 5/6 (10/12)
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-teal-300 font-bold">12 Ortak Paydada Eşitlendi ✅</span>
                       </div>
                     </div>
                   );
@@ -3489,7 +4109,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   'smart-park-water-tank',
                   'fraction-number-line-step',
                   'microscope-density',
-                  'park-laser-tolerance'
+                  'park-laser-tolerance',
+                  'rational-comparator-scale',
+                  'benchmark-reference-line',
+                  'negative-freezer-scale',
+                  'turbine-speed-order'
                 ].includes(currentPage.visualScene.type) && (
                   <div className="w-full h-full p-5 bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 flex flex-col items-center justify-center text-center space-y-3">
                     <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border-2 border-teal-400 text-teal-300 flex items-center justify-center">

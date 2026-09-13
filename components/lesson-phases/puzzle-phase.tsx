@@ -23,6 +23,11 @@ import {
   AbsoluteBalanceGame,
   NumberLineMinesweeperGame
 } from '@/components/lesson-phases/mat7-w2-games';
+import {
+  RationalScaleGame,
+  NegativeFreezeGame,
+  TurbineSpeedSortGame
+} from '@/components/lesson-phases/mat7-w3-games';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import { useAuth } from '@/lib/auth-store';
 import {
@@ -49,7 +54,10 @@ import {
   Layers,
   Package,
   Activity,
-  Train
+  Train,
+  Scale,
+  Thermometer,
+  Wind
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -67,6 +75,9 @@ interface MatchCard {
 }
 
 export type PuzzleGameId = 
+  | 'rationalscale'
+  | 'negativefreeze'
+  | 'turbinespeed'
   | 'rationalmetro'
   | 'absolutebalance'
   | 'numberlineminesweeper'
@@ -219,13 +230,24 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     }
   };
 
+  const isRationalComparisonTopic =
+    selectedOutcome?.id === 'MAT.7.1.2' ||
+    selectedOutcome?.code?.includes('7.1.2') ||
+    selectedOutcome?.title?.toLowerCase().includes('karşılaştırma') ||
+    selectedOutcome?.title?.toLowerCase().includes('sıralama') ||
+    data.title?.toLowerCase().includes('karşılaştırma') ||
+    data.title?.toLowerCase().includes('sıralama');
+
   const isRationalNumbersWeek2 =
-    selectedOutcome?.id === 'MAT.7.1.1-2' ||
-    selectedOutcome?.id === 'MAT.7.1.1.2' ||
-    data.title?.toLowerCase().includes('derinleşme') ||
-    selectedOutcome?.title?.toLowerCase().includes('derinleşme');
+    !isRationalComparisonTopic && (
+      selectedOutcome?.id === 'MAT.7.1.1-2' ||
+      selectedOutcome?.id === 'MAT.7.1.1.2' ||
+      data.title?.toLowerCase().includes('derinleşme') ||
+      selectedOutcome?.title?.toLowerCase().includes('derinleşme')
+    );
 
   const isRationalNumbersTopic =
+    !isRationalComparisonTopic &&
     !isRationalNumbersWeek2 &&
     (selectedOutcome?.id === 'MAT.7.1.1' ||
     selectedOutcome?.code?.includes('7.1.1') ||
@@ -300,7 +322,40 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
     reward: string;
   }> = [];
 
-  if (isRationalNumbersWeek2) {
+  if (isRationalComparisonTopic) {
+    baseGamesList.push(
+      {
+        id: 'rationalscale',
+        title: 'Rasyonel Denge Terazisi',
+        tagline: 'Hızlı Karşılaştırma & Semboller',
+        description: 'İki rasyonel sayıyı teraziye koy, pay/payda eşitleme veya referans stratejisini kullanarak doğru sembolü (<, =, >) seç ve teraziyi dengele!',
+        icon: <Scale className="w-8 h-8" />,
+        badge: 'Arcade Terazi • 6 Soru',
+        gradient: 'from-violet-600 via-purple-600 to-indigo-700',
+        reward: '+120 XP & Denge Ustası'
+      },
+      {
+        id: 'negativefreeze',
+        title: 'Palandöken Dondurucu Sıralama',
+        tagline: 'En Soğuktan En Sıcağa Parkur',
+        description: 'Pist sıcaklıklarını ve negatif kesirleri en soğuktan en sıcağa (küçükten büyüğe: <) doğru sıralayarak dağ yolunu aç!',
+        icon: <Thermometer className="w-8 h-8" />,
+        badge: 'Sıfıra Yakınlık • 3 Aşama',
+        gradient: 'from-cyan-600 via-teal-600 to-blue-800',
+        reward: '+150 XP & Zirve Şampiyonu'
+      },
+      {
+        id: 'turbinespeed',
+        title: 'Rüzgar Türbinleri Sürat Yarışı',
+        tagline: 'Referans & Ortak Payda Sürati',
+        description: 'Türbin kanat hızlarını ortak payda (12, 24) ve yarıma/bütüne yakınlık stratejileriyle en yavaştan en hızlıya sırala ve motorları ateşle!',
+        icon: <Wind className="w-8 h-8" />,
+        badge: 'Hız Kokpiti • 3 Yarış',
+        gradient: 'from-teal-500 via-emerald-600 to-slate-900',
+        reward: '+140 XP & Rüzgar Mühendisi'
+      }
+    );
+  } else if (isRationalNumbersWeek2) {
     baseGamesList.push(
       {
         id: 'rationalmetro',
@@ -827,6 +882,27 @@ export function PuzzlePhase({ data, onNextPhase }: PuzzlePhaseProps) {
 
           {/* Teacher Smart Board Student Delegation Widget */}
           <BoardStudentWidget activityTitle={currentGameInfo?.title || 'Aktif Oyun'} />
+
+          {/* FEATURED GAME: RASYONEL DENGE TERAZİSİ (MAT.7.1.2) */}
+          {selectedGameId === 'rationalscale' && (
+            <div className="animate-in fade-in duration-200">
+              <RationalScaleGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: PALANDÖKEN DONDURUCU SOĞUK SIRALAMA (MAT.7.1.2) */}
+          {selectedGameId === 'negativefreeze' && (
+            <div className="animate-in fade-in duration-200">
+              <NegativeFreezeGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: RÜZGAR TÜRBİNLERİ SÜRAT YARIŞI (MAT.7.1.2) */}
+          {selectedGameId === 'turbinespeed' && (
+            <div className="animate-in fade-in duration-200">
+              <TurbineSpeedSortGame />
+            </div>
+          )}
 
           {/* FEATURED GAME: RASYONEL METRO HATTI (MAT.7.1.1-2) */}
           {selectedGameId === 'rationalmetro' && (

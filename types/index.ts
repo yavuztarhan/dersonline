@@ -74,7 +74,8 @@ export interface LabPhaseData {
     | 'prime-factors-bench'
     | 'common-multiples-divisors-bench'
     | 'rational-numbers-bench'
-    | 'rational-ruler-density-bench';
+    | 'rational-ruler-density-bench'
+    | 'rational-comparison-bench';
   instructions: string;
   taskGoal: string;
   interactiveTips: string[];

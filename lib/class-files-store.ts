@@ -3633,6 +3633,292 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
 </div>`
       }
     ]
+  },
+  {
+    id: 'file-activity-mat-7-1-2-compare',
+    title: 'Etkinlik 1: Rasyonel Sayıları Karşılaştırma & Sıralama (MAT.7.1.2)',
+    classSection: 'Tümü',
+    outcomeCode: 'MAT.7.1.2',
+    outcomeTitle: 'Rasyonel Sayıları Karşılaştırma ve Sıralama',
+    authorId: 'system',
+    authorName: 'T.C. Millî Eğitim Bakanlığı',
+    authorRole: 'system',
+    school: 'Maarif Modeli Matematik Laboratuvarı',
+    pageCount: 2,
+    createdAt: '2026-09-13T10:00:00Z',
+    fileSizeKb: 175,
+    tags: ['Etkinlik Kağıdı', 'Rasyonel Sayılar', 'Karşılaştırma', 'Sıralama', 'Çift Yüzlü', 'Hata Dedektifi'],
+    pages: [
+      {
+        id: 'p1',
+        pageNumber: 1,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: sans-serif; color: #0f172a; max-width: 800px; margin: 0 auto; line-height: 1.4;">
+  <!-- Üst Başlık & Öğrenci Künyesi (ÖN YÜZ / İÇ) -->
+  <div style="border-bottom: 2px solid #0284c7; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase;">
+        T.C. MEB • TÜRKİYE YÜZYILI MAARİF MODELİ • MAT.7.1.2 (SAYFA 1: ÖN YÜZ / İÇ)
+      </span>
+      <h2 style="margin: 4px 0 0 0; color: #0369a1; font-size: 17px; font-weight: 900;">
+        RASYONEL SAYILARI KARŞILAŞTIRMA VE SIRALAMA ÇALIŞMA YAPRAĞI
+      </h2>
+      <p style="margin: 2px 0 0 0; font-size: 10.5px; color: #64748b;">
+        Palandöken Kış Sporları & Rüzgar Enerjisi Santrali Analiz Raporu (Keşif, Strateji & Denge)
+      </p>
+    </div>
+    <div style="text-align: right; font-size: 10.5px; color: #64748b; background: #f8fafc; padding: 6px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+      <div><strong>Adı Soyadı:</strong> .................................................</div>
+      <div style="margin-top: 3px;"><strong>Sınıfı / No:</strong> 7 / ...... &nbsp; <strong>Tarih:</strong> ..../..../2026</div>
+    </div>
+  </div>
+
+  <!-- 4 Temel Strateji Rehberi -->
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;">
+    <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 8px; font-size: 10px;">
+      <strong style="color: #0369a1; display: block; margin-bottom: 2px;">1. Payda Eşitleme</strong>
+      Pozitiflerde ortak paydada payı büyük olan büyüktür: 5/12 &lt; 7/12.
+    </div>
+    <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 8px; font-size: 10px;">
+      <strong style="color: #4338ca; display: block; margin-bottom: 2px;">2. Payları Eşitleme</strong>
+      Paylar eşitken paydası küçük olan parça daha büyüktür: 4/7 &gt; 4/9.
+    </div>
+    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 8px; font-size: 10px;">
+      <strong style="color: #047857; display: block; margin-bottom: 2px;">3. Yarıma / Bütüne Referans</strong>
+      13/28 &lt; 1/2 iken 17/32 &gt; 1/2'dir. Bütüne eksiklerde 9/10 &gt; 7/8.
+    </div>
+    <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 8px; font-size: 10px;">
+      <strong style="color: #be123c; display: block; margin-bottom: 2px;">4. Negatif Kuralı</strong>
+      0'a yakın (mutlak değeri küçük) olan büyüktür: -2/3 &gt; -5/6.
+    </div>
+  </div>
+
+  <!-- GÖREV 1: SEMBOL YERLEŞTİRME (30 PUAN) -->
+  <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; margin-bottom: 8px;">
+      <strong style="color: #0f172a; font-size: 12px;">⚖️ Görev 1: Rasyonel İkilileri Karşılaştırınız (&lt;, &gt;, = yerleştiriniz)</strong>
+      <span style="background: #e0f2fe; color: #0284c7; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">30 Puan (6 x 5P)</span>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center;">
+      <tr style="background: #f8fafc; font-weight: bold; color: #475569;">
+        <th style="padding: 6px; border: 1px solid #e2e8f0;">Soru</th>
+        <th style="padding: 6px; border: 1px solid #e2e8f0;">1. Kesir</th>
+        <th style="padding: 6px; border: 1px solid #e2e8f0; width: 70px;">Sembol</th>
+        <th style="padding: 6px; border: 1px solid #e2e8f0;">2. Kesir</th>
+        <th style="padding: 6px; border: 1px solid #e2e8f0;">Kullanılan Strateji</th>
+      </tr>
+      <tr>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-weight: bold;">1</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">4 / 7</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; background: #fefce8; font-weight: bold;">[ &nbsp; &nbsp; ]</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">4 / 9</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-size: 10px; color: #64748b;">Paylar eşit</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-weight: bold;">2</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">5 / 12</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; background: #fefce8; font-weight: bold;">[ &nbsp; &nbsp; ]</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">7 / 12</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-size: 10px; color: #64748b;">Paydalar eşit</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-weight: bold;">3</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">13 / 28</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; background: #fefce8; font-weight: bold;">[ &nbsp; &nbsp; ]</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">17 / 32</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-size: 10px; color: #64748b;">Yarıma (1/2) yakınlık</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-weight: bold;">4</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">9 / 10</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; background: #fefce8; font-weight: bold;">[ &nbsp; &nbsp; ]</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">7 / 8</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-size: 10px; color: #64748b;">Bütüne (1) yakınlık</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-weight: bold;">5</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">-2 / 3</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; background: #fefce8; font-weight: bold;">[ &nbsp; &nbsp; ]</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">-5 / 6</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-size: 10px; color: #64748b;">Payda eşitleme & negatif</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-weight: bold;">6</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">-3 / 4</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; background: #fefce8; font-weight: bold;">[ &nbsp; &nbsp; ]</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: bold;">-1 / 4</td>
+        <td style="padding: 5px; border: 1px solid #e2e8f0; font-size: 10px; color: #64748b;">Negatif payda eşitliği</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- GÖREV 2: SAYI DOĞRUSUNDA SIRALAMA (20 PUAN) -->
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <strong style="color: #0f172a; font-size: 12px;">📏 Görev 2: Verilen Sayıları Sayı Doğrusuna Yerleştirip Küçükten Büyüğe Sıralayınız</strong>
+      <span style="background: #e0e7ff; color: #4338ca; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">20 Puan (4 x 5P)</span>
+    </div>
+    <p style="margin: 0 0 8px 0; font-size: 11px; color: #475569;">
+      Verilen sayılar: <strong>-3/4 &nbsp; , &nbsp; +1/3 &nbsp; , &nbsp; -1/2 &nbsp; , &nbsp; +5/6</strong>
+    </p>
+    <div style="background: white; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 8px;">
+      <div style="font-family: monospace; font-size: 11px; color: #334155; margin-bottom: 4px;">
+        &larr; ---- [-1] -------- [-3/4] -------- [-1/2] -------- [0] -------- [+1/3] -------- [+5/6] -------- [+1] ---- &rarr;
+      </div>
+      <div style="font-size: 10px; color: #64748b;">Referans Sayı Doğrusu Aralığı: [-1 ile +1 Arası]</div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-family: monospace; font-weight: bold; font-size: 12px;">
+      <span style="border: 1.5px solid #0284c7; padding: 4px 10px; border-radius: 6px; background: white;">( &nbsp; &nbsp; &nbsp; &nbsp; )</span>
+      <span>&lt;</span>
+      <span style="border: 1.5px solid #0284c7; padding: 4px 10px; border-radius: 6px; background: white;">( &nbsp; &nbsp; &nbsp; &nbsp; )</span>
+      <span>&lt;</span>
+      <span style="border: 1.5px solid #0284c7; padding: 4px 10px; border-radius: 6px; background: white;">( &nbsp; &nbsp; &nbsp; &nbsp; )</span>
+      <span>&lt;</span>
+      <span style="border: 1.5px solid #0284c7; padding: 4px 10px; border-radius: 6px; background: white;">( &nbsp; &nbsp; &nbsp; &nbsp; )</span>
+    </div>
+  </div>
+
+  <div style="margin-top: 10px; padding: 6px 10px; background: #e0f2fe; border: 1px solid #7dd3fc; border-radius: 6px; font-size: 9.5px; color: #0369a1; display: flex; justify-content: space-between;">
+    <span>Ön Yüz Puanı: 50 Puan &bull; Arka Yüzdeki Hata Dedektifi ve Mühendislik Görevine Geçiniz &rarr;</span>
+    <span style="font-weight: 800; font-family: monospace;">Sayfa 1 / 2</span>
+  </div>
+</div>`
+      },
+      {
+        id: 'p2',
+        pageNumber: 2,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: sans-serif; color: #0f172a; max-width: 800px; margin: 0 auto; line-height: 1.4;">
+  <!-- Üst Başlık & Öğrenci Künyesi (ARKA YÜZ / DIŞ) -->
+  <div style="border-bottom: 2px solid #4338ca; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase;">
+        T.C. MEB • TÜRKİYE YÜZYILI MAARİF MODELİ • MAT.7.1.2 (SAYFA 2: ARKA YÜZ / DIŞ)
+      </span>
+      <h2 style="margin: 4px 0 0 0; color: #4338ca; font-size: 17px; font-weight: 900;">
+        HATA DEDEKTİFİ, GERÇEK YAŞAM VE SÜREÇ DEĞERLENDİRME
+      </h2>
+      <p style="margin: 2px 0 0 0; font-size: 10.5px; color: #64748b;">
+        Kavram Yanılgılarını Aşma, Mühendislik Kararları ve Becerileri Yansıtma Rubriği
+      </p>
+    </div>
+    <div style="text-align: right; font-size: 10.5px; color: #64748b;">
+      <div><strong>Sayfa:</strong> 2 / 2 (Arka Yüz)</div>
+      <div style="margin-top: 3px;"><strong>Hedef Beceriler:</strong> SDB1.2 &bull; SDB2.2 &bull; SDB3.3</div>
+    </div>
+  </div>
+
+  <!-- GÖREV 3: HATA DEDEKTİFİ (20 PUAN) -->
+  <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #fef3c7; padding-bottom: 6px; margin-bottom: 8px;">
+      <strong style="color: #92400e; font-size: 12px;">🕵️ Görev 3: Hata Dedektifi (Matematiksel Yanılgıyı Yakala)</strong>
+      <span style="background: #fef3c7; color: #b45309; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">20 Puan (2 x 10P)</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 10.5px;">
+      <div style="background: white; border: 1px solid #fef08a; border-radius: 8px; padding: 8px;">
+        <strong style="color: #b45309;">Vaka A: Payda Büyüklüğü Yanılgısı</strong>
+        <p style="margin: 4px 0 6px 0; color: #475569; font-style: italic;">
+          &ldquo;Ali diyor ki: 2/7 kesri 2/5 kesrinden büyüktür çünkü 7 sayısı 5'ten büyüktür.&rdquo;
+        </p>
+        <div style="font-size: 10px; color: #1e293b; line-height: 1.5;">
+          <strong>Dedektif Analizi:</strong> Ali'nin iddiası [ &nbsp; ] Doğru &nbsp; [ &nbsp; ] Hatalı.<br/>
+          <strong>Doğru Açıklama:</strong> Paylar eşitken bütün daha çok parçaya bölündüğünde parçalar küçülür; bu sebeple <strong>2/5 &gt; 2/7</strong> olmalıdır.
+        </div>
+      </div>
+      <div style="background: white; border: 1px solid #fef08a; border-radius: 8px; padding: 8px;">
+        <strong style="color: #b45309;">Vaka B: Negatif Sayılarda Büyüklük Yanılgısı</strong>
+        <p style="margin: 4px 0 6px 0; color: #475569; font-style: italic;">
+          &ldquo;Ceren diyor ki: -4/5 sayısı -2/5 sayısından büyüktür çünkü 4 sayısı 2'den büyüktür.&rdquo;
+        </p>
+        <div style="font-size: 10px; color: #1e293b; line-height: 1.5;">
+          <strong>Dedektif Analizi:</strong> Ceren'in iddiası [ &nbsp; ] Doğru &nbsp; [ &nbsp; ] Hatalı.<br/>
+          <strong>Doğru Açıklama:</strong> Negatif sayılarda sıfıra yakın olan sayı daha büyüktür. Sayı doğrusunda <strong>-2/5 &gt; -4/5</strong> olmalıdır.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GÖREV 4: GERÇEK YAŞAM MÜHENDİSLİK PROBLEMLERİ (30 PUAN) -->
+  <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; margin-bottom: 8px;">
+      <strong style="color: #0f172a; font-size: 12px;">🏔️ Görev 4: Palandöken Rüzgar & İklim Problemleri</strong>
+      <span style="background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">30 Puan (2 x 15P)</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 10.5px;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;">
+        <strong style="color: #0f172a;">Problem 1: Rüzgar Türbin Dönüş Hızları</strong>
+        <p style="margin: 4px 0 6px 0; color: #475569; line-height: 1.4;">
+          Palandöken santralinde A türbini <strong>5/8</strong>, B türbini <strong>7/12</strong>, C türbini ise <strong>3/4</strong> kapasiteyle çalışmaktadır. Türbinleri en yavaştan en hızlıya sıralayınız:
+        </p>
+        <div style="background: white; border: 1px dashed #cbd5e1; padding: 5px; border-radius: 4px; font-family: monospace;">
+          Ortak payda (24): B(14/24) &lt; A(15/24) &lt; C(18/24)<br/>
+          Sıralama: <strong>B &lt; A &lt; C</strong>
+        </div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;">
+        <strong style="color: #0f172a;">Problem 2: Kayak Pisti Donma Sıcaklıkları</strong>
+        <p style="margin: 4px 0 6px 0; color: #475569; line-height: 1.4;">
+          Gece sıcaklıkları: Kuzey Çanağı: <strong>-7/8 °C</strong>, Ejder Zirvesi: <strong>-5/6 °C</strong>, Güney Yamacı: <strong>-2/3 °C</strong>. En soğuktan en ılık olana sıralayınız:
+        </p>
+        <div style="background: white; border: 1px dashed #cbd5e1; padding: 5px; border-radius: 4px; font-family: monospace;">
+          Ortak payda (24): -21/24 &lt; -20/24 &lt; -16/24<br/>
+          Sıralama: <strong>Kuzey &lt; Ejder &lt; Güney</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAARİF ÖZ DEĞERLENDİRME & BECERİ RUBRİĞİ -->
+  <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px;">
+    <strong style="color: #0f172a; font-size: 11px; display: block; margin-bottom: 6px;">
+      🌟 Türkiye Yüzyılı Maarif Modeli: Öğrenci Öz Değerlendirme & Beceri Rubriği
+    </strong>
+    <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: left;">
+      <tr style="background: #e2e8f0; font-weight: bold;">
+        <th style="padding: 4px 6px; border: 1px solid #cbd5e1;">Beceri Kodu</th>
+        <th style="padding: 4px 6px; border: 1px solid #cbd5e1;">Öğrenme ve Süreç Göstergesi</th>
+        <th style="padding: 4px 6px; border: 1px solid #cbd5e1; text-align: center;">1 (Gelişmeli)</th>
+        <th style="padding: 4px 6px; border: 1px solid #cbd5e1; text-align: center;">2 (Kısmen)</th>
+        <th style="padding: 4px 6px; border: 1px solid #cbd5e1; text-align: center;">3 (Başarılı)</th>
+        <th style="padding: 4px 6px; border: 1px solid #cbd5e1; text-align: center;">4 (Yetkin)</th>
+      </tr>
+      <tr>
+        <td style="padding: 4px 6px; border: 1px solid #cbd5e1; font-weight: bold;">SDB1.2</td>
+        <td style="padding: 4px 6px; border: 1px solid #cbd5e1;">Rasyonel sayılarda referans noktası (0, 1/2, 1) seçerken stratejilerimin farkındayım.</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1; font-weight: bold;">[ &times; ]</td>
+      </tr>
+      <tr>
+        <td style="padding: 4px 6px; border: 1px solid #cbd5e1; font-weight: bold;">SDB2.2</td>
+        <td style="padding: 4px 6px; border: 1px solid #cbd5e1;">Negatif rasyonel sayıların sıfıra yakınlık ilkesini hatasız uyguluyorum.</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1; font-weight: bold;">[ &times; ]</td>
+      </tr>
+      <tr>
+        <td style="padding: 4px 6px; border: 1px solid #cbd5e1; font-weight: bold;">SDB3.3</td>
+        <td style="padding: 4px 6px; border: 1px solid #cbd5e1;">Ezbere payda eşitlemek yerine en hızlı ve pratik yöntemi seçebiliyorum.</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1;">[ &nbsp; ]</td>
+        <td style="text-align: center; border: 1px solid #cbd5e1; font-weight: bold;">[ &times; ]</td>
+      </tr>
+    </table>
+    <div style="margin-top: 6px; font-size: 10px; color: #475569;">
+      <strong>Öğretmen Değerlendirme & Gözlem Notu:</strong> ....................................................................................................................................
+    </div>
+  </div>
+
+  <div style="padding: 6px 10px; background: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 6px; font-size: 9.5px; color: #3730a3; display: flex; justify-content: space-between;">
+    <span>🎯 <strong>Toplam Başarı:</strong> Ön Yüz (50P) + Arka Yüz (50P) = 100 Puan. (MAT.7.1.2 Süreç Değerlendirmesi)</span>
+    <span style="font-weight: 800; font-family: monospace;">Sayfa 2 / 2</span>
+  </div>
+</div>`
+      }
+    ]
   }
 ];
 

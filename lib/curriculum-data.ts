@@ -3590,6 +3590,410 @@ export const CURRICULUM_DATA: Grade[] = [
                                                                                           "correctOptionIndex": 0,
                                                                                           "explanation": "Sıfıra olan mesafeleri mutlak değerle karşılaştıralım:\nGüneş Paneli: |+5/2| = 2,50 kWh\nRüzgar Türbini: |-13/5| = 2,60 kWh\n2,50 < 2,60 olduğundan Güneş Paneli sıfır denge noktasına daha yakındır.",
                                                                                           "bloomLevel": "Analiz"
+                                                                                 }
+                                                                      ]
+                                                            }
+                                                  }
+                                        }
+                              ]
+                    },
+                    {
+                              "id": "topic-7-rasyonel-3",
+                              "unitId": "unit-7-sayilar",
+                              "title": "Rasyonel Sayıları Karşılaştırma ve Sıralama",
+                              "description": "Pay veya payda eşitleme, yarıma ve bütüne yakınlık, sıfıra yakınlık ve negatif rasyonel sayılarda ters yön mantığıyla sıralama stratejileri.",
+                              "outcomes": [
+                                        {
+                                                  "id": "MAT.7.1.2",
+                                                  "code": "MAT.7.1.2",
+                                                  "title": "Rasyonel Sayıları Karşılaştırma ve Sıralama",
+                                                  "shortTitle": "Rasyonel Sayıları Karşılaştırma ve Sıralama",
+                                                  "description": "Rasyonel sayıları karşılaştırır ve sıralar; pay veya payda eşitleme, yarıma ve bütüne yakınlık, sıfıra yakınlık gibi stratejileri açıklar; negatif rasyonel sayıları sayı doğrusunda sıfıra yakınlık ve ters yön mantığıyla yorumlar; gerçek yaşam durumlarında (sıcaklık, rüzgar hızı, kar kalınlığı, enerji verimliliği) büyüklükleri analiz eder.",
+                                                  "gradeId": "grade-7",
+                                                  "subjectId": "mat-7",
+                                                  "unitId": "unit-7-sayilar",
+                                                  "topicId": "topic-7-rasyonel-3",
+                                                  "durationMinutes": 40,
+                                                  "pedagogyGuide": {
+                                                            "maarifSDBs": [
+                                                                      "SDB1.2: Kendini Düzenleme / Öz Düzenleme (Negatif rasyonel sayıları sıralarken 'pozitif gibi düşün sonra ters çevir' ve 'sıfıra yakınlık' kurallarını bilinçli denetleme)",
+                                                                      "SDB2.2: İş Birliği ve Akran Öğrenmesi (Palandöken meteoroloji ve rüzgar enerjisi istasyonundaki türbin hızlarını ve sıcaklık sapmalarını akranlarıyla tartışarak en uygun stratejiyi seçme)",
+                                                                      "SDB3.3: Matematiksel Muhakeme ve Problem Çözme (Pay veya payda eşitlemek yerine yarıma veya bütüne yakınlık gibi zihinsel referans noktalarını gerekçelendirerek zaman kazandıran rasyonel stratejiler üretme)"
+                                                            ],
+                                                            "processComponents": [
+                                                                      "a) Rasyonel sayıları karşılaştırmada pay veya payda eşitleme, yarıma ve bütüne yakınlık, sıfıra yakınlık gibi uygun stratejileri seçer ve açıklar.",
+                                                                      "b) Negatif rasyonel sayıların sayı doğrusundaki yerini sıfıra yakınlık üzerinden gerekçelendirerek sıralar.",
+                                                                      "c) Gerçek yaşam problemlerinde rasyonel değerleri (hava sıcaklığı, rüzgar sürati, yakıt verimi) modelleyerek sıralama yapar."
+                                                            ],
+                                                            "learningGoals": [
+                                                                      "Pozitif rasyonel sayılarda paydaları eşit kesirlerde payı büyük olanın, payları eşit kesirlerde paydası küçük olanın daha büyük olduğunu kavrar.",
+                                                                      "Pay veya payda eşitlemenin zor olduğu durumlarda 0, 1/2 (yarım) ve 1 (bütün) referans noktalarını kullanarak zihinden karşılaştırma yapar.",
+                                                                      "Negatif rasyonel sayılarda sayı doğrusunda sıfıra daha yakın olanın (sağda yer alanın) daha büyük olduğunu açıklar.",
+                                                                      "İki veya daha fazla rasyonel sayıyı küçükten büyüğe (<) veya büyükten küçüğe (>) doğru matematiksel sembollerle sıralar."
+                                                            ],
+                                                            "teacherTips": [
+                                                                      "Derse Erzurum Palandöken Kış Olimpiyat Köyü ve Rüzgar Türbinleri senaryosuyla başlayınız; dondurucu gece sıcaklıkları (-3/4 °C, -1/2 °C) ile rüzgar hızları (7/12 m/s, 5/8 m/s) bağlamını kurunuz.",
+                                                                      "Öğrencilere 'Her zaman payda mı eşitlemeliyiz?' sorusunu yönelterek yarıma (1/2) ve bütüne (1) yakınlık referans stratejisini keşfettiriniz (Örn: 9/19 yarımdan küçük, 13/24 yarımdan büyüktür).",
+                                                                      "Negatif kesirlerde öğrencilerin -3/4 < -1/4 olduğunu sayı doğrusunda sıfıra olan mesafe ve termometre soğukluğu ile görselleştirmesini sağlayınız; -1/4 sıfıra daha yakın olduğu için daha sıcaktır/büyüktür.",
+                                                                      "Birim kesir mantığını pekiştiriniz: 1/5 mi daha büyük yoksa 1/9 mu? Bir pastayı 5'e mi bölsek dilim büyük olur 9'a mı?"
+                                                            ],
+                                                            "misconceptions": [
+                                                                      "Payları eşit olan pozitif rasyonel sayılarda paydası büyük olanın daha büyük olduğunu zannetmek (Örn: 3/7 > 3/5 yanılgısı; oysa 3/5 > 3/7).",
+                                                                      "Negatif rasyonel sayıları sıralarken eksi işaretini dikkate almadan pozitif gibi sıralayıp yönü değiştirmemek (Örn: -3/4 > -1/4 yanılgısı; oysa -1/4 > -3/4).",
+                                                                      "Yalnızca payda eşitleme yöntemini bilip pay eşitleme veya referans noktası (0, 1/2, 1) stratejilerini kullanamamak.",
+                                                                      "Bileşik kesir ile basit kesri karşılaştırırken her bileşik kesrin (pozitifse) basit kesirden daima büyük veya eşit olduğunu gözden kaçırmak."
+                                                            ],
+                                                            "keyQuestions": [
+                                                                      "Erzurum Palandöken zirvesinde hava sıcaklığı -1/2 °C iken vadide -4/5 °C ise hangi bölge daha sıcaktır? Neden?",
+                                                                      "17/35 ile 29/57 kesirlerini karşılaştırmak için payda eşitlemek yerine neden yarıma (1/2) yakınlık stratejisini tercih ederiz?",
+                                                                      "Payları eşit olan kesirlerde paydayı büyütmek kesrin değerini neden küçültür?"
+                                                            ]
+                                                  },
+                                                  "phases": {
+                                                            "story": {
+                                                                      "title": "Palandöken Kış Olimpiyat Köyü ve Rüzgar Türbinleri",
+                                                                      "character": {
+                                                                                "name": "Mühendis Hakan & Ceren",
+                                                                                "role": "Palandöken İklim ve Yenilenebilir Enerji Uzmanları",
+                                                                                "avatar": "🏔️"
+                                                                      },
+                                                                      "scenario": "Erzurum Palandöken Kış Sporları Merkezi'nde olimpiyat pistlerinin güvenliği ve yeşil enerji yönetimi için akıllı istasyonlar kurulmuştur. Pist şefi Hakan ve enerji mühendisi Ceren, rüzgar türbinlerinin kanat hızlarını (7/12 m/s, 5/8 m/s, 11/16 m/s) ve pistlerdeki dondurucu yüzey sıcaklıklarını (-1/2 °C, -3/4 °C, -5/6 °C) anlık olarak karşılaştırmak zorundadır. Doğru sıralama yapılmazsa kayak pistlerinde buzlanma uyarısı gecikebilir veya türbinler aşırı yüklenmeye girebilir!",
+                                                                      "realLifeConnection": "Meteoroloji tahminleri, rüzgar enerjisi üretimi, dondurucu ortam lojistiği ve finansal borsa değişimlerinde rasyonel sayıların anlık olarak karşılaştırılması ve sıralanması hayati önem taşır.",
+                                                                      "reflectionQuestion": "Palandöken'de -1/2 °C ile -5/6 °C sıcaklıklarından hangisi sıfıra daha yakındır? Türbin hızlarını karşılaştırırken her zaman payda eşitlemek şart mıdır, yoksa yarıma yakınlık gibi daha hızlı zihinsel yollar var mıdır?",
+                                                                      "keyTakeaway": "Rasyonel sayıları karşılaştırırken pay/payda eşitleme, yarıma (1/2) veya bütüne (1) yakınlık stratejileri kullanılır. Negatif rasyonel sayılarda sayı doğrusunda sıfıra daha yakın olan sayı daima daha büyüktür.",
+                                                                      "pages": [
+                                                                                {
+                                                                                          "id": "p7-w3-1",
+                                                                                          "pageNumber": 1,
+                                                                                          "chapterTitle": "1. Bölüm: Denge Terazisi & Ortak Pay/Payda Stratejisi",
+                                                                                          "conceptTitle": "Payları veya Paydaları Eşit Rasyonel Sayıları Karşılaştırma",
+                                                                                          "conceptBadge": "Eşitleme Stratejisi",
+                                                                                          "symbolicCode": "Paylar Eşit: 4/7 > 4/9 | Paydalar Eşit: 7/12 > 5/12",
+                                                                                          "narrativeText": "Sabahın ilk ışıklarıyla Hakan ve Ceren, Palandöken Akıllı Kontrol Odası'na geldiler. A ve B rüzgar türbinlerinin kanat devir oranları ekranda belirdi: A türbini saniyede 4/7 tur, B türbini ise 4/9 tur dönüyordu. Ceren sordu: \"Hakan, iki kesrin de payı 4. Hangisinin daha hızlı döndüğünü payda eşitlemeden nasıl hemen anlarız?\" Hakan dijital terazi simülasyonunu açtı: \"Bir pastayı 7 eş dilime mi bölersen dilimler büyük olur, 9 eş dilime mi? Tabii ki 7'ye bölünce! İkisinden de 4 dilim aldığımıza göre 4/7 > 4/9'dur. Payları eşit pozitif kesirlerde paydası küçük olan daima daha büyüktür!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Ceren Mühendis",
+                                                                                                    "text": "Harika bir mantık! Peki ya paydalar eşit olsaydı? Mesela 7/12 ile 5/12 tur olsaydı?"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "rational-comparator-scale",
+                                                                                                    "caption": "Akıllı denge terazisi: Sol kefede 4/7, sağ kefede 4/9. Dilim boyutu farkı nedeniyle sol kefe daha ağır basıyor (4/7 > 4/9)."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Dijital denge terazisinde 4/7 ile 4/9 kesirlerini karşılaştırınız ve araya doğru sembolü koyunuz!",
+                                                                                                    "actionLabel": "Teraziyi Dengele ve Karşılaştır ⚖️",
+                                                                                                    "feedbackRevealed": "Tebrikler! 4/7 > 4/9. Payları eşit kesirlerde paydası küçük olanın birim kesri daha büyüktür."
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 1: Payları eşit pozitif rasyonel sayılarda paydası KÜÇÜK olan daha büyüktür (çünkü parçalar daha büyüktür). Paydaları eşit pozitif rasyonel sayılarda ise payı BÜYÜK olan daha büyüktür."
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-w3-2",
+                                                                                          "pageNumber": 2,
+                                                                                          "chapterTitle": "2. Bölüm: Yarıma (1/2) ve Bütüne (1) Yakınlık Referans Metresi",
+                                                                                          "conceptTitle": "Büyük Sayılarda Payda Eşitlemeden Referans Noktasıyla Kıyaslama",
+                                                                                          "conceptBadge": "Referans Noktası (Benchmark)",
+                                                                                          "symbolicCode": "17/36 < 1/2 < 19/36  |  9/10 (Bütüne 1/10 uzak) > 7/8 (Bütüne 1/8 uzak)",
+                                                                                          "narrativeText": "Öğleye doğru sistem yeni iki verimlilik katsayısı üretti: Kuzey Pisti 13/28, Güney Pisti ise 17/32 verimle çalışıyordu. Ceren hesap makinesine uzandı: \"28 ve 32'nin ortak katını bulmak dakikalarımızı alır!\" Hakan gülümsedi: \"Hiç gerek yok Ceren, yarıma (1/2) bakalım! 28'in yarısı 14'tür, yani 14/28 tam yarımdır. 13/28 ise yarımdan küçüktür (< 1/2). Diğer yandan 32'nin yarısı 16'dır, yani 17/32 yarımdan büyüktür (> 1/2). Biri yarımdan küçük, diğeri yarımdan büyükse hiç payda eşitlemeden 17/32 > 13/28 olduğunu saniyeler içinde görürüz!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Hakan Mühendis",
+                                                                                                    "text": "İşte buna 'Yarıma Yakınlık Stratejisi' denir. Bütüne yakınlıkta ise bütüne (1'e) olan eksik parçayı kıyaslarız!"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "benchmark-reference-line",
+                                                                                                    "caption": "Referans cetveli: 0, 1/2 ve 1 işaretli. 13/28 yarımdan geride, 17/32 ise yarımı aşmış olarak parıldıyor."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Referans cetvelini kullanarak 13/28 ile 17/32 kesirlerini 1/2 çizgisine göre konumlandırınız!",
+                                                                                                    "actionLabel": "Yarıma Göre Kıyasla 📏",
+                                                                                                    "feedbackRevealed": "13/28 < 1/2 < 17/32 ⟹ 17/32 > 13/28 olduğu kanıtlandı! Zihinsel referans stratejisi onaylandı."
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 2: Pay ve paydası büyük sayılarda payda eşitlemek yerine 0, 1/2 (yarım) ve 1 (bütün) referans noktaları kullanılır. Yarımdan büyük bir sayı, yarımdan küçük bir sayıdan daima büyüktür."
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-w3-3",
+                                                                                          "pageNumber": 3,
+                                                                                          "chapterTitle": "3. Bölüm: Dondurucu Soğukluk & Negatif Sayılarda Ters Yön",
+                                                                                          "conceptTitle": "Negatif Rasyonel Sayılarda Sıfıra Yakınlık ve Sıralama Tuzağı",
+                                                                                          "conceptBadge": "Negatif Kuralı: Sıfıra Yakın Olan Büyüktür",
+                                                                                          "symbolicCode": "-1/4 > -1/2 > -3/4  (Pozitifte 3/4 > 1/2 > 1/4 iken negatifte yön tamamen ters döner)",
+                                                                                          "narrativeText": "Akşam fırtınası yaklaşırken Palandöken'in zirvesinde dondurucu rüzgarlar esmeye başladı. Pist sensörlerinden üç sıcaklık değeri geldi: Ejder Tepesi -3/4 °C, Gondol İstasyonu -1/2 °C, Vadi Kapısı ise -1/4 °C idi. Ceren uyardı: \"Dikkat! Pozitif sayılarda 3/4 en büyüktü; ama negatifte durum tam tersidir! Sayı doğrusunda sıfıra en yakın olan sayı en büyüktür ve en sıcak noktayı temsil eder. -1/4 sıfıra en yakındır, -3/4 ise sıfırdan en uzakta (en solda) yani en soğuktur! Dolayısıyla: -3/4 < -1/2 < -1/4 sıralaması geçerlidir!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Ceren Mühendis",
+                                                                                                    "text": "Tuzak kuralı unutma: Negatif sayıları önce pozitifmiş gibi sıralarız, sonra eşitsizlik işaretlerini tam tersine çeviririz!"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "negative-freezer-scale",
+                                                                                                    "caption": "Palandöken termometre ve dondurucu sayı doğrusu: 0 noktasından sola doğru -1/4 (en sıcak), -1/2 ve -3/4 (en soğuk) sıralanmış."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Pist sıcaklıklarını en soğuktan en sıcağa (küçükten büyüğe) doğru sıralayınız!",
+                                                                                                    "actionLabel": "Sıcaklıkları Sırala ❄️",
+                                                                                                    "feedbackRevealed": "-3/4 < -1/2 < -1/4. En soğuk pist Ejder Tepesi (-3/4 °C), en sıcak pist Vadi Kapısı (-1/4 °C) olarak belirlendi!"
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 3: Negatif rasyonel sayılar sayı doğrusunda sıfırın solundadır. Sıfıra daha yakın olan (daha sağda bulunan) negatif sayı daha büyüktür. Pratik yöntem: Pozitif gibi sıralayıp yönü ters çeviriniz."
+                                                                                },
+                                                                                {
+                                                                                          "id": "p7-w3-4",
+                                                                                          "pageNumber": 4,
+                                                                                          "chapterTitle": "4. Bölüm: Rüzgar Türbinleri ve Hız Sıralama Kokpiti",
+                                                                                          "conceptTitle": "Çoklu Rasyonel Sayıları Küçükten Büyüğe Sıralama ve Akıllı Eşitleme",
+                                                                                          "conceptBadge": "Çoklu Sıralama Kokpiti",
+                                                                                          "symbolicCode": "5/6, 7/12, 3/4 ⟹ 10/12, 7/12, 9/12 ⟹ 7/12 < 3/4 < 5/6",
+                                                                                          "narrativeText": "Gece yarısı üç rüzgar türbininin kanat hızları acil durum ekranına yansıdı: Türbin-1 hızı 7/12 m/s, Türbin-2 hızı 3/4 m/s, Türbin-3 hızı ise 5/6 m/s idi. Hakan ve Ceren, türbinleri en yavaştan en hızlıya doğru sıralayıp fren yükünü dağıtmak zorundaydı. Ceren hızla paydaları inceledi: \"12, 4 ve 6'nın en küçük ortak katı 12'dir! 3/4'ü 3 ile genişletirsek 9/12 olur; 5/6'yı 2 ile genişletirsek 10/12 olur. Türbin-1 zaten 7/12 idi. Artık paydalar eşit: 7/12 < 9/12 < 10/12! Yani en yavaş Türbin-1 (7/12), ortanca Türbin-2 (3/4) ve en hızlı Türbin-3 (5/6)'tür!\"",
+                                                                                          "characterDialogue": {
+                                                                                                    "speaker": "Hakan Mühendis",
+                                                                                                    "text": "Mükemmel koordinasyon! Rasyonel sayıları doğru sıralayarak Palandöken enerji şebekesini kusursuz dengede tuttuk!"
+                                                                                          },
+                                                                                          "visualScene": {
+                                                                                                    "type": "turbine-speed-order",
+                                                                                                    "caption": "Türbin kokpiti: 7/12 (en yavaş), 3/4 (9/12, ortanca) ve 5/6 (10/12, en hızlı) kanat devir animasyonlarıyla küçükten büyüğe hizalanmış."
+                                                                                          },
+                                                                                          "interactiveAction": {
+                                                                                                    "prompt": "Türbin hızlarını paydalarını 12'de eşitleyerek küçükten büyüğe doğru hizalayınız!",
+                                                                                                    "actionLabel": "Türbinleri Sırala 🌀",
+                                                                                                    "feedbackRevealed": "7/12 < 3/4 (9/12) < 5/6 (10/12). Fren dengesi sağlandı, Palandöken sistemi güvenle çalışıyor!"
+                                                                                          },
+                                                                                          "mathTakeaway": "Kural 4: Çoklu pozitif veya negatif rasyonel sayıları sıralarken uygun bir ortak paydada buluşmak ya da referans noktalarını harmanlamak en kesin sonuca ulaştırır."
+                                                                                }
+                                                                      ]
+                                                            },
+                                                            "lab": {
+                                                                      "title": "Dinamik Rasyonel Terazi ve Referans Cetveli Laboratuvarı",
+                                                                      "toolType": "rational-comparison-bench",
+                                                                      "instructions": "Rasyonel denge terazisi, yarıma/bütüne yakınlık referans metresi ve dondurucu negatif sıcaklık skalasını kullanarak rasyonel sayıları interaktif olarak karşılaştırınız ve sıralayınız.",
+                                                                      "taskGoal": "İki kesir arasına <, =, > sembollerini yerleştirin, 1/2 referans noktasını kullanarak genişletme yapmadan kıyaslayın ve negatif kesirleri en soğuktan en sıcağa doğru sıralayın.",
+                                                                      "interactiveTips": [
+                                                                                "Payları eşit kesirlerde paydası küçük olanın terazide daha ağır bastığını gözlemleyiniz.",
+                                                                                "Yarımdan büyük ve küçük kesirleri referans çizgisi üzerinde görsel olarak ayrıştırınız.",
+                                                                                "Negatif sayılarda sıfıra yakın olanın daha büyük olduğunu termometre ibresiyle doğrulayınız."
+                                                                      ]
+                                                            },
+                                                            "puzzle": {
+                                                                      "title": "Rasyonel Sayıları Karşılaştırma ve Sıralama Oyunları",
+                                                                      "instructions": "Kazanımları pekiştirmek için 3 özel oyundan birini seçiniz: Rasyonel Denge Terazisi (Hızlı Karşılaştırma), Kutup Soğuğu & Negatif Sıralama Parkuru ya da Rüzgar Türbini Sürat Yarışı.",
+                                                                      "items": [
+                                                                                {
+                                                                                          "id": "rc1",
+                                                                                          "concept": "Payda Eşitleme Kuralı",
+                                                                                          "symbol": "a/c vs b/c (c > 0)",
+                                                                                          "definition": "Paydaları eşit pozitif rasyonel sayılarda payı büyük olan sayı daha büyüktür.",
+                                                                                          "visualType": "fraction"
+                                                                                },
+                                                                                {
+                                                                                          "id": "rc2",
+                                                                                          "concept": "Pay Eşitleme Kuralı",
+                                                                                          "symbol": "c/a vs c/b (a < b)",
+                                                                                          "definition": "Payları eşit pozitif rasyonel sayılarda paydası küçük olan sayı daha büyüktür.",
+                                                                                          "visualType": "fraction"
+                                                                                },
+                                                                                {
+                                                                                          "id": "rc3",
+                                                                                          "concept": "Yarıma Yakınlık Referansı",
+                                                                                          "symbol": "x < 1/2 < y",
+                                                                                          "definition": "Biri yarımdan küçük, diğeri yarımdan büyük iki rasyonel sayıyı payda eşitlemeden karşılaştırma yöntemi.",
+                                                                                          "visualType": "ruler"
+                                                                                },
+                                                                                {
+                                                                                          "id": "rc4",
+                                                                                          "concept": "Bütüne Yakınlık Referansı",
+                                                                                          "symbol": "1 - a/b = Eksik Parça",
+                                                                                          "definition": "Bütüne (1) ulaşmak için eksik olan birim kesir parçasını kıyaslayarak sıralama yapma yöntemi.",
+                                                                                          "visualType": "scale"
+                                                                                },
+                                                                                {
+                                                                                          "id": "rc5",
+                                                                                          "concept": "Negatifte Sıfıra Yakınlık",
+                                                                                          "symbol": "-a/b > -c/d",
+                                                                                          "definition": "Negatif rasyonel sayılarda sayı doğrusunda başlangıç noktasına (0) daha yakın olan sayı daha büyüktür.",
+                                                                                          "visualType": "thermometer"
+                                                                                }
+                                                                      ]
+                                                            },
+                                                            "assessment": {
+                                                                      "title": "Değerlendirme Testi: Rasyonel Sayıları Karşılaştırma ve Sıralama",
+                                                                      "instructions": "Aşağıdaki 14 soruyu dikkatle inceleyiniz. Sorular kavramsal stratejiler (pay/payda eşitleme, referans noktası, negatif sıralama) ve Palandöken kış senaryolu bağlam temelli sorulardan oluşmaktadır.",
+                                                                      "reflectionPrompt": "Rasyonel sayıları karşılaştırırken karşılaştığınız en güçlü strateji hangisi oldu? Büyük paydalı sayılarda payda eşitlemek yerine yarıma/bütüne yakınlık referansını kullanmak size problem çözmede nasıl bir avantaj sağladı?",
+                                                                      "questions": [
+                                                                                {
+                                                                                          "id": "mat712_q1",
+                                                                                          "questionText": "3/7 ile 3/5 rasyonel sayılarını karşılaştıran bir öğrenci araya hangi sembolü koymalıdır?",
+                                                                                          "options": [
+                                                                                                    "3/7 > 3/5",
+                                                                                                    "3/7 < 3/5",
+                                                                                                    "3/7 = 3/5",
+                                                                                                    "Karşılaştırılamaz"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Payları eşit pozitif rasyonel sayılarda paydası küçük olan daha büyüktür. 5 < 7 olduğundan 3/5 > 3/7, yani 3/7 < 3/5'tir.",
+                                                                                          "bloomLevel": "Bilgi"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q2",
+                                                                                          "questionText": "Aşağıdaki rasyonel sayılardan hangisi 1/2 (yarım) değerinden daha BÜYÜKTÜR?",
+                                                                                          "options": [
+                                                                                                    "7/16",
+                                                                                                    "9/20",
+                                                                                                    "11/20",
+                                                                                                    "13/28"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 2,
+                                                                                          "explanation": "20'nin yarısı 10'dur. Dolayısıyla 10/20 tam yarımdır. 11/20 > 10/20 olduğundan 11/20 yarımdan büyüktür. Diğer şıklardaki kesirler (7/16 < 8/16, 9/20 < 10/20, 13/28 < 14/28) yarımdan küçüktür.",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q3",
+                                                                                          "questionText": "-5/6 ile -2/3 rasyonel sayıları arasına hangi sembol yazılmalıdır?",
+                                                                                          "options": [
+                                                                                                    "<",
+                                                                                                    ">",
+                                                                                                    "=",
+                                                                                                    "≤"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Paydaları 6'da eşitleyelim: -2/3 = -4/6 olur. -5/6 ile -4/6 sayılarını kıyaslayalım. Negatif sayılarda sıfıra daha yakın olan -4/6 daha büyüktür (-4/6 > -5/6). O halde -5/6 < -2/3'tür.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q4",
+                                                                                          "questionText": "Palandöken meteoroloji istasyonunda ölçülen üç sıcaklık değeri şöyledir: A noktası: -1/3 °C, B noktası: -1/2 °C, C noktası: -1/6 °C. Bu noktaların sıcaklıklarının EN SOĞUKTAN EN SIÇAĞA doğru sıralanışı hangisidir?",
+                                                                                          "options": [
+                                                                                                    "B < A < C",
+                                                                                                    "C < A < B",
+                                                                                                    "A < B < C",
+                                                                                                    "B < C < A"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "En soğuk olan sıcaklık en küçük sayıdır. Paydaları 6'da eşitleyelim:\nA = -2/6, B = -3/6, C = -1/6.\nKüçükten büyüğe sıralarsak: -3/6 < -2/6 < -1/6, yani B < A < C olur.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q5",
+                                                                                          "questionText": "Bütüne yakınlık stratejisini kullanan Ceren, 7/8 ile 11/12 kesirlerini karşılaştırmak istiyor. Her iki kesrin bütüne (1'e) olan eksiklikleri sırasıyla 1/8 ve 1/12'dir. Buna göre doğru karşılaştırma hangisidir?",
+                                                                                          "options": [
+                                                                                                    "7/8 > 11/12 (çünkü 1/8 daha büyüktür)",
+                                                                                                    "11/12 > 7/8 (çünkü bütüne olan eksiği 1/12 daha küçüktür, bütüne daha yakındır)",
+                                                                                                    "7/8 = 11/12",
+                                                                                                    "Bu yöntemle karşılaştırma yapılamaz"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Bütüne ulaşmak için eksik olan parça ne kadar küçükse, kesir bütüne o kadar yakındır ve o kadar büyüktür. 1/12 < 1/8 olduğundan 11/12 bütüne daha yakındır, dolayısıyla 11/12 > 7/8'dir.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q6",
+                                                                                          "questionText": "-7/4, -3/2 ve -11/8 rasyonel sayılarının küçükten büyüğe doğru sıralanışı hangisidir?",
+                                                                                          "options": [
+                                                                                                    "-7/4 < -3/2 < -11/8",
+                                                                                                    "-3/2 < -7/4 < -11/8",
+                                                                                                    "-11/8 < -3/2 < -7/4",
+                                                                                                    "-7/4 < -11/8 < -3/2"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Paydaları 8'de eşitleyelim:\n-7/4 = -14/8\n-3/2 = -12/8\n-11/8 = -11/8\nNegatif sayılarda sayı doğrusunda en solda olan en küçüktür: -14/8 < -12/8 < -11/8 ⟹ -7/4 < -3/2 < -11/8.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q7",
+                                                                                          "questionText": "x = -2 tam 1/3, y = -2 tam 1/5, z = -2 tam 1/2 sayıları veriliyor. Bu sayıların doğru sıralanışı aşağıdakilerden hangisidir?",
+                                                                                          "options": [
+                                                                                                    "z < x < y",
+                                                                                                    "y < x < z",
+                                                                                                    "x < y < z",
+                                                                                                    "z < y < x"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Tam kısımlar eşit (-2). Kesir kısımlarına bakalım: 1/2 > 1/3 > 1/5. Pozitifte 2 tam 1/2 > 2 tam 1/3 > 2 tam 1/5 iken negatifte yön tamamen tersine döner:\n-2 tam 1/2 < -2 tam 1/3 < -2 tam 1/5 ⟹ z < x < y.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q8",
+                                                                                          "questionText": "Üç rüzgar türbininin kanat hızları v1 = 5/8 m/s, v2 = 7/12 m/s ve v3 = 11/16 m/s olarak ölçülmüştür. En hızlıdan en yavaşa doğru sıralama hangisidir?",
+                                                                                          "options": [
+                                                                                                    "v3 > v1 > v2",
+                                                                                                    "v1 > v3 > v2",
+                                                                                                    "v2 > v1 > v3",
+                                                                                                    "v3 > v2 > v1"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Paydaları 48'de eşitleyelim:\nv1 = 5/8 = 30/48\nv2 = 7/12 = 28/48\nv3 = 11/16 = 33/48\nSıralama: 33/48 > 30/48 > 28/48 ⟹ v3 > v1 > v2.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q9",
+                                                                                          "questionText": "Aşağıdaki sıralamalardan hangisi DOĞRUDUR?",
+                                                                                          "options": [
+                                                                                                    "-1/2 < -3/4 < -4/5",
+                                                                                                    "-4/5 < -3/4 < -1/2",
+                                                                                                    "-3/4 < -4/5 < -1/2",
+                                                                                                    "-1/2 < -4/5 < -3/4"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Pozitif halleri: 1/2 (0,50) < 3/4 (0,75) < 4/5 (0,80). Negatif olduklarında yön tersine döner: -4/5 (-0,80) < -3/4 (-0,75) < -1/2 (-0,50).",
+                                                                                          "bloomLevel": "Kavrama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q10",
+                                                                                          "questionText": "Bir kayak yarışında 4 sporcunun bitiş çizgisine olan farkları saniye cinsinden verilmiştir: Can: +1/4 sn, Efe: -2/5 sn, Deniz: -1/3 sn, Berk: +3/8 sn. Bitiş çizgisine EN YAKIN olan (sapması en az olan) sporcu hangisidir?",
+                                                                                          "options": [
+                                                                                                    "Can (+1/4)",
+                                                                                                    "Efe (-2/5)",
+                                                                                                    "Deniz (-1/3)",
+                                                                                                    "Berk (+3/8)"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Bitiş çizgisine yakınlık mutlak değerle ölçülür:\n|+1/4| = 0,25\n|-2/5| = 0,40\n|-1/3| ≈ 0,33\n|+3/8| = 0,375\nEn küçük mutlak değer 0,25 ile Can'a aittir.",
+                                                                                          "bloomLevel": "Analiz"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q11",
+                                                                                          "questionText": "a = -3/5 ve b = -7/10 olduğuna göre a ile b arasına aşağıdaki rasyonel sayılardan hangisi YAZILABİLİR?",
+                                                                                          "options": [
+                                                                                                    "-13/20",
+                                                                                                    "-1/2",
+                                                                                                    "-4/5",
+                                                                                                    "-9/10"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Paydaları 20'de eşitleyelim:\na = -3/5 = -12/20\nb = -7/10 = -14/20\n-14/20 ile -12/20 arasında -13/20 sayısı yer alır.",
+                                                                                          "bloomLevel": "Uygulama"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q12",
+                                                                                          "questionText": "Ali \"-8/3 sayısı -2'den küçüktür çünkü -8/3 = -2 tam 2/3'tür ve sayı doğrusunda -2'nin solundadır\" demektedir. Veli ise \"-8/3 sayısı -2'den büyüktür çünkü 8/3 sayısı 2'den büyüktür\" demektedir. Kim haklıdır?",
+                                                                                          "options": [
+                                                                                                    "Ali haklıdır",
+                                                                                                    "Veli haklıdır",
+                                                                                                    "İkisi de haksızdır",
+                                                                                                    "Sayılar birbirine eşittir"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Ali haklıdır. -8/3 = -2 tam 2/3 sayısı sayı doğrusunda -2 ile -3 arasında ve -2'nin solunda yer alır. Negatif sayılarda solda olan sayı daha küçüktür, yani -8/3 < -2'dir.",
+                                                                                          "bloomLevel": "Değerlendirme"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q13",
+                                                                                          "questionText": "15/17, 19/21, 23/25 rasyonel sayılarını büyükten küçüğe sıralamak için en akılcı yöntem hangisidir?",
+                                                                                          "options": [
+                                                                                                    "Paydaları çarparak ortak paydada buluşmak",
+                                                                                                    "Pay ve payda arasındaki farkın (2) eşit olduğunu fark edip bütüne olan eksiklikleri (2/17, 2/21, 2/25) kıyaslamak",
+                                                                                                    "Hepsini sıfır ile karşılaştırmak",
+                                                                                                    "Ondalık bölme işlemi yapmak"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 1,
+                                                                                          "explanation": "Her üç kesirde de pay ile payda arasındaki fark 2'dir. Bütüne olan eksiklikler: 2/17, 2/21 ve 2/25'tir. Payları eşit olduğundan en küçük eksiklik 2/25'tir. Eksikliği en az olan bütüne en yakındır ve en büyüktür: 23/25 > 19/21 > 15/17.",
+                                                                                          "bloomLevel": "Strateji / Değerlendirme"
+                                                                                },
+                                                                                {
+                                                                                          "id": "mat712_q14",
+                                                                                          "questionText": "Palandöken rüzgar santralinde 1. türbinin ürettiği enerjinin teorik kapasiteye oranı 17/20, 2. türbinin 21/25, 3. türbinin ise 41/50'dir. Mühendis Ceren Hanım en yüksek verimli türbini bakıma son sırada alacaktır. Ceren Hanım'ın belirlediği en verimli türbin hangisidir?",
+                                                                                          "options": [
+                                                                                                    "1. Türbin (17/20)",
+                                                                                                    "2. Türbin (21/25)",
+                                                                                                    "3. Türbin (41/50)",
+                                                                                                    "Hepsinin verimi eşittir"
+                                                                                          ],
+                                                                                          "correctOptionIndex": 0,
+                                                                                          "explanation": "Paydaları 100'de eşitleyelim:\n1. Türbin: 17/20 = 85/100 (%85)\n2. Türbin: 21/25 = 84/100 (%84)\n3. Türbin: 41/50 = 82/100 (%82)\n85/100 > 84/100 > 82/100 olduğundan en yüksek verimli 1. Türbindir.",
+                                                                                          "bloomLevel": "Sentez / Problem Çözme"
                                                                                 }
                                                                       ]
                                                             }

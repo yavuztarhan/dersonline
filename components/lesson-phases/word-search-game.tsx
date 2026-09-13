@@ -486,6 +486,52 @@ const MAT_7_1_1_W2_CLUES: WordClue[] = [
   }
 ];
 
+// 8. MAT.7.1.2 Clues (Rasyonel Sayıları Karşılaştırma ve Sıralama)
+const MAT_7_1_2_CLUES: WordClue[] = [
+  {
+    id: 'mat712-k1',
+    question: 'Payları eşit pozitif kesirlerde bu değeri küçük olan kesir daha büyük dilimlere sahiptir ve daha büyüktür:',
+    word: 'PAYDA',
+    hint: '5 Harfli • Kesir çizgisinin altındaki sayı',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat712-k2',
+    question: '1/2 kesrini temsil eden ve büyük paydalı kesirleri kıyaslarken zihinsel kılavuz olarak kullanılan değer:',
+    word: 'YARIM',
+    hint: '5 Harfli • 1/2 referans noktası',
+    color: '#06b6d4'
+  },
+  {
+    id: 'mat712-k3',
+    question: '1 tam değerine karşılık gelen ve eksik parça kıyaslamasında kullanılan temel büyüklük:',
+    word: 'BÜTÜN',
+    hint: '5 Harfli • 1 tam referansı',
+    color: '#10b981'
+  },
+  {
+    id: 'mat712-k4',
+    question: 'Sayı doğrusunda sıfırın solunda kalan ve sıfıra yaklaştıkça değeri büyüyen sayılar:',
+    word: 'NEGATİF',
+    hint: '7 Harfli • Eksi (-) işaretli sayılar',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat712-k5',
+    question: 'Rasyonel sayıları küçükten büyüğe (<) veya büyükten küçüğe (>) doğru ardışık dizme işlemi:',
+    word: 'SIRALAMA',
+    hint: '8 Harfli • Karşılaştırma dizilimi',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat712-k6',
+    question: 'Payda eşitlemek yerine 0, 1/2 veya 1 gibi bilinen sabit değerlere göre kıyaslama yapma yöntemi:',
+    word: 'REFERANS',
+    hint: '8 Harfli • Kılavuz dayanak noktası',
+    color: '#3b82f6'
+  }
+];
+
 const TURKISH_CHARS = [
   'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
   'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
@@ -596,12 +642,20 @@ export function WordSearchGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
+  const isMat712 =
+    id === 'MAT.7.1.2' ||
+    code.includes('7.1.2') ||
+    title.includes('karşılaştırma') ||
+    title.includes('sıralama');
+
   const isMat711W2 =
-    id === 'MAT.7.1.1-2' ||
-    id === 'MAT.7.1.1.2' ||
-    title.includes('derinleşme') ||
-    title.includes('yoğunluk');
-  const isMat711 = !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
+    !isMat712 && (
+      id === 'MAT.7.1.1-2' ||
+      id === 'MAT.7.1.1.2' ||
+      title.includes('derinleşme') ||
+      title.includes('yoğunluk')
+    );
+  const isMat711 = !isMat712 && !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
   const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
   const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
   const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
@@ -611,7 +665,9 @@ export function WordSearchGame() {
   const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
   const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
 
-  const activeClues = isMat711W2
+  const activeClues = isMat712
+    ? MAT_7_1_2_CLUES
+    : isMat711W2
     ? MAT_7_1_1_W2_CLUES
     : isMat711
     ? MAT_7_1_1_CLUES

@@ -433,6 +433,52 @@ const MAT_7_1_1_W2_TF: TFQuestion[] = [
   }
 ];
 
+// 8. MAT.7.1.2 (Rasyonel Sayıları Karşılaştırma ve Sıralama)
+const MAT_7_1_2_TF: TFQuestion[] = [
+  {
+    id: 'tf-mat712-q1',
+    statement: 'Payları eşit pozitif rasyonel sayılarda paydası küçük olan sayı daha büyüktür.',
+    isTrue: true,
+    explanation: 'Doğru! Bütün daha az parçaya bölündüğünde birim dilimler daha büyük olur (Örn: 3/5 > 3/7).'
+  },
+  {
+    id: 'tf-mat712-q2',
+    statement: '-3/4 rasyonel sayısı -1/4 rasyonel sayısından daha büyüktür.',
+    isTrue: false,
+    explanation: 'Yanlış! Sayı doğrusunda sıfıra daha yakın olan -1/4 sayısı -3/4 sayısından daha büyüktür (-1/4 > -3/4).'
+  },
+  {
+    id: 'tf-mat712-q3',
+    statement: '13/28 kesri 1/2 (yarım) değerinden daha küçüktür.',
+    isTrue: true,
+    explanation: 'Doğru! 28\'in yarısı 14 olduğundan 14/28 tam yarımdır. 13/28 < 14/28 olduğundan yarımdan küçüktür.'
+  },
+  {
+    id: 'tf-mat712-q4',
+    statement: '7/8 ile 11/12 kesirleri bütüne yakınlık kuralıyla karşılaştırıldığında 7/8 bütüne daha yakındır.',
+    isTrue: false,
+    explanation: 'Yanlış! 1 - 11/12 = 1/12 ve 1 - 7/8 = 1/8\'dir. 1/12 < 1/8 olduğundan 11/12\'nin eksiği daha azdır ve bütüne daha yakındır (11/12 > 7/8).'
+  },
+  {
+    id: 'tf-mat712-q5',
+    statement: 'Negatif iki rasyonel sayı karşılaştırılırken sayılar pozitifmiş gibi sıralanıp eşitsizlik yönü tersine çevrilebilir.',
+    isTrue: true,
+    explanation: 'Doğru! Pozitifte 5/6 > 2/3 iken negatifte yön ters döner: -5/6 < -2/3.'
+  },
+  {
+    id: 'tf-mat712-q6',
+    statement: 'Her pozitif bileşik kesir, her pozitif basit kesirden daima büyüktür.',
+    isTrue: true,
+    explanation: 'Doğru! Pozitif basit kesirler 1\'den küçük (< 1), pozitif bileşik kesirler ise 1 veya 1\'den büyüktür (≥ 1).'
+  },
+  {
+    id: 'tf-mat712-q7',
+    statement: 'Paydaları eşit iki negatif rasyonel sayıdan payı daha büyük olan (sayı doğrusunda daha sağdaki) daha büyüktür.',
+    isTrue: true,
+    explanation: 'Doğru! Örneğin -2/7 ile -5/7 karşılaştırıldığında -2 > -5 olduğundan -2/7 > -5/7\'dir.'
+  }
+];
+
 export function TrueFalseGame() {
   const { playSound, addPoints, unlockBadge, selectedOutcome } = useApp();
 
@@ -440,12 +486,20 @@ export function TrueFalseGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
+  const isMat712 =
+    id === 'MAT.7.1.2' ||
+    code.includes('7.1.2') ||
+    title.includes('karşılaştırma') ||
+    title.includes('sıralama');
+
   const isMat711W2 =
-    id === 'MAT.7.1.1-2' ||
-    id === 'MAT.7.1.1.2' ||
-    title.includes('derinleşme') ||
-    title.includes('yoğunluk');
-  const isMat711 = !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
+    !isMat712 && (
+      id === 'MAT.7.1.1-2' ||
+      id === 'MAT.7.1.1.2' ||
+      title.includes('derinleşme') ||
+      title.includes('yoğunluk')
+    );
+  const isMat711 = !isMat712 && !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
   const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
   const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
   const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
@@ -455,7 +509,9 @@ export function TrueFalseGame() {
   const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
   const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
 
-  const questions = isMat711W2
+  const questions = isMat712
+    ? MAT_7_1_2_TF
+    : isMat711W2
     ? MAT_7_1_1_W2_TF
     : isMat711
     ? MAT_7_1_1_TF

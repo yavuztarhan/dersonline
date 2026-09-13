@@ -29,7 +29,8 @@ import {
 import {
   FractionRulerActivityView,
   DensityMicroscopeActivityView,
-  LaserToleranceActivityView
+  LaserToleranceActivityView,
+  RationalComparisonActivityView
 } from './mat7-activity-sheets';
 import confetti from 'canvas-confetti';
 import {
@@ -61,7 +62,8 @@ import {
   Truck,
   Droplets,
   Microscope,
-  Zap
+  Zap,
+  Scale
 } from 'lucide-react';
 
 interface ActivitySheetViewProps {
@@ -203,9 +205,22 @@ export function ActivitySheetView({
     isMat711DensityActivity ||
     isMat711LaserActivity;
 
+  // MAT.7.1.2 Activities (Comparison & Ordering)
+  const isMat712ComparisonActivity =
+    selectedSheetId.includes('mat-7-1-2') ||
+    fileRecord?.id?.includes('mat-7-1-2') ||
+    fileRecord?.outcomeCode === 'MAT.7.1.2' ||
+    outcomeCode === 'MAT.7.1.2' ||
+    fileRecord?.title?.includes('Karşılaştırma & Sıralama') ||
+    fileRecord?.title?.includes('Karşılaştırma ve Sıralama');
+
+  const isMat7Activity =
+    isMat711Activity ||
+    isMat712ComparisonActivity;
+
   const isTableHypothesisActivity =
     !isMat6Activity &&
-    !isMat711Activity &&
+    !isMat7Activity &&
     (selectedSheetId.includes('table-hypothesis') ||
       fileRecord?.id?.includes('table-hypothesis') ||
       fileRecord?.title?.includes('Varsayım ve Tablo'));
@@ -934,6 +949,11 @@ export function ActivitySheetView({
             }`}
           >
             {availableSheets.map((sheet, index) => {
+              const isMat712Compare =
+                sheet.id.includes('mat-7-1-2') ||
+                sheet.outcomeCode === 'MAT.7.1.2' ||
+                sheet.title.includes('Karşılaştırma & Sıralama') ||
+                sheet.title.includes('Karşılaştırma ve Sıralama');
               const isMat711Ruler =
                 sheet.id.includes('mat-7-1-1-ruler') ||
                 sheet.title.includes('Bileşik Kesirleri Tam Sayılı') ||
@@ -995,7 +1015,9 @@ export function ActivitySheetView({
                 (sheet.id.includes('anatomy') || sheet.title.includes('İletkinin Anatomisi')) && !isStations && !isConstruction && !isErrorDetective && !isLinesRelations && !isTableHypo && !isIntersectionChallenge;
               const isActive = sheet.id === (fileRecord?.id || selectedSheetId);
 
-              const icon = isMat711Ruler
+              const icon = isMat712Compare
+                ? '⚖️'
+                : isMat711Ruler
                 ? '💧'
                 : isMat711Density
                 ? '🔬'
@@ -1030,7 +1052,9 @@ export function ActivitySheetView({
                 : isAnatomy
                 ? '📐'
                 : '📏';
-              const title = isMat711Ruler
+              const title = isMat712Compare
+                ? 'Karşılaştırma & Sıralama'
+                : isMat711Ruler
                 ? 'Bileşik Kesir & Sayı Doğrusu'
                 : isMat711Density
                 ? 'Yoğunluk & Sonsuz Nokta'
@@ -1066,7 +1090,9 @@ export function ActivitySheetView({
                 ? 'İletkinin Anatomisi'
                 : 'Aşamalı İnşa İstasyonları';
 
-              const badge = isMat711Ruler
+              const badge = isMat712Compare
+                ? 'Çift Yüzlü Etkinlik'
+                : isMat711Ruler
                 ? '1. Etkinlik'
                 : isMat711Density
                 ? '2. Etkinlik'
@@ -1102,7 +1128,9 @@ export function ActivitySheetView({
                 ? 'Aracı Tanıma'
                 : `Etkinlik ${index + 1}`;
 
-              const tag = isMat711Ruler
+              const tag = isMat712Compare
+                ? '4 Strateji, Hata Dedektifi, Rubrik'
+                : isMat711Ruler
                 ? <span className="inline-flex items-center gap-1"><MathFraction value="-11/4" /> Rezerv Açığı, 4 Eş Dilim</span>
                 : isMat711Density
                 ? <span className="inline-flex items-center gap-1"><MathFraction value="1/3" /> - <MathFraction value="2/3" /> Arası</span>
@@ -1148,7 +1176,9 @@ export function ActivitySheetView({
                   }}
                   className={`flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer text-left border ${
                     isActive
-                      ? isMat711Ruler
+                      ? isMat712Compare
+                        ? 'bg-sky-600 text-white border-sky-500 shadow-md scale-[1.01]'
+                        : isMat711Ruler
                         ? 'bg-sky-600 text-white border-sky-500 shadow-md scale-[1.01]'
                         : isMat711Density
                         ? 'bg-indigo-600 text-white border-indigo-500 shadow-md scale-[1.01]'
@@ -1225,7 +1255,9 @@ export function ActivitySheetView({
       {/* 1. Header Banner & Quick Action Buttons */}
       <div
         className={`text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-colors duration-300 ${
-          isMat711RulerActivity
+          isMat712ComparisonActivity
+            ? 'bg-gradient-to-br from-sky-950 via-indigo-950 to-slate-950'
+            : isMat711RulerActivity
             ? 'bg-gradient-to-br from-sky-950 via-blue-950 to-slate-950'
             : isMat711DensityActivity
             ? 'bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950'
@@ -1265,7 +1297,9 @@ export function ActivitySheetView({
         {/* Background Decorative Patterns */}
         <div
           className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-            isMat711RulerActivity
+            isMat712ComparisonActivity
+              ? 'bg-sky-500/25'
+              : isMat711RulerActivity
               ? 'bg-sky-500/20'
               : isMat711DensityActivity
               ? 'bg-indigo-500/20'
@@ -1304,7 +1338,9 @@ export function ActivitySheetView({
         />
         <div
           className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
-            isMat711RulerActivity
+            isMat712ComparisonActivity
+              ? 'bg-indigo-500/25'
+              : isMat711RulerActivity
               ? 'bg-blue-500/20'
               : isMat711DensityActivity
               ? 'bg-purple-500/20'
@@ -1347,7 +1383,9 @@ export function ActivitySheetView({
           <div className="space-y-2 max-w-2xl">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
-                isMat711RulerActivity
+                isMat712ComparisonActivity
+                  ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
+                  : isMat711RulerActivity
                   ? 'bg-sky-400/20 border-sky-300/30 text-sky-200'
                   : isMat711DensityActivity
                   ? 'bg-indigo-400/20 border-indigo-300/30 text-indigo-200'
@@ -1384,7 +1422,12 @@ export function ActivitySheetView({
                   : 'bg-teal-400/20 border-teal-300/30 text-teal-200'
               }`}
             >
-              {isMat711RulerActivity ? (
+              {isMat712ComparisonActivity ? (
+                <>
+                  <Scale className="w-3.5 h-3.5 text-sky-300" />
+                  <span>Karşılaştırma &amp; Sıralama (7. Sınıf - MAT.7.1.2)</span>
+                </>
+              ) : isMat711RulerActivity ? (
                 <>
                   <Droplets className="w-3.5 h-3.5 text-sky-300" />
                   <span>Bileşik Kesirden Sayı Doğrusuna (7. Sınıf - MAT.7.1.1)</span>
@@ -1478,7 +1521,9 @@ export function ActivitySheetView({
             </div>
             
             <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              {isMat711RulerActivity
+              {isMat712ComparisonActivity
+                ? 'Etkinlik 1: "RASYONEL SAYILARI KARŞILAŞTIRMA VE SIRALAMA"'
+                : isMat711RulerActivity
                 ? 'Etkinlik 1: "BİLEŞİK KESİRLERDEN SAYI DOĞRUSUNA VE ARALIK DİLİMLEME"'
                 : isMat711DensityActivity
                 ? 'Etkinlik 2: "RASYONEL SAYILARIN YOĞUNLUĞU VE SONSUZ NOKTA MİKROSKOBU"'
@@ -1516,7 +1561,13 @@ export function ActivitySheetView({
             </h2>
             
             {/* Kurgu Paneli / Açıklama */}
-            {isMat711RulerActivity ? (
+            {isMat712ComparisonActivity ? (
+              <div className="p-3 bg-sky-950/60 border border-sky-500/40 rounded-2xl backdrop-blur-sm">
+                <p className="text-xs sm:text-sm text-sky-100 font-medium leading-relaxed">
+                  🏔️ <strong>Palandöken Kış İstasyonu &amp; Rüzgar Santrali:</strong> &ldquo;Palandöken meteoroloji istasyonu ve rüzgar türbinlerinin verileri üzerinden payda eşitleme, yarıma/bütüne yakınlık ve negatif sıralama kurallarını keşfediniz; çift yüzlü çalışma yaprağında terazi simülasyonunu, hata dedektifliğini ve süreç rubriğini tamamlayınız!&rdquo;
+                </p>
+              </div>
+            ) : isMat711RulerActivity ? (
               <div className="p-3 bg-sky-950/60 border border-sky-500/40 rounded-2xl backdrop-blur-sm">
                 <p className="text-xs sm:text-sm text-sky-100 font-medium leading-relaxed">
                   💧 <strong>Su Deposu &amp; Sayı Doğrusu:</strong> &ldquo;15 Temmuz Demokrasi Parkı Akıllı Su Deposu'ndaki <MathFraction value="-11/4" unit="tonluk" /> su açığını tam sayılı kesre dönüştürünüz, sayı doğrusunda ardışık tam sayılar arasını payda kadar eş dilimlere ayırıp hassas konumlandırınız!&rdquo;
@@ -1660,7 +1711,9 @@ export function ActivitySheetView({
               <span>{outcomeCode}</span>
               <span>•</span>
               <span>
-                {isMat711RulerActivity
+                {isMat712ComparisonActivity
+                  ? 'Çift Yüz (Ön/Arka) • Strateji & Hata Dedektifi (100 Puan)'
+                  : isMat711RulerActivity
                   ? '2 Bölüm • Dönüşüm & Dilimleme (100 Puan)'
                   : isMat711DensityActivity
                   ? '2 Bölüm • Genişletme & Yoğunluk İspatı (100 Puan)'
@@ -1698,7 +1751,9 @@ export function ActivitySheetView({
               </span>
               <span>•</span>
               <span>
-                {isMat711RulerActivity
+                {isMat712ComparisonActivity
+                  ? 'Terazi Modeli, Sayı Doğrusu, 2 Hata Vakası & Rubrik'
+                  : isMat711RulerActivity
                   ? <span className="inline-flex items-center gap-1"><MathFraction value="-11/4" />, <MathFraction value="-7/2" />, <MathFraction value="+13/4" /> Noktaları</span>
                   : isMat711DensityActivity
                   ? <span className="inline-flex items-center gap-1"><MathFraction value="1/3" /> ile <MathFraction value="2/3" unit="Bar" /> Sensörleri</span>
@@ -1874,7 +1929,9 @@ export function ActivitySheetView({
       </div>
 
       {/* 2. BODY CONTENT: MAT.7 OR MAT.6 ACTIVITIES OR 5TH GRADE WORKSHOPS */}
-      {isMat711RulerActivity ? (
+      {isMat712ComparisonActivity ? (
+        <RationalComparisonActivityView />
+      ) : isMat711RulerActivity ? (
         <FractionRulerActivityView />
       ) : isMat711DensityActivity ? (
         <DensityMicroscopeActivityView />
