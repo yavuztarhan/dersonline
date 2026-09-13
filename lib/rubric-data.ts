@@ -689,6 +689,77 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk5', text: 'Günlük hayatta su tasarrufu ve tolerans paylarını rasyonel modellerle analiz edebilirim.' }
     ]
   },
+  'MAT.7.1.2': {
+    id: 'rubric-mat-7-1-2',
+    outcomeId: 'MAT.7.1.2',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Rasyonel Sayıları Karşılaştırma ve Sıralama',
+    description:
+      'Pay ve payda eşitleme stratejileri, yarıma (1/2) ve bütüne (1) referans alma yöntemleri, negatif sayılarda sıfıra yakınlık/mutlak değer ilkeleri ile dinamik terazi ve termometre modellerini dereceli olarak değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Pay ve Payda Eşitleme Stratejileri (Birim Kesir & Dilim Sayısı)',
+        category: 'Kavramsal Anlama & Birim Kesir',
+        levelDescriptions: {
+          1: 'Payları eşit kesirlerde paydası büyük olanın neden daha küçük olduğunu açıklamakta zorlanıyorum; genişletme yapmadan sıralayamıyorum.',
+          2: 'Paydaları eşitleyerek sıralama yapabiliyorum fakat payları eşit kesirlerde birim kesir büyüklüğü (dilim genişliği) mantığını kurmakta zorlanıyorum.',
+          3: 'Payları eşit kesirlerde paydası küçük olanın daha büyük dilim belirttiğini açıklar, paydaları eşit kesirlerde payı büyük olanın daha büyük olduğunu kuralına uygun uygularım.',
+          4: 'Verilen kesir setine göre pay mı yoksa payda mı eşitlemenin daha pratik olduğunu anında analiz eder, en sade ortak kat stratejisiyle hızlıca sıralarım.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Yarıma (1/2) ve Bütüne (1) Referans Alma (Zihinsel Karşılaştırma)',
+        category: 'Matematiksel Muhakeme & Referans Noktaları',
+        levelDescriptions: {
+          1: 'Büyük sayılardan oluşan kesirlerde işlem yapmadan 1/2 veya 1 ile kıyaslama yapma stratejisini anlayamıyorum.',
+          2: 'Bir kesrin yarımdan büyük mü küçük mü olduğunu belirleyebiliyorum ancak iki kesri aynı anda yarıma mesafesine göre kıyaslamakta zorlanıyorum.',
+          3: 'Bütüne veya yarıma olan uzaklıkları (eksik parça / artık parça yöntemi) kullanarak ortak payda aramaksızın zihinden hatasız karşılaştırma yaparım.',
+          4: 'Referans noktası stratejisini yeni ve karmaşık rasyonel sayılarda esnekçe kullanır, gerekçemi sayı doğrusu ve lazer metresi üzerinde kanıtlayarak açıklarım.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Negatif Rasyonel Sayılarda Sıfıra Yakınlık & Mutlak Değer İlkesi',
+        category: 'Sayı Hissi & Negatif Sıralama',
+        levelDescriptions: {
+          1: 'Negatif rasyonel sayıları sıralarken pozitif sayılar gibi düşünüyor, -5/6\'nın -2/3\'ten büyük olduğunu sanıyorum (kavram yanılgısı).',
+          2: 'Negatif kesirlerin pozitiflerin tersi olduğunu ezberden biliyorum ancak sayı doğrusunda sıfıra olan mesafe ile büyüklük ilişkisini açıklamakta zorlanıyorum.',
+          3: 'Negatif rasyonel sayılarda mutlak değeri küçük (sıfıra daha yakın veya sayı doğrusunda daha sağda) olanın daha büyük olduğunu kuralına uygun uygularım.',
+          4: 'Negatif rasyonel sayıları dondurucu hava sıcaklığı, deniz seviyesi veya borç/alacak bağlamlarında zihinsel modellerle görselleştirir ve sıralamayı gerekçelendiririm.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Çoklu Temsil, Sayı Doğrusu ve Denge Terazisi ile Modelleme',
+        category: 'Matematiksel Modelleme & Araç Kullanımı',
+        levelDescriptions: {
+          1: 'Kesirleri denge terazisinde veya sayı doğrusunda karşılaştırma modellerine dönüştürmekte desteğe ihtiyaç duyuyorum.',
+          2: 'Terazide ağır basan tarafın sayı doğrusundaki yönünü eşleştirebiliyorum ancak ara adımları modellemekte zorlanıyorum.',
+          3: 'Verilen rasyonel sayıları sayı doğrusunda doğru ardışıklıkla yerleştirir, denge terazisi simülasyonunda eğim yönüyle büyüklük ilişkisini doğru modellerim.',
+          4: 'Sayı doğrusu, terazi modeli ve sembolik (<, =, >) ifadeler arasında akıcı geçişler yapar; akranlarıma görsel modeller üzerinden ispat sunarım.'
+        }
+      },
+      {
+        id: 'c5',
+        title: 'Gerçek Yaşam Problemleri & Kavram Yanılgısı Dedektifliği (SDB1.2 - SDB3.3)',
+        category: 'Eleştirel Düşünme & Gerçek Yaşam',
+        levelDescriptions: {
+          1: 'Günlük hayat problemlerinde (meteoroloji sıcaklıkları, rüzgar türbini hızları) kesirleri karşılaştırmakta ve yanılgıları fark etmekte zorlanıyorum.',
+          2: 'Hatalı bir sıralama verildiğinde sonucun yanlış olduğunu hissediyorum ancak hangi kuralın ihlal edildiğini matematiksel dille açıklayamıyorum.',
+          3: 'Palandöken hava durumu veya yenilenebilir enerji verilerindeki rasyonel değerleri doğru sıralar, sık yapılan kavram yanılgılarını (örn. paydası büyük olan büyüktür yanılgısı) tespit edip düzeltirim.',
+          4: 'Gerçek yaşam senaryolarında rasyonel büyüklükleri karar verme (en verimli türbin, en soğuk pist) süreçlerinde stratejik bir veri analiz aracı olarak etkinlikle kullanırım.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Payları eşit rasyonel sayılarda paydası küçük olanın daha büyük olduğunu bilirim.' },
+      { id: 'chk2', text: 'Paydaları farklı kesirleri uygun ortak katlarla genişleterek paydalarını eşitleyebilirim.' },
+      { id: 'chk3', text: 'Büyük kesirleri 1/2 veya 1 referans noktasına olan yakınlıklarına göre zihinden kıyaslarım.' },
+      { id: 'chk4', text: 'Negatif rasyonel sayılarda sıfıra daha yakın olan sayının daha büyük olduğunu bilirim.' },
+      { id: 'chk5', text: 'Karışık işaretli ve biçimli rasyonel sayıları küçükten büyüğe hatasız sıralayabilirim.' }
+    ]
+  },
 };
 
 /**
@@ -1461,6 +1532,65 @@ export const PEER_OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       { id: 'chk3', text: 'Mutlak değerin başlangıç noktasına uzaklık olduğunu arkadaşlarına açıkladı.' },
       { id: 'chk4', text: 'Laboratuvar ve oyun istasyonunda takım çalışmasına uyum sağladı.' },
       { id: 'chk5', text: 'Farklı fikirlere saygı göstererek yapıcı geri bildirimlerde bulundu.' }
+    ]
+  },
+  'MAT.7.1.2': {
+    id: 'peer-rubric-mat-7-1-2',
+    outcomeId: 'MAT.7.1.2',
+    title: 'Akran Değerlendirme Rubriği: Rasyonel Sayıları Karşılaştırma ve Sıralama',
+    description: 'Takım arkadaşınızın pay/payda eşitleme, referans noktası kullanımı, negatif rasyonel sıralama ve terazi modellerini kurma performansını değerlendiriniz.',
+    criteria: [
+      {
+        id: 'c1',
+        title: 'Pay ve Payda Eşitleme Stratejileri',
+        category: 'Kavramsal Anlama & Birim Kesir',
+        levelDescriptions: {
+          1: 'Pay veya payda eşitleme kurallarını uygulamakta ve uygun yöntemi seçmekte zorlanıyor.',
+          2: 'Paydaları eşitleyebiliyor ancak payları eşit olduğunda birim kesir mantığını açıklamakta zorlanıyor.',
+          3: 'Verilen kesirlerde pay veya payda eşitleme adımlarını kuralına uygun ve doğru biçimde uyguladı.',
+          4: 'En pratik eşitleme yöntemini anında seçerek akranlarına zaman kazandırıcı çözümler gösterdi.'
+        }
+      },
+      {
+        id: 'c2',
+        title: 'Yarıma (1/2) ve Bütüne Referans Alma',
+        category: 'Matematiksel Muhakeme',
+        levelDescriptions: {
+          1: 'Büyük kesirlerde referans noktası kullanarak zihinsel karşılaştırma yapmakta zorlanıyor.',
+          2: '1/2 referansını tanıyor ancak iki kesir arasındaki farkı zihinden kıyaslamakta desteğe ihtiyaç duyuyor.',
+          3: 'Yarımdan büyük/küçük olma durumunu ve bütüne olan uzaklıkları başarıyla kullanarak karşılaştırma yaptı.',
+          4: 'Zihinsel referans stratejisini akranlarına sayı doğrusu ve lazer cetveli üzerinde mantığıyla anlattı.'
+        }
+      },
+      {
+        id: 'c3',
+        title: 'Negatif Rasyonel Sayı Sıralaması',
+        category: 'Sayı Hissi & Negatif Sıralama',
+        levelDescriptions: {
+          1: 'Negatif kesirleri sıralarken pozitif sayılarla karıştırıyor, sıfıra yakınlık kuralını unutuyor.',
+          2: 'Negatif sayıların yönünü biliyor ancak mutlak değer kıyaslamasında tereddüt yaşıyor.',
+          3: 'Negatif kesirlerde sıfıra daha yakın olanın büyük olduğunu kuralına uygun şekilde uyguladı.',
+          4: 'Palandöken dondurucu sıcaklık probleminde negatif kesirleri hatasız sıralayıp grubuna rehberlik etti.'
+        }
+      },
+      {
+        id: 'c4',
+        title: 'Takım Çalışması & Denge Terazisi Modeli',
+        category: 'İş Birliği & Modelleme',
+        levelDescriptions: {
+          1: 'Laboratuvardaki terazi ve sıralama etkinliklerinde pasif kaldı, fikir paylaşımında bulunmadı.',
+          2: 'Sorulduğunda katıldı ancak modelleme ve doğrulama süreçlerinde tek başına karar almak istedi.',
+          3: 'Denge terazisi simülasyonunu ve çoklu sıralama masasını takımla uyum içinde başarıyla kullandı.',
+          4: 'Grup içinde hatalı tahminleri nazikçe düzelten, herkesi sürece katan yapıcı bir iş birliği sergiledi.'
+        }
+      }
+    ],
+    checklistItems: [
+      { id: 'chk1', text: 'Pay ve payda eşitleme stratejilerini doğru uyguladı.' },
+      { id: 'chk2', text: '1/2 ve bütüne yakınlık referanslarını kullanarak zihinden karşılaştırma yaptı.' },
+      { id: 'chk3', text: 'Negatif rasyonel sayıları sıfıra yakınlık ilkesine göre doğru sıraladı.' },
+      { id: 'chk4', text: 'Denge terazisi ve referans metresi laboratuvarında aktif rol aldı.' },
+      { id: 'chk5', text: 'Grup arkadaşlarına karşılaştırıcı ve yapıcı geri bildirimlerde bulundu.' }
     ]
   },
 };
