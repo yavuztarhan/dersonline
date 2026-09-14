@@ -28,6 +28,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTab?: 'student' | 'login' | 'register' | 'board';
+  redirectUrl?: string;
 }
 
 function DemoLauncherCard({
@@ -83,7 +84,8 @@ function DemoLauncherCard({
 export function AuthModal({
   isOpen,
   onClose,
-  defaultTab = 'login'
+  defaultTab = 'login',
+  redirectUrl
 }: AuthModalProps) {
   const router = useRouter();
   const { loginWithEmail, loginStudent } = useAuth();
@@ -129,13 +131,25 @@ export function AuthModal({
     setActiveTab(defaultTab);
   }, [defaultTab]);
 
+  // ESC key listener to close modal
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !mounted) return null;
 
   const handleLiveGoogleSignIn = async () => {
     setGoogleLoading(true);
     setOauthErrorNotice(null);
     try {
-      const res = await signIn('google', { redirect: false, callbackUrl: '/' });
+      const res = await signIn('google', { redirect: false, callbackUrl: redirectUrl || '/' });
       if (res?.error) {
         setOauthErrorNotice('Google ile oturum açılamadı. Lütfen tekrar deneyiniz.');
         setGoogleLoading(false);
@@ -165,6 +179,9 @@ export function AuthModal({
       const isSuccess = typeof res === 'boolean' ? res : res?.success;
       if (isSuccess) {
         onClose();
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        }
       } else {
         const errorMsg = (typeof res === 'object' && res?.error)
           ? res.error
@@ -210,6 +227,9 @@ export function AuthModal({
       const isSuccess = typeof res === 'boolean' ? res : res?.success;
       if (isSuccess) {
         onClose();
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        }
       } else {
         const errorMsg = (typeof res === 'object' && res?.error)
           ? res.error
@@ -224,19 +244,38 @@ export function AuthModal({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-xl my-8">
-        
-        {/* Close Button */}
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[99999] bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200 cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-xl my-6 cursor-default"
+      >
+        {/* Floating Close Button */}
         <button
+          type="button"
           onClick={onClose}
-          className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-slate-800 text-white hover:bg-slate-700 flex items-center justify-center shadow-lg transition-all cursor-pointer"
+          className="absolute -top-3 -right-3 z-30 w-9 h-9 rounded-full bg-slate-800 text-white hover:bg-slate-700 flex items-center justify-center shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95"
+          title="Pencereyi Kapat (ESC)"
+          aria-label="Pencereyi Kapat"
         >
           <X className="w-5 h-5" />
         </button>
 
         {activeTab === 'register' ? (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6 relative">
+            {/* In-Card Close Button */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+              title="Kapat (ESC)"
+              aria-label="Kapat"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
             <div className="space-y-4 text-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold">
                 <Sparkles className="w-3.5 h-3.5 text-teal-600" />
@@ -364,17 +403,35 @@ export function AuthModal({
               onStartTeacher={() => {
                 startTeacherDemo();
                 onClose();
-                window.location.reload();
+                if (redirectUrl) {
+                  window.location.href = redirectUrl;
+                } else {
+                  window.location.reload();
+                }
               }}
               onStartStudent={() => {
                 startStudentDemo();
                 onClose();
-                window.location.reload();
+                if (redirectUrl) {
+                  window.location.href = redirectUrl;
+                } else {
+                  window.location.reload();
+                }
               }}
             />
           </div>
         ) : (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6 relative">
+            {/* In-Card Close Button */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+              title="Kapat (ESC)"
+              aria-label="Kapat"
+            >
+              <X className="w-4 h-4" />
+            </button>
             
             {/* Header & Tabs */}
             <div className="space-y-4 text-center">
@@ -461,7 +518,7 @@ export function AuthModal({
 
             {/* Content per Tab */}
             {activeTab === 'board' ? (
-              <BoardQrLogin onSuccess={onClose} />
+              <BoardQrLogin onSuccess={onClose} onCancel={onClose} />
             ) : activeTab === 'student' ? (
               /* STUDENT 3-PARAMETER LOGIN VIEW */
               <div className="space-y-4">
@@ -742,12 +799,20 @@ export function AuthModal({
               onStartTeacher={() => {
                 startTeacherDemo();
                 onClose();
-                window.location.reload();
+                if (redirectUrl) {
+                  window.location.href = redirectUrl;
+                } else {
+                  window.location.reload();
+                }
               }}
               onStartStudent={() => {
                 startStudentDemo();
                 onClose();
-                window.location.reload();
+                if (redirectUrl) {
+                  window.location.href = redirectUrl;
+                } else {
+                  window.location.reload();
+                }
               }}
             />
 

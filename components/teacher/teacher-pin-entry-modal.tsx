@@ -35,7 +35,13 @@ export function TeacherPinEntryModal({ isOpen, onClose }: TeacherPinEntryModalPr
   ];
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
     if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
       setPinDigits(['', '', '', '']);
       setErrorMessage(null);
       setSuccessMessage(null);
@@ -44,7 +50,10 @@ export function TeacherPinEntryModal({ isOpen, onClose }: TeacherPinEntryModalPr
         inputRefs[0].current?.focus();
       }, 100);
     }
-  }, [isOpen]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -130,8 +139,14 @@ export function TeacherPinEntryModal({ isOpen, onClose }: TeacherPinEntryModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-slate-900 dark:text-white">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-slate-900 dark:text-white cursor-default"
+      >
         {/* Header */}
         <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-indigo-600 to-teal-700 text-white">
           <div className="flex items-center gap-2.5">

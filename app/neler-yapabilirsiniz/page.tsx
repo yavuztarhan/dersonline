@@ -62,31 +62,43 @@ export default function NelerYapabilirsinizPage() {
   const [activeTab, setActiveTab] = useState<RoleCategory>('all');
   const [introVideoOpen, setIntroVideoOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<'student' | 'login' | 'register'>('login');
+  const [authModalTab, setAuthModalTab] = useState<'student' | 'login' | 'register' | 'board'>('login');
+  const [authModalRedirect, setAuthModalRedirect] = useState<string | undefined>(undefined);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  const handleOpenLogin = () => {
+  const handleOpenLogin = (redirect?: any) => {
     playSound('click');
     setAuthModalTab('login');
+    setAuthModalRedirect(typeof redirect === 'string' ? redirect : undefined);
     setAuthModalOpen(true);
   };
 
-  const handleOpenRegister = () => {
+  const handleOpenRegister = (redirect?: any) => {
     playSound('click');
     setAuthModalTab('register');
+    setAuthModalRedirect(typeof redirect === 'string' ? redirect : undefined);
     setAuthModalOpen(true);
   };
 
-  const handleOpenStudentLogin = () => {
+  const handleOpenStudentLogin = (redirect?: any) => {
     playSound('click');
     setAuthModalTab('student');
+    setAuthModalRedirect(typeof redirect === 'string' ? redirect : undefined);
     setAuthModalOpen(true);
   };
 
-  const handleStartDemo = () => {
+  const handleOpenBoardLogin = (redirect?: any) => {
+    playSound('click');
+    setAuthModalTab('board');
+    setAuthModalRedirect(typeof redirect === 'string' ? redirect : '/lesson/MAT.5.3.1');
+    setAuthModalOpen(true);
+  };
+
+  const handleStartDemo = (destination?: any) => {
     playSound('click');
     startTeacherDemo();
-    router.push('/');
+    const dest = typeof destination === 'string' ? destination : '/';
+    router.push(dest);
   };
 
   // Feature cards data
@@ -107,7 +119,7 @@ export default function NelerYapabilirsinizPage() {
       ],
       whyItMatters: '"Hocam bu matematik gerçek hayatta ne işimize yarayacak?" sorusunu ilk 10 saniyede tarihe gömer. Öğrencinin dikkatini mıknatıs gibi çeker ve merak duygusunu zirveye taşır.',
       actionText: 'Ders Odasını Keşfet',
-      onAction: handleOpenLogin
+      actionHref: '/lesson/MAT.5.3.1?phase=story'
     },
 
     // 2. DERS AKIŞI - ATÖLYE & LABORATUVAR
@@ -126,7 +138,7 @@ export default function NelerYapabilirsinizPage() {
       ],
       whyItMatters: 'Ezberi bitirir, "yaparak ve yaşayarak öğrenme" modelini sınıfta %100 hayata geçirir. Öğrencinin soyut kavramları zihninde görselleştirmesini ve kalıcı kılmasını sağlar.',
       actionText: 'Atölyeyi İncele',
-      onAction: handleOpenLogin
+      actionHref: '/lesson/MAT.5.3.1?phase=lab'
     },
 
     // 3. DERS AKIŞI - OYUNLAŞTIRMA
@@ -163,8 +175,8 @@ export default function NelerYapabilirsinizPage() {
         'Öğretmen panelinde sınıfın kavrama oranı ve analitik grafiği saniyeler içinde oluşsun.'
       ],
       whyItMatters: 'Öğretmene "Sınıfım bugün ne kadar anladı?" sorusunun net cevabını verir. Eksik kalan noktaları bir sonraki derse taşımadan anında tespit etmenizi sağlar.',
-      actionText: 'Öğretmen Girişi',
-      onAction: handleOpenLogin
+      actionText: 'Değerlendirmeyi İncele',
+      actionHref: '/lesson/MAT.5.3.1?phase=assessment'
     },
 
     // 5. ÖĞRETMEN SÜPER GÜCÜ: DERS PLANI PDF
@@ -182,8 +194,8 @@ export default function NelerYapabilirsinizPage() {
         'Saniyeler içinde resmi formatta hazırlanan A4 belgenizi indirin veya doğrudan yazdırın.'
       ],
       whyItMatters: 'Öğretmenlerimizi akşamları ve hafta sonları saatlerce plan yazma kırtasiyeciliğinden kurtarır. Haftada en az 3 saat serbest zaman kazandırır!',
-      actionText: 'Demo ile İncele',
-      onAction: handleStartDemo
+      actionText: 'Ders Planını İncele (PDF)',
+      actionHref: '/lesson/MAT.5.3.1'
     },
 
     // 6. ÖĞRETMEN SÜPER GÜCÜ: ŞİFRESİZ TAHTA GİRİŞİ
@@ -201,8 +213,8 @@ export default function NelerYapabilirsinizPage() {
         'Telefonunuzun kamerasıyla QR kodu okutun veya öğretmen panelinizden PIN\'i onaylayın. Tahta anında sizin adınıza açılır!'
       ],
       whyItMatters: 'Şifrenizin öğrenciler tarafından görülme riskini sıfırlar. Teneffüsten derse geçerken 1 saniye bile kaybetmeden sınıfı derse odaklar.',
-      actionText: 'Hemen Başla',
-      onAction: handleOpenLogin
+      actionText: 'QR / PIN Girişini Aç',
+      onAction: () => handleOpenBoardLogin('/lesson/MAT.5.3.1')
     },
 
     // 7. ÖĞRETMEN SÜPER GÜCÜ: E-OKUL EXCEL AKTARIM
@@ -220,8 +232,8 @@ export default function NelerYapabilirsinizPage() {
         'Öğrenci numaraları, adları ve şubeleri saniyeler içinde sisteme tanımlansın.'
       ],
       whyItMatters: 'Yeni eğitim-öğretim yılı başında veya nakil gelen öğrencilerde saatlerce veri girişi yapma çilesini yok eder.',
-      actionText: 'Öğretmen Kaydı',
-      onAction: handleOpenRegister
+      actionText: 'Öğretmen Panelinde Gör',
+      actionHref: '/teacher'
     },
 
     // 8. TAHTA ARAÇLARI: KURA ÇARKI & TAHTA KALEMİ
@@ -238,8 +250,8 @@ export default function NelerYapabilirsinizPage() {
         'Kalem simgesine dokunun; renk ve kalınlık seçerek dersin ya da oyunun üzerine serbestçe çizim yapın.'
       ],
       whyItMatters: '"Hocam hep aynı kişileri kaldırıyorsunuz!" itirazlarını tamamen bitirir. Sınıftaki tüm öğrencileri tetikte ve heyecanlı tutar.',
-      actionText: 'Demo Modunda Dene',
-      onAction: handleStartDemo
+      actionText: 'Tahta Araçlarını Dene',
+      actionHref: '/lesson/MAT.5.3.1'
     },
 
     // 9. ÖĞRENCİ DÜNYASI: ŞİFRESİZ GİRİŞ & XP ROZETLER
@@ -257,8 +269,8 @@ export default function NelerYapabilirsinizPage() {
         'Dersleri tamamlayın, bulmacaları çözün; profilinizde parlayan rozetleri toplayın!'
       ],
       whyItMatters: '"Şifremi unuttum" krizlerini kökten çözer. Çocuklara bilgisayar oyunu oynar gibi ders çalıştırma ve başarı hissi aşılama gücü verir.',
-      actionText: 'Öğrenci Girişi Yap',
-      onAction: handleOpenStudentLogin
+      actionText: 'Öğrenci Masasını Aç',
+      actionHref: '/student'
     },
 
     // 10. OKUL VE İLÇE YÖNETİMİ: 81 İL AĞI VE SIFIR MALİYET
@@ -849,6 +861,7 @@ export default function NelerYapabilirsinizPage() {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         defaultTab={authModalTab}
+        redirectUrl={authModalRedirect}
       />
 
       {/* Intro Video Modal */}

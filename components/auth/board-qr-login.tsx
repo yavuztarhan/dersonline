@@ -13,14 +13,16 @@ import {
   ShieldCheck,
   Smartphone,
   Tv,
-  AlertCircle
+  AlertCircle,
+  X
 } from 'lucide-react';
 
 interface BoardQrLoginProps {
   onSuccess: () => void;
+  onCancel?: () => void;
 }
 
-export function BoardQrLogin({ onSuccess }: BoardQrLoginProps) {
+export function BoardQrLogin({ onSuccess, onCancel }: BoardQrLoginProps) {
   const { loginWithBoardSession } = useAuth();
   const { playSound } = useApp();
 
@@ -301,6 +303,18 @@ export function BoardQrLogin({ onSuccess }: BoardQrLoginProps) {
           düğmesine tıklayarak tahtadaki girişi onaylayabilirsiniz. Şifreniz öğrenciler tarafından görülemez.
         </div>
       </div>
+
+      {/* Optional Cancel/Close Button */}
+      {onCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="w-full py-2.5 px-4 rounded-2xl border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900 font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs active:scale-98"
+        >
+          <X className="w-4 h-4 text-slate-500" />
+          <span>Pencereyi Kapat</span>
+        </button>
+      )}
     </div>
   );
 }

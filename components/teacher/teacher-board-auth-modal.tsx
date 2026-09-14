@@ -287,6 +287,21 @@ export function TeacherBoardAuthModal({
   };
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        stopCamera();
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
     if (isOpen) {
       setSuccessMessage(null);
       setCameraError(null);
@@ -307,8 +322,17 @@ export function TeacherBoardAuthModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+    <div
+      onClick={() => {
+        stopCamera();
+        onClose();
+      }}
+      className="fixed inset-0 z-[99999] bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200 cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden cursor-default"
+      >
         {/* Header */}
         <div className="p-4 sm:p-5 bg-gradient-to-r from-teal-700 via-teal-800 to-emerald-800 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">

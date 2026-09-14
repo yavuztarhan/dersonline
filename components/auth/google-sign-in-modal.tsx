@@ -28,6 +28,20 @@ export function GoogleSignInModal({
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen || !mounted) return null;
 
   const handleLiveOAuth = async () => {
@@ -62,8 +76,14 @@ export function GoogleSignInModal({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-sm overflow-hidden relative animate-in zoom-in-95 duration-200">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[99999] bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-sm overflow-hidden relative animate-in zoom-in-95 duration-200 cursor-default"
+      >
         
         {/* Close Button */}
         <button

@@ -32,7 +32,7 @@ export function AuthGuard({
 }: AuthGuardProps) {
   const router = useRouter();
   const { currentUser } = useAuth();
-  const { isDemoMode } = useDemoMode();
+  const { isDemoMode, startTeacherDemo } = useDemoMode();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [defaultTab, setDefaultTab] = useState<'student' | 'login' | 'register' | 'board'>('login');
 
@@ -78,6 +78,19 @@ export function AuthGuard({
 
             {/* Action Buttons */}
             <div className="space-y-2.5 pt-2">
+              {!isDemoMode && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    startTeacherDemo();
+                  }}
+                  className="w-full py-3 px-4 rounded-2xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-950 font-black text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  <span>⚡ Şifresiz Demo Moduyla Hemen Aç</span>
+                </button>
+              )}
+
               <button
                 onClick={() => {
                   setDefaultTab('student');

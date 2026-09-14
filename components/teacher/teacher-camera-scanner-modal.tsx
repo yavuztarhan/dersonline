@@ -88,15 +88,23 @@ export function TeacherCameraScannerModal({ isOpen, onClose }: TeacherCameraScan
   };
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        stopCamera();
+        onClose();
+      }
+    };
     if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
       startCamera();
     } else {
       stopCamera();
     }
     return () => {
+      window.removeEventListener('keydown', handleKeyDown);
       stopCamera();
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   const scanFrame = () => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -201,8 +209,17 @@ export function TeacherCameraScannerModal({ isOpen, onClose }: TeacherCameraScan
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-sm bg-slate-900 text-white rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+    <div
+      onClick={() => {
+        stopCamera();
+        onClose();
+      }}
+      className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-sm bg-slate-900 text-white rounded-3xl border border-slate-800 shadow-2xl overflow-hidden cursor-default"
+      >
         {/* Header */}
         <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-emerald-600 to-teal-700 text-white">
           <div className="flex items-center gap-2.5">
