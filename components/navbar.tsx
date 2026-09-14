@@ -160,20 +160,6 @@ export function Navbar() {
                 </p>
               </div>
             </button>
-
-            {/* Direct Link to Neler Yapabilirsiniz */}
-            <Link
-              href="/neler-yapabilirsiniz"
-              className={`hidden xl:inline-flex items-center gap-1.5 ml-2 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                pathname === '/neler-yapabilirsiniz'
-                  ? 'bg-teal-700 text-white shadow-xs'
-                  : 'bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200/80 hover:border-teal-300'
-              }`}
-              title="Platform Özellikleri & Kullanım Rehberi"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-              <span>Neler Yapabilirsiniz?</span>
-            </Link>
           </div>
 
           {/* 2. Right Side: Context-Aware Single Dashboard Button & User Controls */}
