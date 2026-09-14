@@ -41,9 +41,11 @@ import {
   Zap,
   XCircle,
   Check,
-  Ruler
+  Ruler,
+  Palette
 } from 'lucide-react';
 import { MascotLabHelper } from '@/components/mascot';
+import { GeometryFlowSelector, GeometryStationId } from '@/components/lesson-phases/geometry-flow-selector';
 
 interface LabPhaseProps {
   data: LabPhaseData;
@@ -60,13 +62,17 @@ interface GeoPoint {
 
 interface GeoObject {
   id: string;
-  type: 'segment' | 'ray' | 'line';
+  type: 'segment' | 'ray' | 'line' | 'circle' | 'perpendicular' | 'art-motif';
   p1: GeoPoint;
-  p2: GeoPoint;
+  p2?: GeoPoint;
   symbol: string;
   label: string;
   length?: number;
+  radius?: number;
+  isDisk?: boolean;
+  distance?: number;
   color: string;
+  motifType?: 'seljuk-star' | 'tile' | 'maritime';
 }
 
 interface GeoAngle {
@@ -198,10 +204,14 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       data.title.toLowerCase().includes('iletki') ||
       (data.title.toLowerCase().includes('açı') && !data.title.toLowerCase().includes('geometri')));
 
-  // Active Tool: 'angle' for MAT.5.3.3, 'point' | 'segment' | 'ray' | 'line' for MAT.5.3.1
-  const [activeTool, setActiveTool] = useState<'angle' | 'ray' | 'segment' | 'line' | 'point' | 'drag'>(
-    isAngleTopic ? 'angle' : 'point'
-  );
+  // Active Tool: 'angle' for MAT.5.3.3, or geometry tools for MAT.5.3.1
+  const [activeTool, setActiveTool] = useState<
+    'angle' | 'ray' | 'segment' | 'line' | 'point' | 'compass' | 'setsquare' | 'artmotif' | 'drag'
+  >(isAngleTopic ? 'angle' : 'point');
+
+  // Multi-station Flow for MAT.5.3.1
+  const [activeStation, setActiveStation] = useState<GeometryStationId>('lines');
+  const [compassCenterPoint, setCompassCenterPoint] = useState<GeoPoint | null>(null);
 
   const [points, setPoints] = useState<GeoPoint[]>([]);
   const [objects, setObjects] = useState<GeoObject[]>([]);
@@ -228,18 +238,21 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     180: false
   });
 
-  // Geometry Lab Missions state (MAT.5.3.1)
+  // Geometry Lab Missions state (MAT.5.3.1 - 7 Maarif İstasyon Görevi)
   const [geoMissionsDone, setGeoMissionsDone] = useState({
     point: false,
     segment: false,
-    ray: false,
-    line: false
+    rayLine: false,
+    angle: false,
+    circle: false,
+    perpendicular: false,
+    art: false
   });
 
   const [feedbackMsg, setFeedbackMsg] = useState(
     isAngleTopic
       ? 'Açı oluşturmak için tahtaya tıklayarak 1. Başlangıç Köşesi (O), 2. Taban Kolu (A) ve 3. Dönen Kolu (B) belirleyin.'
-      : 'Tahtaya tıklayarak Nokta bırakabilir veya Doğru Parçası, Işın ve Doğru araçlarıyla geometrik şekiller çizebilirsiniz.'
+      : 'Tahtaya tıklayarak Nokta, Çizgeç (Doğru Parçası), Işın, Doğru, Açı, Pergel, Gönye veya Sanat araçlarını kullanabilirsiniz.'
   );
 
   // Angle Naming & Hat Verification state (MAT.5.3.3)
@@ -320,22 +333,28 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     if (!isAngleTopic && !isExperimentBench) {
       const hasPoint = points.length >= 1;
       const hasSegment = objects.some((o) => o.type === 'segment');
-      const hasRay = objects.some((o) => o.type === 'ray');
-      const hasLine = objects.some((o) => o.type === 'line');
+      const hasRayLine = objects.some((o) => o.type === 'ray' || o.type === 'line');
+      const hasAngle = angles.length >= 1;
+      const hasCircle = objects.some((o) => o.type === 'circle');
+      const hasPerpendicular = objects.some((o) => o.type === 'perpendicular');
+      const hasArt = objects.some((o) => o.type === 'art-motif');
 
       setGeoMissionsDone({
         point: hasPoint,
         segment: hasSegment,
-        ray: hasRay,
-        line: hasLine
+        rayLine: hasRayLine,
+        angle: hasAngle,
+        circle: hasCircle,
+        perpendicular: hasPerpendicular,
+        art: hasArt
       });
 
-      if (hasPoint && hasSegment && hasRay && hasLine && !geoMissionsDone.line) {
+      if (hasPoint && hasSegment && (hasRayLine || hasAngle) && (hasCircle || hasPerpendicular) && !geoMissionsDone.art) {
         unlockBadge('geo-master');
         addPoints(50);
       }
     }
-  }, [points, objects, isAngleTopic, isExperimentBench]);
+  }, [points, objects, angles, isAngleTopic, isExperimentBench]);
 
   // Preset Angle Loader for MAT.5.3.3
   const loadPresetAngle = (deg: number) => {
@@ -444,6 +463,146 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setAngles([]);
     setSelectedPointForLink(null);
     setFeedbackMsg('🎨 Örnek geometrik modeller yüklendi: Doğru Parçası [AB], Işın [CD> ve Doğru EF.');
+  };
+
+  const loadAngleStationPreset = () => {
+    playSound('click');
+    const v: GeoPoint = { id: 'pt-O', label: 'B', x: 240, y: 280, color: '#f59e0b' };
+    const pA: GeoPoint = { id: 'pt-A', label: 'A', x: 440, y: 280, color: '#0284c7' };
+    const pC: GeoPoint = { id: 'pt-C', label: 'C', x: 240, y: 100, color: '#10b396' };
+    setPoints([v, pA, pC]);
+
+    const ray1: GeoObject = {
+      id: 'ray-base',
+      type: 'ray',
+      p1: v,
+      p2: pA,
+      symbol: '[BA>',
+      label: 'Taban Kolu [BA>',
+      color: '#0284c7'
+    };
+    const ray2: GeoObject = {
+      id: 'ray-rot',
+      type: 'ray',
+      p1: v,
+      p2: pC,
+      symbol: '[BC>',
+      label: 'Dönen Kol [BC>',
+      color: '#10b396'
+    };
+    const rightAngle: GeoAngle = {
+      id: 'ang-right-90',
+      vertex: v,
+      p1: pA,
+      p2: pC,
+      degree: 90,
+      type: 'dik',
+      label: 's(∠ABC) = 90° (Dik Açı 📐)',
+      color: '#ef4444'
+    };
+    setObjects([ray1, ray2]);
+    setAngles([rightAngle]);
+    setFeedbackMsg('📐 Dinamik 90° Dik Açı yüklendi: Ortak B köşesinden çıkan [BA> ve [BC> ışınları.');
+  };
+
+  const loadCircleStationPreset = () => {
+    playSound('click');
+    const m1: GeoPoint = { id: 'pt-M1', label: 'M1', x: 180, y: 220, color: '#0284c7' };
+    const r1Pt: GeoPoint = { id: 'pt-R1', label: 'A', x: 245, y: 220, color: '#0284c7' };
+    const m2: GeoPoint = { id: 'pt-M2', label: 'M2', x: 420, y: 220, color: '#10b396' };
+    const r2Pt: GeoPoint = { id: 'pt-R2', label: 'B', x: 485, y: 220, color: '#10b396' };
+    setPoints([m1, r1Pt, m2, r2Pt]);
+
+    const circ1: GeoObject = {
+      id: 'circ-1',
+      type: 'circle',
+      p1: m1,
+      p2: r1Pt,
+      symbol: 'Çember M1',
+      label: '1. Çember (M1, r=5 cm, R=10 cm)',
+      radius: 65,
+      length: 5,
+      isDisk: false,
+      color: '#0284c7'
+    };
+    const circ2: GeoObject = {
+      id: 'circ-2',
+      type: 'circle',
+      p1: m2,
+      p2: r2Pt,
+      symbol: 'Eş Çember M2',
+      label: '2. Eş Çember (M2, r=5 cm, R=10 cm)',
+      radius: 65,
+      length: 5,
+      isDisk: true,
+      color: '#10b396'
+    };
+    setObjects([circ1, circ2]);
+    setAngles([]);
+    setFeedbackMsg('⭕ Pergel Kilidi ile Eş Çemberler yüklendi! r1 = r2 = 5 cm (Pergel açıklığı bozulmadan çizilen çemberler eştir).');
+  };
+
+  const loadPerpendicularStationPreset = () => {
+    playSound('click');
+    const pD1: GeoPoint = { id: 'pt-d1', label: 'E', x: 80, y: 320, color: '#38bdf8' };
+    const pD2: GeoPoint = { id: 'pt-d2', label: 'F', x: 560, y: 320, color: '#38bdf8' };
+    const pTop: GeoPoint = { id: 'pt-P', label: 'P', x: 300, y: 120, color: '#f43f5e' };
+    const pH: GeoPoint = { id: 'pt-H', label: 'H', x: 300, y: 320, color: '#10b396' };
+    const pSlant: GeoPoint = { id: 'pt-S', label: 'S', x: 460, y: 320, color: '#94a3b8' };
+    setPoints([pD1, pD2, pTop, pH, pSlant]);
+
+    const dLine: GeoObject = {
+      id: 'line-d-base',
+      type: 'line',
+      p1: pD1,
+      p2: pD2,
+      symbol: 'd Doğrusu',
+      label: 'Kıyı d Doğrusu',
+      color: '#38bdf8'
+    };
+    const perpSeg: GeoObject = {
+      id: 'perp-ph',
+      type: 'perpendicular',
+      p1: pTop,
+      p2: pH,
+      symbol: '[PH] ⊥ d',
+      label: 'En Kısa Yol: Dikme [PH] ⊥ d (15 cm)',
+      distance: 15,
+      color: '#f43f5e'
+    };
+    const slantSeg: GeoObject = {
+      id: 'slant-ps',
+      type: 'segment',
+      p1: pTop,
+      p2: pSlant,
+      symbol: '[PS]',
+      label: 'Eğik Yol [PS] (23 cm - Daha Uzun)',
+      length: 23,
+      color: '#94a3b8'
+    };
+    setObjects([dLine, perpSeg, slantSeg]);
+    setAngles([]);
+    setFeedbackMsg('📐 Gönye Dikmesi yüklendi: [PH] ⊥ d mesafesi (15 cm), eğik yol [PS] mesafesinden (23 cm) daha kısadır!');
+  };
+
+  const loadArtMotifStationPreset = () => {
+    playSound('click');
+    const m: GeoPoint = { id: 'pt-art-center', label: 'M', x: 320, y: 220, color: '#f59e0b' };
+    setPoints([m]);
+
+    const motifObj: GeoObject = {
+      id: 'art-seljuk-1',
+      type: 'art-motif',
+      p1: m,
+      symbol: 'Selçuklu Çinisi',
+      label: '8 Köşeli Selçuklu Geometrik Çini Deseni [D7.1]',
+      radius: 80,
+      color: '#f59e0b',
+      motifType: 'seljuk-star'
+    };
+    setObjects([motifObj]);
+    setAngles([]);
+    setFeedbackMsg('🎨 [D7.1] Selçuklu Yıldızı & Sanat Panosu yüklendi: Çember, dikme ve doğruların kusursuz estetik birleşimi.');
   };
 
   const clearAll = () => {
@@ -711,6 +870,134 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         addPoints(15);
         setFeedbackMsg(`✨ ${labelText} başarıyla çizildi!`);
       }
+      return;
+    }
+
+    // COMPASS & CIRCLE TOOL (MAT.5.3.1)
+    if (activeTool === 'compass') {
+      const pt: GeoPoint = hitPoint || {
+        id: `pt-${Date.now()}-${Math.random()}`,
+        label: !compassCenterPoint ? 'M' : POINT_LABELS[points.length % POINT_LABELS.length],
+        x,
+        y,
+        color: activeColor
+      };
+      if (!hitPoint) setPoints([...points, pt]);
+
+      if (!compassCenterPoint) {
+        setCompassCenterPoint(pt);
+        playSound('select');
+        setFeedbackMsg(`⭕ Pergelin iğnesi ${pt.label} (Merkez) noktasına sabitlendi. Şimdi yarıçapı belirlemek için bir çember noktasına tıklayınız.`);
+      } else {
+        if (compassCenterPoint.id === pt.id) return;
+        const dx = pt.x - compassCenterPoint.x;
+        const dy = pt.y - compassCenterPoint.y;
+        const radPix = Math.round(Math.sqrt(dx * dx + dy * dy)) || 45;
+        const radCm = Math.round((radPix / 25) * 10) / 10;
+
+        const newCircle: GeoObject = {
+          id: `circ-${Date.now()}`,
+          type: 'circle',
+          p1: compassCenterPoint,
+          p2: pt,
+          symbol: `Çember (${compassCenterPoint.label})`,
+          label: `Çember (Merkez: ${compassCenterPoint.label}, r = ${radCm} cm, R = ${Math.round(radCm * 2 * 10) / 10} cm)`,
+          radius: radPix,
+          length: radCm,
+          isDisk: false,
+          color: activeColor
+        };
+
+        setObjects([...objects, newCircle]);
+        setCompassCenterPoint(null);
+        setHoverPos(null);
+        playSound('success');
+        addPoints(20);
+        setFeedbackMsg(`⭕ ${compassCenterPoint.label} merkezli çember çizildi! Yarıçap r = ${radCm} cm, Çap R = ${Math.round(radCm * 2 * 10) / 10} cm.`);
+      }
+      return;
+    }
+
+    // SET SQUARE / PERPENDICULAR TOOL (MAT.5.3.1)
+    if (activeTool === 'setsquare') {
+      const pTop: GeoPoint = hitPoint || {
+        id: `pt-${Date.now()}-${Math.random()}`,
+        label: 'P',
+        x,
+        y,
+        color: '#f43f5e'
+      };
+      if (!hitPoint) setPoints([...points, pTop]);
+
+      const groundY = Math.min(Math.max(pTop.y + 120, 240), 400);
+      const pH: GeoPoint = {
+        id: `pt-H-${Date.now()}`,
+        label: 'H',
+        x: pTop.x,
+        y: groundY,
+        color: '#10b396'
+      };
+
+      const pD1: GeoPoint = { id: `pt-d1-${Date.now()}`, label: 'd1', x: Math.max(pTop.x - 140, 40), y: groundY, color: '#38bdf8' };
+      const pD2: GeoPoint = { id: `pt-d2-${Date.now()}`, label: 'd2', x: Math.min(pTop.x + 140, 720), y: groundY, color: '#38bdf8' };
+
+      const baseLine: GeoObject = {
+        id: `line-d-${Date.now()}`,
+        type: 'line',
+        p1: pD1,
+        p2: pD2,
+        symbol: 'd Doğrusu',
+        label: 'Kıyı d Doğrusu',
+        color: '#38bdf8'
+      };
+
+      const distCm = Math.round(((groundY - pTop.y) / 25) * 10) / 10;
+      const perpObj: GeoObject = {
+        id: `perp-${Date.now()}`,
+        type: 'perpendicular',
+        p1: pTop,
+        p2: pH,
+        symbol: `[${pTop.label}${pH.label}] ⊥ d`,
+        label: `Dikme [${pTop.label}${pH.label}] ⊥ d (En Kısa Yol: ${distCm} cm)`,
+        distance: distCm,
+        color: '#f43f5e'
+      };
+
+      setPoints([...points, pTop, pH, pD1, pD2]);
+      setObjects([...objects, baseLine, perpObj]);
+      playSound('success');
+      addPoints(25);
+      setFeedbackMsg(`📐 Gönye ile ${pTop.label} noktasından d doğrusuna [${pTop.label}${pH.label}] ⊥ d dikmesi indirildi! En kısa mesafe: ${distCm} cm.`);
+      return;
+    }
+
+    // ART MOTIF TOOL [D7.1] (MAT.5.3.1)
+    if (activeTool === 'artmotif') {
+      const centerPt: GeoPoint = {
+        id: `pt-motif-${Date.now()}`,
+        label: 'M',
+        x,
+        y,
+        color: '#f59e0b'
+      };
+      setPoints([...points, centerPt]);
+
+      const artObj: GeoObject = {
+        id: `art-${Date.now()}`,
+        type: 'art-motif',
+        p1: centerPt,
+        symbol: 'Selçuklu Çinisi [D7.1]',
+        label: 'Görsel Sanatlar: 8 Köşeli Selçuklu Geometrik Deseni',
+        radius: 65,
+        color: activeColor,
+        motifType: 'seljuk-star'
+      };
+
+      setObjects([...objects, artObj]);
+      playSound('success');
+      addPoints(30);
+      setFeedbackMsg(`🎨 [D7.1] Görsel Sanatlar: Çember ve dikmelerden türetilen Selçuklu Yıldızı motifi tuvale eklendi!`);
+      return;
     }
   };
 
@@ -1579,6 +1866,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
+                onPointerLeave={handlePointerUp}
+                onPointerCancel={handlePointerUp}
                 className={`w-full h-[460px] cursor-crosshair select-none touch-none ${showGrid ? 'math-grid-bg' : ''}`}
               >
                 {/* Empty State Hint */}
@@ -1616,15 +1905,15 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
                 {/* Geometric Objects (Rays) */}
                 {objects.map((obj) => {
+                  if (obj.type !== 'ray' || !obj.p2) return null;
                   const p1 = points.find((p) => p.id === obj.p1.id) || obj.p1;
-                  const p2 = points.find((p) => p.id === obj.p2.id) || obj.p2;
-                  const { type, color, id } = obj;
+                  const p2 = points.find((p) => p.id === obj.p2!.id) || obj.p2;
+                  if (!p2) return null;
+                  const { color, id } = obj;
                   const dx = p2.x - p1.x;
                   const dy = p2.y - p1.y;
                   const len = Math.sqrt(dx * dx + dy * dy) || 1;
                   const angle = Math.atan2(dy, dx);
-
-                  if (type === 'ray') {
                     const baseExtend = Math.max(len + 40, 80);
                     const extendLen = baseExtend * armScaleMultiplier;
                     const extX = p1.x + (dx / len) * extendLen;
@@ -1654,8 +1943,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         <circle cx={p1.x} cy={p1.y} r="6" fill={color} stroke="#ffffff" strokeWidth="2" />
                       </g>
                     );
-                  }
-                  return null;
                 })}
 
                 {/* Render Angles & Live Arc Labels */}
@@ -1669,11 +1956,21 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   return (
                     <g
                       key={pt.id}
-                      className="cursor-grab active:cursor-grabbing"
+                      className="cursor-grab active:cursor-grabbing select-none"
                       onPointerDown={(e) => {
                         e.stopPropagation();
+                        try {
+                          (e.currentTarget as SVGElement)?.setPointerCapture?.(e.pointerId);
+                        } catch {}
                         setDraggingPointId(pt.id);
                         playSound('click');
+                      }}
+                      onPointerUp={(e) => {
+                        e.stopPropagation();
+                        try {
+                          (e.currentTarget as SVGElement)?.releasePointerCapture?.(e.pointerId);
+                        } catch {}
+                        setDraggingPointId(null);
                       }}
                     >
                       {/* Pulse ring for active vertex */}
@@ -1681,15 +1978,22 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         <circle cx={pt.x} cy={pt.y} r="16" fill="none" stroke="#f59e0b" strokeWidth="2" className="animate-pulse" />
                       )}
 
-                      {/* Point Circle */}
+                      {/* Dragging glow halo */}
+                      {isDragging && (
+                        <circle cx={pt.x} cy={pt.y} r="15" fill={pt.color} fillOpacity="0.25" stroke={pt.color} strokeWidth="2" strokeDasharray="3,3" />
+                      )}
+
+                      {/* Invisible Large Hit Target (40px) for Touch / Smart Board */}
+                      <circle cx={pt.x} cy={pt.y} r="20" fill="transparent" />
+
+                      {/* Point Circle (Completely stable, NO CSS transform/scale jumping) */}
                       <circle
                         cx={pt.x}
                         cy={pt.y}
                         r={isVertex ? 9 : 7.5}
                         fill={isVertex ? '#f59e0b' : pt.color}
                         stroke="#ffffff"
-                        strokeWidth="3"
-                        className={`transition-transform hover:scale-125 ${isDragging ? 'scale-125 ring-4 ring-teal-400' : ''}`}
+                        strokeWidth={isDragging ? '3.5' : '2.5'}
                       />
 
                       {/* Point Label */}
@@ -1885,6 +2189,38 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         </div>
       </div>
 
+      {/* Geometry Station Flow Selector for MAT.5.3.1 */}
+      <GeometryFlowSelector
+        activeStation={activeStation}
+        onSelectStation={(st) => {
+          setActiveStation(st);
+          playSound('click');
+          if (st === 'lines') {
+            setActiveTool('segment');
+            setFeedbackMsg('1. İstasyon: Çizgeç ile iki nokta arasında aynı hizada noktaları bağlayarak Doğru Parçası [AB], Işın veya Doğru inşa ediniz.');
+          } else if (st === 'angle') {
+            setActiveTool('angle');
+            setFeedbackMsg('2. İstasyon: Başlangıç noktası ortak iki ışınla Dinamik Açı (∠ABC) oluşturunuz.');
+          } else if (st === 'compass') {
+            setActiveTool('compass');
+            setFeedbackMsg('3. İstasyon: Pergel aracı ile merkez (M) ve yarıçap (r) belirleyerek Çember ve Eş Çemberler çiziniz.');
+          } else if (st === 'perpendicular') {
+            setActiveTool('setsquare');
+            setFeedbackMsg('4. İstasyon: Gönye aracı ile doğruya dış noktadan 90° en kısa dikmeyi (d ⊥ k) indiriniz.');
+          } else if (st === 'art') {
+            setActiveTool('artmotif');
+            setFeedbackMsg('5. İstasyon: Görsel Sanatlar entegrasyonu [D7.1] ile Selçuklu çinisi ve logo tasarımınızı tahtaya yerleştiriniz.');
+          }
+        }}
+        completedStations={{
+          lines: geoMissionsDone.point && geoMissionsDone.segment,
+          angle: geoMissionsDone.angle,
+          compass: geoMissionsDone.circle,
+          perpendicular: geoMissionsDone.perpendicular,
+          art: geoMissionsDone.art
+        }}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* LEFT TOOLBAR */}
@@ -1892,11 +2228,17 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           
           {/* Main Geometry Tools */}
           <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-4">
-            <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
-              Temel Geometrik Çizim Araçları
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
+                Geometri Çizim Araçları (8 Araç)
+              </h3>
+              <span className="text-[10px] font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded">
+                OB2 & MAB3
+              </span>
+            </div>
 
             <div className="grid grid-cols-2 gap-2">
+              {/* 1. Nokta */}
               <button
                 onClick={() => {
                   setActiveTool('point');
@@ -1904,24 +2246,25 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   playSound('click');
                   setFeedbackMsg('📍 Nokta Aracı: Tahtaya tıklayarak isimlendirilmiş noktalar yerleştiriniz.');
                 }}
-                className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
                   activeTool === 'point'
                     ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20 scale-102'
                     : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                <Dot className="w-6 h-6" />
+                <Dot className="w-5 h-5" />
                 <span>📍 Nokta (•)</span>
               </button>
 
+              {/* 2. Doğru Parçası */}
               <button
                 onClick={() => {
                   setActiveTool('segment');
                   setSelectedPointForLink(null);
                   playSound('click');
-                  setFeedbackMsg('📏 Doğru Parçası [AB]: İki noktayı birleştirerek boyu ölçülebilir çizgi oluşturunuz.');
+                  setFeedbackMsg('📏 Doğru Parçası [AB]: İki noktayı bağlayan boyu ölçülebilir çizgi oluşturunuz.');
                 }}
-                className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
                   activeTool === 'segment'
                     ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20 scale-102'
                     : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -1931,6 +2274,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 <span>📏 Doğru Parçası [AB]</span>
               </button>
 
+              {/* 3. Işın */}
               <button
                 onClick={() => {
                   setActiveTool('ray');
@@ -1938,7 +2282,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   playSound('click');
                   setFeedbackMsg('🔦 Işın [CD>: 1. Tıklanan nokta başlangıçtır [C], 2. nokta yönü belirler.');
                 }}
-                className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
                   activeTool === 'ray'
                     ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20 scale-102'
                     : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -1948,21 +2292,97 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 <span>🔦 Işın [CD&gt;</span>
               </button>
 
+              {/* 4. Doğru */}
               <button
                 onClick={() => {
                   setActiveTool('line');
                   setSelectedPointForLink(null);
                   playSound('click');
-                  setFeedbackMsg('↔️ Doğru EF: İki yönden de sonsuza uzayan çift oklu çizgi çiziniz.');
+                  setFeedbackMsg('↔️ Doğru EF (d): İki yönden de sonsuza uzayan çift oklu çizgi çiziniz.');
                 }}
-                className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
                   activeTool === 'line'
                     ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20 scale-102'
                     : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                <span className="font-black text-sm tracking-tighter">&lt;—&gt;</span>
-                <span>↔️ Doğru EF</span>
+                <span className="font-black text-xs tracking-tighter">&lt;—&gt;</span>
+                <span>↔️ Doğru EF (d)</span>
+              </button>
+
+              {/* 5. Dinamik Açı */}
+              <button
+                onClick={() => {
+                  setActiveTool('angle');
+                  setSelectedPointForLink(null);
+                  setAngleStepPoint1(null);
+                  setAngleStepPoint2(null);
+                  playSound('click');
+                  setFeedbackMsg('📐 Dinamik Açı: Tahtaya tıklayarak 1. Köşe (B), 2. Taban (A) ve 3. Dönen Kolu (C) belirleyin.');
+                }}
+                className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
+                  activeTool === 'angle'
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-102'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Maximize2 className="w-5 h-5" />
+                <span>📐 Açı (∠ABC)</span>
+              </button>
+
+              {/* 6. Pergel & Çember */}
+              <button
+                onClick={() => {
+                  setActiveTool('compass');
+                  setSelectedPointForLink(null);
+                  setCompassCenterPoint(null);
+                  playSound('click');
+                  setFeedbackMsg('⭕ Pergel: 1. Tıklama ile Merkez (M), 2. tıklama ile Yarıçap (r) belirleyip çember çizin.');
+                }}
+                className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
+                  activeTool === 'compass'
+                    ? 'bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-600/20 scale-102'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Compass className="w-5 h-5" />
+                <span>⭕ Pergel & Çember</span>
+              </button>
+
+              {/* 7. Gönye & Dikme */}
+              <button
+                onClick={() => {
+                  setActiveTool('setsquare');
+                  setSelectedPointForLink(null);
+                  playSound('click');
+                  setFeedbackMsg('📐 Gönye & Dikme: Tahtada bir noktaya tıklayarak kıyı d doğrusuna 90° en kısa dikmeyi [PH] ⊥ d indirin.');
+                }}
+                className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
+                  activeTool === 'setsquare'
+                    ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-600/20 scale-102'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <span className="font-black text-sm">⊥</span>
+                <span>📐 Gönye & Dikme</span>
+              </button>
+
+              {/* 8. Sanat Motifi */}
+              <button
+                onClick={() => {
+                  setActiveTool('artmotif');
+                  setSelectedPointForLink(null);
+                  playSound('click');
+                  setFeedbackMsg('🎨 Görsel Sanatlar: Tahtaya tıklayarak 8 köşeli Selçuklu Çinisi veya geometrik logo deseni kondurun.');
+                }}
+                className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
+                  activeTool === 'artmotif'
+                    ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20 scale-102'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Palette className="w-5 h-5" />
+                <span>🎨 Sanat Motifi [D7.1]</span>
               </button>
             </div>
 
@@ -1981,7 +2401,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               }`}
             >
               <Move className="w-4 h-4" />
-              <span>🖐️ Noktaları Taşı & Boyutlandır</span>
+              <span>🖐️ Noktaları Taşı & Canlı Boyutlandır</span>
             </button>
 
             {/* Color Palette */}
@@ -2023,18 +2443,50 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             </div>
           </div>
 
-          {/* Quick Presets for MAT.5.3.1 */}
+          {/* Quick Presets for MAT.5.3.1 (5 İstasyon Şablonu) */}
           <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-3">
             <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
-              Hazır Şablonlar
+              İstasyon Hazır Şablonları (5 İstasyon)
             </h4>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-1.5">
               <button
                 onClick={loadDefaultGeometricPresets}
-                className="p-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs font-bold text-left flex items-center justify-between"
+                className="p-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs font-bold text-left flex items-center justify-between"
               >
-                <span>🌟 Tüm Temel Modelleri Yükle</span>
+                <span>1. 🌟 Temel Çizgiler ([AB], [CD&gt;, EF)</span>
                 <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+              </button>
+
+              <button
+                onClick={loadAngleStationPreset}
+                className="p-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-xs font-bold text-left flex items-center justify-between"
+              >
+                <span>2. 📐 Dinamik 90° Dik Açı Modeli</span>
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              </button>
+
+              <button
+                onClick={loadCircleStationPreset}
+                className="p-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 text-xs font-bold text-left flex items-center justify-between"
+              >
+                <span>3. ⭕ Pergel Kilidi: Eş Çemberler (r1=r2)</span>
+                <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+              </button>
+
+              <button
+                onClick={loadPerpendicularStationPreset}
+                className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-900 border border-rose-200 text-xs font-bold text-left flex items-center justify-between"
+              >
+                <span>4. 📐 Gönye ile Kıyıya En Kısa Dikme</span>
+                <Sparkles className="w-3.5 h-3.5 text-rose-600" />
+              </button>
+
+              <button
+                onClick={loadArtMotifStationPreset}
+                className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold text-left flex items-center justify-between"
+              >
+                <span>5. 🎨 Selçuklu Çinisi & Sanat Panosu [D7.1]</span>
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
               </button>
             </div>
           </div>
@@ -2044,40 +2496,61 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-xs font-black uppercase text-amber-400">
                 <Target className="w-4 h-4" />
-                <span>Laboratuvar Görevleri</span>
+                <span>İstasyon Görevleri (7 Görev)</span>
               </div>
               <span className="text-[11px] text-indigo-200">
-                {Object.values(geoMissionsDone).filter(Boolean).length} / 4 Tamamlandı
+                {Object.values(geoMissionsDone).filter(Boolean).length} / 7 Tamamlandı
               </span>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="space-y-1.5 text-xs">
               <div className={`p-2 rounded-xl flex items-center justify-between border ${
                 geoMissionsDone.point ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
               }`}>
-                <span>📍 En az 1 Nokta (•) yerleştir</span>
+                <span>📍 1. En az 1 Nokta (•) yerleştir</span>
                 {geoMissionsDone.point ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
               </div>
 
               <div className={`p-2 rounded-xl flex items-center justify-between border ${
                 geoMissionsDone.segment ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
               }`}>
-                <span>📏 1 Doğru Parçası [AB] çiz</span>
+                <span>📏 2. Doğru Parçası [AB] çiz (Çizgeç)</span>
                 {geoMissionsDone.segment ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
               </div>
 
               <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.ray ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
+                geoMissionsDone.rayLine ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
               }`}>
-                <span>🔦 1 Işın [CD&gt; modeli oluştur</span>
-                {geoMissionsDone.ray ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
+                <span>🔦 3. Işın [CD&gt; veya Doğru EF oluştur</span>
+                {geoMissionsDone.rayLine ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
               </div>
 
               <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.line ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
+                geoMissionsDone.angle ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
               }`}>
-                <span>↔️ 1 Doğru EF inşa et</span>
-                {geoMissionsDone.line ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
+                <span>📐 4. Dinamik Açı (∠ABC) oluştur</span>
+                {geoMissionsDone.angle ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
+              </div>
+
+              <div className={`p-2 rounded-xl flex items-center justify-between border ${
+                geoMissionsDone.circle ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
+              }`}>
+                <span>⭕ 5. Pergel ile Çember (r) çiz</span>
+                {geoMissionsDone.circle ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
+              </div>
+
+              <div className={`p-2 rounded-xl flex items-center justify-between border ${
+                geoMissionsDone.perpendicular ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
+              }`}>
+                <span>📐 6. Gönye ile Dikme (d ⊥ k) indir</span>
+                {geoMissionsDone.perpendicular ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
+              </div>
+
+              <div className={`p-2 rounded-xl flex items-center justify-between border ${
+                geoMissionsDone.art ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
+              }`}>
+                <span>🎨 7. Estetik Sanat Motifi ekle [D7.1]</span>
+                {geoMissionsDone.art ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
               </div>
             </div>
           </div>
@@ -2098,6 +2571,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               <div className="flex items-center gap-3 text-slate-300">
                 <span>Noktalar: {points.length}</span>
                 <span>Şekiller: {objects.length}</span>
+                {angles.length > 0 && <span>Açılar: {angles.length}</span>}
               </div>
             </div>
 
@@ -2107,10 +2581,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
-              className={`w-full h-[460px] cursor-crosshair select-none touch-none ${showGrid ? 'math-grid-bg' : ''}`}
+              onPointerLeave={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              className={`w-full h-[470px] cursor-crosshair select-none touch-none ${showGrid ? 'math-grid-bg' : ''}`}
             >
               {/* Empty State Hint */}
-              {points.length === 0 && objects.length === 0 && (
+              {points.length === 0 && objects.length === 0 && angles.length === 0 && (
                 <g className="pointer-events-none">
                   <text
                     x="50%"
@@ -2120,12 +2596,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                     fontSize="14"
                     fontWeight="bold"
                   >
-                    ✨ Nokta veya çizim aracını seçip tahtaya tıklayarak geometrik çizim yapınız.
+                    ✨ İstasyon araçlarından birini seçip tahtaya tıklayarak geometrik çizim yapınız.
                   </text>
                 </g>
               )}
 
-              {/* Connecting line preview */}
+              {/* Connecting line / compass radius preview */}
               {selectedPointForLink && hoverPos && (
                 <line
                   x1={selectedPointForLink.x}
@@ -2138,28 +2614,51 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   className="animate-pulse"
                 />
               )}
+              {compassCenterPoint && hoverPos && (
+                <g>
+                  <circle
+                    cx={compassCenterPoint.x}
+                    cy={compassCenterPoint.y}
+                    r={Math.round(Math.sqrt((hoverPos.x - compassCenterPoint.x) ** 2 + (hoverPos.y - compassCenterPoint.y) ** 2)) || 10}
+                    fill="none"
+                    stroke={activeColor}
+                    strokeWidth="2"
+                    strokeDasharray="5,4"
+                    className="animate-pulse"
+                  />
+                  <line
+                    x1={compassCenterPoint.x}
+                    y1={compassCenterPoint.y}
+                    x2={hoverPos.x}
+                    y2={hoverPos.y}
+                    stroke={activeColor}
+                    strokeWidth="2"
+                  />
+                </g>
+              )}
+
+              {/* Render Angles */}
+              {angles.map((ang) => renderAngleVisual(ang))}
 
               {/* Render Geometric Objects */}
               {objects.map((obj) => {
                 const p1 = points.find((p) => p.id === obj.p1.id) || obj.p1;
-                const p2 = points.find((p) => p.id === obj.p2.id) || obj.p2;
+                const p2 = obj.p2 ? (points.find((p) => p.id === obj.p2?.id) || obj.p2) : undefined;
                 const { type, color, id, length, symbol } = obj;
 
-                const dx = p2.x - p1.x;
-                const dy = p2.y - p1.y;
-                const len = Math.sqrt(dx * dx + dy * dy) || 1;
-                const angle = Math.atan2(dy, dx);
-                const midX = (p1.x + p2.x) / 2;
-                const midY = (p1.y + p2.y) / 2;
-
                 // 1. SEGMENT: Two closed boundary dots + length badge
-                if (type === 'segment') {
+                if (type === 'segment' && p2) {
+                  const dx = p2.x - p1.x;
+                  const dy = p2.y - p1.y;
+                  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const midX = (p1.x + p2.x) / 2;
+                  const midY = (p1.y + p2.y) / 2;
+
                   return (
                     <g key={id}>
                       <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeWidth="4.5" strokeLinecap="round" />
                       <circle cx={p1.x} cy={p1.y} r="5.5" fill={color} stroke="#ffffff" strokeWidth="2" />
                       <circle cx={p2.x} cy={p2.y} r="5.5" fill={color} stroke="#ffffff" strokeWidth="2" />
-                      {/* Segment Length Badge */}
                       <g transform={`translate(${midX}, ${midY - 14})`}>
                         <rect x="-36" y="-12" width="72" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
                         <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
@@ -2171,7 +2670,13 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 }
 
                 // 2. RAY: Closed start point + One directional arrow
-                if (type === 'ray') {
+                if (type === 'ray' && p2) {
+                  const dx = p2.x - p1.x;
+                  const dy = p2.y - p1.y;
+                  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const angle = Math.atan2(dy, dx);
+                  const midX = (p1.x + p2.x) / 2;
+                  const midY = (p1.y + p2.y) / 2;
                   const extLen = len + 40;
                   const extX = p1.x + (dx / len) * extLen;
                   const extY = p1.y + (dy / len) * extLen;
@@ -2190,7 +2695,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <line x1={p1.x} y1={p1.y} x2={extX} y2={extY} stroke={color} strokeWidth="4.5" strokeLinecap="round" />
                       <polygon points={`${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`} fill={color} />
                       <circle cx={p1.x} cy={p1.y} r="6.5" fill={color} stroke="#ffffff" strokeWidth="2" />
-                      {/* Ray Label Badge */}
                       <g transform={`translate(${midX}, ${midY - 14})`}>
                         <rect x="-30" y="-12" width="60" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
                         <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
@@ -2202,7 +2706,14 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 }
 
                 // 3. LINE: Double arrows on both sides
-                if (type === 'line') {
+                if (type === 'line' && p2) {
+                  const dx = p2.x - p1.x;
+                  const dy = p2.y - p1.y;
+                  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const angle = Math.atan2(dy, dx);
+                  const midX = (p1.x + p2.x) / 2;
+                  const midY = (p1.y + p2.y) / 2;
+
                   const ext1X = p1.x - (dx / len) * 45;
                   const ext1Y = p1.y - (dy / len) * 45;
                   const ext2X = p2.x + (dx / len) * 45;
@@ -2211,7 +2722,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   const arrowLen = 13;
                   const arrowWidth = 6.5;
 
-                  // Arrow at ext2
                   const tip2X = ext2X;
                   const tip2Y = ext2Y;
                   const left2X = tip2X - arrowLen * Math.cos(angle) - arrowWidth * Math.sin(angle);
@@ -2219,7 +2729,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   const right2X = tip2X - arrowLen * Math.cos(angle) + arrowWidth * Math.sin(angle);
                   const right2Y = tip2Y - arrowLen * Math.sin(angle) - arrowWidth * Math.cos(angle);
 
-                  // Arrow at ext1
                   const oppAngle = angle + Math.PI;
                   const tip1X = ext1X;
                   const tip1Y = ext1Y;
@@ -2233,11 +2742,85 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <line x1={ext1X} y1={ext1Y} x2={ext2X} y2={ext2Y} stroke={color} strokeWidth="4.5" strokeLinecap="round" />
                       <polygon points={`${tip2X},${tip2Y} ${left2X},${left2Y} ${right2X},${right2Y}`} fill={color} />
                       <polygon points={`${tip1X},${tip1Y} ${left1X},${left1Y} ${right1X},${right1Y}`} fill={color} />
-                      {/* Line Label Badge */}
                       <g transform={`translate(${midX}, ${midY - 14})`}>
                         <rect x="-24" y="-12" width="48" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
                         <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
                           {p1.label}{p2.label}
+                        </text>
+                      </g>
+                    </g>
+                  );
+                }
+
+                // 4. CIRCLE: Compass circle with center M, radius line r, diameter R
+                if (type === 'circle') {
+                  const rad = obj.radius || 60;
+                  const rCm = obj.length || Math.round((rad / 25) * 10) / 10;
+                  const dCm = Math.round(rCm * 2 * 10) / 10;
+
+                  return (
+                    <g key={id}>
+                      {obj.isDisk && (
+                        <circle cx={p1.x} cy={p1.y} r={rad} fill={color} fillOpacity="0.2" />
+                      )}
+                      <circle cx={p1.x} cy={p1.y} r={rad} fill="none" stroke={color} strokeWidth="3.5" />
+                      {/* Radius line r */}
+                      <line x1={p1.x} y1={p1.y} x2={p1.x + rad} y2={p1.y} stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4,2" />
+                      <circle cx={p1.x + rad} cy={p1.y} r="4" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
+                      <text x={p1.x + rad / 2} y={p1.y - 6} fill="#f59e0b" fontSize="10" fontWeight="bold" textAnchor="middle">
+                        r = {rCm} cm
+                      </text>
+                      {/* Center dot */}
+                      <circle cx={p1.x} cy={p1.y} r="5" fill={color} stroke="#ffffff" strokeWidth="2" />
+                      <text x={p1.x} y={p1.y + 16} fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">
+                        {p1.label} (Merkez)
+                      </text>
+                      {/* Badge */}
+                      <g transform={`translate(${p1.x}, ${p1.y - rad - 14})`}>
+                        <rect x="-65" y="-12" width="130" height="24" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.2" />
+                        <text x="0" y="4" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
+                          ⭕ Çember (R = {dCm} cm)
+                        </text>
+                      </g>
+                    </g>
+                  );
+                }
+
+                // 5. PERPENDICULAR: Point dropped to line with 90° right angle mark
+                if (type === 'perpendicular' && p2) {
+                  return (
+                    <g key={id}>
+                      <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeWidth="4" strokeLinecap="round" />
+                      <circle cx={p1.x} cy={p1.y} r="6" fill={color} stroke="#ffffff" strokeWidth="2" />
+                      <circle cx={p2.x} cy={p2.y} r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
+                      {/* 90° Square symbol at foot H */}
+                      <rect x={p2.x} y={p2.y - 16} width="16" height="16" fill="none" stroke={color} strokeWidth="2" />
+                      <circle cx={p2.x + 8} cy={p2.y - 8} r="2" fill={color} />
+                      {/* Shortest distance badge */}
+                      <g transform={`translate(${p1.x + 50}, ${(p1.y + p2.y) / 2})`}>
+                        <rect x="-45" y="-12" width="90" height="24" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.2" />
+                        <text x="0" y="4" textAnchor="middle" fill="#fb7185" fontSize="10" fontWeight="bold">
+                          |{p1.label}{p2.label}| ⊥ d ({obj.distance || 15} cm)
+                        </text>
+                      </g>
+                    </g>
+                  );
+                }
+
+                // 6. ART MOTIF: Seljuk Star & Tile Pattern
+                if (type === 'art-motif') {
+                  const rad = obj.radius || 65;
+                  return (
+                    <g key={id} transform={`translate(${p1.x}, ${p1.y})`}>
+                      <circle cx="0" cy="0" r={rad} fill="none" stroke="#64748b" strokeWidth="1.5" strokeDasharray="3,3" />
+                      <circle cx="0" cy="0" r={rad * 0.7} fill="none" stroke="#94a3b8" strokeWidth="1" />
+                      <rect x={-rad * 0.55} y={-rad * 0.55} width={rad * 1.1} height={rad * 1.1} fill="none" stroke="#f59e0b" strokeWidth="2.5" />
+                      <rect x={-rad * 0.55} y={-rad * 0.55} width={rad * 1.1} height={rad * 1.1} fill="none" stroke="#10b396" strokeWidth="2.5" transform="rotate(45)" />
+                      <circle cx="0" cy="0" r="7" fill="#d97706" stroke="#ffffff" strokeWidth="2" />
+                      <g transform={`translate(0, ${rad + 16})`}>
+                        <rect x="-65" y="-10" width="130" height="20" rx="6" fill="#0f172a" stroke="#f59e0b" strokeWidth="1.2" />
+                        <text x="0" y="4" textAnchor="middle" fill="#fde047" fontSize="9.5" fontWeight="bold">
+                          🎨 Selçuklu Çinisi [D7.1]
                         </text>
                       </g>
                     </g>
@@ -2255,27 +2838,44 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 return (
                   <g
                     key={pt.id}
-                    className="cursor-grab active:cursor-grabbing"
+                    className="cursor-grab active:cursor-grabbing select-none"
                     onPointerDown={(e) => {
                       e.stopPropagation();
+                      try {
+                        (e.currentTarget as SVGElement)?.setPointerCapture?.(e.pointerId);
+                      } catch {}
                       setDraggingPointId(pt.id);
                       playSound('click');
+                    }}
+                    onPointerUp={(e) => {
+                      e.stopPropagation();
+                      try {
+                        (e.currentTarget as SVGElement)?.releasePointerCapture?.(e.pointerId);
+                      } catch {}
+                      setDraggingPointId(null);
                     }}
                   >
                     {/* Active Link selection ring */}
                     {isSelected && (
-                      <circle cx={pt.x} cy={pt.y} r="15" fill="none" stroke="#f59e0b" strokeWidth="2.5" className="animate-pulse" />
+                      <circle cx={pt.x} cy={pt.y} r="16" fill="none" stroke="#f59e0b" strokeWidth="2.5" className="animate-pulse" />
                     )}
 
-                    {/* Point Circle */}
+                    {/* Dragging glow halo */}
+                    {isDragging && (
+                      <circle cx={pt.x} cy={pt.y} r="15" fill={pt.color} fillOpacity="0.25" stroke={pt.color} strokeWidth="2" strokeDasharray="3,3" />
+                    )}
+
+                    {/* Invisible Large Hit Target (40px) for Touch / Smart Board */}
+                    <circle cx={pt.x} cy={pt.y} r="20" fill="transparent" />
+
+                    {/* Point Circle (Completely stable, NO CSS transform/scale jumping) */}
                     <circle
                       cx={pt.x}
                       cy={pt.y}
                       r="8"
                       fill={pt.color}
                       stroke="#ffffff"
-                      strokeWidth="2.5"
-                      className={`transition-transform hover:scale-125 ${isDragging ? 'scale-125 ring-4 ring-teal-400' : ''}`}
+                      strokeWidth={isDragging ? '3.5' : '2.5'}
                     />
 
                     {/* Point Label */}
@@ -2300,16 +2900,16 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black uppercase text-teal-300 tracking-wider flex items-center gap-1.5">
                   <Shapes className="w-4 h-4" />
-                  <span>Sembolik Temsil & Ölçülebilirlik Tablosu</span>
+                  <span>Sembolik Temsil, Ölçülebilirlik & Estetik Tablosu</span>
                 </span>
                 <span className="text-[11px] text-slate-400">
-                  {objects.length} Geometrik Nesne Çizildi
+                  {objects.length + angles.length} Geometrik Nesne Çizildi
                 </span>
               </div>
 
-              {objects.length === 0 ? (
+              {objects.length === 0 && angles.length === 0 ? (
                 <div className="text-xs text-slate-400 italic py-2">
-                  Henüz tahtaya bir doğru parçası, ışın veya doğru çizilmedi. Araçları kullanarak çizim yapabilirsiniz.
+                  Henüz tahtaya bir doğru parçası, ışın, açı, çember veya dikme çizilmedi. Araçları veya hazır şablonları kullanabilirsiniz.
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
@@ -2322,12 +2922,44 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         <div className="font-mono font-black text-amber-300 text-sm">
                           {obj.symbol}
                         </div>
-                        <div className="text-[11px] text-slate-300">{obj.label}</div>
+                        <div className="text-[11px] text-slate-300 line-clamp-1">{obj.label}</div>
                       </div>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        obj.type === 'segment' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                        obj.type === 'segment'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          : obj.type === 'circle'
+                          ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                          : obj.type === 'perpendicular'
+                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                          : obj.type === 'art-motif'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                          : 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
                       }`}>
-                        {obj.type === 'segment' ? 'Ölçülebilir 📏' : 'Sonsuz (∞)'}
+                        {obj.type === 'segment'
+                          ? 'Ölçülebilir 📏'
+                          : obj.type === 'circle'
+                          ? 'Çevre ⭕'
+                          : obj.type === 'perpendicular'
+                          ? 'En Kısa ⊥'
+                          : obj.type === 'art-motif'
+                          ? 'Sanat [D7.1]'
+                          : 'Sonsuz (∞)'}
+                      </span>
+                    </div>
+                  ))}
+                  {angles.map((ang) => (
+                    <div
+                      key={ang.id}
+                      className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between gap-2"
+                    >
+                      <div>
+                        <div className="font-mono font-black text-amber-300 text-sm">
+                          s(∠{ang.p1.label}{ang.vertex.label}{ang.p2.label}) = {ang.degree}°
+                        </div>
+                        <div className="text-[11px] text-slate-300">{ang.label}</div>
+                      </div>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 shrink-0">
+                        {ang.type.toUpperCase()} AÇI
                       </span>
                     </div>
                   ))}
@@ -2338,7 +2970,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             {/* Action Bar */}
             <div className="bg-slate-50 border-t border-slate-200 p-4 flex items-center justify-between gap-3 text-xs">
               <div className="text-slate-600 text-xs">
-                💡 <strong className="text-slate-800">Maarif İlkesi:</strong> Yalnızca iki ucu kapalı doğru parçaları <span className="font-mono font-bold text-teal-700">[AB]</span> cetvelle ölçülebilir.
+                💡 <strong className="text-slate-800">Maarif İlkesi:</strong> İki ucu kapalı doğru parçaları <span className="font-mono font-bold text-teal-700">[AB]</span> ölçülebilir; pergel sabit noktaya eşit uzaklık çizer, en kısa çizgi ise dikmedir (d ⊥ k).
               </div>
 
               <button

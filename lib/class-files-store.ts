@@ -188,108 +188,232 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
   },
   {
     id: 'file-activity-mat-5-3-1',
-    title: 'Etkinlik 1: Aşamalı İnşa İstasyonları (MAT.5.3.1)',
+    title: 'Etkinlik 1: Maarif Geometri Keşif İstasyonları & Sanat Panosu (MAT.5.3.1)',
     classSection: 'Tümü',
     outcomeCode: 'MAT.5.3.1',
-    outcomeTitle: 'Temel Geometrik Çizimler ve Geometrik Araçların Kullanımı',
+    outcomeTitle: 'Temel Geometrik Çizimler, Araçların Kullanımı ve Estetik Tasarım (D7.1)',
     authorName: 'Millî Eğitim Bakanlığı',
     authorRole: 'teacher',
     school: 'Edirne Selimiye İmam Hatip Ortaokulu',
-    pageCount: 1,
+    pageCount: 2,
     createdAt: '2026-09-09T08:00:00Z',
-    fileSizeKb: 180,
-    tags: ['Etkinlik Kağıdı', 'Aşamalı İnşa', 'Cetvel', 'İletki', 'Pergel', 'Gönye', 'MAT.5.3.1', 'Değerlendirme'],
+    fileSizeKb: 280,
+    tags: ['Etkinlik Kağıdı', 'Maarif Modeli', 'Çizgeç', 'Pergel', 'Gönye', 'Açı', 'Çember', 'Dikme', 'D7.1 Sanat', 'MAT.5.3.1', 'Öz/Akran Değerlendirme'],
     pages: [
       {
         id: 'p1',
         pageNumber: 1,
         backgroundType: 'grid',
-        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif;">
-  <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 16px;">
-    <h2 style="color: #0f766e; font-size: 18px; font-weight: 900; margin: 0; text-transform: uppercase;">
-      📐 ETKİNLİK 1: AŞAMALI İNŞA İSTASYONLARI (MAT.5.3.1)
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #1e293b;">
+  <div style="text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f0fdfa, #ccfbf1); padding: 10px; border-radius: 12px; border: 1px solid #99f6e4;">
+    <div style="display: inline-block; background: #0f766e; color: #ffffff; font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      TÜRKİYE YÜZYILI MAARİF MODELİ • MAT.5.3.1
+    </div>
+    <h2 style="color: #0f766e; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      📐 ETKİNLİK 1: GEOMETRİK İNŞA, SEMBOLLER VE KEŞİF İSTASYONLARI
     </h2>
-    <p style="color: #475569; font-size: 11px; margin: 4px 0 0 0; font-weight: 600;">
-      Aşağıdaki 4 ayrı istasyon alanında verilen yönergeleri uygun geometrik araçları (Cetvel, İletki, Pergel, Gönye) kullanarak tamamlayınız.
+    <p style="color: #475569; font-size: 10.5px; margin: 3px 0 0 0; font-weight: 600;">
+      Öğrenci Adı-Soyadı: _______________________________ Sınıf / No: ______ Tarih: ___/___/2026
     </p>
   </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-    
-    <!-- İSTASYON 1: CETVEL -->
-    <div style="border: 2px solid #0d9488; border-radius: 12px; padding: 12px; background: #ffffff;">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ccfbf1; padding-bottom: 6px; margin-bottom: 8px;">
-        <span style="font-weight: 900; color: #0f766e; font-size: 12px;">📏 İSTASYON 1: CETVEL</span>
-        <span style="font-size: 10px; font-weight: bold; background: #f0fdfa; color: #0d9488; padding: 2px 6px; border-radius: 4px; border: 1px solid #99f6e4;">Doğru Parçası & Işın</span>
+  <!-- BÖLÜM 1: AÇIK UÇLU SORGULAMA -->
+  <div style="border: 1.5px solid #0d9488; border-radius: 10px; padding: 10px; margin-bottom: 10px; background: #ffffff;">
+    <div style="font-weight: 900; color: #0f766e; font-size: 11px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+      <span>💡 BÖLÜM 1: KAVRAMSAL SORGULAMA & KEŞİF SORULARI (OB2, SB1.1, SB2.1)</span>
+      <span style="font-size: 9.5px; background: #f0fdfa; color: #0d9488; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(20 Puan)</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10.5px;">
+      <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px;">
+        <p style="margin: 0 0 4px 0; font-weight: 700;">1. İki nokta arasında aynı hizada işaretlenen tüm noktaların birleşimi hangi şekli oluşturur? Hangi araçla çizilir?</p>
+        <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
+        <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
       </div>
-      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
-        <strong>Yönerge:</strong> Cetvelini kullanarak <strong>6 cm</strong> uzunluğunda bir <code>[AB]</code> doğru parçası çiz. Ardından başlangıcı <code>C</code> olan bir <code>[CD</code> ışını inşa et.
-      </p>
-      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 160px; background: #f8fafc; position: relative; padding: 8px;">
-        <div style="position: absolute; top: 16px; left: 16px; font-size: 11px; font-weight: 900; color: #0f766e;">• A</div>
-        <div style="position: absolute; top: 16px; left: 160px; font-size: 10px; color: #94a3b8;">(6 cm → B noktası)</div>
-        <div style="position: absolute; bottom: 28px; left: 16px; font-size: 11px; font-weight: 900; color: #0f766e;">• C</div>
-        <div style="position: absolute; bottom: 28px; left: 180px; font-size: 10px; color: #94a3b8;">([CD Işını →)</div>
-        <div style="position: absolute; bottom: 6px; right: 10px; font-size: 9px; color: #64748b; font-family: monospace;">Cetvel Kılavuzu: 0 ... 6 ... 10 cm</div>
+      <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px;">
+        <p style="margin: 0 0 4px 0; font-weight: 700;">2. Bir fenerin ışık kolu başlangıç noktası etrafında döndüğünde ne meydana gelir? Köşe ve kolları açıklayınız.</p>
+        <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
+        <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
+      </div>
+      <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px;">
+        <p style="margin: 0 0 4px 0; font-weight: 700;">3. Sabit bir noktaya eşit uzaklıktaki tüm noktaları çizmek için neden pergel kullanılır? Daireden farkı nedir?</p>
+        <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
+        <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
+      </div>
+      <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px;">
+        <p style="margin: 0 0 4px 0; font-weight: 700;">4. Bir doğruya dışındaki noktadan çizilebilecek en kısa çizgi neden dikmedir? Hangi araçla inşa edilir?</p>
+        <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
+        <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
       </div>
     </div>
-
-    <!-- İSTASYON 2: İLETKİ -->
-    <div style="border: 2px solid #3b82f6; border-radius: 12px; padding: 12px; background: #ffffff;">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #dbeafe; padding-bottom: 6px; margin-bottom: 8px;">
-        <span style="font-weight: 900; color: #1d4ed8; font-size: 12px;">🧭 İSTASYON 2: İLETKİ</span>
-        <span style="font-size: 10px; font-weight: bold; background: #eff6ff; color: #2563eb; padding: 2px 6px; border-radius: 4px; border: 1px solid #bfdbfe;">60° Açı İnşası</span>
-      </div>
-      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
-        <strong>Yönerge:</strong> Verilen yatay kolun başlangıç noktasına iletkini yerleştirerek <strong>60°'lik</strong> bir dar açı inşa et. Açının yayını çiz.
-      </p>
-      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 160px; background: #f8fafc; position: relative; padding: 8px;">
-        <div style="position: absolute; bottom: 32px; left: 24px; width: 140px; height: 2px; background: #1e293b;"></div>
-        <div style="position: absolute; bottom: 26px; left: 18px; font-size: 11px; font-weight: 900; color: #1d4ed8;">• O</div>
-        <div style="position: absolute; bottom: 27px; left: 168px; font-size: 11px; font-weight: 900; color: #1e293b;">►</div>
-        <div style="position: absolute; top: 16px; left: 70px; font-size: 10px; color: #94a3b8;">(İletki ile 60° hizası)</div>
-        <div style="position: absolute; bottom: 6px; right: 10px; font-size: 9px; color: #64748b; font-family: monospace;">Açı Ölçüsü: m(O) = 60°</div>
-      </div>
-    </div>
-
-    <!-- İSTASYON 3: PERGEL -->
-    <div style="border: 2px solid #8b5cf6; border-radius: 12px; padding: 12px; background: #ffffff;">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ede9fe; padding-bottom: 6px; margin-bottom: 8px;">
-        <span style="font-weight: 900; color: #6d28d9; font-size: 12px;">⭕ İSTASYON 3: PERGEL</span>
-        <span style="font-size: 10px; font-weight: bold; background: #f5f3ff; color: #7c3aed; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd6fe;">Çember & Selçuklu Motifi</span>
-      </div>
-      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
-        <strong>Yönerge:</strong> Pergelini <strong>4 cm</strong> aç. <code>'M'</code> merkezine batırarak tam bir çember çiz. Çember yayından merkeze doğru ikinci bir yay çizerek çiçek motifi oluştur.
-      </p>
-      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 160px; background: #f8fafc; position: relative; display: flex; align-items: center; justify-content: center;">
-        <div style="width: 10px; height: 10px; border-radius: 50%; background: #6d28d9; border: 2px solid #ffffff; box-shadow: 0 0 0 1.5px #6d28d9;"></div>
-        <span style="position: absolute; margin-top: 24px; font-size: 11px; font-weight: 900; color: #6d28d9;">M (Merkez Noktası)</span>
-        <div style="position: absolute; width: 110px; height: 110px; border-radius: 50%; border: 1px dotted #cbd5e1; pointer-events: none;"></div>
-        <div style="position: absolute; bottom: 6px; right: 10px; font-size: 9px; color: #64748b; font-family: monospace;">Yarıçap r = 4 cm</div>
-      </div>
-    </div>
-
-    <!-- İSTASYON 4: GÖNYE -->
-    <div style="border: 2px solid #ea580c; border-radius: 12px; padding: 12px; background: #ffffff;">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #ffedd5; padding-bottom: 6px; margin-bottom: 8px;">
-        <span style="font-weight: 900; color: #c2410c; font-size: 12px;">📐 İSTASYON 4: GÖNYE</span>
-        <span style="font-size: 10px; font-weight: bold; background: #fff7ed; color: #ea580c; padding: 2px 6px; border-radius: 4px; border: 1px solid #fed7aa;">Dikme İndirme (⊥)</span>
-      </div>
-      <p style="font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0 0 8px 0; font-weight: 600;">
-        <strong>Yönerge:</strong> Aşağıdaki <code>d</code> doğrusuna, dışındaki <code>P</code> noktasından gönye yardımıyla bir dikme indir. Diklik sembolünü (<code>⊥</code>) koy.
-      </p>
-      <div style="border: 1.5px dashed #cbd5e1; border-radius: 8px; height: 160px; background: #f8fafc; position: relative; padding: 8px;">
-        <div style="position: absolute; top: 20px; left: 90px; font-size: 12px; font-weight: 900; color: #c2410c;">• P (Dış Nokta)</div>
-        <div style="position: absolute; bottom: 35px; left: 16px; width: 190px; height: 2px; background: #334155; transform: rotate(-8deg);"></div>
-        <div style="position: absolute; bottom: 42px; right: 20px; font-size: 11px; font-weight: 900; color: #334155;">d doğrusu</div>
-        <div style="position: absolute; bottom: 6px; right: 10px; font-size: 9px; color: #64748b; font-family: monospace;">Diklik: [PH] ⊥ d (90°)</div>
-      </div>
-    </div>
-
   </div>
 
-  <div style="margin-top: 14px; padding: 8px 12px; background: #f0fdfa; border: 1px solid #ccfbf1; border-radius: 8px; font-size: 10px; color: #0f766e; display: flex; justify-content: space-between; align-items: center;">
-    <span>🎯 <strong>Değerlendirme:</strong> Her istasyon 25 puan değerindedir. Toplam 100 Puan.</span>
+  <!-- BÖLÜM 2: SEMBOLİK TEMSİLLER TABLOSU -->
+  <div style="border: 1.5px solid #2563eb; border-radius: 10px; padding: 10px; margin-bottom: 10px; background: #ffffff;">
+    <div style="font-weight: 900; color: #1d4ed8; font-size: 11px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+      <span>📐 BÖLÜM 2: MATEMATİKSEL DİL & SEMBOLİK GÖSTERİMLER (MAB3, SB3.1)</span>
+      <span style="font-size: 9.5px; background: #eff6ff; color: #2563eb; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(20 Puan)</span>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: left;">
+      <thead>
+        <tr style="background: #eff6ff; border-bottom: 1.5px solid #bfdbfe;">
+          <th style="padding: 4px 6px; border: 1px solid #dbeafe;">Geometrik Kavram</th>
+          <th style="padding: 4px 6px; border: 1px solid #dbeafe;">Görsel / Model Temsili</th>
+          <th style="padding: 4px 6px; border: 1px solid #dbeafe;">Sembolik Gösterim</th>
+          <th style="padding: 4px 6px; border: 1px solid #dbeafe;">Sınır / Uzunluk Durumu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0; font-weight: bold;">Nokta</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">• A</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><code>A, B, C...</code></td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">Boyutu, eni, boyu yoktur.</td>
+        </tr>
+        <tr style="background: #f8fafc;">
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0; font-weight: bold;">Doğru Parçası</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">•———•</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><code>[AB]</code> veya <code>[BA]</code></td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">İki ucu sınırlı, boyu <code>|AB|</code> ölçülür.</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0; font-weight: bold;">Işın</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">•———►</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><code>[AB></code></td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">Başlangıç sınırlı [A], B yönünde sonsuz.</td>
+        </tr>
+        <tr style="background: #f8fafc;">
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0; font-weight: bold;">Doğru</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">◄———►</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><code>AB</code> veya küçük harf <code>d</code></td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">İki ucu da sonsuzdur, uç noktası yoktur.</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0; font-weight: bold;">Açı</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">▲ (İki ışının birleşimi)</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><code>∠ABC</code> veya <code>s(B)</code></td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">Işının dönmesiyle oluşan açıklık derecesi.</td>
+        </tr>
+        <tr style="background: #f8fafc;">
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0; font-weight: bold;">Dikme</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">⊥ (90° dik açı işareti)</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><code>d ⊥ k</code> veya <code>[PH] ⊥ d</code></td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">Doğruya dış noktadan indirilen en kısa yol.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- BÖLÜM 3: DOĞRU / YANLIŞ & ÇÜRÜTME -->
+  <div style="border: 1.5px solid #d97706; border-radius: 10px; padding: 10px; background: #ffffff;">
+    <div style="font-weight: 900; color: #b45309; font-size: 11px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+      <span>⚖️ BÖLÜM 3: DOĞRU (D) / YANLIŞ (Y) VE ÇÜRÜTME İSTASYONU</span>
+      <span style="font-size: 9.5px; background: #fffbeb; color: #b45309; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(15 Puan)</span>
+    </div>
+    <div style="font-size: 10px; line-height: 1.6;">
+      <p style="margin: 2px 0;">( &nbsp; ) 1. Noktanın kalemin ucunun bıraktığı iz gibi küçük de olsa bir alanı veya kalınlığı vardır.</p>
+      <p style="margin: 2px 0;">( &nbsp; ) 2. Bir [AB] doğru parçasının uç noktalarını sınırsızca uzatırsak bir doğru (d) elde ederiz.</p>
+      <p style="margin: 2px 0;">( &nbsp; ) 3. Çember ile daire aynı geometrik şekildir; simit ile madeni para aynı özellikleri gösterir.</p>
+      <p style="margin: 2px 0;">( &nbsp; ) 4. Pergel açıklığını hiç değiştirmeden çizilen iki çemberin yarıçap uzunlukları birbirine eştir.</p>
+      <p style="margin: 2px 0;">( &nbsp; ) 5. Bir doğruya dışındaki noktadan çizilen çizgiler arasında en kısa olanı 90° dikme çizgisidir.</p>
+    </div>
+  </div>
+</div>`
+      },
+      {
+        id: 'p2',
+        pageNumber: 2,
+        backgroundType: 'grid',
+        textContent: `<div style="font-family: system-ui, -apple-system, sans-serif; color: #1e293b;">
+  <div style="text-align: center; border-bottom: 2px solid #7c3aed; padding-bottom: 8px; margin-bottom: 12px; background: linear-gradient(135deg, #f5f3ff, #ede9fe); padding: 10px; border-radius: 12px; border: 1px solid #ddd6fe;">
+    <div style="display: inline-block; background: #6d28d9; color: #ffffff; font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 3px;">
+      GÖRSEL SANATLAR ENTEGRASYONU [D7.1] • MAARİF ESTETİK TASARIM
+    </div>
+    <h2 style="color: #6d28d9; font-size: 16px; font-weight: 900; margin: 0; text-transform: uppercase;">
+      🎨 ETKİNLİK 1 (SAYFA 2): ESTETİK SANAT PANOSU VE PERFORMANS GÖREVİ
+    </h2>
+    <p style="color: #475569; font-size: 10.5px; margin: 3px 0 0 0; font-weight: 600;">
+      Çizgeç, Pergel ve Gönye ile Selçuklu Çinisi, Halı/Kilim Deseni veya Denizci Logosu Oluşturma
+    </p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+    <!-- BÖLÜM 4: GERÇEK YAŞAM MODELLEME -->
+    <div style="border: 1.5px solid #0d9488; border-radius: 10px; padding: 10px; background: #ffffff;">
+      <div style="font-weight: 900; color: #0f766e; font-size: 11px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+        <span>🌍 BÖLÜM 4: GERÇEK YAŞAM EŞLEŞTİRME</span>
+        <span style="font-size: 9.5px; background: #f0fdfa; color: #0d9488; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(15 Puan)</span>
+      </div>
+      <div style="font-size: 10px; line-height: 1.6;">
+        <p style="margin: 2px 0;"><strong>A)</strong> Deniz fenerinden çıkan projektör ışığı: _________________</p>
+        <p style="margin: 2px 0;"><strong>B)</strong> Denizin ufuk çizgisi: _________________</p>
+        <p style="margin: 2px 0;"><strong>C)</strong> İki kule arasına gerilmiş asma köprü halatı: _________________</p>
+        <p style="margin: 2px 0;"><strong>D)</strong> Simit veya bisiklet jantı: _________________</p>
+        <p style="margin: 2px 0;"><strong>E)</strong> Madeni 1 TL veya pizza dilimi: _________________</p>
+      </div>
+    </div>
+
+    <!-- BÖLÜM 5: RUBRİK PUANLAMA KUTUSU -->
+    <div style="border: 1.5px solid #6d28d9; border-radius: 10px; padding: 10px; background: #ffffff;">
+      <div style="font-weight: 900; color: #6d28d9; font-size: 11px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+        <span>📊 ÖZ & AKRAN DEĞERLENDİRME SKORU</span>
+        <span style="font-size: 9.5px; background: #f5f3ff; color: #6d28d9; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(30 Puan)</span>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 9.5px;">
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 3px 0;">1. Çizgeç ve Pergel Doğruluğu:</td>
+          <td style="text-align: right; font-weight: bold;">[ &nbsp; / 10 Puan ]</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 3px 0;">2. Gönye ile Dikme ve Açı Hassasiyeti:</td>
+          <td style="text-align: right; font-weight: bold;">[ &nbsp; / 10 Puan ]</td>
+        </tr>
+        <tr>
+          <td style="padding: 3px 0;">3. Estetik Tasarım & Simetri (D7.1):</td>
+          <td style="text-align: right; font-weight: bold;">[ &nbsp; / 10 Puan ]</td>
+        </tr>
+      </table>
+      <div style="margin-top: 6px; padding: 4px 8px; background: #faf5ff; border: 1px dashed #c084fc; border-radius: 6px; font-size: 9px; color: #581c87;">
+        <strong>Akran Görüşü:</strong> __________________________________________________
+      </div>
+    </div>
+  </div>
+
+  <!-- TASARIM KANVASI (GÖRSEL SANATLAR D7.1) -->
+  <div style="border: 2px solid #7c3aed; border-radius: 12px; background: #ffffff; padding: 12px; position: relative;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #ede9fe; padding-bottom: 6px; margin-bottom: 8px;">
+      <span style="font-size: 11.5px; font-weight: 900; color: #6d28d9; display: flex; align-items: center; gap: 4px;">
+        🎨 PERFORMANS GÖREVİ ÇİZİM KANVASI: ESTETİK DESEN / ÇİNİ MOTİFİ [D7.1]
+      </span>
+      <span style="font-size: 9px; font-family: monospace; color: #6d28d9; background: #f5f3ff; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd6fe;">
+        Pergel, Çizgeç ve Gönye ile Özgün Tasarımınızı Çiziniz
+      </span>
+    </div>
+
+    <!-- Milimetrik Grid Çizim Alanı -->
+    <div style="border: 1.5px dashed #c4b5fd; border-radius: 8px; height: 260px; background: #faf5ff; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 10px;">
+      <div style="display: flex; justify-content: space-between; font-size: 9px; color: #8b5cf6;">
+        <span>• Merkez M1</span>
+        <span>• Tepe Dikmesi H</span>
+        <span>• Merkez M2 (Eş Çember)</span>
+      </div>
+
+      <!-- Çizim İpuçları Su Damgası -->
+      <div style="text-align: center; color: #a78bfa; font-size: 11px; font-weight: bold; opacity: 0.6; pointer-events: none;">
+        <div>⭕ Pergeli M1 noktasına batırıp 3 cm yarıçaplı ana çemberi çizin.</div>
+        <div style="margin-top: 4px;">📐 Gönye ile çembere dış noktadan dikme inip simetri ekseni oluşturun.</div>
+        <div style="margin-top: 4px;">🌟 Çizgeç ile çember yaylarını birleştirerek 8 köşeli Selçuklu Yıldızı motifi türetin.</div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; font-size: 9px; color: #8b5cf6;">
+        <span>Ölçek: 1 kare = 1 cm</span>
+        <span>SDB1.3 Öz Değerlendirme • SDB2.2 Akran Panosu</span>
+        <span>D7.1 Estetik ve Sanat</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 10px; padding: 6px 12px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; font-size: 10px; color: #6d28d9; display: flex; justify-content: space-between; align-items: center;">
+    <span>🎯 <strong>Toplam Puan:</strong> Bölüm 1 (20) + Bölüm 2 (20) + Bölüm 3 (15) + Bölüm 4 (15) + Tasarım/Pano (30) = 100 Puan</span>
     <span style="font-weight: 800; font-family: monospace;">www.maarifakademi.com.tr</span>
   </div>
 </div>`

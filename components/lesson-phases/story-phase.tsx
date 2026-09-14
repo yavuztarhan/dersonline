@@ -58,6 +58,14 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [scene2LighthouseOn, setScene2LighthouseOn] = useState(false);
   const [scene3RulerMeasured, setScene3RulerMeasured] = useState(false);
   const [scene4HorizonExtended, setScene4HorizonExtended] = useState(false);
+  // MAT.5.3.1 Geometry Story Interactive States
+  const [sceneAngleDeg, setSceneAngleDeg] = useState<number>(60);
+  const [sceneCompassDrawn, setSceneCompassDrawn] = useState<boolean>(false);
+  const [sceneCompassStep, setSceneCompassStep] = useState<number>(0);
+  const [sceneDiskMode, setSceneDiskMode] = useState<'circle' | 'disk'>('circle');
+  const [sceneEqualCircleDrawn, setSceneEqualCircleDrawn] = useState<boolean>(false);
+  const [sceneSetSquareDropped, setSceneSetSquareDropped] = useState<boolean>(false);
+  const [sceneArtMotifType, setSceneArtMotifType] = useState<'seljuk-star' | 'tile-cross' | 'maritime-logo'>('seljuk-star');
   const [scene41Tested, setScene41Tested] = useState(false);
   const [scene42Tested, setScene42Tested] = useState(false);
   const [scene43Tested, setScene43Tested] = useState(false);
@@ -475,6 +483,551 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                       </linearGradient>
                     </defs>
                   </svg>
+                )}
+
+                {/* SCENE 4: ANGLE ROTATOR (MAT.5.3.1) */}
+                {currentPage.visualScene.type === 'angle-rotator' && (
+                  <div className="w-full h-full flex flex-col bg-[#090d16] p-3 rounded-2xl">
+                    <svg className="w-full flex-1" viewBox="0 0 400 220">
+                      <rect width="400" height="220" fill="#090d16" />
+                      {/* Grid dots */}
+                      <circle cx="50" cy="50" r="1" fill="#334155" />
+                      <circle cx="150" cy="50" r="1" fill="#334155" />
+                      <circle cx="250" cy="50" r="1" fill="#334155" />
+                      <circle cx="350" cy="50" r="1" fill="#334155" />
+
+                      {/* Vertex B at (130, 160) */}
+                      {(() => {
+                        const vx = 130;
+                        const vy = 160;
+                        const armLen = 140;
+                        const rad = (sceneAngleDeg * Math.PI) / 180;
+                        const cx = vx + armLen * Math.cos(rad);
+                        const cy = vy - armLen * Math.sin(rad);
+
+                        const arcR = 45;
+                        const arcX = vx + arcR * Math.cos(rad);
+                        const arcY = vy - arcR * Math.sin(rad);
+
+                        const isRightAngle = sceneAngleDeg === 90;
+
+                        return (
+                          <g>
+                            {/* Angle Sector Fill */}
+                            <path
+                              d={`M ${vx} ${vy} L ${vx + armLen} ${vy} A ${armLen} ${armLen} 0 0 0 ${cx} ${cy} Z`}
+                              fill="#fde047"
+                              fillOpacity="0.12"
+                            />
+
+                            {/* Base Ray [BA> */}
+                            <line x1={vx} y1={vy} x2={vx + armLen + 20} y2={vy} stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" />
+                            <polygon points={`${vx + armLen + 30},${vy} ${vx + armLen + 18},${vy - 6} ${vx + armLen + 18},${vy + 6}`} fill="#38bdf8" />
+                            <circle cx={vx + 110} cy={vy} r="4" fill="#38bdf8" stroke="#ffffff" strokeWidth="1.5" />
+                            <text fill="#7dd3fc" fontSize="11" fontWeight="bold" x={vx + 110} y={vy + 18} textAnchor="middle">A Kolu</text>
+
+                            {/* Rotating Ray [BC> */}
+                            <line x1={vx} y1={vy} x2={cx + (18 * Math.cos(rad))} y2={cy - (18 * Math.sin(rad))} stroke="#fde047" strokeWidth="4" strokeLinecap="round" />
+                            <polygon
+                              points={`${cx + (25 * Math.cos(rad))},${cy - (25 * Math.sin(rad))} ${cx - (6 * Math.sin(rad))},${cy - (6 * Math.cos(rad))} ${cx + (6 * Math.sin(rad))},${cy + (6 * Math.cos(rad))}`}
+                              fill="#fde047"
+                            />
+                            <circle cx={cx - (25 * Math.cos(rad))} cy={cy + (25 * Math.sin(rad))} r="4" fill="#fde047" stroke="#ffffff" strokeWidth="1.5" />
+                            <text fill="#fde047" fontSize="11" fontWeight="bold" x={cx - (15 * Math.cos(rad))} y={cy + (15 * Math.sin(rad)) - 10} textAnchor="middle">C Kolu</text>
+
+                            {/* Angle Arc or Right Angle Square */}
+                            {isRightAngle ? (
+                              <g>
+                                <rect x={vx} y={vy - 24} width="24" height="24" fill="none" stroke="#f43f5e" strokeWidth="2.5" />
+                                <circle cx={vx + 12} cy={vy - 12} r="2.5" fill="#f43f5e" />
+                              </g>
+                            ) : (
+                              <path
+                                d={`M ${vx + arcR} ${vy} A ${arcR} ${arcR} 0 0 0 ${arcX} ${arcY}`}
+                                fill="none"
+                                stroke="#fde047"
+                                strokeWidth="2.5"
+                                strokeDasharray={sceneAngleDeg > 120 ? '3,3' : 'none'}
+                              />
+                            )}
+
+                            {/* Vertex B Node */}
+                            <circle cx={vx} cy={vy} r="7" fill="#10b396" stroke="#ffffff" strokeWidth="2.5" />
+                            <text fill="#5ee7cc" fontSize="14" fontWeight="900" x={vx - 18} y={vy + 18}>B (Köşe)</text>
+
+                            {/* Degree Badge */}
+                            <g transform={`translate(${vx + 60}, ${vy - 45})`}>
+                              <rect x="-35" y="-14" width="70" height="26" rx="8" fill="#0f172a" stroke={isRightAngle ? '#f43f5e' : '#fde047'} strokeWidth="1.5" />
+                              <text x="0" y="4" textAnchor="middle" fill={isRightAngle ? '#fb7185' : '#fde047'} fontSize="12" fontWeight="900">
+                                {sceneAngleDeg}° {isRightAngle ? '📐 DİK' : sceneAngleDeg < 90 ? 'DAR' : 'GENİŞ'}
+                              </text>
+                            </g>
+
+                            {/* Mathematical Notation */}
+                            <text fill="#94a3b8" fontSize="11" fontWeight="bold" x="380" y="30" textAnchor="end">
+                              Sembol: s(B) = {sceneAngleDeg}° veya ∠ABC
+                            </text>
+                          </g>
+                        );
+                      })()}
+                    </svg>
+
+                    {/* Interactive Angle Controls */}
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => {
+                            setSceneAngleDeg(45);
+                            playSound('click');
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                            sceneAngleDeg === 45 ? 'bg-amber-400 text-slate-900 shadow-sm' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          }`}
+                        >
+                          Dar (45°)
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSceneAngleDeg(90);
+                            playSound('success');
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                            sceneAngleDeg === 90 ? 'bg-rose-500 text-white shadow-sm ring-2 ring-rose-300' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          }`}
+                        >
+                          Dik (90°) 📐
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSceneAngleDeg(135);
+                            playSound('click');
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                            sceneAngleDeg === 135 ? 'bg-indigo-400 text-slate-900 shadow-sm' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          }`}
+                        >
+                          Geniş (135°)
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-1 max-w-[180px]">
+                        <input
+                          type="range"
+                          min="15"
+                          max="165"
+                          value={sceneAngleDeg}
+                          onChange={(e) => setSceneAngleDeg(Number(e.target.value))}
+                          className="w-full accent-amber-400 cursor-pointer"
+                        />
+                        <span className="text-xs font-black text-amber-300 w-9 text-right">{sceneAngleDeg}°</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE 5: COMPASS & CIRCLE (MAT.5.3.1) */}
+                {currentPage.visualScene.type === 'compass-circle' && (
+                  <div className="w-full h-full flex flex-col bg-[#0b1120] p-3 rounded-2xl">
+                    <svg className="w-full flex-1" viewBox="0 0 400 220">
+                      <rect width="400" height="220" fill="#0b1120" />
+
+                      {/* Center Point M */}
+                      <circle cx="200" cy="110" r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
+                      <text fill="#5ee7cc" fontSize="13" fontWeight="900" x="200" y="90" textAnchor="middle">M (Merkez)</text>
+
+                      {/* Compass Circle */}
+                      {sceneCompassDrawn ? (
+                        <g className="animate-in fade-in duration-500">
+                          {/* Circle boundary */}
+                          <circle cx="200" cy="110" r="70" fill="none" stroke="#38bdf8" strokeWidth="3.5" />
+
+                          {/* Diameter Line [AB] (Passing through center M from x=130 to x=270) */}
+                          <line x1="130" y1="110" x2="270" y2="110" stroke="#a855f7" strokeWidth="3" />
+                          <circle cx="130" cy="110" r="4.5" fill="#c084fc" stroke="#ffffff" strokeWidth="1.5" />
+                          <text fill="#e9d5ff" fontSize="11" fontWeight="900" x="116" y="114" textAnchor="end">A</text>
+                          <circle cx="270" cy="110" r="4.5" fill="#c084fc" stroke="#ffffff" strokeWidth="1.5" />
+                          <text fill="#e9d5ff" fontSize="11" fontWeight="900" x="284" y="114" textAnchor="start">B</text>
+
+                          {/* Diameter Badge [AB] */}
+                          <g transform="translate(200, 134)">
+                            <rect x="-85" y="-11" width="170" height="22" rx="6" fill="#1e1035" stroke="#a855f7" strokeWidth="1.2" />
+                            <text x="0" y="4" textAnchor="middle" fill="#d8b4fe" fontSize="10" fontWeight="900">
+                              Çap [AB]: R = 2r = 10 cm
+                            </text>
+                          </g>
+
+                          {/* Dedicated Radius Line [MC] (From center M to boundary point C at 45 deg) */}
+                          <line x1="200" y1="110" x2="249.5" y2="60.5" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4,3" />
+                          <circle cx="249.5" cy="60.5" r="4" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
+                          <text fill="#fbbf24" fontSize="11" fontWeight="900" x="260" y="58">C</text>
+                          <g transform="translate(242, 82)">
+                            <rect x="-26" y="-9" width="52" height="18" rx="4" fill="#0f172a" stroke="#f59e0b" strokeWidth="1" />
+                            <text x="0" y="4" textAnchor="middle" fill="#f59e0b" fontSize="9" fontWeight="900">
+                              r = 5 cm
+                            </text>
+                          </g>
+
+                          {/* Information Badge */}
+                          <g transform="translate(200, 185)">
+                            <rect x="-140" y="-12" width="280" height="24" rx="8" fill="#0284c7" fillOpacity="0.2" stroke="#38bdf8" strokeWidth="1.2" />
+                            <text x="0" y="4" textAnchor="middle" fill="#e0f2fe" fontSize="10" fontWeight="bold">
+                              ⭕ Çap: Merkezden geçen en uzun doğru parçasıdır (R = 2r)
+                            </text>
+                          </g>
+                        </g>
+                      ) : (
+                        /* Unrendered compass hint */
+                        <g className="animate-pulse">
+                          <circle cx="200" cy="110" r="70" fill="none" stroke="#475569" strokeWidth="2" strokeDasharray="6,6" />
+                          <line x1="130" y1="110" x2="270" y2="110" stroke="#64748b" strokeWidth="1.5" strokeDasharray="4,4" />
+                          <circle cx="130" cy="110" r="3" fill="#64748b" />
+                          <circle cx="270" cy="110" r="3" fill="#64748b" />
+                          <text fill="#94a3b8" fontSize="11" fontWeight="bold" x="200" y="145" textAnchor="middle">
+                            Pergel iğnesi M noktasında sabit (r = 5 cm)
+                          </text>
+                        </g>
+                      )}
+
+                      {/* Compass Tool Illustration */}
+                      <g transform="translate(190, 40) rotate(-15)">
+                        {/* Hinge */}
+                        <circle cx="10" cy="10" r="6" fill="#94a3b8" stroke="#334155" strokeWidth="2" />
+                        {/* Metal leg to center M */}
+                        <line x1="10" y1="10" x2="10" y2="70" stroke="#cbd5e1" strokeWidth="3.5" />
+                        <polygon points="10,74 7,66 13,66" fill="#cbd5e1" />
+                        {/* Pencil leg */}
+                        <line x1="10" y1="10" x2="50" y2="60" stroke="#f59e0b" strokeWidth="3.5" />
+                        <polygon points="52,65 46,58 54,58" fill="#1e293b" />
+                      </g>
+                    </svg>
+
+                    {/* Interactive Button */}
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                      <span className="text-xs text-slate-400">
+                        {sceneCompassDrawn ? '✅ Çember inşa edildi: Yarıçap (r) & Çap (R)' : '👉 Pergeli döndürerek çemberi çizin'}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setSceneCompassDrawn(!sceneCompassDrawn);
+                          playSound('success');
+                        }}
+                        className="px-4 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-teal-600/30 transition-all"
+                      >
+                        <span>{sceneCompassDrawn ? 'Yeniden Çiz 🔄' : 'Pergeli Döndür (360°) ⭕'}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE 6: CIRCLE VS DISK & EQUAL CIRCLES (MAT.5.3.1) */}
+                {currentPage.visualScene.type === 'circle-disk-compare' && (
+                  <div className="w-full h-full flex flex-col bg-[#0a0f1d] p-3 rounded-2xl">
+                    <svg className="w-full flex-1" viewBox="0 0 400 220">
+                      <rect width="400" height="220" fill="#0a0f1d" />
+
+                      {/* Left: Circle (Hollow) */}
+                      <g transform="translate(100, 100)">
+                        <circle cx="0" cy="0" r="50" fill="none" stroke="#38bdf8" strokeWidth="4" />
+                        <circle cx="0" cy="0" r="4" fill="#38bdf8" />
+                        <text fill="#38bdf8" fontSize="13" fontWeight="900" x="0" y="70" textAnchor="middle">1. ÇEMBER ⭕</text>
+                        <text fill="#94a3b8" fontSize="10" fontWeight="bold" x="0" y="86" textAnchor="middle">İçi Boş (Simit, Halka)</text>
+                        <line x1="0" y1="0" x2="50" y2="0" stroke="#f59e0b" strokeWidth="2" strokeDasharray="3,2" />
+                        <text fill="#f59e0b" fontSize="9" fontWeight="bold" x="25" y="-5" textAnchor="middle">r = 4 cm</text>
+                      </g>
+
+                      {/* Right: Disk (Filled Region) or Equal Circle */}
+                      <g transform="translate(290, 100)">
+                        {sceneDiskMode === 'circle' ? (
+                          <>
+                            {/* Disk View */}
+                            <circle cx="0" cy="0" r="50" fill="#0284c7" fillOpacity="0.45" stroke="#38bdf8" strokeWidth="4" />
+                            <circle cx="0" cy="0" r="4" fill="#ffffff" />
+                            <text fill="#38bdf8" fontSize="13" fontWeight="900" x="0" y="70" textAnchor="middle">2. DAİRE 🟡</text>
+                            <text fill="#94a3b8" fontSize="10" fontWeight="bold" x="0" y="86" textAnchor="middle">İçi Dolu (Madeni Para, Pizza)</text>
+                            <text fill="#fde047" fontSize="9" fontWeight="bold" x="0" y="4" textAnchor="middle">İç Bölge + Çember</text>
+                          </>
+                        ) : (
+                          <>
+                            {/* Equal Circle View */}
+                            <circle cx="0" cy="0" r="50" fill="none" stroke="#10b396" strokeWidth="4" strokeDasharray={sceneEqualCircleDrawn ? 'none' : '4,4'} />
+                            <circle cx="0" cy="0" r="4" fill="#10b396" />
+                            <text fill="#10b396" fontSize="13" fontWeight="900" x="0" y="70" textAnchor="middle">EŞ ÇEMBER 🔒</text>
+                            <text fill="#5ee7cc" fontSize="10" fontWeight="bold" x="0" y="86" textAnchor="middle">Pergel Açıklığı Kilitli</text>
+                            <line x1="0" y1="0" x2="50" y2="0" stroke="#f59e0b" strokeWidth="2" strokeDasharray="3,2" />
+                            <text fill="#f59e0b" fontSize="9" fontWeight="bold" x="25" y="-5" textAnchor="middle">r2 = 4 cm (Eş!)</text>
+                          </>
+                        )}
+                      </g>
+
+                      {/* Versus / Lock Badge */}
+                      <g transform="translate(195, 100)">
+                        <circle cx="0" cy="0" r="16" fill="#1e293b" stroke="#475569" strokeWidth="1.5" />
+                        <text x="0" y="5" textAnchor="middle" fill="#fde047" fontSize="11" fontWeight="900">
+                          {sceneDiskMode === 'circle' ? 'VS' : '='}
+                        </text>
+                      </g>
+                    </svg>
+
+                    {/* Mode Toggle Controls */}
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                      <span className="text-xs text-slate-300 font-medium">
+                        {sceneDiskMode === 'circle'
+                          ? '💡 Çember çizgisel sınırdır; Daire iç bölgeyle birlikte alandır.'
+                          : '🔒 Pergel açıklığı değişmeden çizilen tüm çemberler eştir (r1 = r2).'}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setSceneDiskMode(sceneDiskMode === 'circle' ? 'disk' : 'circle');
+                            setSceneEqualCircleDrawn(true);
+                            playSound('click');
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                        >
+                          <span>{sceneDiskMode === 'circle' ? 'Eş Çemberleri Karşılaştır 🔒' : 'Çember vs Daire Gör ⭕'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE 7: SET SQUARE & PERPENDICULAR (MAT.5.3.1) */}
+                {currentPage.visualScene.type === 'set-square-drop' && (
+                  <div className="w-full h-full flex flex-col bg-[#090d16] p-3 rounded-2xl">
+                    <svg className="w-full flex-1" viewBox="0 0 400 220">
+                      <rect width="400" height="220" fill="#090d16" />
+
+                      {/* Sea & Shore Line d */}
+                      <rect x="0" y="170" width="400" height="50" fill="#0369a1" opacity="0.35" />
+                      <line x1="30" y1="170" x2="370" y2="170" stroke="#38bdf8" strokeWidth="4" />
+                      <polygon points="20,170 32,164 32,176" fill="#38bdf8" />
+                      <polygon points="380,170 368,164 368,176" fill="#38bdf8" />
+                      <text fill="#7dd3fc" fontSize="12" fontWeight="900" x="375" y="195" textAnchor="end">Kıyı d Doğrusu ↔️</text>
+
+                      {/* External Point P (Ship at sea) */}
+                      <circle cx="200" cy="50" r="7" fill="#f59e0b" stroke="#ffffff" strokeWidth="2.5" />
+                      <text fill="#fde047" fontSize="13" fontWeight="900" x="200" y="36" textAnchor="middle">P (Dış Nokta / Gemi)</text>
+
+                      {/* Slanted lines (longer paths) */}
+                      <line x1="200" y1="50" x2="80" y2="170" stroke="#64748b" strokeWidth="2" strokeDasharray="4,4" />
+                      <circle cx="80" cy="170" r="4" fill="#64748b" />
+                      <text fill="#94a3b8" fontSize="10" fontWeight="bold" x="120" y="105">Eğik Yol: 26 m</text>
+
+                      <line x1="200" y1="50" x2="320" y2="170" stroke="#64748b" strokeWidth="2" strokeDasharray="4,4" />
+                      <circle cx="320" cy="170" r="4" fill="#64748b" />
+                      <text fill="#94a3b8" fontSize="10" fontWeight="bold" x="270" y="105">Eğik Yol: 25 m</text>
+
+                      {/* Dropped Perpendicular [PH] */}
+                      {sceneSetSquareDropped ? (
+                        <g className="animate-in fade-in duration-300">
+                          {/* Set Square Graphic (Gönye) */}
+                          <polygon points="200,170 200,90 260,170" fill="#f59e0b" fillOpacity="0.25" stroke="#f59e0b" strokeWidth="2" />
+                          <circle cx="218" cy="150" r="8" fill="#0f172a" opacity="0.6" />
+
+                          {/* Perpendicular Line */}
+                          <line x1="200" y1="50" x2="200" y2="170" stroke="#f43f5e" strokeWidth="4.5" strokeLinecap="round" />
+                          <circle cx="200" cy="170" r="6" fill="#f43f5e" stroke="#ffffff" strokeWidth="2" />
+                          <text fill="#f43f5e" fontSize="13" fontWeight="900" x="200" y="192" textAnchor="middle">H (Dikme Ayağı)</text>
+
+                          {/* Right Angle Symbol at H */}
+                          <rect x="200" y="152" width="18" height="18" fill="none" stroke="#f43f5e" strokeWidth="2.5" />
+                          <circle cx="209" cy="161" r="2" fill="#f43f5e" />
+
+                          {/* Shortest Distance Tag */}
+                          <g transform="translate(195, 95)">
+                            <rect x="-85" y="-12" width="80" height="24" rx="6" fill="#0f172a" stroke="#f43f5e" strokeWidth="1.5" />
+                            <text x="-45" y="4" textAnchor="middle" fill="#fb7185" fontSize="10" fontWeight="900">
+                              |PH| = 15 m (EN KISA!)
+                            </text>
+                          </g>
+
+                          {/* Perpendicular Notation */}
+                          <g transform="translate(290, 45)">
+                            <rect x="-40" y="-12" width="80" height="24" rx="6" fill="#0f172a" stroke="#38bdf8" strokeWidth="1.2" />
+                            <text x="0" y="4" textAnchor="middle" fill="#38bdf8" fontSize="11" fontWeight="bold">
+                              [PH] ⊥ d
+                            </text>
+                          </g>
+                        </g>
+                      ) : (
+                        <g
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setSceneSetSquareDropped(true);
+                            playSound('success');
+                          }}
+                        >
+                          <circle cx="200" cy="110" r="26" fill="#f43f5e" opacity="0.2" className="animate-ping" />
+                          <rect x="140" y="95" width="120" height="36" rx="10" fill="#f43f5e" />
+                          <text fill="#ffffff" fontSize="11" fontWeight="900" x="200" y="117" textAnchor="middle">
+                            Gönyeyi Yerleştir 📐
+                          </text>
+                        </g>
+                      )}
+                    </svg>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                      <span className="text-xs text-slate-300">
+                        {sceneSetSquareDropped
+                          ? '🎯 Kanıt: Bir noktadan doğruya inilen dikme (90°) daima en kısa yoldur!'
+                          : '👉 Gönyeyi oturtarak kıyıya en kısa doğru parçasını indirin.'}
+                      </span>
+                      {sceneSetSquareDropped && (
+                        <button
+                          onClick={() => {
+                            setSceneSetSquareDropped(false);
+                            playSound('click');
+                          }}
+                          className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold"
+                        >
+                          Tekrar Dene 🔄
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* SCENE 8: AESTHETIC ART PANEL [D7.1] (MAT.5.3.1) */}
+                {currentPage.visualScene.type === 'aesthetic-art-panel' && (
+                  <div className="w-full h-full flex flex-col bg-[#0d1322] p-3 rounded-2xl">
+                    <svg className="w-full flex-1" viewBox="0 0 400 220">
+                      <rect width="400" height="220" fill="#0d1322" />
+
+                      {/* Seljuk Star Motif */}
+                      {sceneArtMotifType === 'seljuk-star' && (
+                        <g transform="translate(200, 110)">
+                          {/* Concentric Guide Circles */}
+                          <circle cx="0" cy="0" r="75" fill="none" stroke="#1e293b" strokeWidth="1" strokeDasharray="3,3" />
+                          <circle cx="0" cy="0" r="55" fill="none" stroke="#334155" strokeWidth="1" />
+                          <circle cx="0" cy="0" r="28" fill="#042f2e" stroke="#10b396" strokeWidth="2" />
+
+                          {/* 8-Pointed Star (Two Intersecting Squares rotated 45 deg) */}
+                          <rect x="-42" y="-42" width="84" height="84" fill="none" stroke="#f59e0b" strokeWidth="3" rx="2" />
+                          <rect x="-42" y="-42" width="84" height="84" fill="none" stroke="#10b396" strokeWidth="3" rx="2" transform="rotate(45)" />
+
+                          {/* Center Motif */}
+                          <polygon points="0,-18 13,-13 18,0 13,13 0,18 -13,13 -18,0 -13,-13" fill="#fde047" opacity="0.8" />
+                          <circle cx="0" cy="0" r="5" fill="#0f172a" stroke="#ffffff" strokeWidth="1.5" />
+
+                          {/* Ray Spokes */}
+                          {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+                            <line
+                              key={deg}
+                              x1="0"
+                              y1="0"
+                              x2={75 * Math.cos((deg * Math.PI) / 180)}
+                              y2={75 * Math.sin((deg * Math.PI) / 180)}
+                              stroke="#0284c7"
+                              strokeWidth="1.5"
+                              strokeDasharray="2,2"
+                            />
+                          ))}
+
+                          <text fill="#fde047" fontSize="11" fontWeight="900" x="0" y="95" textAnchor="middle">
+                            8 Köşeli Selçuklu Geometrik Yıldızı
+                          </text>
+                        </g>
+                      )}
+
+                      {/* Tile Cross Motif */}
+                      {sceneArtMotifType === 'tile-cross' && (
+                        <g transform="translate(200, 110)">
+                          {/* 4 Intersecting Pergel Circles */}
+                          <circle cx="-35" cy="0" r="45" fill="#0369a1" fillOpacity="0.2" stroke="#38bdf8" strokeWidth="2.5" />
+                          <circle cx="35" cy="0" r="45" fill="#0369a1" fillOpacity="0.2" stroke="#38bdf8" strokeWidth="2.5" />
+                          <circle cx="0" cy="-35" r="45" fill="#0f766e" fillOpacity="0.2" stroke="#14b8a6" strokeWidth="2.5" />
+                          <circle cx="0" cy="35" r="45" fill="#0f766e" fillOpacity="0.2" stroke="#14b8a6" strokeWidth="2.5" />
+
+                          {/* Orthogonal Symmetry Axes (Dikmeler) */}
+                          <line x1="-85" y1="0" x2="85" y2="0" stroke="#fde047" strokeWidth="2" strokeDasharray="4,2" />
+                          <line x1="0" y1="-85" x2="0" y2="85" stroke="#fde047" strokeWidth="2" strokeDasharray="4,2" />
+
+                          {/* Central Rosette */}
+                          <circle cx="0" cy="0" r="14" fill="#d97706" stroke="#ffffff" strokeWidth="2" />
+                          <text fill="#ffffff" fontSize="9" fontWeight="bold" x="0" y="3" textAnchor="middle">M</text>
+
+                          <text fill="#5ee7cc" fontSize="11" fontWeight="900" x="0" y="95" textAnchor="middle">
+                            Geleneksel Geometrik Çini & Kemer Deseni
+                          </text>
+                        </g>
+                      )}
+
+                      {/* Maritime Logo Motif */}
+                      {sceneArtMotifType === 'maritime-logo' && (
+                        <g transform="translate(200, 110)">
+                          {/* Outer Dial Circle */}
+                          <circle cx="0" cy="0" r="68" fill="none" stroke="#e2e8f0" strokeWidth="3" />
+                          <circle cx="0" cy="0" r="62" fill="none" stroke="#f59e0b" strokeWidth="1" strokeDasharray="3,3" />
+
+                          {/* 4 Cardinal Rays (North, South, East, West) */}
+                          <polygon points="0,-68 -9,-14 0,0" fill="#dc2626" />
+                          <polygon points="0,-68 9,-14 0,0" fill="#991b1b" />
+                          <polygon points="0,68 -9,14 0,0" fill="#cbd5e1" />
+                          <polygon points="0,68 9,14 0,0" fill="#64748b" />
+                          <polygon points="68,0 14,-9 0,0" fill="#cbd5e1" />
+                          <polygon points="68,0 14,9 0,0" fill="#64748b" />
+                          <polygon points="-68,0 -14,-9 0,0" fill="#cbd5e1" />
+                          <polygon points="-68,0 -14,9 0,0" fill="#64748b" />
+
+                          {/* Center Pivot */}
+                          <circle cx="0" cy="0" r="9" fill="#0f172a" stroke="#fde047" strokeWidth="2.5" />
+
+                          <text fill="#fde047" fontSize="11" fontWeight="900" x="0" y="95" textAnchor="middle">
+                            Denizci Pusula & Fener Logosu (D7.1)
+                          </text>
+                        </g>
+                      )}
+                    </svg>
+
+                    {/* Motif Switcher Tabs */}
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => {
+                            setSceneArtMotifType('seljuk-star');
+                            playSound('click');
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                            sceneArtMotifType === 'seljuk-star'
+                              ? 'bg-amber-400 text-slate-900 shadow-sm'
+                              : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          }`}
+                        >
+                          Selçuklu Yıldızı 🌟
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSceneArtMotifType('tile-cross');
+                            playSound('click');
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                            sceneArtMotifType === 'tile-cross'
+                              ? 'bg-teal-400 text-slate-900 shadow-sm'
+                              : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          }`}
+                        >
+                          Çini Deseni 🏺
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSceneArtMotifType('maritime-logo');
+                            playSound('click');
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                            sceneArtMotifType === 'maritime-logo'
+                              ? 'bg-rose-400 text-slate-900 shadow-sm'
+                              : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          }`}
+                        >
+                          Pusula Logosu 🧭
+                        </button>
+                      </div>
+
+                      <span className="text-[11px] font-extrabold text-indigo-300 bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-700/50">
+                        Sanat Panosu [D7.1]
+                      </span>
+                    </div>
+                  </div>
                 )}
 
                 {/* SCENE: SELIMIYE PLAN (MAT.5.3.2) */}
@@ -4716,6 +5269,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   'lighthouse-ray',
                   'bridge-segment',
                   'horizon-line',
+                  'angle-rotator',
+                  'compass-circle',
+                  'circle-disk-compare',
+                  'set-square-drop',
+                  'aesthetic-art-panel',
                   'selimiye-plan',
                   'ray-angle',
                   'perpendicular-parallel',

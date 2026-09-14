@@ -47,175 +47,261 @@ export const CURRICULUM_DATA: Grade[] = [
                     durationMinutes: 40,
                     pedagogyGuide: {
                       maarifSDBs: [
-                        'SDB1.2: Öz Düzenleme (Kendi çizimlerini kontrol etme ve hatalarını düzeltme)',
-                        'SDB2.2: İş Birliği ve Akran Öğrenmesi (Grup çizim etkinliklerinde fikir paylaşımı)',
-                        'SDB3.3: Eleştirel ve Geometrik Düşünme (Uzamsal modelleri sembolik dile aktarma)'
+                        'SDB1.2: Öz Düzenleme (Kendi çizimlerini, pergel açıklığını ve dikme açılarını kontrol etme)',
+                        'SDB1.3: Kendini Değerlendirme (Kendi geometrik tasarımları ve panodaki ürünleri hakkında yargıda bulunma)',
+                        'SDB2.2: İş Birliği ve Akran Değerlendirme (Akran değerlendirme formu ile arkadaşının çizimlerini ve estetik panosunu inceleme)',
+                        'SDB3.3: Eleştirel ve Geometrik Düşünme (Açı dönme hareketini, pergel iziyle çemberi ve en kısa yol olarak dikmeyi kanıtlama)'
                       ],
                       processComponents: [
-                        'SB1.1: Günlük Hayat Durumlarını Geometrik Olarak Anlamlandırma',
-                        'SB2.1: Nokta, Doğru, Doğru Parçası ve Işın Modellerini Temsil Etme',
-                        'SB3.2: Sembolik ve Görsel Temsiller Arasında Geçiş Yapma'
+                        'SB1.1: İki nokta arasında aynı hizada işaretlenen noktaların doğru parçasını oluşturduğunu keşfetme',
+                        'SB1.2: Ölçüsüz cetvel (çizgeç), pergel ve gönye araçlarını uygun geometrik inşalarda kullanma (OB2)',
+                        'SB2.1: Bir ışının başlangıç noktası etrafında dönmesiyle açıyı dinamik olarak modelleme',
+                        'SB2.2: Bir noktaya eşit uzaklıktaki noktaların pergelin iz bırakmasıyla çember oluşturduğunu fark etme ve yarıçapları karşılaştırma',
+                        'SB2.3: Bir doğruya dışındaki noktadan çizilebilecek en kısa çizginin dikme olduğunu gönye ile ortaya koyma ve düzlem yüzeyini tanıma',
+                        'SB3.1: Sembolik gösterimleri (MAB3) ve matematiksel dili hatasız kullanma ([AB], [AB>, AB, d, s(B), d ⊥ k, |AB|)',
+                        'SB3.2: Görsel Sanatlar ile ilişkilendirerek çember ve doğrulardan oluşan estetik tasarım (logo, çini, kilim) panosu hazırlama (D7.1)'
                       ],
                       learningGoals: [
-                        'Noktanın boyutu olmadığını ve konum belirttiğini fark eder.',
-                        'Doğrunun iki ucu sonsuza giden bir çizgi modeli olduğunu kavrar.',
-                        'Doğru parçasının iki ucunun sınırlı olduğunu ve uzunluğunun ölçülebildiğini açıklar.',
-                        'Işının bir ucu kapalı, diğer ucu sonsuza giden ışık hüzmesi modeli olduğunu sembolle gösterir ([AB veya AB şeklinde).'
+                        'Noktanın boyutu olmadığını, iki nokta arasında aynı hizada işaretlenen noktaların doğru parçasını oluşturduğunu ve ölçüsüz cetvelle (çizgeç) çizildiğini açıklar.',
+                        'Doğru parçasının uç noktaları uzatıldığında sınıra ulaşılamayacağını tartışarak ışın ve doğru modellerini oluşturur; küçük harfle (d doğrusu) adlandırır.',
+                        'Aynı noktadan çıkan iki ışının veya bir ışının başlangıç noktası etrafında dönmesinin açı oluşturduğunu dinamik olarak gösterir.',
+                        'Bir noktaya eşit uzaklıktaki noktaların pergel yardımıyla iz bırakarak çember oluşturduğunu fark eder; merkez, yarıçap (r) ve çap (R) elemanlarını belirler.',
+                        'Çember ile daire arasındaki ilişkiyi kurar; pergel açıklığını değiştirmeden eş yarıçaplı çemberler çizer.',
+                        'Bir doğruya dışındaki noktadan çizilebilecek en kısa doğru parçasının dikme olduğunu gönye yardımıyla inşa eder; dik açıyı ve düzlem yüzeyini tanımlar.',
+                        'Nokta, doğru, doğru parçası, ışın, açı, çember ve dikme çizimleriyle estetik tasarım (çini, logo, halı/kilim) panosu hazırlar; öz ve akran değerlendirme yapar.'
                       ],
                       teacherTips: [
-                        'Akıllı tahtada önce lazer pointer / fener yardımıyla ışın modelini somutlaştırın.',
-                        'Öğrencilere cetvel ile doğru parçasını ölçtürün, ardından "Neden doğrunun uzunluğu ölçülemez?" sorusu ile tartışma başlatın.',
-                        'Köşeli parantez [ sembolünün "o ucun kapalı / durak noktası" olduğunu görsel analojilerle pekiştirin.'
+                        'Ölçüsüz cetveli (çizgeç) sayı okumaktan ziyade düz çizgi çekme ve iki noktayı bağlama aracı olarak kullandırınız (OB2).',
+                        'Açıyı sabit bir resim yerine ışının başlangıç noktasına göre dönme hareketi olarak dinamik canlandırınız.',
+                        'Pergeli "bir noktaya eşit uzaklıktaki tüm noktaların izini süren" keşif aracı olarak deneyimletiniz; pergel açıklığı bozulmadan çizilen çemberlerin eşliğini kıyaslatınız.',
+                        'Doğruya dışındaki noktadan eğik ve dik çizgiler çizdirerek en kısa mesafenin 90° dikme olduğunu gönye ile keşfettiriniz.',
+                        'Görsel sanatlar ile disiplinlerarası bağ kurarak öğrencilerin çini/kilim/logo desenlerini sınıfta panoya asmasını ve SDB1.3 / SDB2.2 formlarıyla değerlendirmesini sağlayınız (D7.1).'
                       ],
                       misconceptions: [
                         'Doğru parçasını cetvelle çizip üzerine ok koyarak doğru ile karıştırma.',
                         'Işının başlangıç noktasının önemsiz olduğunu düşünerek sembolü ters yazma (Örn: Başlangıcı A olan ışına BA yazmak).',
+                        'Çember ile daireyi aynı sanmak (çember sadece çevre çizgisidir, daire ise içi dolu düzlemsel bölgedir).',
+                        'Bir doğruya dışındaki noktadan birden fazla dikme çizilebileceğini veya en kısa yolun eğik çizgi olabileceğini zannetmek.',
                         'Noktanın bir kalınlığı veya alanı olduğunu zannetme.'
                       ],
                       keyQuestions: [
-                        'Sonsuzluğa giden bir tren rayı ile iki istasyon arasındaki ray arasında ne fark vardır?',
-                        'Bir fenerden çıkan ışık demeti evrende nereye kadar gider? Onu nasıl modelleriz?'
+                        'İki nokta arasında cetvel kullanmadan dümdüz noktalar işaretlesek ne elde ederiz?',
+                        'Bir ışını başlangıç noktası etrafında döndürdüğümüzde oluşan açıklığa ne ad verilir?',
+                        'Bir noktaya hep aynı mesafede (5 cm) duran noktaların hepsini birleştirirsek hangi şekil doğar? Bunu tek seferde çizen araç nedir?',
+                        'Bir nehirden karşı kıyıya en kısa yoldan geçmek için kıyıya nasıl bir açıyla yönelmeliyiz?'
                       ]
                     },
                     phases: {
                       story: {
-                        title: 'Kutup Yıldızı ve Deniz Feneri Macerası',
+                        title: 'Mimar Sinan’ın İzinde: Kutup Yıldızı, Çizgeç ve Pergel Macerası',
                         character: {
                           name: 'Kaptan Bilge & Mimar Defne',
-                          role: 'Gezgin Matematikçiler',
+                          role: 'Maarif Geometri Kaşifleri',
                           avatar: '🧭'
                         },
-                        scenario: 'Kaptan Bilge, fırtınalı bir gecede gemisini güvenli limana ulaştırmak için sahil fenerinin yaydığı ışık hüzmesini takip ediyor. Mimar Defne ise liman ile fener kulesi arasına sağlam bir köprü kirişi inşa etmeye çalışıyor.',
-                        realLifeConnection: 'Fenerin ampulünden çıkıp sonsuz karanlığa doğru uzanan ışık bir IŞIN modelidir. İki iskele arasına döşenen sabit demir köprü bir DOĞRU PARÇASI modelidir. Ufuk çizgisi ise gözümüzün alabildiğine iki yöne uzanan bir DOĞRU modelidir.',
-                        reflectionQuestion: 'Sizce fenerden çıkan ışığın uzunluğunu cetvelle ölçebilir miyiz? Peki köprü kirişini ölçebilir miyiz?',
-                        keyTakeaway: 'Nokta bir başlangıçtır, doğru iki yöne sonsuzdur, doğru parçası iki uçtan sınırlıdır, ışın ise tek yönde sonsuza akar.',
+                        scenario: 'Kaptan Bilge ve Mimar Defne, fırtınalı denizlerden tarihi bir liman kentine ulaşıyor. Bir yandan deniz fenerinin ışıkları ve köprü kirişleriyle şehri yeniden inşa ederken; diğer yandan fenerin dönen ışığıyla açıları, pergelin büyülü iziyle çemberleri ve gönyenin dikliğiyle en sağlam temelleri kuruyorlar.',
+                        realLifeConnection: 'Fenerin ampulü bir NOKTA, fenerden yayılan tek yönlü ışık bir IŞIN, fener kafasının dönmesi bir AÇI, köprü kirişi bir DOĞRU PARÇASI, ufuk çizgisi bir DOĞRU, fener kulesinin tabanındaki çeşme havuzu bir ÇEMBER/DAİRE, kulenin yere tam dik yükselmesi ise bir DİKME modelidir.',
+                        reflectionQuestion: 'Bir noktaya hep eşit uzaklıkta kalan noktaları cetvelle tek tek işaretlemek mi kolaydır, yoksa pergelin ayağını sabitleyip döndürmek mi? Peki bir kıyıya en kısa mesafeden ulaşmak için neden tam 90° dik açıyla gitmeliyiz?',
+                        keyTakeaway: 'Nokta konumdur, Çizgeç mesafedir, Doğru sınırsızlıktır, Açı dönme hareketidir, Çember eşit uzaklığın izidir, Dikme ise en kısa mesafedir.',
                         pages: [
                           {
                             id: 'p-1',
                             pageNumber: 1,
-                            chapterTitle: '1. Bölüm: Haritadaki İşaret',
-                            conceptTitle: 'Nokta Kavramı',
+                            chapterTitle: '1. Bölüm: Haritadaki İşaret ve İki Noktanın Sırrı',
+                            conceptTitle: 'Nokta Kavramı & Boyutsuzluk',
                             conceptBadge: 'Nokta (•)',
                             symbolicCode: 'A, B, C...',
-                            narrativeText: 'Karanlık ve fırtınalı bir gecede Kaptan Bilge, gemisini dev dalgalardan korumak için haritasını açtı. Kaleminin ucuyla haritada sığınılacak limanın tam yerini işaretledi.',
+                            narrativeText: 'Karanlık ve fırtınalı bir gecede Kaptan Bilge, gemisini dev dalgalardan korumak için eski deniz haritasını açtı. Kaleminin sivri ucuyla haritada sığınılacak güvenli limanın yerini işaretledi.',
                             characterDialogue: {
                               speaker: 'Kaptan Bilge',
                               text: 'Haritada işaretlediğim bu küçük iz, sadece bir konumu gösterir. Kalınlığı, eni ya da boyu yoktur; burası bizim başlangıç Noktamızdır!'
                             },
                             visualScene: {
                               type: 'point-map',
-                              caption: 'Harita üzerindeki A Noktası: Konum belirtir, boyutu yoktur.'
+                              caption: 'Harita üzerindeki A ve B Noktaları: Sadece konum belirtir, boyutları yoktur.'
                             },
                             interactiveAction: {
-                              prompt: 'Haritadaki liman iskelesine tıklayarak A Noktasını işaretleyin!',
-                              actionLabel: 'Haritada Noktayı İşaretle (•)',
-                              feedbackRevealed: 'Harika! A Noktası belirlendi. Nokta sadece konum belirtir ve büyük harfle isimlendirilir.'
+                              prompt: 'Haritada iki liman iskelesine dokunarak A ve B noktalarını işaretleyin!',
+                              actionLabel: 'Haritada Noktaları Belirle (•)',
+                              feedbackRevealed: 'A ve B Noktaları belirlendi! Noktaların alanı veya boyutu yoktur, büyük harflerle adlandırılır.'
                             },
-                            mathTakeaway: 'Nokta: Boyutu (eni, boyu, derinliği) olmayan, uzayda veya düzlemde tam bir konum belirten geometrik yapıdır.'
+                            mathTakeaway: 'Nokta: Boyutu (eni, boyu, derinliği) olmayan, uzayda veya düzlemde tam bir konum belirten temel geometrik yapıdır.'
                           },
                           {
                             id: 'p-2',
                             pageNumber: 2,
-                            chapterTitle: '2. Bölüm: Karanlığı Yaran Işık',
-                            conceptTitle: 'Işın Modeli',
-                            conceptBadge: 'Işın [AB',
-                            symbolicCode: '[AB veya [AB>',
-                            narrativeText: 'Kaptan rotasını belirlerken uzaktaki sahil fenerinin dev ampulü yandı. Fenerin içindeki lambadan çıkan güçlü ışık demeti, gökyüzünde sonsuzluğa doğru kesintisiz ilerledi.',
+                            chapterTitle: '2. Bölüm: Çizgecin İzi: Doğru Parçası [AB]',
+                            conceptTitle: 'Ölçüsüz Cetvel (Çizgeç) & Doğru Parçası',
+                            conceptBadge: 'Doğru Parçası [AB]',
+                            symbolicCode: '[AB] veya [BA]',
+                            narrativeText: 'Mimar Defne, limandaki iki taş sütun (A ve B) arasında aynı hizada yan yana sonsuz sayıda nokta olduğunu fark etti. Ölçüsüz cetvelini (çizgeç) alarak bu iki nokta arasındaki çizgiyi çekti.',
                             characterDialogue: {
-                              speaker: 'Kaptan Bilge',
-                              text: 'Bakın! Işığın başladığı yer fener kulesidir (Başlangıç Noktası [A]). Ama ışığın sonu yoktur, uzay boşluğunda sonsuza doğru akar!'
+                              speaker: 'Mimar Defne',
+                              text: 'İki nokta arasında aynı hizada dizilen tüm bu noktalar birleştiğinde ortaya Doğru Parçası çıkar! İki ucu da sınırlandırıldığı için cetvelle tam boyu |AB| = 24 m olarak ölçülebilir.'
                             },
                             visualScene: {
-                              type: 'lighthouse-ray',
-                              caption: 'Fener lambasından çıkan ışık hüzmesi bir IŞIN [AB modelidir.'
+                              type: 'bridge-segment',
+                              caption: 'İki nokta arasına çekilen düz çizgi bir DOĞRU PARÇASI [AB] modelidir.'
                             },
                             interactiveAction: {
-                              prompt: 'Feneri açarak ışık huzmesini karanlığa doğru fırlatın!',
-                              actionLabel: 'Fenerin Işığını Aç 🔦',
-                              feedbackRevealed: 'Işın [AB oluşturuldu! Başlangıç noktası kapalı [A], diğer ucu sonsuza doğru giden oktur.'
+                              prompt: 'Çizgeci (ölçüsüz cetveli) kullanarak A ve B noktalarını tek bir hatla birleştirin!',
+                              actionLabel: 'Doğru Parçasını Çiz 📏',
+                              feedbackRevealed: 'Doğru Parçası [AB] tamamlandı! Başlangıcı da bitişi de kapalıdır [A ve B], uzunluğu kesinlikle ölçülebilir.'
                             },
-                            mathTakeaway: 'Işın: Bir ucu sabit ve kapalı bir başlangıç noktasına sahip, diğer ucu ise bir yönde sınırsızca uzayan çizgi modelidir.'
+                            mathTakeaway: 'Doğru Parçası: İki noktayı aynı hizada birleştiren, iki ucu da sınırlı olan ve uzunluğu ölçülebilen düz çizgidir. Sembolü: [AB] veya [BA], uzunluğu: |AB|.'
                           },
                           {
                             id: 'p-3',
                             pageNumber: 3,
-                            chapterTitle: '3. Bölüm: İki Kıyı Arasındaki Köprü',
-                            conceptTitle: 'Doğru Parçası Modeli',
-                            conceptBadge: 'Doğru Parçası [AB]',
-                            symbolicCode: '[AB] veya [BA]',
-                            narrativeText: 'Liman güvenliğe kavuştuğunda Mimar Defne sabahın ilk ışıklarıyla işe koyuldu. Liman iskelesi ile fener kulesi arasına 24 metrelik gergin bir çelik köprü kirişi yerleştirdi.',
+                            chapterTitle: '3. Bölüm: Sonsuza Uzanan Çizgiler: Işın ve d Doğrusu',
+                            conceptTitle: 'Işın [AB> ve Doğru AB (d)',
+                            conceptBadge: 'Işın [AB> • Doğru d',
+                            symbolicCode: '[AB> ve AB (veya d)',
+                            narrativeText: 'Mimar Defne sordu: "Peki bu çizginin uçlarından aynı hizada noktalar koymaya devam edersek ne olur?" Kaptan feneri açtı: Fenerden çıkan ışık tek yönde sonsuza aktı (Işın). Ufuk çizgisine baktıklarında ise çizgi her iki yönde de sınırsız uzadı (Doğru).',
                             characterDialogue: {
-                              speaker: 'Mimar Defne',
-                              text: 'Bu köprü kirişinin başlangıcı da bitişi de sabittir. İki ucu da sınırlandırılmış olduğu için uzunluğu metre ile tam olarak ölçülebilir!'
+                              speaker: 'Kaptan & Mimar',
+                              text: 'Işının başlangıç noktası vardır ama sonu yoktur [A\'dan sonsuza. Doğrunun ise hiçbir uç noktası yoktur, iki uca da sonsuza gider ve küçük "d" harfiyle de gösterilebilir!'
                             },
                             visualScene: {
-                              type: 'bridge-segment',
-                              caption: 'İki sütun arasına gerilen çelik kiriş bir DOĞRU PARÇASI [AB] modelidir.'
+                              type: 'lighthouse-ray',
+                              caption: 'Fener ışığı tek yöne giden IŞIN [AB>, ufuk çizgisi ise çift yöne uzanan DOĞRU (d) modelidir.'
                             },
                             interactiveAction: {
-                              prompt: 'Cetvel ile iki sütun arasındaki köprü kirişini ölçün!',
-                              actionLabel: 'Köprüyü Cetvelle Ölç 📏',
-                              feedbackRevealed: 'Ölçüm tamamlandı: 24 metre! Her iki ucu da kapalı [A ve B] olduğu için boyu tam hesaplanabilir.'
+                              prompt: 'Çizginin uçlarını uzatarak tek uçlu ışın ve çift uçlu d doğrusunu keşfedin!',
+                              actionLabel: 'Sonsuzluk Oklarını Çek ↔️',
+                              feedbackRevealed: 'Işın [AB> ve d Doğrusu oluşturuldu! Doğrunun uç noktası yoktur, ışının ise başlangıç haricinde uç noktası bulunmaz.'
                             },
-                            mathTakeaway: 'Doğru Parçası: İki ucu da sınırlı olan, üzerinde sonsuz nokta barındıran ve uzunluğu kesinlikle ölçülebilen düz çizgidir.'
+                            mathTakeaway: 'Işın: Başlangıcı sabit, diğer ucu sonsuza giden modeldir ([AB>). Doğru: İki yönden de sınırsız uzayan, uç noktası olmayan düz çizgidir (AB veya d).'
                           },
                           {
                             id: 'p-4',
                             pageNumber: 4,
-                            chapterTitle: '4. Bölüm: Sonsuz Ufuk Çizgisi',
-                            conceptTitle: 'Doğru Modeli',
-                            conceptBadge: 'Doğru AB',
-                            symbolicCode: 'AB veya d',
-                            narrativeText: 'Güneş tamamen doğduğunda deniz ve gökyüzü buluştu. Kaptan Bilge ve Mimar Defne, doğudan batıya iki yönde de sınırsızca uzanan ufuk çizgisine hayranlıkla baktılar.',
+                            chapterTitle: '4. Bölüm: Fenerin Dönüşü ve Açının Doğuşu',
+                            conceptTitle: 'Dinamik Dönme ve Açı Kavramı',
+                            conceptBadge: 'Açı (∠ABC)',
+                            symbolicCode: 'ABC veya s(B)',
+                            narrativeText: 'Sahil fenerinin dev projektörü sabit bir eksen etrafında dönmeye başladı. Kaptan Bilge, aynı noktadan çıkan iki farklı ışın arasındaki açıklığın fener döndükçe büyüyüp küçüldüğünü fark etti.',
                             characterDialogue: {
-                              speaker: 'Kaptan & Mimar',
-                              text: 'Ufuk çizgisi gibi bir model düşünün; ne başında bir duvar var ne de sonunda. İki yönden de sonsuza dek devam eder!'
+                              speaker: 'Kaptan Bilge',
+                              text: 'Bir ışın başlangıç noktası etrafında döndüğünde geride bir açıklık bırakır. Başlangıç noktaları ortak olan bu iki ışının oluşturduğu geometrik şekle AÇI denir!'
                             },
                             visualScene: {
-                              type: 'horizon-line',
-                              caption: 'İki uca sınırsızca uzanan ufuk çizgisi bir DOĞRU (AB) modelidir.'
+                              type: 'angle-rotator',
+                              caption: 'Ortak B noktasından çıkan [BA ve [BC ışınlarının oluşturduğu ABC açısı.'
                             },
                             interactiveAction: {
-                              prompt: 'Ufuk çizgisinin iki ucuna sonsuzluk oklarını ekleyin!',
-                              actionLabel: 'İki Yöne Sonsuzluk Okları Çek ↔️',
-                              feedbackRevealed: 'AB Doğrusu tamamlandı! İki yönde de ok bulunması sınırsız uzandığını gösterir.'
+                              prompt: 'Fenerin ışık kolunu parmağınızla döndürerek dar, dik (90°) ve geniş açıları gözlemleyin!',
+                              actionLabel: 'Işını Döndür & Açıyı Ölç 📐',
+                              feedbackRevealed: 'Açı dinamik olarak keşfedildi! İki ışın dik konuma geldiğinde 90° dik açı oluşur.'
                             },
-                            mathTakeaway: 'Doğru: Her iki yönden de sınırsızca uzayan, kalınlığı olmayan ve uçlarına çift yönlü ok konulan düz çizgidir.'
+                            mathTakeaway: 'Açı: Başlangıç noktaları ortak olan iki ışının birleşimi veya bir ışının başlangıç noktasına göre dönmesiyle oluşan açıklıktır.'
                           },
                           {
                             id: 'p-5',
                             pageNumber: 5,
-                            chapterTitle: '5. Bölüm: Büyük Geometri Özeti',
-                            conceptTitle: 'Karşılaştırma & Maarif Değerlendirmesi',
-                            conceptBadge: 'Büyük Tablo',
-                            symbolicCode: 'Özet Tablo',
-                            narrativeText: 'Maceranın sonunda Kaptan Bilge ve Mimar Defne öğrendikleri tüm geometrik kavramları gemi günlüğünde bir araya getirdiler.',
+                            chapterTitle: '5. Bölüm: Eşit Uzaklıklar ve Pergelin İzi: Çember',
+                            conceptTitle: 'Pergel ile Çember İnşası & Elemanları',
+                            conceptBadge: 'Çember ⭕',
+                            symbolicCode: 'M Merkez, r Yarıçap, R Çap',
+                            narrativeText: 'Mimar Defne, deniz fenerinin zeminine dairesel bir su havuzu tasarlamak istedi. Merkezdeki taşa eşit mesafede (5 metre) noktalar işaretlemeye başladı. Noktaların sayısı arttıkça kusursuz yuvarlak bir şekil belirdi!',
                             characterDialogue: {
-                              speaker: 'Gezgin Matematikçiler',
-                              text: 'Artık etrafımızdaki her yapının bir geometrik dille konuşulduğunu biliyoruz. Şimdi sıra çizim atölyesinde kendi modellerimizi oluşturmakta!'
+                              speaker: 'Mimar Defne',
+                              text: 'Sabit bir noktaya eşit uzaklıktaki tüm noktalar birleştiğinde Çember oluşur! Bu kusursuz şekli çizmek için sivri ucu merkezde duran ve kalem ayağı iz bırakan PERGEL kullanılır!'
                             },
                             visualScene: {
-                              type: 'summary-chart',
-                              caption: 'Nokta, Işın, Doğru Parçası ve Doğru modellerinin tam tablosu.'
+                              type: 'compass-circle',
+                              caption: 'Pergelin sabit ayağı Merkez (M), açıklığı Yarıçap (r), kalemin çizdiği kapalı eğri Çemberdir.'
                             },
                             interactiveAction: {
-                              prompt: 'Sınıf tartışma sorusunu inceleyin ve çizim atölyesine geçin!',
-                              actionLabel: 'Sınıf Tartışmasını Başlat 💬',
-                              feedbackRevealed: 'Tebrikler! 1. Aşamayı tamamladınız. Şimdi Çizim Atölyesi ile kendi modellerinizi tasarlayabilirsiniz.'
+                              prompt: 'Pergelin ayağını merkeze sabitleyip 360° döndürerek çemberi çizin!',
+                              actionLabel: 'Pergeli Döndür & Çember Çiz ⭕',
+                              feedbackRevealed: 'Çember çizildi! Merkezden çember üzerindeki noktalara olan uzaklık Yarıçap (r), iki katı ise Çap (R = 2r) olarak adlandırılır.'
                             },
-                            mathTakeaway: 'Geometri günlük hayatı anlamlandırma sanatıdır: Nokta konumdur, Işın yayılmadır, Doğru Parçası mesafedir, Doğru ise sınırsızlıktır.'
+                            mathTakeaway: 'Çember: Bir düzlemde sabit bir noktaya (merkez) eşit uzaklıktaki tüm noktaların oluşturduğu kapalı geometrik şekildir. Merkezden geçen en uzun doğru parçası çaptır (R).'
+                          },
+                          {
+                            id: 'p-6',
+                            pageNumber: 6,
+                            chapterTitle: '6. Bölüm: Çemberden Daireye ve Pergel Kilidi (Eş Çemberler)',
+                            conceptTitle: 'Çember vs Daire & Eş Yarıçaplı Çemberler',
+                            conceptBadge: 'Daire & Eş Çemberler',
+                            symbolicCode: 'r1 = r2 (Eş Çember)',
+                            narrativeText: 'Defne uyardı: "Çember sadece etraftaki çember çizgisidir (halka gibi içi boş). Havuzun suyla dolan iç bölgesiyle beraber tamamı ise bir DAİRE\'dir!" Ardından pergel açıklığını hiç bozmadan yan tarafa bir çember daha çizdi.',
+                            characterDialogue: {
+                              speaker: 'Mimar & Kaptan',
+                              text: 'Pergel açıklığını değiştirmeden çizilen çemberlerin yarıçapları birbirine eşittir (r1 = r2). Bu iki çember tıpatıp eştir!'
+                            },
+                            visualScene: {
+                              type: 'circle-disk-compare',
+                              caption: 'Çember içi boş halkadır; daire ise çember ile iç bölgesinin birleşimidir.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Pergel açıklığını kilitleyin ve tuvalin yanına eş yarıçaplı ikinci bir çember çizin!',
+                              actionLabel: 'Pergel Açıklığını Kilitle & Eş Çember Çiz 🔒',
+                              feedbackRevealed: 'Eş çemberler başarıyla çizildi! Pergel açıklığı değişmediği için her iki çemberin yarıçap uzunlukları tamamen eşittir.'
+                            },
+                            mathTakeaway: 'Daire: Çember ile çemberin iç bölgesinin birleşimidir. Pergel açıklığı değiştirilmeden çizilen tüm çemberlerin yarıçap uzunlukları eşittir.'
+                          },
+                          {
+                            id: 'p-7',
+                            pageNumber: 7,
+                            chapterTitle: '7. Bölüm: Kıyıya En Kısa Yol: Gönye ve Dikme (d ⊥ k)',
+                            conceptTitle: 'En Kısa Mesafe, Gönye ve Dikme & Düzlem',
+                            conceptBadge: 'Dikme (⊥) • Düzlem',
+                            symbolicCode: 'd ⊥ k, [AB] ⊥ d',
+                            narrativeText: 'Kaptan Bilge gemisini kıyı şeridine yanaştırırken sordu: "Açık denizdeki bir gemiden kıyı doğrusuna çizilebilecek en kısa rota hangisidir?" Mimar Defne gönyesini çıkardı ve kıyıya 90 derecelik dik bir çizgi çekti.',
+                            characterDialogue: {
+                              speaker: 'Mimar Defne',
+                              text: 'Bir noktadan bir doğruya çizilebilecek en kısa doğru parçası, o doğruya 90° dik olan parçadır! Bunu çizmek için GÖNYE kullanılır ve bu doğru parçasına DİKME denir. Tüm bu çizimlerin yapıldığı sonsuz düz yüzeye ise DÜZLEM adı verilir.'
+                            },
+                            visualScene: {
+                              type: 'set-square-drop',
+                              caption: 'P noktasından d doğrusuna gönye yardımıyla inilen en kısa doğru parçası: DİKME [PH] ⊥ d.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Gönyeyi doğru üzerine oturtup P noktasından kıyıya tam 90° dikme indirin!',
+                              actionLabel: 'Gönye ile Dikme İn 📐',
+                              feedbackRevealed: 'Dikme [PH] ⊥ d çizildi! Doğruya dışındaki bir noktadan çizilen en kısa doğru parçası daima dikmedir.'
+                            },
+                            mathTakeaway: 'Dikme: Bir noktadan bir doğruya indirilen ve doğru ile 90° dik açı yapan en kısa doğru parçasıdır. Sembolü: ⊥. Çizimlerin yapıldığı yüzey ise Düzlemdir.'
+                          },
+                          {
+                            id: 'p-8',
+                            pageNumber: 8,
+                            chapterTitle: '8. Bölüm: Geometri Sanatla Buluşuyor: Çini, Motif & Pano (D7.1)',
+                            conceptTitle: 'Görsel Sanatlar Entegrasyonu & Estetik Pano',
+                            conceptBadge: 'Sanat & Tasarım (D7.1)',
+                            symbolicCode: 'Öz & Akran Değerlendirme',
+                            narrativeText: 'Gezgin matematikçiler öğrendikleri tüm araçları (çizgeç, pergel, gönye) bir araya getirerek Selçuklu çinileri, kilim motifleri ve modern bir deniz feneri logosu tasarladılar. Tasarımlarını okul panosunda sergileyip akranlarıyla değerlendirdiler.',
+                            characterDialogue: {
+                              speaker: 'Gezgin Matematikçiler',
+                              text: 'Geometri sadece bir ölçüm bilimi değil, aynı zamanda estetik ve sanatın temelidir! Şimdi çizim atölyesinde pergel ve gönyemizle kendi özgün tasarımımızı yapalım!'
+                            },
+                            visualScene: {
+                              type: 'aesthetic-art-panel',
+                              caption: 'Çemberler, doğrular ve dikmelerle oluşturulmuş estetik Selçuklu yıldızı ve çini motifi panosu.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Geometrik motifleri birleştirerek estetik tasarım panosunu tamamlayın ve atölyeye geçin!',
+                              actionLabel: 'Tasarım Panosunu Aç 🎨',
+                              feedbackRevealed: 'Harika! 1. Aşama tamamlandı. Şimdi Atölye, Çalışma Kâğıdı ve Öz/Akran Değerlendirme formlarıyla öğrendiklerinizi pekiştirin!'
+                            },
+                            mathTakeaway: 'Geometrik yapılar (doğru parçası, açı, çember, dikme) mimari ve sanatta kusursuz bir simetri ve estetik meydana getirir (D7.1).'
                           }
                         ]
                       },
                       lab: {
-                        title: 'İnteraktif Geometri Çizim Laboratuvarı',
+                        title: 'İnteraktif Geometri, Çizim ve Tasarım Laboratuvarı',
                         toolType: 'geometry-canvas',
-                        instructions: 'Aşağıdaki etkileşimli tahtayı kullanarak sırasıyla Nokta, Doğru, Doğru Parçası ve Işın oluşturun. Çizimlerin sembolik karşılıklarını ekranda gözlemleyin.',
-                        taskGoal: 'En az 1 adet Doğru Parçası [AB], 1 adet Işın [CD ve 1 adet Doğru EF oluşturup özelliklerini inceleyin.',
+                        instructions: 'Aşağıdaki etkileşimli tahtayı kullanarak sırasıyla Nokta, Çizgeç (Doğru Parçası), Işın, Doğru, Dinamik Açı, Pergel & Çember, Gönye & Dikme ve Estetik Tasarım araçlarını deneyimleyiniz.',
+                        taskGoal: 'En az 1 Doğru Parçası, 1 Dinamik Açı, 1 Pergel Çemberi ve 1 Gönye Dikmesi inşa ederek özelliklerini inceleyiniz.',
                         interactiveTips: [
-                          'Nokta aracıyla tahtaya tıklayarak isimlendirilmiş noktalar bırakabilirsiniz.',
-                          'Doğru parçası aracı ile iki noktayı birleştirip uzunluğunu ölçebilirsiniz.',
-                          'Işın aracını seçtiğinizde ilk tıkladığınız nokta başlangıç noktası [ olur.'
+                          'Nokta aracıyla tahtaya tıklayarak isimlendirilmiş noktalar yerleştirebilirsiniz.',
+                          'Çizgeç / Doğru Parçası aracıyla iki noktayı birleştirip uzunluğunu ölçebilirsiniz.',
+                          'Dinamik Açı aracıyla ışının başlangıç noktası etrafında dönme hareketini ve açılan dereceyi gözlemleyebilirsiniz.',
+                          'Pergel aracıyla merkez seçip çember çizebilir, yarıçap kilidiyle eş çemberler oluşturabilirsiniz.',
+                          'Gönye aracıyla doğruya dışındaki noktadan dikme inip en kısa mesafeyi kanıtlayabilirsiniz.',
+                          'Sanat Tasarım Panosu modunda çember ve dikmeleri renklendirerek özgün bir çini/logo motifi tasarlayabilirsiniz.'
                         ],
                         presetObjects: [
                           { id: 'p1', type: 'point', label: 'A', x1: 150, y1: 180, color: '#10b396' },
@@ -245,7 +331,7 @@ export const CURRICULUM_DATA: Grade[] = [
                             id: 'pz-3',
                             concept: 'Doğru',
                             symbol: 'AB veya d',
-                            definition: 'Her iki yönden de sınırsızca uzayan düz çizgi.',
+                            definition: 'Her iki yönden de sınırsızca uzayan, uç noktası olmayan düz çizgi.',
                             visualType: 'line'
                           },
                           {
@@ -254,12 +340,40 @@ export const CURRICULUM_DATA: Grade[] = [
                             symbol: 'A, B, C...',
                             definition: 'Boyutu, eni, boyu veya yüksekliği olmayan, konumu belirten iz.',
                             visualType: 'point'
+                          },
+                          {
+                            id: 'pz-5',
+                            concept: 'Açı',
+                            symbol: '∠ABC veya s(B)',
+                            definition: 'Başlangıç noktası ortak iki ışının oluşturduğu veya bir ışının dönmesiyle oluşan açıklık.',
+                            visualType: 'angle'
+                          },
+                          {
+                            id: 'pz-6',
+                            concept: 'Çember',
+                            symbol: 'M Merkez, r Yarıçap',
+                            definition: 'Bir noktaya eşit uzaklıktaki tüm noktaların oluşturduğu kapalı eğri.',
+                            visualType: 'circle'
+                          },
+                          {
+                            id: 'pz-7',
+                            concept: 'Daire',
+                            symbol: 'Çember + İç Bölge',
+                            definition: 'Çember çizgisi ile içinde kalan düzlemsel alanın tamamı.',
+                            visualType: 'disk'
+                          },
+                          {
+                            id: 'pz-8',
+                            concept: 'Dikme',
+                            symbol: 'd ⊥ k',
+                            definition: 'Bir noktadan bir doğruya inilen ve 90° dik açı yapan en kısa doğru parçası.',
+                            visualType: 'perpendicular'
                           }
                         ]
                       },
                       assessment: {
-                        title: 'Kazanım Değerlendirme ve Pekiştirme Testi',
-                        instructions: 'Soruları dikkatle okuyunuz. Soruları tek tek çözerek gerçek hayat modellerini analiz ediniz.',
+                        title: 'Kazanım Değerlendirme ve Pekiştirme Testi (MAT.5.3.1)',
+                        instructions: 'Soruları dikkatle okuyunuz. Soruları çözerek geometrik kavramları, araçları ve modelleri analiz ediniz.',
                         questions: [
                           {
                             id: 'q1',
@@ -272,7 +386,7 @@ export const CURRICULUM_DATA: Grade[] = [
                               'D) Düzlem'
                             ],
                             correctOptionIndex: 2,
-                            explanation: 'Fener lambası sabit kapalı bir başlangıç noktasıdır [A], uzaya doğru kesintisiz ilerleyen ışık ise tek yönde sınırsızlığı ifade eder. Bu model IŞINdır ve [AB şeklinde gösterilir.',
+                            explanation: 'Fener lambası sabit kapalı bir başlangıç noktasıdır [A], uzaya doğru kesintisiz ilerleyen ışık ise tek yönde sınırsızlığı ifade eder. Bu model IŞINdır ve [AB> şeklinde gösterilir.',
                             bloomLevel: 'Kavrama & Modelleme'
                           },
                           {
@@ -291,7 +405,7 @@ export const CURRICULUM_DATA: Grade[] = [
                           },
                           {
                             id: 'q3',
-                            questionText: 'Açık denizde gemiden baktığımızda gökyüzü ile denizin birleştiği ve gözümüzün görebildiği her iki yöne doğru sınırsızca devam eden Ufuk Çizgisi hangi geometrik kavrama en yakın modeldir?',
+                            questionText: 'Açık denizde gemiden baktığımızda gökyüzü ile denizin birleştiği ve her iki yöne doğru sınırsızca devam eden Ufuk Çizgisi hangi geometrik kavrama en uygun modeldir?',
                             context: 'Coğrafi Gözlem & Doğa',
                             options: [
                               'A) Doğru',
@@ -300,12 +414,12 @@ export const CURRICULUM_DATA: Grade[] = [
                               'D) Nokta'
                             ],
                             correctOptionIndex: 0,
-                            explanation: 'Ufuk çizgisi her iki uca doğru da kesintisiz ve sınırsız devam ettiği için çift yönlü uzayan DOĞRU (AB) kavramı ile modellenir.',
+                            explanation: 'Ufuk çizgisi her iki uca doğru da kesintisiz ve sınırsız devam ettiği için çift yönlü uzayan DOĞRU (AB veya d) kavramı ile modellenir.',
                             bloomLevel: 'Kavrama & İlişkilendirme'
                           },
                           {
                             id: 'q4',
-                            questionText: 'Kaptan Bilge harita üzerinde gizli limanın yerini belirlemek için kalemin sivri ucuyla küçük bir iz bırakmış ve yanına "A" yazmıştır. Bu iz geometride neyi temsil eder?',
+                            questionText: 'Kaptan Bilge harita üzerinde limanın yerini belirlemek için kalemin sivri ucuyla küçük bir iz bırakmış ve yanına "A" yazmıştır. Bu iz geometride neyi temsil eder?',
                             context: 'Haritacılık & Navigasyon',
                             options: [
                               'A) Kalınlığı 2 cm olan bir doğru parçasıdır.',
@@ -319,12 +433,96 @@ export const CURRICULUM_DATA: Grade[] = [
                           },
                           {
                             id: 'q5',
-                            questionText: 'Karayolları mühendisi, A şehri ile B şehri arasına 45 kilometrelik dümdüz bir otoban şeridi inşa etmiştir. Bu otoban şeridinin sembolik matematiksel gösterimi hangisidir?',
+                            questionText: 'Bir ışının başlangıç noktası sabit tutularak kendi ekseni etrafında döndürülmesiyle oluşan açıklık hangi geometrik kavramı tanımlar?',
+                            context: 'Dinamik Geometri & Açı',
+                            options: [
+                              'A) Doğru Parçası',
+                              'B) Çember',
+                              'C) Açı',
+                              'D) Dikme'
+                            ],
+                            correctOptionIndex: 2,
+                            explanation: 'Bir ışının başlangıç noktası etrafında dönmesiyle veya başlangıç noktaları ortak olan iki ışının birleşimiyle AÇI oluşur.',
+                            bloomLevel: 'Kavramsal Anlama & Dönme'
+                          },
+                          {
+                            id: 'q6',
+                            questionText: 'Bir düzlemde sabit bir noktaya eşit uzaklıkta (örn. 6 cm) bulunan tüm noktaların birleşimiyle oluşan kapalı şekil hangisidir ve hangi araçla çizilir?',
+                            context: 'Pergel & Çember İnşası',
+                            options: [
+                              'A) Doğru parçası - Çizgeç ile',
+                              'B) Çember - Pergel ile',
+                              'C) Dikme - Gönye ile',
+                              'D) Işın - İletki ile'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Sabit bir merkeze eşit uzaklıktaki tüm noktaların geometrik yeri ÇEMBERdir ve pergelin sivri ucu merkeze batırılarak çizilir.',
+                            bloomLevel: 'Araç Kullanımı & Geometrik Tanım'
+                          },
+                          {
+                            id: 'q7',
+                            questionText: 'Yarıçapı 4 cm olan bir çember çizdikten sonra pergelin açıklığını HİÇ DEĞİŞTİRMEDEN kâğıdın başka bir yerine yeni bir çember çizen öğrenci için hangisi doğrudur?',
+                            context: 'Eş Çemberler & Pergel Açıklığı',
+                            options: [
+                              'A) İkinci çemberin yarıçapı 8 cm olur.',
+                              'B) İki çemberin yarıçap uzunlukları eşittir (r1 = r2 = 4 cm).',
+                              'C) İkinci şekil çember değil daire olur.',
+                              'D) Pergel açıklığı kilitli kaldığı için ikinci çember çizilemez.'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Pergel açıklığı yarıçapı belirler. Pergel açıklığı değiştirilmediğinde çizilen tüm çemberlerin yarıçapları birbirine eşit (eş çemberler) olur.',
+                            bloomLevel: 'Çıkarım & Karşılaştırma'
+                          },
+                          {
+                            id: 'q8',
+                            questionText: 'Çember ile daire arasındaki farkı açıklayan aşağıdaki ifadelerden hangisidir DOĞRUDUR?',
+                            context: 'Çember vs Daire',
+                            options: [
+                              'A) Çemberin içi doludur, dairenin içi boştur.',
+                              'B) Çember sadece çevre çizgisidir; daire ise çember ile iç bölgesinin birleşimidir.',
+                              'C) Çemberin yarıçapı varken dairenin yarıçapı yoktur.',
+                              'D) Daire cetvelle çizilir, çember çizilemez.'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Çember hula-hop halkası gibi içi boş bir eğridir. Madeni para veya tepsi gibi içi dolu düzlemsel bölge ise DAİREdir.',
+                            bloomLevel: 'Kavramsal Ayırt Etme'
+                          },
+                          {
+                            id: 'q9',
+                            questionText: 'Bir d doğrusuna, doğrunun dışındaki bir P noktasından çizilebilecek EN KISA doğru parçası için aşağıdakilerden hangisi KESİNLİKLE doğrudur?',
+                            context: 'En Kısa Mesafe & Dikme',
+                            options: [
+                              'A) Doğruya 45° açıyla eğik çizilir.',
+                              'B) Doğruya 90° açıyla çizilen Dikmedir ve gönye ile çizilir.',
+                              'C) Bir ışındır ve uzunluğu ölçülemez.',
+                              'D) Doğruya paralel olarak uzanır.'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Bir noktadan bir doğruya çizilebilecek en kısa doğru parçası, o doğruya dik (90°) olan parçadır. Bu doğru parçasına DİKME denir ve gönye ile inşa edilir.',
+                            bloomLevel: 'Akıl Yürütme & Dikme'
+                          },
+                          {
+                            id: 'q10',
+                            questionText: 'Nokta, doğru, doğru parçası, ışın, açı ve çember gibi tüm geometrik şekillerin üzerinde çizildiği sonsuz genişlikteki düz yüzeye ne ad verilir?',
+                            context: 'Yüzey & Düzlem',
+                            options: [
+                              'A) Hacim',
+                              'B) Düzlem',
+                              'C) Yarıçap',
+                              'D) Açıortay'
+                            ],
+                            correctOptionIndex: 1,
+                            explanation: 'Tüm iki boyutlu geometrik çizim ve inşaların yapıldığı sonsuz düz yüzeye DÜZLEM denir.',
+                            bloomLevel: 'Temel Geometri & Düzlem'
+                          },
+                          {
+                            id: 'q11',
+                            questionText: 'Karayolları mühendisi, A şehri ile B şehri arasına 45 kilometrelik dümdüz bir otoban inşa etmiştir. Bu otoban şeridinin sembolik matematiksel gösterimi hangisidir?',
                             context: 'Ulaşım & Altyapı',
                             options: [
                               'A) AB veya d',
                               'B) [AB]',
-                              'C) [AB',
+                              'C) [AB>',
                               'D) (AB>'
                             ],
                             correctOptionIndex: 1,
@@ -332,46 +530,46 @@ export const CURRICULUM_DATA: Grade[] = [
                             bloomLevel: 'Sembolik Gösterim & Uygulama'
                           },
                           {
-                            id: 'q6',
-                            questionText: 'Güneşten yayılarak Dünya\'mıza ulaşan güneş ışıkları ile ilgili yapılan aşağıdaki yorumlardan hangisi matematiksel olarak DOĞRUDUR?',
-                            context: 'Astronomi & Güneş Sistemi',
+                            id: 'q12',
+                            questionText: 'Görsel sanatlar dersinde geleneksel Selçuklu çinisi ve halı motifi tasarlamak isteyen bir öğrencinin hangi geometrik araç ve kavram kombinasyonunu kullanması en uygundur?',
+                            context: 'Görsel Sanatlar & Estetik Tasarım (D7.1)',
                             options: [
-                              'A) Güneş sabit başlangıç noktası olduğu için bir IŞIN modelidir.',
-                              'B) İki ucu da sonsuza gittiği için bir DOĞRU modelidir.',
-                              'C) Uzunluğu metreyle tam olarak ölçülebilen bir DOĞRU PARÇASI modelidir.',
-                              'D) Kalınlığı ve yüzeyi olan bir DÜZLEM modelidir.'
+                              'A) Sadece termometre ve terazi',
+                              'B) Pergel (çember yayları) ve Çizgeç/Gönye (doğru parçaları ve dikmeler)',
+                              'C) Yalnızca mikroskop',
+                              'D) Sadece hesap makinesi'
                             ],
-                            correctOptionIndex: 0,
-                            explanation: 'Güneş küresi ışığın çıktığı sabit başlangıç noktasıdır [G], uzaya yayılan ışık ise tek yönde sonsuza gider. Bu nedenle bir IŞIN modelidir.',
-                            bloomLevel: 'Akıl Yürütme & Çıkarım'
+                            correctOptionIndex: 1,
+                            explanation: 'Geometrik motifler ve çini desenleri pergel ile çizilen dairesel yaylar ve çizgeç/gönye ile çizilen doğru parçalarının estetik kombinasyonundan oluşur (D7.1).',
+                            bloomLevel: 'Disiplinlerarası Uygulama & Sanat'
                           },
                           {
-                            id: 'q7',
-                            questionText: 'Aşağıda verilen geometrik kavramlardan hangisinin uzunluğu cetvel veya şerit metre kullanılarak HESAPLANABİLİR?',
-                            context: 'Ölçme & Değerlendirme',
+                            id: 'q13',
+                            questionText: 'Aşağıda verilen sembolik gösterimlerden hangisi "d doğrusunun k doğrusuna dik olduğunu" ifade eder?',
+                            context: 'Matematiksel Sembol Dili (MAB3)',
                             options: [
-                              'A) d Doğrusu',
-                              'B) [KL Işını',
-                              'C) [MN] Doğru Parçası',
-                              'D) AB Doğrusu'
+                              'A) d // k',
+                              'B) d ⊥ k',
+                              'C) [d, k]',
+                              'D) d = k'
                             ],
-                            correctOptionIndex: 2,
-                            explanation: 'Doğru ve Işın en az bir yönde sonsuza uzadığı için uzunlukları ölçülemez. Yalnızca her iki ucu da sınırlı olan [MN] Doğru Parçasının boyu ölçülebilir.',
-                            bloomLevel: 'Kritik Düşünme & Analiz'
+                            correctOptionIndex: 1,
+                            explanation: 'Geometride diklik sembolü ters T şeklindeki "⊥" sembolüdür. "d ⊥ k", d doğrusu k doğrusuna diktir anlamına gelir.',
+                            bloomLevel: 'Sembolik Temsil & Dil'
                           },
                           {
-                            id: 'q8',
-                            questionText: 'Bir sınıfta öğretmen tahtaya iki ucu oklu düz bir çizgi çizmiş ve üzerine K ve L noktalarını işaretlemiştir. Öğrencilerden bu çizimi sembolle ifade etmelerini istemiştir. Hangi öğrencinin cevabı DOĞRUDUR?',
-                            context: 'Sınıf İçi Akıllı Tahta Uygulaması',
+                            id: 'q14',
+                            questionText: 'Bir doğru parçasının uç noktalarından başlayarak aynı hizada noktalar koymaya devam eden bir öğrencinin ulaştığı sonuçla ilgili hangisi YANLIŞTIR?',
+                            context: 'Kavramsal Doğruluk & Sınırsızlık',
                             options: [
-                              'A) Ali: "[KL]"',
-                              'B) Ayşe: "[KL"',
-                              'C) Can: "KL veya d"',
-                              'D) Zeynep: "|KL|"'
+                              'A) Tek bir uçtan uzatırsa ışın modeli elde eder.',
+                              'B) İki yönden de uzatırsa doğru modeli elde eder.',
+                              'C) Doğrunun ve ışının uzunluğu cetvelle tam olarak ölçülebilir.',
+                              'D) Doğrunun başlangıç veya bitiş sınırı yoktur.'
                             ],
                             correctOptionIndex: 2,
-                            explanation: 'İki ucunda da ok olan ve sınırsız uzanan çizgi bir doğrudur. Sembolik olarak KL veya küçük harfle d doğrusu olarak gösterilir.',
-                            bloomLevel: 'Kavramsal Değerlendirme'
+                            explanation: 'Doğru ve ışın en az bir yönde sonsuza doğru uzandığı için uzunlukları cetvelle ölçülemez. Sadece doğru parçasının uzunluğu ölçülebilir.',
+                            bloomLevel: 'Eleştirel Düşünme & Analiz'
                           }
                         ]
                       }

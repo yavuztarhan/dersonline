@@ -501,72 +501,84 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
   'MAT.5.3.1': {
     id: 'rubric-mat-5-3-1',
     outcomeId: 'MAT.5.3.1',
-    title: 'Öğrenci Öz Değerlendirme Rubriği: Temel Geometrik Kavramlar ve Çizimler',
+    title: 'Öğrenci Öz Değerlendirme Rubriği: Temel Geometri, Çizim Araçları ve Estetik Tasarım (MAT.5.3.1)',
     description:
-      'Nokta, doğru, doğru parçası ve ışın kavramlarını ayırt etme, sembolik olarak gösterme ve çizim araçlarını kullanma becerinizi değerlendiriniz.',
+      'Nokta, doğru, doğru parçası, ışın, dinamik açı, pergel ile çember/daire, gönye ile dikme ve görsel sanatlar estetik tasarım panosu [D7.1] kazanımlarındaki becerilerinizi değerlendiriniz.',
     criteria: [
       {
         id: 'c1',
-        title: 'Kavramsal Ayırt Etme (Nokta, Doğru, Doğru Parçası, Işın)',
-        category: 'Kavramsal Anlama',
+        title: 'Nokta, Çizgeç (Ölçüsüz Cetvel) ve Doğru Parçası [AB]',
+        category: 'Kavramsal Anlama & Çizim (OB2)',
         levelDescriptions: {
-          1: 'Doğru, doğru parçası ve ışının sınır durumlarını (uç noktalarını) karıştırıyorum.',
-          2: 'Doğru ve doğru parçasını ayırt ediyorum fakat ışının tek yönde sonsuza uzamasını açıklamakta zorlanıyorum.',
-          3: 'Dört temel kavramı başlangıç/bitiş sınırlarına ve uzunluklarının ölçülebilirliğine göre doğru ayırt ediyorum.',
-          4: 'Kavramların tüm geometrik özelliklerini, uzunluk durumlarını ve modellerini eksiksiz açıklayabiliyorum.'
+          1: 'Noktanın boyutu olduğunu düşünüyor, iki nokta arasındaki aynı hizadaki noktaları çizgeçle bağlamakta zorlanıyorum.',
+          2: 'Noktanın konum belirttiğini biliyorum ancak doğru parçasının iki ucunun da sınırlı olduğunu ve uzunluğunun |AB| şeklinde ölçülebildiğini açıklamada zorlanıyorum.',
+          3: 'Noktanın boyutsuzluğunu, çizgecin iki noktayı bağlama işlevini ve [AB] doğru parçasının uzunluğunun ölçülebilir olduğunu doğru açıklıyorum.',
+          4: 'Nokta ve doğru parçası ilişkisini derinlemesine açıklar; çizgeç kullanarak farklı uzunluklardaki doğru parçalarını ve sembolik gösterimlerini (|AB|) hatasız inşa ederim.'
         }
       },
       {
         id: 'c2',
-        title: 'Sembolik Temsilleri Doğru Kullanma',
-        category: 'Matematiksel Dil ve Semboller',
+        title: 'Sonsuza Uzama: Işın [AB> ve Küçük Harfle d Doğrusu',
+        category: 'Matematiksel Dil & Semboller (MAB3)',
         levelDescriptions: {
-          1: 'Köşeli parantez [ ve ] işaretlerinin sınırlı uç noktayı gösterdiğini karıştırıyorum.',
-          2: 'Doğru parçası [AB] sembolünü biliyorum fakat ışın [AB ve doğru AB sembollerinde tereddüt ediyorum.',
-          3: 'AB, [AB], [AB sembollerini modelleriyle doğru eşleştiriyorum.',
-          4: 'Sembolik dili matematiksel iletişimde hatasız kullanıyor, uzunluk sembolü |AB| ile nesne sembolünü ayırt ediyorum.'
+          1: 'Işının başlangıç noktası ile doğrunun sınırsızlığını birbirine karıştırıyor, sembolleri ters yazıyorum.',
+          2: 'Işının tek yönde sonsuza gittiğini biliyorum ancak doğrunun iki uca da sınırsız uzandığını ve küçük harfle (d doğrusu) adlandırıldığını ifade etmekte zorlanıyorum.',
+          3: '[AB> ışınını başlangıç noktasına göre doğru gösteriyor; AB doğrusunun uç noktası olmadığını ve d doğrusu olarak adlandırılabileceğini biliyorum.',
+          4: 'Işın ve doğrunun uçsuzluğunu modellerle kanıtlar; matematiksel dili ([AB>, AB, d) günlük ve teorik problemlerde eksiksiz kullanırım.'
         }
       },
       {
         id: 'c3',
-        title: 'Gerçek Yaşam Modelleriyle İlişkilendirme',
-        category: 'Matematiksel Modelleme',
+        title: 'Açının Dinamik Tanımı (Işının Dönmesi) ve Sembolü',
+        category: 'Dinamik Geometri & Açılar',
         levelDescriptions: {
-          1: 'Çevremdeki nesneleri geometrik kavramlarla ilişkilendirmekte zorlanıyorum.',
-          2: 'Cetveli doğru parçasına benzetiyorum ancak elektrik teli veya lazer ışığını eşleştirmede zorlanıyorum.',
-          3: 'Lazer ışığını ışına, cetveli doğru parçasına, tren rayını doğruya başarıyla eşleştiriyorum.',
-          4: 'Çevremdeki karmaşık yapıları inceleyip doğru, ışın ve doğru parçası modellerini özgün örneklerle açıklıyorum.'
+          1: 'Açıyı sadece statik iki çizgi olarak görüyor, dönme hareketiyle oluştuğunu ve ortak köşeyi fark edemiyorum.',
+          2: 'Ortak noktadan çıkan iki ışının açı oluşturduğunu biliyorum ancak bir ışının başlangıç noktası etrafında dönmesiyle açının büyüyüp küçüldüğünü açıklamakta zorlanıyorum.',
+          3: 'Bir ışının başlangıç noktası etrafında dönmesiyle açının dinamik oluştuğunu gösterir; köşe, kol ve sembolik gösterimleri (∠ABC, s(B)) doğru kullanırım.',
+          4: 'Dinamik dönme hareketini açı ölçüleriyle (dar, dik 90°, geniş) tam ilişkilendirir; açının kollarının uzatılmasının açı ölçüsünü değiştirmediğini kanıtlarım.'
         }
       },
       {
         id: 'c4',
-        title: 'Çizim ve Geometrik Araç Kullanımı',
-        category: 'Psikomotor & Dijital Beceriler',
+        title: 'Pergel ile Çember, Daire ve Eş Çemberler (r, R=2r)',
+        category: 'Geometrik Araçlar (OB2)',
         levelDescriptions: {
-          1: 'Cetvel ve dijital çizim araçlarında başlangıç ve ok uçlarını çizmekte zorlanıyorum.',
-          2: 'Cetvelle doğru parçası çiziyorum fakat ışının ok ucunu bazen yanlış yöne koyuyorum.',
-          3: 'Cetvel ve sanal tahta araçlarıyla nokta, doğru, doğru parçası ve ışın çizimlerini hatasız yapıyorum.',
-          4: 'Geometrik çizimleri yüksek hassasiyetle tamamlıyor, arkadaşlarımın çizimlerindeki hataları düzeltebiliyorum.'
+          1: 'Pergelin kullanım amacını kavramakta zorlanıyor, çember ile daireyi birbirinin aynısı sanıyorum.',
+          2: 'Pergelin sabit ayağının merkez olduğunu biliyorum ancak çemberin içi boş çizgi, dairenin ise iç bölgeyle birleşim olduğunu açıklamakta tereddüt ediyorum.',
+          3: 'Sabit noktaya eşit uzaklıktaki noktaların pergel iziyle çember oluşturduğunu fark eder; merkez (M), yarıçap (r) ve çap (R) bağıntısını kurarak pergel açıklığı bozulmadan eş çemberler çizerim.',
+          4: 'Çember ve daire ayrımını somut örneklerle kanıtlar; pergel açıklığı kilitli kalarak inşa edilen eş yarıçaplı çemberlerle özgün geometrik yapılar üretirim.'
         }
       },
       {
         id: 'c5',
-        title: 'Öz Yansıtma ve Öğrenme Günlüğü (SDB1.3)',
-        category: 'Süreç Becerileri & Yansıtma',
+        title: 'Gönye, En Kısa Mesafe ve Dikme (d ⊥ k) & Düzlem',
+        category: 'Muhakeme & İnşa Becerisi',
         levelDescriptions: {
-          1: 'Öğrenme sürecimi değerlendirmekte ve ne öğrendiğimi yazmakta zorlanıyorum.',
-          2: 'Öğrendiklerimi kısaca yazıyorum ancak kavramsal derinlik kurmakta zorlanıyorum.',
-          3: 'Öğrenme günlüğünde kendi güçlü ve gelişmeye açık yönlerimi doğru tespit ediyorum.',
-          4: 'Öğrenme günlüğüne matematiksel çıkarımlarımı ve şaşırtıcı keşiflerimi detaylı ve özgün şekilde yansıtıyorum.'
+          1: 'Bir doğruya dış noktadan çizilen en kısa çizginin dikme olduğunu fark edemiyor, gönyeyi kullanamıyorum.',
+          2: 'Gönyeyle dik çizgi çizebiliyorum ancak eğik çizgilerin dikmeden neden daha uzun olduğunu gerekçelendirmekte zorlanıyorum.',
+          3: 'Bir doğruya dışındaki noktadan çizilebilecek en kısa doğru parçasının dikme olduğunu gönye ile keşfeder; dik açıyı, ⊥ sembolünü ve düzlem kavramını doğru tanımlarım.',
+          4: 'En kısa yol mantığını geometrik ve günlük yaşam bağlamında açıklar; d ⊥ k dikme inşasını ve düzlem yüzeyini farklı doğrultularda hatasız uygularım.'
+        }
+      },
+      {
+        id: 'c6',
+        title: 'Görsel Sanatlar Entegrasyonu & Estetik Tasarım Panosu (D7.1, SDB1.3)',
+        category: 'Disiplinlerarası Sanat & Estetik',
+        levelDescriptions: {
+          1: 'Geometrik şekilleri sanatsal bir desende bir araya getirmekte ve panodaki ürünümü değerlendirmekte zorlanıyorum.',
+          2: 'Çember ve doğrularla basit desenler çiziyorum ancak Selçuklu motifi, çini veya logo estetiğine dönüştürmede rehberliğe ihtiyaç duyuyorum.',
+          3: 'Çizgeç, pergel ve gönye ile çember, dikme ve doğru parçalarını birleştirerek estetik bir tasarım (çini/logo/motif) oluşturur ve panoda sergilerim.',
+          4: 'Görsel sanatlar ile geometrinin estetik bağını (D7.1) ustalıkla yansıtan özgün bir tasarım panosu hazırlar; kendi ve akranlarımın tasarımlarını zengin argümanlarla değerlendiririm.'
         }
       }
     ],
     checklistItems: [
-      { id: 'chk1', text: 'Nokta, doğru, doğru parçası ve ışın arasındaki sınır farklarını biliyorum.' },
-      { id: 'chk2', text: '[AB], [AB ve AB sembollerini modelleriyle hatasız eşleştirebiliyorum.' },
-      { id: 'chk3', text: 'Çevremdeki nesneleri (lazer ışını, cetvel, tren rayı) geometrik modellerle ilişkilendirebiliyorum.' },
-      { id: 'chk4', text: 'Cetvel ve dijital çizim araçlarıyla doğru, doğru parçası ve ışın çizebiliyorum.' },
-      { id: 'chk5', text: 'Öğrenme günlüğümde güçlü ve geliştirmem gereken yönlerimi ifade edebiliyorum.' }
+      { id: 'chk1', text: 'Noktanın boyutsuz olduğunu ve [AB] doğru parçasının uzunluğunun (|AB|) ölçülebildiğini biliyorum.' },
+      { id: 'chk2', text: 'Işın [AB> ile d doğrusunun sınırsızlık farkını ve sembolik yazımını doğru uygulayabiliyorum.' },
+      { id: 'chk3', text: 'Bir ışının başlangıç noktası etrafında dönmesiyle açının oluştuğunu ve s(B) sembolünü kavradım.' },
+      { id: 'chk4', text: 'Pergelin sabit ayağıyla eşit uzaklık izi sürerek çember ve eş yarıçaplı çemberler çizebiliyorum.' },
+      { id: 'chk5', text: 'Bir doğruya dış noktadan indirilen en kısa doğru parçasının dikme (d ⊥ k) olduğunu gönye ile gösterdim.' },
+      { id: 'chk6', text: 'Çizgeç, pergel ve gönye ile estetik bir çini/motif/logo tasarımı hazırlayıp panoda değerlendirdim.' }
     ]
   },
   'MAT.7.1.1': {
@@ -1418,72 +1430,84 @@ export const PEER_OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
   'MAT.5.3.1': {
     id: 'peer-rubric-mat-5-3-1',
     outcomeId: 'MAT.5.3.1',
-    title: 'Akran Değerlendirme Rubriği: Temel Geometrik Kavramlar ve Çizimler',
+    title: 'Akran Değerlendirme Rubriği: Geometrik İnşalar, Dinamik Açılar ve Tasarım Panosu (MAT.5.3.1)',
     description:
-      'Takım arkadaşınızın nokta, doğru, doğru parçası ve ışın kavramlarını ayırt etme, sembolik olarak gösterme ve çizim araçlarını kullanma becerilerini değerlendiriniz.',
+      'Takım arkadaşınızın çizgeç, pergel ve gönye ile yaptığı geometrik inşaları, sembolik matematik dilini ve estetik tasarım panosundaki [D7.1] ürününü değerlendiriniz.',
     criteria: [
       {
         id: 'c1',
-        title: 'Kavramsal Ayırt Etme (Nokta, Doğru, Doğru Parçası, Işın)',
-        category: 'Kavramsal Anlama',
+        title: 'Nokta ve Çizgeç ile Doğru Parçası [AB] Çizimi',
+        category: 'Kavramsal Anlama & Çizim (OB2)',
         levelDescriptions: {
-          1: 'Doğru, doğru parçası ve ışının sınır durumlarını (uç noktalarını) karıştırıyor.',
-          2: 'Doğru ve doğru parçasını ayırt ediyor fakat ışının tek yönde sonsuza uzamasını açıklamakta zorlanıyor.',
-          3: 'Dört temel kavramı başlangıç/bitiş sınırlarına ve uzunluklarının ölçülebilirliğine göre doğru ayırt ediyor.',
-          4: 'Kavramların tüm geometrik özelliklerini, uzunluk durumlarını ve modellerini eksiksiz açıklayabiliyor.'
+          1: 'İki nokta arasında aynı hizada çizgiler çekmekte zorlanıyor, doğru parçasının sınırlarını belirtmiyor.',
+          2: 'Çizgeç ile iki noktayı birleştiriyor ancak uzunluk ölçümü ve sınır parantezlerini ([AB]) açıklamada zorlanıyor.',
+          3: 'Noktanın boyutsuzluğunu gözeterek çizgeç ile doğru parçasını hatasız çiziyor ve boyunu (|AB|) doğru ölçüyor.',
+          4: 'Farklı konumlarda doğru parçalarını yüksek çizim hassasiyetiyle inşa ediyor, arkadaşına rehberlik edebiliyor.'
         }
       },
       {
         id: 'c2',
-        title: 'Sembolik Temsilleri Doğru Kullanma',
-        category: 'Matematiksel Dil ve Semboller',
+        title: 'Sonsuzluk, Işın [AB> ve d Doğrusu Temsili',
+        category: 'Matematiksel Dil & Semboller (MAB3)',
         levelDescriptions: {
-          1: 'Köşeli parantez [ ve ] işaretlerinin sınırlı uç noktayı gösterdiğini karıştırıyor.',
-          2: 'Doğru parçası [AB] sembolünü biliyor fakat ışın [AB ve doğru AB sembollerinde tereddüt ediyor.',
-          3: 'AB, [AB], [AB sembollerini modelleriyle doğru eşleştiriyor.',
-          4: 'Sembolik dili matematiksel iletişimde hatasız kullanıyor, uzunluk sembolü |AB| ile nesne sembolünü ayırt ediyor.'
+          1: 'Işının tek uçlu başlangıcı ile doğrunun çift yönlü sınırsızlığını karıştırıyor.',
+          2: 'Işını çiziyor ancak ok yönünü ve sembol gösterimini ([AB>) ters yazabiliyor.',
+          3: 'Işın ve doğru modellerini doğru çiziyor; küçük harfle adlandırmayı (d doğrusu) ve sembolik dili kurallara uygun kullanıyor.',
+          4: 'Doğru ve ışının sınırsızlık kavramını modeller üzerinde eksiksiz açıklıyor, arkadaşının sembolik hatalarını düzeltiyor.'
         }
       },
       {
         id: 'c3',
-        title: 'Gerçek Yaşam Modelleriyle İlişkilendirme',
-        category: 'Matematiksel Modelleme',
+        title: 'Dinamik Açı Oluşumu ve Sembolü (s(B) / ∠ABC)',
+        category: 'Dinamik Geometri & Açılar',
         levelDescriptions: {
-          1: 'Çevresindeki nesneleri geometrik kavramlarla ilişkilendirmekte zorlanıyor.',
-          2: 'Cetveli doğru parçasına benzetiyor ancak elektrik teli veya lazer ışığını eşleştirmede zorlanıyor.',
-          3: 'Lazer ışığını ışına, cetveli doğru parçasına, tren rayını doğruya başarıyla eşleştiriyor.',
-          4: 'Çevresindeki karmaşık yapıları inceleyip doğru, ışın ve doğru parçası modellerini özgün örneklerle açıklıyor.'
+          1: 'Açıyı sabit bir şekil sanıyor, başlangıç noktası etrafında dönme hareketini kavrayamıyor.',
+          2: 'Açının kollarını ve köşesini gösteriyor ancak dönme yönünü ve açı sembolünü ifade etmekte zorlanıyor.',
+          3: 'Bir ışının başlangıç noktası etrafında dönmesiyle açının oluştuğunu dinamik canlandırıyor; köşe ve kol sembollerini doğru kullanıyor.',
+          4: 'Dar, dik (90°) ve geniş açı dönüşümlerini kusursuz açıklıyor; kol uzunluğunun açıyı etkilemediğini arkadaşına ispatlıyor.'
         }
       },
       {
         id: 'c4',
-        title: 'Çizim ve Geometrik Araç Kullanımı',
-        category: 'Psikomotor & Dijital Beceriler',
+        title: 'Pergel ile Çember, Daire ve Eş Yarıçaplar (r, R=2r)',
+        category: 'Geometrik Araçlar (OB2)',
         levelDescriptions: {
-          1: 'Cetvel ve dijital çizim araçlarında başlangıç ve ok uçlarını çizmekte zorlanıyor.',
-          2: 'Cetvelle doğru parçası çiziyor fakat ışının ok ucunu bazen yanlış yöne koyuyor.',
-          3: 'Cetvel ve sanal tahta araçlarıyla nokta, doğru, doğru parçası ve ışın çizimlerini hatasız yapıyor.',
-          4: 'Geometrik çizimleri yüksek hassasiyetle tamamlıyor, takım arkadaşlarının çizimlerindeki hataları düzeltebiliyor.'
+          1: 'Pergeli sabit tutmakta zorlanıyor, çember ve daire kavramlarını birbiri yerine kullanıyor.',
+          2: 'Pergel ile çember çiziyor ancak merkez (M) ve yarıçap (r) kavramlarını açıklamakta tereddüt ediyor.',
+          3: 'Pergelin ayağını merkeze sabitleyerek çember çiziyor; çember ile daire (iç bölge) farkını ve pergel kilidiyle eş çemberleri gösteriyor.',
+          4: 'Pergel açıklığını bozmadan çoklu eş çemberler inşa ediyor; yarıçap (r) ve çap (R) ilişkisini zengin örneklerle modelledi.'
         }
       },
       {
         id: 'c5',
-        title: 'Takım Çalışması ve İletişim (SDB1.3)',
-        category: 'Süreç Becerileri & İş Birliği',
+        title: 'Gönye ile En Kısa Yol, Dikme (d ⊥ k) ve Düzlem',
+        category: 'Muhakeme & İnşa Becerisi',
         levelDescriptions: {
-          1: 'Grup çalışmalarında öğrenme adımlarını ve çizimlerini değerlendirmekte zorlanıyor.',
-          2: 'Grupta üstlendiği görevleri yerine getiriyor ancak kavramsal derinlik kurmakta zorlanıyor.',
-          3: 'Grup çalışmasında takım arkadaşlarına yapıcı destek oluyor, kendi ve takımının güçlü yönlerini fark ediyor.',
-          4: 'Grup içi matematiksel tartışmalara aktif katılıyor, çizim ve çıkarımlarını arkadaşlarına net ve özgün şekilde aktarıyor.'
+          1: 'Gönyeyi doğruya hizalamakta zorlanıyor, en kısa yolun dikme olduğunu fark edemiyor.',
+          2: 'Gönyeyle dikme çiziyor ancak eğik çizgilerle dikme arasındaki uzunluk farkını gerekçelendiremiyor.',
+          3: 'Dış noktadan doğruya gönye ile 90° dikme indiriyor; en kısa mesafenin dikme olduğunu ve çizimlerin düzlemde yer aldığını gösteriyor.',
+          4: 'Farklı doğrultulardaki doğrulara hatasız dikmeler (d ⊥ k) inşa ediyor; en kısa mesafe ispatını arkadaşına net argümanlarla sunuyor.'
+        }
+      },
+      {
+        id: 'c6',
+        title: 'Estetik Tasarım Panosu & Akran İncelemesi (D7.1, SDB2.2)',
+        category: 'Sanatsal Tasarım & İş Birliği',
+        levelDescriptions: {
+          1: 'Arkadaşının tasarım panosundaki ürünlerini incelemekte ve yapıcı geri bildirim vermekte zorlanıyor.',
+          2: 'Tasarım panosuna katkı sağlıyor ancak geometrik ögelerin (çember, dikme, motif) estetik bağını açıklamada yetersiz kalıyor.',
+          3: 'Arkadaşının çini/motif/logo tasarımındaki geometrik yapıları objektif inceliyor; yapıcı ve motive edici dönütler veriyor.',
+          4: 'Tasarım panosundaki Selçuklu motiflerini, simetrileri ve geometrik incelikleri yüksek estetik bilinçle analiz edip akranına ilham verici katkı sunuyor.'
         }
       }
     ],
     checklistItems: [
-      { id: 'chk1', text: 'Nokta, doğru, doğru parçası ve ışın arasındaki farkları kavradı.' },
-      { id: 'chk2', text: '[AB], [AB ve AB sembollerini modelleriyle eşleştirebiliyor.' },
-      { id: 'chk3', text: 'Çevresindeki nesneleri geometrik modellerle ilişkilendirebiliyor.' },
-      { id: 'chk4', text: 'Cetvel ve dijital çizim araçlarıyla çizimleri hatasız yapabiliyor.' },
-      { id: 'chk5', text: 'Grup içi iş birliğinde yapıcı ve destekleyici bir rol üstleniyor.' }
+      { id: 'chk1', text: 'Arkadaşım noktanın boyutsuzluğunu ve [AB] doğru parçasının ölçülebilirliğini doğru açıkladı.' },
+      { id: 'chk2', text: 'Işın ve d doğrusu modellerini çizdi, sonsuza gidiş oklarını ve sembollerini hatasız kullandı.' },
+      { id: 'chk3', text: 'Bir ışının dönme hareketiyle dinamik açı oluşturdu, köşe ve kollarını gösterdi.' },
+      { id: 'chk4', text: 'Pergel açıklığını bozmadan eş yarıçaplı çemberler çizdi, çember-daire farkını belirtti.' },
+      { id: 'chk5', text: 'Gönye yardımıyla doğruya dış noktadan en kısa yol olan dikmeyi (d ⊥ k) doğru indirdi.' },
+      { id: 'chk6', text: 'Tasarım panosundaki çini/motif/logo çalışmasını geometrik kurallara ve estetik ölçütlere uygun tamamladı.' }
     ]
   },
   'MAT.7.1.1': {
