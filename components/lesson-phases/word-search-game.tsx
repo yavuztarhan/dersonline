@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/lib/store';
 import confetti from 'canvas-confetti';
 import {
@@ -857,14 +857,60 @@ export function WordSearchGame() {
   const [placedWords, setPlacedWords] = useState<PlacedWord[]>([]);
   const [foundWordIds, setFoundWordIds] = useState<string[]>([]);
   const [selectedCells, setSelectedCells] = useState<CellPos[]>([]);
-  const [isSelecting, setIsSelecting] = useState(false);
   const [tapStart, setTapStart] = useState<CellPos | null>(null);
   const [revealedHints, setRevealedHints] = useState<Record<string, boolean>>({});
   const [foundCellColors, setFoundCellColors] = useState<Record<string, string>>({});
 
+  // Refs for bulletproof touch & mouse interaction on mobile / smart board
+  const selectedCellsRef = useRef<CellPos[]>([]);
+  useEffect(() => {
+    selectedCellsRef.current = selectedCells;
+  }, [selectedCells]);
+
+  const dragStartRef = useRef<CellPos | null>(null);
+  const isDraggingRef = useRef(false);
+  const startCoordsRef = useRef<{ x: number; y: number } | null>(null);
+  const hasMovedRef = useRef(false);
+  const isTouchActiveRef = useRef(false);
+
   useEffect(() => {
     initRandomGrid();
   }, [selectedOutcome?.id, selectedOutcome?.code, activeClues]);
+
+  // Global mouseup listener so dragging outside the grid doesn't get stuck
+  useEffect(() => {
+    const onGlobalMouseUp = () => {
+      if (isDraggingRef.current && hasMovedRef.current) {
+        const cells = selectedCellsRef.current;
+        if (cells.length > 1) {
+          const matched = checkSelectedWord(cells);
+          if (!matched) {
+            playSound('click');
+            setTimeout(() => {
+              setSelectedCells([]);
+              selectedCellsRef.current = [];
+            }, 300);
+          } else {
+            setSelectedCells([]);
+            selectedCellsRef.current = [];
+          }
+        } else {
+          setSelectedCells([]);
+          selectedCellsRef.current = [];
+        }
+        setTapStart(null);
+      }
+      isDraggingRef.current = false;
+      dragStartRef.current = null;
+      startCoordsRef.current = null;
+      hasMovedRef.current = false;
+    };
+
+    window.addEventListener('mouseup', onGlobalMouseUp);
+    return () => {
+      window.removeEventListener('mouseup', onGlobalMouseUp);
+    };
+  }, [placedWords, foundWordIds, activeClues, gridMatrix]);
 
   const initRandomGrid = () => {
     const generated = generateWordGrid(activeClues);
@@ -872,7 +918,11 @@ export function WordSearchGame() {
     setPlacedWords(generated.placed);
     setFoundWordIds([]);
     setSelectedCells([]);
+    selectedCellsRef.current = [];
     setTapStart(null);
+    dragStartRef.current = null;
+    isDraggingRef.current = false;
+    hasMovedRef.current = false;
     setFoundCellColors({});
     setRevealedHints({});
   };
@@ -928,87 +978,215 @@ export function WordSearchGame() {
     return false;
   };
 
+  // Helper to extract cell position from client coordinates (works on all touch screens & whiteboards)
+  const getCellFromCoords = (clientX: number, clientY: number): CellPos | null => {
+    if (typeof document === 'undefined') return null;
+    const el = document.elementFromPoint(clientX, clientY);
+    const cellEl = el?.closest('[data-cell-pos]');
+    if (!cellEl) return null;
+    const r = Number(cellEl.getAttribute('data-row'));
+    const c = Number(cellEl.getAttribute('data-col'));
+    if (isNaN(r) || isNaN(c)) return null;
+    return { row: r, col: c };
+  };
+
+  // Helper to calculate a straight line between two cells (horizontal, vertical, diagonal)
+  const calculateLine = (start: CellPos, end: CellPos): CellPos[] | null => {
+    const dr = end.row - start.row;
+    const dc = end.col - start.col;
+    if (dr === 0 && dc === 0) {
+      return [start];
+    }
+    if (dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc)) {
+      const stepR = dr === 0 ? 0 : dr > 0 ? 1 : -1;
+      const stepC = dc === 0 ? 0 : dc > 0 ? 1 : -1;
+      const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
+      const line: CellPos[] = [];
+      for (let i = 0; i < length; i++) {
+        line.push({ row: start.row + i * stepR, col: start.col + i * stepC });
+      }
+      return line;
+    }
+    return null;
+  };
+
   // Two-tap selection: tap first letter, then tap last letter (Akıllı Tahta / Touch Friendly)
-  const handleCellClick = (r: number, c: number) => {
+  const handleCellTap = (r: number, c: number) => {
     if (!tapStart) {
+      // First tap
       setTapStart({ row: r, col: c });
       setSelectedCells([{ row: r, col: c }]);
+      selectedCellsRef.current = [{ row: r, col: c }];
       playSound('select');
     } else if (tapStart.row === r && tapStart.col === c) {
-      // Tap on same cell cancels
+      // Tap same cell cancels
       setTapStart(null);
       setSelectedCells([]);
+      selectedCellsRef.current = [];
       playSound('click');
     } else {
-      const dr = r - tapStart.row;
-      const dc = c - tapStart.col;
-      if (dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc)) {
-        const stepR = dr === 0 ? 0 : dr > 0 ? 1 : -1;
-        const stepC = dc === 0 ? 0 : dc > 0 ? 1 : -1;
-        const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
-        const lineCells: CellPos[] = [];
-        for (let i = 0; i < length; i++) {
-          lineCells.push({ row: tapStart.row + i * stepR, col: tapStart.col + i * stepC });
-        }
-        setSelectedCells(lineCells);
-        const matched = checkSelectedWord(lineCells);
+      // Second tap: try to connect
+      const line = calculateLine(tapStart, { row: r, col: c });
+      if (line) {
+        setSelectedCells(line);
+        selectedCellsRef.current = line;
+        const matched = checkSelectedWord(line);
         if (!matched) {
           playSound('click');
-          setTimeout(() => setSelectedCells([]), 350);
+          setTimeout(() => {
+            setSelectedCells([]);
+            selectedCellsRef.current = [];
+          }, 350);
         } else {
-          setTimeout(() => setSelectedCells([]), 200);
+          setTimeout(() => {
+            setSelectedCells([]);
+            selectedCellsRef.current = [];
+          }, 200);
         }
+        setTapStart(null);
       } else {
         // Not aligned, switch start to this cell
         setTapStart({ row: r, col: c });
         setSelectedCells([{ row: r, col: c }]);
+        selectedCellsRef.current = [{ row: r, col: c }];
         playSound('select');
-        return;
+      }
+    }
+  };
+
+  // TOUCH EVENT HANDLERS (for touchscreens, iPads, Android, Akıllı Tahta)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    isTouchActiveRef.current = true;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const cell = getCellFromCoords(touch.clientX, touch.clientY);
+    if (!cell) return;
+
+    dragStartRef.current = cell;
+    startCoordsRef.current = { x: touch.clientX, y: touch.clientY };
+    isDraggingRef.current = true;
+    hasMovedRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDraggingRef.current || !dragStartRef.current) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    if (startCoordsRef.current) {
+      const dist = Math.hypot(touch.clientX - startCoordsRef.current.x, touch.clientY - startCoordsRef.current.y);
+      if (dist > 8) {
+        hasMovedRef.current = true;
+      }
+    }
+
+    if (hasMovedRef.current) {
+      // Prevent browser screen scrolling while dragging across letters
+      if (e.cancelable) e.preventDefault();
+
+      const currentCell = getCellFromCoords(touch.clientX, touch.clientY);
+      if (currentCell) {
+        const line = calculateLine(dragStartRef.current, currentCell);
+        if (line) {
+          setSelectedCells(line);
+          selectedCellsRef.current = line;
+        }
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+
+    if (hasMovedRef.current) {
+      // Drag gesture ended
+      const cells = selectedCellsRef.current;
+      if (cells.length > 1) {
+        const matched = checkSelectedWord(cells);
+        if (!matched) {
+          playSound('click');
+          setTimeout(() => {
+            setSelectedCells([]);
+            selectedCellsRef.current = [];
+          }, 300);
+        } else {
+          setSelectedCells([]);
+          selectedCellsRef.current = [];
+        }
+      } else {
+        setSelectedCells([]);
+        selectedCellsRef.current = [];
       }
       setTapStart(null);
+    } else if (dragStartRef.current) {
+      // Discrete tap (no drag movement)
+      handleCellTap(dragStartRef.current.row, dragStartRef.current.col);
+    }
+
+    dragStartRef.current = null;
+    startCoordsRef.current = null;
+    hasMovedRef.current = false;
+
+    setTimeout(() => {
+      isTouchActiveRef.current = false;
+    }, 400);
+  };
+
+  // MOUSE EVENT HANDLERS (for desktop / laptop mouse)
+  const handleMouseDown = (r: number, c: number, e: React.MouseEvent) => {
+    if (isTouchActiveRef.current) return;
+    if (e.button !== 0) return;
+
+    dragStartRef.current = { row: r, col: c };
+    startCoordsRef.current = { x: e.clientX, y: e.clientY };
+    isDraggingRef.current = true;
+    hasMovedRef.current = false;
+  };
+
+  const handleMouseEnter = (r: number, c: number) => {
+    if (isTouchActiveRef.current) return;
+    if (!isDraggingRef.current || !dragStartRef.current) return;
+
+    hasMovedRef.current = true;
+    const line = calculateLine(dragStartRef.current, { row: r, col: c });
+    if (line) {
+      setSelectedCells(line);
+      selectedCellsRef.current = line;
     }
   };
 
-  // Mouse Drag Handlers
-  const handleCellMouseDown = (r: number, c: number) => {
-    setIsSelecting(true);
-    setSelectedCells([{ row: r, col: c }]);
-    setTapStart({ row: r, col: c });
-    playSound('select');
-  };
+  const handleMouseUp = (r: number, c: number) => {
+    if (isTouchActiveRef.current) return;
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
 
-  const handleCellMouseEnter = (r: number, c: number) => {
-    if (!isSelecting) return;
-    const start = selectedCells[0] || tapStart;
-    if (!start) return;
-
-    const dr = r - start.row;
-    const dc = c - start.col;
-    const stepR = dr === 0 ? 0 : dr > 0 ? 1 : -1;
-    const stepC = dc === 0 ? 0 : dc > 0 ? 1 : -1;
-
-    if (dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc)) {
-      const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
-      const newSelection: CellPos[] = [];
-      for (let i = 0; i < length; i++) {
-        newSelection.push({ row: start.row + i * stepR, col: start.col + i * stepC });
+    if (hasMovedRef.current) {
+      const cells = selectedCellsRef.current;
+      if (cells.length > 1) {
+        const matched = checkSelectedWord(cells);
+        if (!matched) {
+          playSound('click');
+          setTimeout(() => {
+            setSelectedCells([]);
+            selectedCellsRef.current = [];
+          }, 300);
+        } else {
+          setSelectedCells([]);
+          selectedCellsRef.current = [];
+        }
+      } else {
+        setSelectedCells([]);
+        selectedCellsRef.current = [];
       }
-      setSelectedCells(newSelection);
-    }
-  };
-
-  const handleCellMouseUp = () => {
-    if (!isSelecting) return;
-    setIsSelecting(false);
-
-    if (selectedCells.length > 1) {
-      const matched = checkSelectedWord(selectedCells);
-      if (!matched) {
-        playSound('click');
-      }
-      setSelectedCells([]);
       setTapStart(null);
+    } else {
+      handleCellTap(r, c);
     }
+
+    dragStartRef.current = null;
+    startCoordsRef.current = null;
+    hasMovedRef.current = false;
   };
 
   const toggleHint = (clueId: string) => {
@@ -1068,27 +1246,35 @@ export function WordSearchGame() {
           <div
             className="grid gap-1 sm:gap-1.5 select-none touch-none"
             style={{ gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))` }}
-            onMouseLeave={handleCellMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
           >
             {gridMatrix.map((row, r) =>
               row.map((letter, c) => {
                 const selected = isCellSelected(r, c);
                 const foundColor = isCellFound(r, c);
+                const isTapStartCell = tapStart?.row === r && tapStart?.col === c && selectedCells.length === 1;
 
                 return (
                   <button
                     key={`${r}-${c}`}
                     type="button"
-                    onClick={() => handleCellClick(r, c)}
-                    onMouseDown={() => handleCellMouseDown(r, c)}
-                    onMouseEnter={() => handleCellMouseEnter(r, c)}
-                    onMouseUp={handleCellMouseUp}
-                    className={`w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 rounded-xl font-black text-[11px] sm:text-xs lg:text-sm font-mono flex items-center justify-center transition-all cursor-pointer ${
-                      selected
-                        ? 'bg-amber-400 text-slate-950 scale-110 shadow-md ring-2 ring-amber-500 z-10'
+                    data-cell-pos="true"
+                    data-row={r}
+                    data-col={c}
+                    onMouseDown={(e) => handleMouseDown(r, c, e)}
+                    onMouseEnter={() => handleMouseEnter(r, c)}
+                    onMouseUp={() => handleMouseUp(r, c)}
+                    className={`w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-9.5 lg:h-9.5 rounded-xl font-black text-xs sm:text-xs lg:text-sm font-mono flex items-center justify-center transition-all cursor-pointer touch-manipulation select-none ${
+                      isTapStartCell
+                        ? 'bg-amber-400 text-slate-950 scale-110 shadow-lg ring-4 ring-amber-400/70 z-20 animate-pulse'
+                        : selected
+                        ? 'bg-amber-400 text-slate-950 scale-105 shadow-md ring-2 ring-amber-500 z-10'
                         : foundColor
                         ? 'text-white font-black shadow-xs scale-102'
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-800 active:scale-95'
                     }`}
                     style={foundColor && !selected ? { backgroundColor: foundColor } : {}}
                   >
@@ -1096,6 +1282,35 @@ export function WordSearchGame() {
                   </button>
                 );
               })
+            )}
+          </div>
+
+          {/* Interactive Touch / Smart Board Helper Banner */}
+          <div className="w-full max-w-md">
+            {tapStart ? (
+              <div className="mt-4 px-4 py-2.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold flex items-center justify-between gap-2 animate-in fade-in">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping shrink-0" />
+                  <span>
+                    1. harf seçildi (<strong>{gridMatrix[tapStart.row]?.[tapStart.col]}</strong>). Şimdi kelimenin <strong>son harfine</strong> dokunun veya sürükleyin!
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTapStart(null);
+                    setSelectedCells([]);
+                    playSound('click');
+                  }}
+                  className="px-2.5 py-1 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 text-[11px] font-bold cursor-pointer transition-colors shrink-0"
+                >
+                  İptal
+                </button>
+              </div>
+            ) : (
+              <div className="mt-4 px-3.5 py-2 rounded-2xl bg-slate-50 border border-slate-200 text-slate-500 text-[11px] sm:text-xs flex items-center justify-between text-center sm:text-left">
+                <span>💡 <strong>Akıllı Tahta & Mobil:</strong> Parmağınızı kaydırarak seçebilir ya da önce ilk, sonra son harfe dokunabilirsiniz.</span>
+              </div>
             )}
           </div>
         </div>
