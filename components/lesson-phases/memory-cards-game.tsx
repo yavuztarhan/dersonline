@@ -1634,7 +1634,7 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
                 
                 {/* BACK FACE (Kapalı Yüz - Gizli Desen) */}
                 <div
-                  className="absolute inset-0 w-full h-full rounded-3xl p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950 border-2 border-slate-700/80 hover:border-teal-400/80 flex flex-col items-center justify-between text-white [backface-visibility:hidden] shadow-md group transition-colors"
+                  className="absolute inset-0 w-full h-full rounded-3xl p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950 border-2 border-b-4 border-slate-700 border-b-slate-900 hover:border-teal-400 hover:border-b-teal-500 flex flex-col items-center justify-between text-white [backface-visibility:hidden] shadow-md group transition-all"
                 >
                   {/* Decorative Header */}
                   <div className="w-full flex items-center justify-between text-[10px] font-mono text-teal-400/60">
@@ -1647,19 +1647,19 @@ export function MemoryCardsGame({ onBackToMenu }: { onBackToMenu?: () => void })
                     ?
                   </div>
 
-                  <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 group-hover:text-teal-300 transition-colors">
-                    Çevirmek İçin Tıkla
+                  <div className="px-3.5 py-1.5 rounded-xl bg-teal-500/20 group-hover:bg-teal-500 text-teal-300 group-hover:text-slate-950 border border-teal-500/40 text-[11px] font-black tracking-wide transition-all shadow-xs flex items-center gap-1.5">
+                    <span>👆 Dokun & Çevir</span>
                   </div>
                 </div>
 
                 {/* FRONT FACE (Açık Yüz - [transform:rotateY(180deg)]) */}
                 <div
-                  className={`absolute inset-0 w-full h-full rounded-3xl p-4 sm:p-5 flex flex-col justify-between [backface-visibility:hidden] [transform:rotateY(180deg)] border-2 transition-all ${
+                  className={`absolute inset-0 w-full h-full rounded-3xl p-4 sm:p-5 flex flex-col justify-between [backface-visibility:hidden] [transform:rotateY(180deg)] border-2 border-b-4 transition-all ${
                     card.isMatched
-                      ? 'bg-emerald-50/95 border-emerald-500 shadow-emerald-500/20 shadow-lg text-emerald-950'
+                      ? 'bg-emerald-50/95 border-emerald-500 border-b-emerald-600 shadow-emerald-500/20 shadow-lg text-emerald-950'
                       : isWrong
-                      ? 'bg-rose-50 border-rose-500 text-rose-950 shadow-rose-500/20 shadow-lg'
-                      : 'bg-white border-teal-500 shadow-xl text-slate-900'
+                      ? 'bg-rose-50 border-rose-500 border-b-rose-600 text-rose-950 shadow-rose-500/20 shadow-lg'
+                      : 'bg-white border-teal-500 border-b-teal-600 shadow-xl text-slate-900'
                   }`}
                 >
                   

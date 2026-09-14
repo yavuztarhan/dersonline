@@ -223,6 +223,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
 
   const [draggingPointId, setDraggingPointId] = useState<string | null>(null);
+  const touchDrawStartRef = useRef<{
+    x: number;
+    y: number;
+    point: GeoPoint;
+    tool: string;
+  } | null>(null);
   const [activeColor, setActiveColor] = useState('#0284c7');
   const [showGrid, setShowGrid] = useState(true);
   const [showProtractor, setShowProtractor] = useState(true);
@@ -611,8 +617,11 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setObjects([]);
     setAngles([]);
     setSelectedPointForLink(null);
+    setCompassCenterPoint(null);
     setAngleStepPoint1(null);
     setAngleStepPoint2(null);
+    setHoverPos(null);
+    if (touchDrawStartRef.current) touchDrawStartRef.current = null;
     setAngleNameInput('');
     setAngleNameStatus('idle');
     setAngleNameFeedback(null);
@@ -703,42 +712,50 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   // Pointer Down on Canvas
   const handlePointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!svgRef.current) return;
+    try {
+      (e.currentTarget as SVGElement)?.setPointerCapture?.(e.pointerId);
+    } catch {}
+
     const rect = svgRef.current.getBoundingClientRect();
     const x = Math.round(e.clientX - rect.left);
     const y = Math.round(e.clientY - rect.top);
 
     const hitPoint = getPointNear(x, y, points);
 
-    // If Drag Tool active or hit existing point
-    if (activeTool === 'drag' || hitPoint) {
+    // 1. DRAG TOOL: Move existing points
+    if (activeTool === 'drag') {
       if (hitPoint) {
         setDraggingPointId(hitPoint.id);
         playSound('click');
-        return;
       }
+      return;
     }
 
-    // POINT TOOL (MAT.5.3.1)
+    // 2. POINT TOOL (MAT.5.3.1)
     if (activeTool === 'point') {
+      if (hitPoint) {
+        setFeedbackMsg(`📍 Bu konumda zaten ${hitPoint.label} noktası var.`);
+        return;
+      }
       const nextLabel = POINT_LABELS[points.length % POINT_LABELS.length];
       const newPt: GeoPoint = {
-        id: `pt-${Date.now()}-${Math.random()}`,
+        id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         label: nextLabel,
         x,
         y,
         color: activeColor
       };
-      setPoints([...points, newPt]);
+      setPoints((prev) => [...prev, newPt]);
       playSound('select');
       addPoints(5);
       setFeedbackMsg(`📍 ${nextLabel} Noktası eklendi (Konum: x:${x}, y:${y}). Noktanın boyutu yoktur, sadece konum belirtir.`);
       return;
     }
 
-    // ANGLE TOOL (MAT.5.3.3)
+    // 3. ANGLE TOOL (MAT.5.3.3)
     if (activeTool === 'angle') {
       const pt: GeoPoint = hitPoint || {
-        id: `pt-${Date.now()}-${Math.random()}`,
+        id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         label: !angleStepPoint1 ? 'O' : !angleStepPoint2 ? 'A' : 'B',
         x,
         y,
@@ -746,16 +763,20 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       };
 
       if (!hitPoint) {
-        setPoints([...points, pt]);
+        setPoints((prev) => [...prev, pt]);
       }
 
       if (!angleStepPoint1) {
         setAngleStepPoint1(pt);
+        setHoverPos({ x, y });
+        touchDrawStartRef.current = { x, y, point: pt, tool: 'angle-step-1' };
         playSound('select');
-        setFeedbackMsg(`📍 Açının Köşesi (${pt.label}) belirlendi. Şimdi taban kolunun yönünü belirlemek için tahtaya tıklayınız.`);
+        setFeedbackMsg(`📍 Açının Köşesi (${pt.label}) belirlendi. Taban kolu için sürükleyip bırakınız veya tahtaya tıklayınız.`);
       } else if (!angleStepPoint2) {
         if (angleStepPoint1.id === pt.id) return;
         setAngleStepPoint2(pt);
+        setHoverPos({ x, y });
+        touchDrawStartRef.current = { x, y, point: pt, tool: 'angle-step-2' };
         playSound('select');
 
         const ray1: GeoObject = {
@@ -767,8 +788,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           label: `Taban Kolu [${angleStepPoint1.label}${pt.label}`,
           color: '#0284c7'
         };
-        setObjects([...objects, ray1]);
-        setFeedbackMsg(`📐 [${angleStepPoint1.label}${pt.label} Taban Işını çizildi. Şimdi dönen 2. kolu (${pt.label === 'A' ? 'B' : 'C'}) çizmek için tahtaya tıklayınız!`);
+        setObjects((prev) => [...prev, ray1]);
+        setFeedbackMsg(`📐 [${angleStepPoint1.label}${pt.label} Taban Işını çizildi. Şimdi dönen kolu çizmek için sürükleyip bırakınız veya tıklayınız!`);
       } else {
         if (angleStepPoint1.id === pt.id || angleStepPoint2.id === pt.id) return;
 
@@ -801,6 +822,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         setAngleStepPoint1(null);
         setAngleStepPoint2(null);
         setHoverPos(null);
+        touchDrawStartRef.current = null;
         playSound('success');
         addPoints(25);
         setFeedbackMsg(`🎉 ∠${angleStepPoint2.label}${angleStepPoint1.label}${pt.label} Açısı oluşturuldu! Ölçü: ${deg}° (${typeInfo.title}).`);
@@ -808,64 +830,85 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       return;
     }
 
-    // SEGMENT / RAY / LINE TOOLS (MAT.5.3.1)
+    // 4. SEGMENT / RAY / LINE TOOLS (MAT.5.3.1)
     if (activeTool === 'segment' || activeTool === 'ray' || activeTool === 'line') {
-      const pt: GeoPoint = hitPoint || {
-        id: `pt-${Date.now()}-${Math.random()}`,
-        label: POINT_LABELS[points.length % POINT_LABELS.length],
-        x,
-        y,
-        color: activeColor
-      };
-
-      if (!hitPoint) {
-        setPoints([...points, pt]);
-      }
+      const toolName = activeTool === 'segment' ? 'Doğru Parçası' : activeTool === 'ray' ? 'Işın' : 'Doğru';
 
       if (!selectedPointForLink) {
-        setSelectedPointForLink(pt);
+        // First point (1. Nokta - dokununca nokta koyar / seçer)
+        const p1: GeoPoint = hitPoint || {
+          id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          label: POINT_LABELS[points.length % POINT_LABELS.length],
+          x,
+          y,
+          color: activeColor
+        };
+
+        if (!hitPoint) {
+          setPoints((prev) => [...prev, p1]);
+        }
+
+        setSelectedPointForLink(p1);
+        setHoverPos({ x, y });
+        touchDrawStartRef.current = { x, y, point: p1, tool: activeTool };
         playSound('select');
-        const toolName = activeTool === 'segment' ? 'Doğru Parçası' : activeTool === 'ray' ? 'Işın' : 'Doğru';
-        setFeedbackMsg(`1. Nokta (${pt.label}) seçildi. ${toolName} çizimini tamamlamak için 2. noktaya tıklayınız.`);
+        setFeedbackMsg(`📍 1. Nokta (${p1.label}) konuldu. Sürükleyip parmağınızı kaldırarak veya 2. noktaya dokunarak ${toolName} çizebilirsiniz.`);
       } else {
-        if (selectedPointForLink.id === pt.id) {
+        // Second point via tap / click mode
+        const p1 = selectedPointForLink;
+        if (hitPoint && hitPoint.id === p1.id) {
           setSelectedPointForLink(null);
+          setHoverPos(null);
+          touchDrawStartRef.current = null;
           return;
         }
 
-        const dx = pt.x - selectedPointForLink.x;
-        const dy = pt.y - selectedPointForLink.y;
-        const pixelLen = Math.round(Math.sqrt(dx * dx + dy * dy));
-        const cmLen = Math.round((pixelLen / 30) * 10) / 10; // Approx cm scale
+        const p2: GeoPoint = hitPoint || {
+          id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          label: POINT_LABELS[points.length % POINT_LABELS.length],
+          x,
+          y,
+          color: activeColor
+        };
+
+        if (!hitPoint) {
+          setPoints((prev) => [...prev, p2]);
+        }
+
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const pixelLen = Math.round(Math.hypot(dx, dy));
+        const cmLen = Math.round((pixelLen / 30) * 10) / 10;
 
         let symbolText = '';
         let labelText = '';
 
         if (activeTool === 'segment') {
-          symbolText = `[${selectedPointForLink.label}${pt.label}]`;
-          labelText = `Doğru Parçası [${selectedPointForLink.label}${pt.label}] (${cmLen} cm)`;
+          symbolText = `[${p1.label}${p2.label}]`;
+          labelText = `Doğru Parçası [${p1.label}${p2.label}] (${cmLen} cm)`;
         } else if (activeTool === 'ray') {
-          symbolText = `[${selectedPointForLink.label}${pt.label}>`;
-          labelText = `Işın [${selectedPointForLink.label}${pt.label}>`;
+          symbolText = `[${p1.label}${p2.label}>`;
+          labelText = `Işın [${p1.label}${p2.label}>`;
         } else {
-          symbolText = `${selectedPointForLink.label}${pt.label}`;
-          labelText = `Doğru ${selectedPointForLink.label}${pt.label}`;
+          symbolText = `${p1.label}${p2.label}`;
+          labelText = `Doğru ${p1.label}${p2.label}`;
         }
 
         const newObj: GeoObject = {
           id: `obj-${Date.now()}`,
           type: activeTool,
-          p1: selectedPointForLink,
-          p2: pt,
+          p1,
+          p2,
           symbol: symbolText,
           label: labelText,
           length: cmLen,
           color: activeColor
         };
 
-        setObjects([...objects, newObj]);
+        setObjects((prev) => [...prev, newObj]);
         setSelectedPointForLink(null);
         setHoverPos(null);
+        touchDrawStartRef.current = null;
         playSound('success');
         addPoints(15);
         setFeedbackMsg(`✨ ${labelText} başarıyla çizildi!`);
@@ -873,52 +916,74 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       return;
     }
 
-    // COMPASS & CIRCLE TOOL (MAT.5.3.1)
+    // 5. COMPASS & CIRCLE TOOL (MAT.5.3.1)
     if (activeTool === 'compass') {
-      const pt: GeoPoint = hitPoint || {
-        id: `pt-${Date.now()}-${Math.random()}`,
-        label: !compassCenterPoint ? 'M' : POINT_LABELS[points.length % POINT_LABELS.length],
-        x,
-        y,
-        color: activeColor
-      };
-      if (!hitPoint) setPoints([...points, pt]);
-
       if (!compassCenterPoint) {
-        setCompassCenterPoint(pt);
+        // Center point M
+        const pCenter: GeoPoint = hitPoint || {
+          id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          label: 'M',
+          x,
+          y,
+          color: activeColor
+        };
+
+        if (!hitPoint) {
+          setPoints((prev) => [...prev, pCenter]);
+        }
+
+        setCompassCenterPoint(pCenter);
+        setHoverPos({ x, y });
+        touchDrawStartRef.current = { x, y, point: pCenter, tool: 'compass' };
         playSound('select');
-        setFeedbackMsg(`⭕ Pergelin iğnesi ${pt.label} (Merkez) noktasına sabitlendi. Şimdi yarıçapı belirlemek için bir çember noktasına tıklayınız.`);
+        setFeedbackMsg(`⭕ Pergelin iğnesi ${pCenter.label} (Merkez) noktasına sabitlendi. Yarıçapı belirlemek için sürükleyip parmağınızı kaldırınız veya bir noktaya tıklayınız.`);
       } else {
-        if (compassCenterPoint.id === pt.id) return;
-        const dx = pt.x - compassCenterPoint.x;
-        const dy = pt.y - compassCenterPoint.y;
-        const radPix = Math.round(Math.sqrt(dx * dx + dy * dy)) || 45;
+        // Boundary point via tap / click mode
+        const pCenter = compassCenterPoint;
+        if (hitPoint && hitPoint.id === pCenter.id) return;
+
+        const p2: GeoPoint = hitPoint || {
+          id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          label: POINT_LABELS[points.length % POINT_LABELS.length],
+          x,
+          y,
+          color: activeColor
+        };
+
+        if (!hitPoint) {
+          setPoints((prev) => [...prev, p2]);
+        }
+
+        const dx = p2.x - pCenter.x;
+        const dy = p2.y - pCenter.y;
+        const radPix = Math.round(Math.hypot(dx, dy)) || 45;
         const radCm = Math.round((radPix / 25) * 10) / 10;
 
         const newCircle: GeoObject = {
           id: `circ-${Date.now()}`,
           type: 'circle',
-          p1: compassCenterPoint,
-          p2: pt,
-          symbol: `Çember (${compassCenterPoint.label})`,
-          label: `Çember (Merkez: ${compassCenterPoint.label}, r = ${radCm} cm, R = ${Math.round(radCm * 2 * 10) / 10} cm)`,
+          p1: pCenter,
+          p2,
+          symbol: `Çember (${pCenter.label})`,
+          label: `Çember (Merkez: ${pCenter.label}, r = ${radCm} cm, R = ${Math.round(radCm * 2 * 10) / 10} cm)`,
           radius: radPix,
           length: radCm,
           isDisk: false,
           color: activeColor
         };
 
-        setObjects([...objects, newCircle]);
+        setObjects((prev) => [...prev, newCircle]);
         setCompassCenterPoint(null);
         setHoverPos(null);
+        touchDrawStartRef.current = null;
         playSound('success');
         addPoints(20);
-        setFeedbackMsg(`⭕ ${compassCenterPoint.label} merkezli çember çizildi! Yarıçap r = ${radCm} cm, Çap R = ${Math.round(radCm * 2 * 10) / 10} cm.`);
+        setFeedbackMsg(`⭕ ${pCenter.label} merkezli çember çizildi! Yarıçap r = ${radCm} cm, Çap R = ${Math.round(radCm * 2 * 10) / 10} cm.`);
       }
       return;
     }
 
-    // SET SQUARE / PERPENDICULAR TOOL (MAT.5.3.1)
+    // 6. SET SQUARE / PERPENDICULAR TOOL (MAT.5.3.1)
     if (activeTool === 'setsquare') {
       const pTop: GeoPoint = hitPoint || {
         id: `pt-${Date.now()}-${Math.random()}`,
@@ -971,7 +1036,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       return;
     }
 
-    // ART MOTIF TOOL [D7.1] (MAT.5.3.1)
+    // 7. ART MOTIF TOOL [D7.1] (MAT.5.3.1)
     if (activeTool === 'artmotif') {
       const centerPt: GeoPoint = {
         id: `pt-motif-${Date.now()}`,
@@ -1001,7 +1066,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     }
   };
 
-  // Pointer Move (Dragging & Preview Lines)
+  // Pointer Move (Dragging, Touch-Draw Live Stretching & Preview Lines)
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
@@ -1012,18 +1077,228 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       setPoints((prev) =>
         prev.map((pt) => (pt.id === draggingPointId ? { ...pt, x, y } : pt))
       );
+      setObjects((prev) =>
+        prev.map((obj) => {
+          const isP1 = obj.p1.id === draggingPointId;
+          const isP2 = obj.p2?.id === draggingPointId;
+          if (!isP1 && !isP2) return obj;
+
+          const updatedP1 = isP1 ? { ...obj.p1, x, y } : (points.find((p) => p.id === obj.p1.id) || obj.p1);
+          const updatedP2 = obj.p2
+            ? isP2
+              ? { ...obj.p2, x, y }
+              : (points.find((p) => p.id === obj.p2!.id) || obj.p2)
+            : undefined;
+
+          if (obj.type === 'segment' && updatedP2) {
+            const dx = updatedP2.x - updatedP1.x;
+            const dy = updatedP2.y - updatedP1.y;
+            const pixelLen = Math.hypot(dx, dy);
+            const currentCm = Math.round((pixelLen / 30) * 10) / 10;
+            return {
+              ...obj,
+              p1: updatedP1,
+              p2: updatedP2,
+              length: currentCm,
+              label: `Doğru Parçası [${updatedP1.label}${updatedP2.label}] (${currentCm} cm)`
+            };
+          }
+
+          if (obj.type === 'circle') {
+            const rad = updatedP2
+              ? Math.round(Math.hypot(updatedP2.x - updatedP1.x, updatedP2.y - updatedP1.y))
+              : (obj.radius || 60);
+            const radCm = Math.round((rad / 25) * 10) / 10;
+            return {
+              ...obj,
+              p1: updatedP1,
+              p2: updatedP2,
+              radius: rad,
+              length: radCm,
+              label: `Çember (Merkez: ${updatedP1.label}, r = ${radCm} cm, R = ${Math.round(radCm * 2 * 10) / 10} cm)`
+            };
+          }
+
+          return {
+            ...obj,
+            p1: updatedP1,
+            ...(updatedP2 ? { p2: updatedP2 } : {})
+          };
+        })
+      );
       return;
     }
 
-    if (selectedPointForLink || angleStepPoint1) {
+    if (selectedPointForLink || angleStepPoint1 || compassCenterPoint || touchDrawStartRef.current) {
       setHoverPos({ x, y });
     }
   };
 
-  const handlePointerUp = () => {
+  // Pointer Up (Complete Drag-to-Draw Shape upon Finger Release)
+  const handlePointerUp = (e?: React.PointerEvent<SVGSVGElement>) => {
+    if (e && svgRef.current) {
+      try {
+        (e.currentTarget as SVGElement)?.releasePointerCapture?.(e.pointerId);
+      } catch {}
+    }
+
     if (draggingPointId) {
       setDraggingPointId(null);
       playSound('click');
+    }
+
+    if (!touchDrawStartRef.current || !svgRef.current) {
+      return;
+    }
+
+    const startInfo = touchDrawStartRef.current;
+    touchDrawStartRef.current = null;
+
+    let upX = hoverPos?.x ?? startInfo.x;
+    let upY = hoverPos?.y ?? startInfo.y;
+
+    if (e && svgRef.current) {
+      const rect = svgRef.current.getBoundingClientRect();
+      upX = Math.round(e.clientX - rect.left);
+      upY = Math.round(e.clientY - rect.top);
+    }
+
+    const dist = Math.hypot(upX - startInfo.x, upY - startInfo.y);
+
+    // If dragged at least 20 pixels, complete drawing immediately on finger release!
+    if (dist >= 20) {
+      const p1 = startInfo.point;
+
+      // Check if finger lifted over an existing point (snap)
+      const hitPoint = getPointNear(upX, upY, points.filter((p) => p.id !== p1.id), 24);
+
+      const nextLabel = POINT_LABELS[points.length % POINT_LABELS.length];
+      const p2: GeoPoint = hitPoint || {
+        id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        label: nextLabel,
+        x: upX,
+        y: upY,
+        color: activeColor
+      };
+
+      if (!hitPoint) {
+        setPoints((prev) => [...prev, p2]);
+      }
+
+      if (startInfo.tool === 'segment' || startInfo.tool === 'ray' || startInfo.tool === 'line') {
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const pixelLen = Math.round(Math.hypot(dx, dy));
+        const cmLen = Math.round((pixelLen / 30) * 10) / 10;
+
+        let symbolText = '';
+        let labelText = '';
+
+        if (startInfo.tool === 'segment') {
+          symbolText = `[${p1.label}${p2.label}]`;
+          labelText = `Doğru Parçası [${p1.label}${p2.label}] (${cmLen} cm)`;
+        } else if (startInfo.tool === 'ray') {
+          symbolText = `[${p1.label}${p2.label}>`;
+          labelText = `Işın [${p1.label}${p2.label}>`;
+        } else {
+          symbolText = `${p1.label}${p2.label}`;
+          labelText = `Doğru ${p1.label}${p2.label}`;
+        }
+
+        const newObj: GeoObject = {
+          id: `obj-${Date.now()}`,
+          type: startInfo.tool as any,
+          p1,
+          p2,
+          symbol: symbolText,
+          label: labelText,
+          length: cmLen,
+          color: activeColor
+        };
+
+        setObjects((prev) => [...prev, newObj]);
+        setSelectedPointForLink(null);
+        setHoverPos(null);
+        playSound('success');
+        addPoints(15);
+        setFeedbackMsg(`✨ ${labelText} başarıyla çizildi!`);
+      } else if (startInfo.tool === 'compass') {
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const radPix = Math.round(Math.hypot(dx, dy)) || 45;
+        const radCm = Math.round((radPix / 25) * 10) / 10;
+
+        const newCircle: GeoObject = {
+          id: `circ-${Date.now()}`,
+          type: 'circle',
+          p1,
+          p2,
+          symbol: `Çember (${p1.label})`,
+          label: `Çember (Merkez: ${p1.label}, r = ${radCm} cm, R = ${Math.round(radCm * 2 * 10) / 10} cm)`,
+          radius: radPix,
+          length: radCm,
+          isDisk: false,
+          color: activeColor
+        };
+
+        setObjects((prev) => [...prev, newCircle]);
+        setCompassCenterPoint(null);
+        setHoverPos(null);
+        playSound('success');
+        addPoints(20);
+        setFeedbackMsg(`⭕ ${p1.label} merkezli çember çizildi! Yarıçap r = ${radCm} cm, Çap R = ${Math.round(radCm * 2 * 10) / 10} cm.`);
+      } else if (startInfo.tool === 'angle-step-1') {
+        setAngleStepPoint2(p2);
+        const ray1: GeoObject = {
+          id: `ray-1-${Date.now()}`,
+          type: 'ray',
+          p1,
+          p2,
+          symbol: `[${p1.label}${p2.label}`,
+          label: `Taban Kolu [${p1.label}${p2.label}`,
+          color: '#0284c7'
+        };
+        setObjects((prev) => [...prev, ray1]);
+        setFeedbackMsg(`📐 [${p1.label}${p2.label} Taban Işını çizildi. Şimdi dönen 2. kolu çizmek için sürükleyip bırakınız veya tıklayınız!`);
+        playSound('select');
+      } else if (startInfo.tool === 'angle-step-2' && angleStepPoint1) {
+        const vertex = angleStepPoint1;
+        const arm1 = startInfo.point;
+        const arm2 = p2;
+
+        const ray2: GeoObject = {
+          id: `ray-2-${Date.now()}`,
+          type: 'ray',
+          p1: vertex,
+          p2: arm2,
+          symbol: `[${vertex.label}${arm2.label}`,
+          label: `Dönen Kol [${vertex.label}${arm2.label}`,
+          color: '#10b396'
+        };
+
+        const deg = getAngleDegree(vertex, arm1, arm2);
+        const typeInfo = getAngleType(deg);
+
+        const newAngle: GeoAngle = {
+          id: `ang-${Date.now()}`,
+          vertex,
+          p1: arm1,
+          p2: arm2,
+          degree: deg,
+          type: typeInfo.type,
+          label: `s(∠${arm1.label}${vertex.label}${arm2.label}) = ${deg}° (${typeInfo.title})`,
+          color: typeInfo.color
+        };
+
+        setObjects((prev) => [...prev, ray2]);
+        setAngles((prev) => [...prev, newAngle]);
+        setAngleStepPoint1(null);
+        setAngleStepPoint2(null);
+        setHoverPos(null);
+        playSound('success');
+        addPoints(25);
+        setFeedbackMsg(`🎉 ∠${arm1.label}${vertex.label}${arm2.label} Açısı oluşturuldu! Ölçü: ${deg}° (${typeInfo.title}).`);
+      }
     }
   };
 
@@ -2603,16 +2878,36 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
               {/* Connecting line / compass radius preview */}
               {selectedPointForLink && hoverPos && (
-                <line
-                  x1={selectedPointForLink.x}
-                  y1={selectedPointForLink.y}
-                  x2={hoverPos.x}
-                  y2={hoverPos.y}
-                  stroke={activeColor}
-                  strokeWidth="3"
-                  strokeDasharray="6,4"
-                  className="animate-pulse"
-                />
+                <g className="pointer-events-none">
+                  <line
+                    x1={selectedPointForLink.x}
+                    y1={selectedPointForLink.y}
+                    x2={hoverPos.x}
+                    y2={hoverPos.y}
+                    stroke={activeColor}
+                    strokeWidth="3.5"
+                    strokeDasharray="6,4"
+                    className="animate-pulse"
+                  />
+                  {/* Endpoint Preview Circle */}
+                  <circle cx={hoverPos.x} cy={hoverPos.y} r="6" fill={activeColor} fillOpacity="0.4" stroke={activeColor} strokeWidth="2" />
+
+                  {/* Dynamic Ray Arrow Preview if activeTool is ray */}
+                  {activeTool === 'ray' && (() => {
+                    const dx = hoverPos.x - selectedPointForLink.x;
+                    const dy = hoverPos.y - selectedPointForLink.y;
+                    const ang = Math.atan2(dy, dx);
+                    const tipX = hoverPos.x;
+                    const tipY = hoverPos.y;
+                    const aLen = 14;
+                    const aW = 7;
+                    const lX = tipX - aLen * Math.cos(ang) - aW * Math.sin(ang);
+                    const lY = tipY - aLen * Math.sin(ang) + aW * Math.cos(ang);
+                    const rX = tipX - aLen * Math.cos(ang) + aW * Math.sin(ang);
+                    const rY = tipY - aLen * Math.sin(ang) - aW * Math.cos(ang);
+                    return <polygon points={`${tipX},${tipY} ${lX},${lY} ${rX},${rY}`} fill={activeColor} />;
+                  })()}
+                </g>
               )}
               {compassCenterPoint && hoverPos && (
                 <g>
@@ -2650,7 +2945,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 if (type === 'segment' && p2) {
                   const dx = p2.x - p1.x;
                   const dy = p2.y - p1.y;
-                  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const len = Math.hypot(dx, dy) || 1;
+                  const currentCm = Math.round((len / 30) * 10) / 10;
                   const midX = (p1.x + p2.x) / 2;
                   const midY = (p1.y + p2.y) / 2;
 
@@ -2660,9 +2956,9 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <circle cx={p1.x} cy={p1.y} r="5.5" fill={color} stroke="#ffffff" strokeWidth="2" />
                       <circle cx={p2.x} cy={p2.y} r="5.5" fill={color} stroke="#ffffff" strokeWidth="2" />
                       <g transform={`translate(${midX}, ${midY - 14})`}>
-                        <rect x="-36" y="-12" width="72" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
+                        <rect x="-46" y="-12" width="92" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
                         <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
-                          |{p1.label}{p2.label}| = {length || Math.round(len / 3)} cm
+                          |{p1.label}{p2.label}| = {currentCm} cm
                         </text>
                       </g>
                     </g>
@@ -2754,8 +3050,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
                 // 4. CIRCLE: Compass circle with center M, radius line r, diameter R
                 if (type === 'circle') {
-                  const rad = obj.radius || 60;
-                  const rCm = obj.length || Math.round((rad / 25) * 10) / 10;
+                  const rad = p2 ? Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y)) : (obj.radius || 60);
+                  const rCm = Math.round((rad / 25) * 10) / 10;
                   const dCm = Math.round(rCm * 2 * 10) / 10;
 
                   return (

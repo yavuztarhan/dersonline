@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 
 interface MultiplicationQuestion {
+  id: string;
   num1: number;
   num2: number;
   correctAnswer: number;
@@ -112,6 +113,7 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
     const options = [correctAnswer, ...Array.from(distractors)].sort(() => Math.random() - 0.5);
 
     return {
+      id: `q-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
       num1,
       num2,
       correctAnswer,
@@ -221,6 +223,10 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
   // Answer Evaluation
   const handleSelectOption = (optionValue: number) => {
     if (isAnswerChecking || gameState !== 'playing' || !currentQuestion) return;
+
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
 
     setSelectedOption(optionValue);
     setIsAnswerChecking(true);
@@ -519,7 +525,7 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
               const isSelected = selectedOption === option;
               const isCorrect = option === currentQuestion.correctAnswer;
               
-              let buttonStyle = 'bg-white hover:bg-teal-50/80 border-2 border-slate-200 hover:border-teal-400 text-slate-900 hover:scale-[1.02] shadow-sm';
+              let buttonStyle = 'bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-900 shadow-sm outline-none focus:outline-none focus:ring-0';
 
               if (isAnswerChecking) {
                 if (isCorrect) {
@@ -533,10 +539,15 @@ export function MultiplicationGame({ onBackToHub }: MultiplicationGameProps) {
 
               return (
                 <button
-                  key={`${option}-${idx}`}
+                  key={`${currentQuestion.id}-${idx}`}
+                  type="button"
                   disabled={isAnswerChecking}
-                  onClick={() => handleSelectOption(option)}
-                  className={`py-6 px-4 rounded-2xl text-2xl sm:text-3xl font-black transition-all flex flex-col items-center justify-center gap-1 active:scale-95 cursor-pointer relative ${buttonStyle}`}
+                  onPointerUp={(e) => (e.currentTarget as HTMLElement)?.blur()}
+                  onClick={(e) => {
+                    (e.currentTarget as HTMLElement)?.blur();
+                    handleSelectOption(option);
+                  }}
+                  className={`py-6 px-4 rounded-2xl text-2xl sm:text-3xl font-black transition-all flex flex-col items-center justify-center gap-1 active:scale-95 cursor-pointer relative select-none ${buttonStyle}`}
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 absolute top-2 left-3">
                     [{idx + 1}]

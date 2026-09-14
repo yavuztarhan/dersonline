@@ -36,10 +36,13 @@ import {
   clearActiveBoardStudent,
   saveBoardParticipation
 } from '@/lib/board-participation-store';
+import { MathText } from '@/components/ui/math-fraction';
 import {
   Puzzle,
   Sparkles,
   CheckCircle2,
+  Check,
+  MousePointerClick,
   XCircle,
   RotateCcw,
   ArrowRight,
@@ -1056,7 +1059,7 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
           {/* FEATURED GAME: SIFIR DENGE MERKEZİ (MAT.7.1.1) */}
           {selectedGameId === 'zerobalance' && (
             <div className="animate-in fade-in duration-200">
-              <ZeroBalanceCenterGame />
+              <ZeroBalanceCenterGame onBackToMenu={() => setSelectedGameId(null)} />
             </div>
           )}
 
@@ -1171,50 +1174,114 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
                 </div>
               )}
 
+              {/* Interactive Step-by-Step Helper Banner */}
+              <div className="bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 border-2 border-teal-200/90 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black text-lg shadow-sm shrink-0">
+                    👆
+                  </div>
+                  <div>
+                    <div className="text-xs sm:text-sm font-black text-slate-900">
+                      {selectedConcept && !selectedTarget
+                        ? `🎯 Sol kolondan bir kart seçtiniz! Şimdi sağ kolondan doğru tanımına dokunun.`
+                        : !selectedConcept && selectedTarget
+                        ? `🎯 Sağ kolondan bir kart seçtiniz! Şimdi sol kolondan doğru kavramına dokunun.`
+                        : 'Eşleştirmek için sol kolondan bir kavrama, ardından sağ kolondan tanımına dokunun!'}
+                    </div>
+                    <div className="text-[11px] text-teal-800 font-semibold mt-0.5">
+                      Her eşleşen çift: +15 XP • Toplam: {conceptCards.filter((c) => c.matched).length} / {conceptCards.length} Çift Eşleşti
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-white text-teal-800 text-xs font-black border border-teal-200 shadow-2xs">
+                    {conceptCards.filter((c) => c.matched).length === conceptCards.length ? '🎉 Tamamlandı' : `${conceptCards.filter((c) => !c.matched).length} Kalan`}
+                  </span>
+                </div>
+              </div>
+
               {/* Matching Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Left Column: Concepts */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-extrabold text-slate-700 uppercase tracking-wider">
-                      Geometrik Kavramlar
-                    </h4>
-                    <span className="text-xs text-slate-400">Sol Kolon</span>
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-black text-xs">
+                        1
+                      </span>
+                      <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                        Kavramlar & Terimler
+                      </h4>
+                    </div>
+                    <span className="text-xs text-slate-400 font-bold">Sol Kolon</span>
                   </div>
 
                   <div className="space-y-3">
-                    {conceptCards.map((card) => {
+                    {conceptCards.map((card, idx) => {
                       const isSelected = selectedConcept?.id === card.id;
                       const isWrong = wrongPair.includes(card.id);
 
                       return (
                         <button
                           key={card.id}
+                          type="button"
                           disabled={card.matched}
                           onClick={() => handleConceptClick(card)}
-                          className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between ${
+                          className={`group relative w-full text-left p-4 sm:p-5 rounded-2xl border-2 border-b-4 transition-all duration-150 flex items-center justify-between gap-3 cursor-pointer select-none active:translate-y-1 active:border-b-2 outline-none focus:outline-none focus:ring-2 focus:ring-teal-400 ${
                             card.matched
-                              ? 'bg-emerald-50 border-emerald-400 text-emerald-900 opacity-90 shadow-2xs'
+                              ? 'bg-emerald-50/90 border-emerald-300 border-b-emerald-400 text-emerald-950 opacity-80 cursor-default shadow-xs active:translate-y-0 active:border-b-4'
                               : isWrong
-                              ? 'bg-rose-50 border-rose-400 text-rose-900 animate-shake'
+                              ? 'bg-rose-50 border-rose-400 border-b-rose-500 text-rose-950 animate-shake shadow-md'
                               : isSelected
-                              ? 'bg-teal-50 border-teal-600 ring-2 ring-teal-400 shadow-md scale-101'
-                              : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800 shadow-xs'
+                              ? 'bg-gradient-to-r from-teal-600 to-emerald-600 border-teal-700 border-b-teal-900 text-white shadow-lg shadow-teal-600/30 scale-[1.02] ring-4 ring-teal-300/60 -translate-y-0.5'
+                              : 'bg-white hover:bg-teal-50/40 border-slate-200 border-b-slate-300 hover:border-teal-400 hover:border-b-teal-500 hover:-translate-y-0.5 text-slate-900 shadow-sm hover:shadow-md'
                           }`}
                         >
-                          <div>
-                            <div className="font-black text-base">{card.text}</div>
-                            {card.subtext && (
-                              <div className="text-xs text-slate-500 mt-1 font-medium">
-                                {card.subtext}
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <span
+                              className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0 transition-colors shadow-2xs ${
+                                isSelected
+                                  ? 'bg-white/20 text-white border border-white/30'
+                                  : card.matched
+                                  ? 'bg-emerald-200 text-emerald-900'
+                                  : 'bg-slate-100 text-slate-700 group-hover:bg-teal-100 group-hover:text-teal-800 border border-slate-200'
+                              }`}
+                            >
+                              {idx + 1}
+                            </span>
+                            <div className="min-w-0">
+                              <div className={`font-black text-base tracking-tight ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                                <MathText text={card.text} />
                               </div>
-                            )}
+                              {card.subtext && (
+                                <div className={`text-xs mt-0.5 font-medium truncate ${isSelected ? 'text-teal-100' : 'text-slate-500'}`}>
+                                  {card.subtext}
+                                </div>
+                              )}
+                            </div>
                           </div>
+
                           {card.matched ? (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                            <div className="shrink-0 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-black flex items-center gap-1.5 shadow-2xs">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                              <span>Eşleşti ✓</span>
+                            </div>
+                          ) : isWrong ? (
+                            <div className="shrink-0 px-3 py-1.5 rounded-xl bg-rose-100 text-rose-800 border border-rose-300 text-xs font-black flex items-center gap-1.5 shadow-2xs">
+                              <XCircle className="w-4 h-4 text-rose-600" />
+                              <span>Uyuşmadı</span>
+                            </div>
+                          ) : isSelected ? (
+                            <div className="shrink-0 px-3.5 py-1.5 rounded-xl bg-white text-teal-950 text-xs font-black shadow-md flex items-center gap-1.5 animate-pulse">
+                              <Check className="w-3.5 h-3.5 text-teal-600 stroke-[3]" />
+                              <span>Seçildi</span>
+                            </div>
                           ) : (
-                            <div className="w-4 h-4 rounded-full border border-slate-300" />
+                            <div className="shrink-0 px-3.5 py-1.5 rounded-xl bg-slate-100 group-hover:bg-teal-600 text-slate-700 group-hover:text-white border border-slate-200 group-hover:border-teal-600 text-xs font-black transition-all flex items-center gap-1.5 shadow-2xs group-hover:shadow-sm">
+                              <span>👆 Dokun</span>
+                            </div>
                           )}
                         </button>
                       );
@@ -1225,46 +1292,81 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
                 {/* Right Column: Symbols & Definitions */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-extrabold text-slate-700 uppercase tracking-wider">
-                      Semboller & Tanımlar
-                    </h4>
-                    <span className="text-xs text-slate-400">Sağ Kolon</span>
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-black text-xs">
+                        2
+                      </span>
+                      <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                        Semboller & Tanımlar
+                      </h4>
+                    </div>
+                    <span className="text-xs text-slate-400 font-bold">Sağ Kolon</span>
                   </div>
 
                   <div className="space-y-3">
-                    {targetCards.map((card) => {
+                    {targetCards.map((card, idx) => {
                       const isSelected = selectedTarget?.id === card.id;
                       const isWrong = wrongPair.includes(card.id);
 
                       return (
                         <button
                           key={card.id}
+                          type="button"
                           disabled={card.matched}
                           onClick={() => handleTargetClick(card)}
-                          className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between ${
+                          className={`group relative w-full text-left p-4 sm:p-5 rounded-2xl border-2 border-b-4 transition-all duration-150 flex items-center justify-between gap-3 cursor-pointer select-none active:translate-y-1 active:border-b-2 outline-none focus:outline-none focus:ring-2 focus:ring-teal-400 ${
                             card.matched
-                              ? 'bg-emerald-50 border-emerald-400 text-emerald-900 opacity-90 shadow-2xs'
+                              ? 'bg-emerald-50/90 border-emerald-300 border-b-emerald-400 text-emerald-950 opacity-80 cursor-default shadow-xs active:translate-y-0 active:border-b-4'
                               : isWrong
-                              ? 'bg-rose-50 border-rose-400 text-rose-900 animate-shake'
+                              ? 'bg-rose-50 border-rose-400 border-b-rose-500 text-rose-950 animate-shake shadow-md'
                               : isSelected
-                              ? 'bg-teal-50 border-teal-600 ring-2 ring-teal-400 shadow-md scale-101'
-                              : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800 shadow-xs'
+                              ? 'bg-gradient-to-r from-teal-600 to-emerald-600 border-teal-700 border-b-teal-900 text-white shadow-lg shadow-teal-600/30 scale-[1.02] ring-4 ring-teal-300/60 -translate-y-0.5'
+                              : 'bg-white hover:bg-teal-50/40 border-slate-200 border-b-slate-300 hover:border-teal-400 hover:border-b-teal-500 hover:-translate-y-0.5 text-slate-900 shadow-sm hover:shadow-md'
                           }`}
                         >
-                          <div>
-                            <div className="font-mono font-black text-amber-700 text-base">
-                              {card.text}
-                            </div>
-                            {card.subtext && (
-                              <div className="text-xs text-slate-500 mt-1">
-                                {card.subtext}
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <span
+                              className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0 transition-colors shadow-2xs ${
+                                isSelected
+                                  ? 'bg-white/20 text-white border border-white/30'
+                                  : card.matched
+                                  ? 'bg-emerald-200 text-emerald-900'
+                                  : 'bg-amber-100 text-amber-900 group-hover:bg-teal-100 group-hover:text-teal-800 border border-amber-200'
+                              }`}
+                            >
+                              {String.fromCharCode(65 + idx)}
+                            </span>
+                            <div className="min-w-0">
+                              <div className={`font-mono font-black text-base ${isSelected ? 'text-amber-200' : 'text-amber-800'}`}>
+                                <MathText text={card.text} />
                               </div>
-                            )}
+                              {card.subtext && (
+                                <div className={`text-xs mt-0.5 font-medium ${isSelected ? 'text-teal-100' : 'text-slate-600'}`}>
+                                  <MathText text={card.subtext} />
+                                </div>
+                              )}
+                            </div>
                           </div>
+
                           {card.matched ? (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                            <div className="shrink-0 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-black flex items-center gap-1.5 shadow-2xs">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                              <span>Eşleşti ✓</span>
+                            </div>
+                          ) : isWrong ? (
+                            <div className="shrink-0 px-3 py-1.5 rounded-xl bg-rose-100 text-rose-800 border border-rose-300 text-xs font-black flex items-center gap-1.5 shadow-2xs">
+                              <XCircle className="w-4 h-4 text-rose-600" />
+                              <span>Uyuşmadı</span>
+                            </div>
+                          ) : isSelected ? (
+                            <div className="shrink-0 px-3.5 py-1.5 rounded-xl bg-white text-teal-950 text-xs font-black shadow-md flex items-center gap-1.5 animate-pulse">
+                              <Check className="w-3.5 h-3.5 text-teal-600 stroke-[3]" />
+                              <span>Seçildi</span>
+                            </div>
                           ) : (
-                            <div className="w-4 h-4 rounded-full border border-slate-300" />
+                            <div className="shrink-0 px-3.5 py-1.5 rounded-xl bg-slate-100 group-hover:bg-teal-600 text-slate-700 group-hover:text-white border border-slate-200 group-hover:border-teal-600 text-xs font-black transition-all flex items-center gap-1.5 shadow-2xs group-hover:shadow-sm">
+                              <span>👆 Dokun</span>
+                            </div>
                           )}
                         </button>
                       );

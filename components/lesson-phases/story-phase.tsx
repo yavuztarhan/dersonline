@@ -61,6 +61,10 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   // MAT.5.3.1 Geometry Story Interactive States
   const [sceneAngleDeg, setSceneAngleDeg] = useState<number>(60);
   const [sceneCompassDrawn, setSceneCompassDrawn] = useState<boolean>(false);
+  const [sceneCompassAngle, setSceneCompassAngle] = useState<number>(0);
+  const [isCompassAnimating, setIsCompassAnimating] = useState<boolean>(false);
+  const [compassWaiting, setCompassWaiting] = useState<boolean>(false);
+  const [compassLifting, setCompassLifting] = useState<boolean>(false);
   const [sceneCompassStep, setSceneCompassStep] = useState<number>(0);
   const [sceneDiskMode, setSceneDiskMode] = useState<'circle' | 'disk'>('circle');
   const [sceneEqualCircleDrawn, setSceneEqualCircleDrawn] = useState<boolean>(false);
@@ -117,6 +121,47 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [denomStepperActive, setDenomStepperActive] = useState<'separate' | 'expanded' | 'merged'>('merged');
   const [vectorForcePreset, setVectorForcePreset] = useState<'flight' | 'opposite_cancel' | 'wind_dominant'>('flight');
   const [thermalSubtractionStep, setThermalSubtractionStep] = useState<1 | 2 | 3>(3);
+
+  // MAT.5.3.1 Compass 360-degree Drawing Animation Effect
+  useEffect(() => {
+    if (!isCompassAnimating) return;
+    let animFrameId: number;
+    let startTimestamp: number | null = null;
+    const duration = 2400; // 2.4s for smooth majestic 360° compass sweep
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const elapsed = timestamp - startTimestamp;
+      const progress = Math.min(elapsed / duration, 1);
+      const angle = progress * 360;
+      setSceneCompassAngle(angle);
+
+      if (progress < 1) {
+        animFrameId = requestAnimationFrame(step);
+      } else {
+        setIsCompassAnimating(false);
+        setSceneCompassDrawn(true);
+        setSceneCompassAngle(360);
+        playSound('success');
+
+        // Çizim bitti: 1 saniye çember üzerinde bekleme başlat
+        setCompassWaiting(true);
+      }
+    };
+
+    animFrameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animFrameId);
+  }, [isCompassAnimating, playSound]);
+
+  // MAT.5.3.1 Compass 1-Second Pause & Lift-off Timer Effect
+  useEffect(() => {
+    if (!compassWaiting) return;
+    const timer = setTimeout(() => {
+      setCompassWaiting(false);
+      setCompassLifting(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [compassWaiting]);
 
   const pages: StorybookPage[] = data.pages || [
     {
@@ -627,19 +672,57 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
 
                 {/* SCENE 5: COMPASS & CIRCLE (MAT.5.3.1) */}
                 {currentPage.visualScene.type === 'compass-circle' && (
-                  <div className="w-full h-full flex flex-col bg-[#0b1120] p-3 rounded-2xl">
+                  <div className="w-full h-full flex flex-col bg-[#0b1120] p-3 rounded-2xl select-none">
                     <svg className="w-full flex-1" viewBox="0 0 400 220">
                       <rect width="400" height="220" fill="#0b1120" />
 
-                      {/* Center Point M */}
-                      <circle cx="200" cy="110" r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
-                      <text fill="#5ee7cc" fontSize="13" fontWeight="900" x="200" y="90" textAnchor="middle">M (Merkez)</text>
+                      {/* Guide / Preview Circle */}
+                      {!sceneCompassDrawn && sceneCompassAngle === 0 && (
+                        <g className="animate-pulse">
+                          <circle cx="200" cy="110" r="70" fill="none" stroke="#334155" strokeWidth="1.8" strokeDasharray="6,6" />
+                          <text fill="#64748b" fontSize="10" fontWeight="bold" x="200" y="145" textAnchor="middle">
+                            Pergel iğnesi M noktasında sabit (r = 5 cm)
+                          </text>
+                        </g>
+                      )}
 
-                      {/* Compass Circle */}
-                      {sceneCompassDrawn ? (
+                      {/* Dynamic Arc drawn by rotating compass */}
+                      {sceneCompassAngle > 0 && sceneCompassAngle < 360 && !sceneCompassDrawn && (() => {
+                        const rad = (sceneCompassAngle * Math.PI) / 180;
+                        const curX = 200 + 70 * Math.cos(rad);
+                        const curY = 110 + 70 * Math.sin(rad);
+                        const largeArc = sceneCompassAngle > 180 ? 1 : 0;
+                        return (
+                          <g>
+                            {/* Glowing halo behind arc */}
+                            <path
+                              d={`M 270 110 A 70 70 0 ${largeArc} 1 ${curX.toFixed(1)} ${curY.toFixed(1)}`}
+                              fill="none"
+                              stroke="#0284c7"
+                              strokeWidth="8"
+                              strokeOpacity="0.35"
+                              strokeLinecap="round"
+                            />
+                            {/* Main drawn line */}
+                            <path
+                              d={`M 270 110 A 70 70 0 ${largeArc} 1 ${curX.toFixed(1)} ${curY.toFixed(1)}`}
+                              fill="none"
+                              stroke="#38bdf8"
+                              strokeWidth="3.5"
+                              strokeLinecap="round"
+                            />
+                            {/* Pencil contact active spark */}
+                            <circle cx={curX} cy={curY} r="4.5" fill="#38bdf8" className="animate-ping" />
+                            <circle cx={curX} cy={curY} r="3" fill="#ffffff" />
+                          </g>
+                        );
+                      })()}
+
+                      {/* Completed Circle & Detailed Measurements */}
+                      {(sceneCompassDrawn || sceneCompassAngle >= 360) && (
                         <g className="animate-in fade-in duration-500">
                           {/* Circle boundary */}
-                          <circle cx="200" cy="110" r="70" fill="none" stroke="#38bdf8" strokeWidth="3.5" />
+                          <circle cx="200" cy="110" r="70" fill="rgba(56, 189, 248, 0.04)" stroke="#38bdf8" strokeWidth="3.5" />
 
                           {/* Diameter Line [AB] (Passing through center M from x=130 to x=270) */}
                           <line x1="130" y1="110" x2="270" y2="110" stroke="#a855f7" strokeWidth="3" />
@@ -668,53 +751,187 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                           </g>
 
                           {/* Information Badge */}
-                          <g transform="translate(200, 185)">
-                            <rect x="-140" y="-12" width="280" height="24" rx="8" fill="#0284c7" fillOpacity="0.2" stroke="#38bdf8" strokeWidth="1.2" />
+                          <g transform="translate(200, 195)">
+                            <rect x="-155" y="-12" width="310" height="24" rx="8" fill="#0284c7" fillOpacity="0.2" stroke="#38bdf8" strokeWidth="1.2" />
                             <text x="0" y="4" textAnchor="middle" fill="#e0f2fe" fontSize="10" fontWeight="bold">
-                              ⭕ Çap: Merkezden geçen en uzun doğru parçasıdır (R = 2r)
+                              Çap [AB]: Merkezden geçen en uzun doğru parçasıdır (R = 2r)
                             </text>
                           </g>
                         </g>
-                      ) : (
-                        /* Unrendered compass hint */
-                        <g className="animate-pulse">
-                          <circle cx="200" cy="110" r="70" fill="none" stroke="#475569" strokeWidth="2" strokeDasharray="6,6" />
-                          <line x1="130" y1="110" x2="270" y2="110" stroke="#64748b" strokeWidth="1.5" strokeDasharray="4,4" />
-                          <circle cx="130" cy="110" r="3" fill="#64748b" />
-                          <circle cx="270" cy="110" r="3" fill="#64748b" />
-                          <text fill="#94a3b8" fontSize="11" fontWeight="bold" x="200" y="145" textAnchor="middle">
-                            Pergel iğnesi M noktasında sabit (r = 5 cm)
-                          </text>
-                        </g>
                       )}
 
-                      {/* Compass Tool Illustration */}
-                      <g transform="translate(190, 40) rotate(-15)">
-                        {/* Hinge */}
-                        <circle cx="10" cy="10" r="6" fill="#94a3b8" stroke="#334155" strokeWidth="2" />
-                        {/* Metal leg to center M */}
-                        <line x1="10" y1="10" x2="10" y2="70" stroke="#cbd5e1" strokeWidth="3.5" />
-                        <polygon points="10,74 7,66 13,66" fill="#cbd5e1" />
-                        {/* Pencil leg */}
-                        <line x1="10" y1="10" x2="50" y2="60" stroke="#f59e0b" strokeWidth="3.5" />
-                        <polygon points="52,65 46,58 54,58" fill="#1e293b" />
+                      {/* Center Point M (Permanent anchor) */}
+                      <circle cx="200" cy="110" r="5.5" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
+                      <text
+                        fill="#5ee7cc"
+                        stroke="#0b1120"
+                        strokeWidth="3"
+                        paintOrder="stroke"
+                        fontSize="11"
+                        fontWeight="900"
+                        x="200"
+                        y="99"
+                        textAnchor="middle"
+                      >
+                        M (Merkez)
+                      </text>
+
+                      {/* Realistic Compass Instrument (Rigid Isosceles Drafting Compass) */}
+                      {/* Pivot is at center M(200, 110); rotating the group rotates pencil tip precisely along circle (r = 70) */}
+                      {/* Waits 1 second on circle then smoothly lifts up and away from the drawing */}
+                      <g
+                        transform={
+                          compassLifting
+                            ? `translate(340, -40) rotate(335)`
+                            : `translate(200, 110) rotate(${sceneCompassAngle})`
+                        }
+                        className={isCompassAnimating ? '' : 'transition-all duration-1000 ease-out'}
+                        style={{
+                          opacity: compassLifting ? 0 : 1,
+                          filter: 'drop-shadow(0px 6px 10px rgba(0,0,0,0.55))',
+                          pointerEvents: 'none'
+                        }}
+                      >
+                        {/* Needle Leg (Fixed at Center M: local 0,0) */}
+                        <line x1="35" y1="-55" x2="0" y2="-6" stroke="#94a3b8" strokeWidth="4.5" strokeLinecap="round" />
+                        <line x1="35" y1="-55" x2="0" y2="-6" stroke="#f1f5f9" strokeWidth="1.5" strokeLinecap="round" />
+                        {/* Sharp steel needle cone meeting (0, 0) */}
+                        <polygon points="0,0 -1.8,-7 1.8,-7" fill="#e2e8f0" stroke="#475569" strokeWidth="0.5" />
+                        <circle cx="0" cy="0" r="2" fill="#10b396" stroke="#ffffff" strokeWidth="1" />
+
+                        {/* Pencil Leg (Pencil tip locked at distance r = 70: local 70, 0) */}
+                        <line x1="35" y1="-55" x2="54" y2="-22" stroke="#94a3b8" strokeWidth="4.5" strokeLinecap="round" />
+                        <line x1="35" y1="-55" x2="54" y2="-22" stroke="#f1f5f9" strokeWidth="1.5" strokeLinecap="round" />
+
+                        {/* Pencil Holder Clamp */}
+                        <rect x="49" y="-25" width="10" height="14" rx="2" fill="#334155" stroke="#1e293b" strokeWidth="1" transform="rotate(28 54 -18)" />
+                        <circle cx="58" cy="-21" r="3" fill="#f59e0b" stroke="#78350f" strokeWidth="0.8" />
+
+                        {/* Wooden Pencil Body */}
+                        <polygon points="50,-30 57,-26 67,-7 60,-11" fill="#f59e0b" stroke="#d97706" strokeWidth="0.8" />
+                        {/* Sharpened pencil cone */}
+                        <polygon points="63,-9 67,-7 68.5,-3.5 64.5,-5.5" fill="#fde68a" stroke="#d97706" strokeWidth="0.5" />
+                        {/* Graphite pencil tip touching circle at (70, 0) */}
+                        <polygon points="68.5,-3.5 70,0 66.5,-2" fill="#1e293b" stroke="#020617" strokeWidth="0.5" />
+                        <circle cx="70" cy="0" r="2" fill="#38bdf8" />
+
+                        {/* Top Hinge (Tepe Mafsalı) at (35, -55) */}
+                        {/* Handle extending upwards */}
+                        <rect x="32" y="-76" width="6" height="22" rx="2" fill="#475569" stroke="#1e293b" strokeWidth="1" />
+                        <line x1="32" y1="-72" x2="38" y2="-72" stroke="#94a3b8" strokeWidth="0.8" />
+                        <line x1="32" y1="-68" x2="38" y2="-68" stroke="#94a3b8" strokeWidth="0.8" />
+                        <line x1="32" y1="-64" x2="38" y2="-64" stroke="#94a3b8" strokeWidth="0.8" />
+                        <circle cx="35" cy="-76" r="3.5" fill="#cbd5e1" stroke="#475569" strokeWidth="1" />
+
+                        {/* Hinge Discs & Rivet */}
+                        <circle cx="35" cy="-55" r="7.5" fill="#475569" stroke="#1e293b" strokeWidth="1.5" />
+                        <circle cx="35" cy="-55" r="4.5" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1" />
+                        <circle cx="35" cy="-55" r="2" fill="#1e293b" />
+
+                        {/* Radius Spindle Bar & Span Badge */}
+                        <line x1="16" y1="-32" x2="52" y2="-32" stroke="#0284c7" strokeWidth="1.2" strokeDasharray="3,2" />
+                        <rect x="23" y="-39" width="24" height="14" rx="3" fill="#0f172a" fillOpacity="0.9" stroke="#38bdf8" strokeWidth="0.8" />
+                        <text x="35" y="-29" fill="#38bdf8" fontSize="8" fontWeight="bold" textAnchor="middle">r=5cm</text>
                       </g>
                     </svg>
 
-                    {/* Interactive Button */}
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-                      <span className="text-xs text-slate-400">
-                        {sceneCompassDrawn ? '✅ Çember inşa edildi: Yarıçap (r) & Çap (R)' : '👉 Pergeli döndürerek çemberi çizin'}
-                      </span>
-                      <button
-                        onClick={() => {
-                          setSceneCompassDrawn(!sceneCompassDrawn);
-                          playSound('success');
-                        }}
-                        className="px-4 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-teal-600/30 transition-all"
-                      >
-                        <span>{sceneCompassDrawn ? 'Yeniden Çiz 🔄' : 'Pergeli Döndür (360°) ⭕'}</span>
-                      </button>
+                    {/* Interactive Controls & Smartboard Angle Scrub */}
+                    <div className="flex flex-col gap-2 pt-2 border-t border-slate-800">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-slate-300">
+                            {isCompassAnimating ? (
+                              <span className="text-sky-400 font-bold flex items-center gap-1.5 animate-pulse">
+                                <span>🌀 Çember çiziliyor:</span>
+                                <span className="font-mono text-amber-300">{Math.round(sceneCompassAngle)}°</span>
+                              </span>
+                            ) : compassWaiting ? (
+                              <span className="text-amber-300 font-bold flex items-center gap-1.5 animate-pulse">
+                                <span>⏳ Çember tamamlandı, pergel kaldırılıyor (1 sn)...</span>
+                              </span>
+                            ) : compassLifting ? (
+                              <span className="text-sky-300 font-bold flex items-center gap-1.5">
+                                <span>↗️ Pergel çemberden uzaklaştı</span>
+                              </span>
+                            ) : sceneCompassDrawn ? (
+                              <span className="text-teal-400 font-bold">
+                                ✅ Çember tamamlandı: Yarıçap (r) = 5 cm, Çap (R) = 10 cm
+                              </span>
+                            ) : (
+                              <span>👉 Pergeli döndürerek çemberi çizin (r = 5 cm)</span>
+                            )}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {sceneCompassDrawn && !isCompassAnimating && !compassWaiting && (
+                            <button
+                              onClick={() => {
+                                setCompassLifting(!compassLifting);
+                                playSound('click');
+                              }}
+                              className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold text-xs transition-all shadow-sm flex items-center gap-1"
+                              title="Pergeli görünür yap veya kaldır"
+                            >
+                              <span>{compassLifting ? 'Pergeli Göster 📐' : 'Pergeli Kaldır ↗️'}</span>
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => {
+                              if (isCompassAnimating) return;
+                              setCompassLifting(false);
+                              setCompassWaiting(false);
+                              setSceneCompassDrawn(false);
+                              setSceneCompassAngle(0);
+                              setIsCompassAnimating(true);
+                              playSound('click');
+                            }}
+                            disabled={isCompassAnimating || compassWaiting}
+                            className={`px-4 py-1.5 rounded-xl text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition-all ${
+                              isCompassAnimating || compassWaiting
+                                ? 'bg-slate-700 cursor-not-allowed opacity-75'
+                                : 'bg-teal-600 hover:bg-teal-500 active:scale-95 shadow-teal-600/30'
+                            }`}
+                          >
+                            <span>
+                              {isCompassAnimating
+                                ? 'Çiziliyor... ⏳'
+                                : compassWaiting
+                                ? 'Bekleniyor (1s)... ⏳'
+                                : sceneCompassDrawn
+                                ? 'Yeniden Döndür & Çiz 🔄'
+                                : 'Pergeli Döndür ve Çiz (360°) ⭕'}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Smartboard scrubber / manual angle control */}
+                      <div className="flex items-center gap-2 px-1 text-slate-400 text-xs">
+                        <span className="shrink-0 text-[11px] font-medium text-slate-400">Açı ({Math.round(sceneCompassAngle)}°):</span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="360"
+                          step="1"
+                          value={Math.round(sceneCompassAngle)}
+                          onChange={(e) => {
+                            if (isCompassAnimating) setIsCompassAnimating(false);
+                            setCompassLifting(false);
+                            setCompassWaiting(false);
+                            const val = Number(e.target.value);
+                            setSceneCompassAngle(val);
+                            if (val >= 360) {
+                              setSceneCompassDrawn(true);
+                            } else {
+                              setSceneCompassDrawn(false);
+                            }
+                          }}
+                          className="w-full accent-teal-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                        />
+                        <span className="shrink-0 text-[10px] font-mono text-slate-500">360°</span>
+                      </div>
                     </div>
                   </div>
                 )}
