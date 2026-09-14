@@ -26,6 +26,52 @@ interface WordClue {
   color: string;
 }
 
+// 0. MAT.5.1.1 Clues (5. Sınıf: Doğal Sayılar, Bölükler ve Basamak Değeri)
+const MAT_5_1_1_CLUES: WordClue[] = [
+  {
+    id: 'mat511-c1',
+    question: 'Büyük doğal sayıların kolay okunup yazılabilmesi için sağdan sola doğru ayrılan üçerli basamak gruplarına ne ad verilir?',
+    word: 'BÖLÜK',
+    hint: '5 Harfli • Birler, binler, milyonlar',
+    color: '#0284c7'
+  },
+  {
+    id: 'mat511-c2',
+    question: '7, 8 ve 9 basamaklı doğal sayılarda en solda yer alan ve büyük miktarları belirten bölüğe ne denir?',
+    word: 'MİLYONLAR',
+    hint: '9 Harfli • Milyonlar basamağının olduğu bölük',
+    color: '#10b981'
+  },
+  {
+    id: 'mat511-c3',
+    question: 'Bir rakamın bulunduğu haneye ve konumuna göre kazandığı sayısal değere ne denir?',
+    word: 'BASAMAK',
+    hint: '7 Harfli • Basamak Değeri',
+    color: '#f59e0b'
+  },
+  {
+    id: 'mat511-c4',
+    question: 'Bir doğal sayının tüm basamak değerlerinin toplamı biçiminde ayrıntılı olarak yazılmasına ne ad verilir?',
+    word: 'ÇÖZÜMLEME',
+    hint: '9 Harfli • Basamak değerleri toplamı',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'mat511-c5',
+    question: 'Birler bölüğü ile milyonlar bölüğü arasında yer alan (4, 5 ve 6. basamaklar) bölüğe ne ad verilir?',
+    word: 'BİNLER',
+    hint: '6 Harfli • 1.000\'ler bölüğü',
+    color: '#ec4899'
+  },
+  {
+    id: 'mat511-c6',
+    question: 'Bir doğal sayının en sağında yer alan birler, onlar ve yüzler basamağının oluşturduğu temel bölüğe ne denir?',
+    word: 'BİRLER',
+    hint: '6 Harfli • En sağdaki temel bölük',
+    color: '#ef4444'
+  }
+];
+
 // 1. MAT.5.3.1 Clues (Temel Çizimler)
 const MAT_5_3_1_CLUES: WordClue[] = [
   {
@@ -588,7 +634,7 @@ const MAT_7_1_3_CLUES: WordClue[] = [
 
 const TURKISH_CHARS = [
   'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
-  'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
+  'J', 'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U',
   'Ü', 'V', 'Y', 'Z'
 ];
 
@@ -603,20 +649,25 @@ interface PlacedWord {
   cells: CellPos[];
 }
 
-const GRID_SIZE = 11;
-
-function generateWordGrid(clues: WordClue[], size = GRID_SIZE): { grid: string[][]; placed: PlacedWord[] } {
+function generateWordGrid(clues: WordClue[], customSize?: number): { grid: string[][]; placed: PlacedWord[] } {
   const directions = [
-    { dr: 0, dc: 1 }, // Horizontal right
-    { dr: 1, dc: 0 }, // Vertical down
-    { dr: 1, dc: 1 }, // Diagonal down-right
-    { dr: 0, dc: -1 }, // Horizontal left
-    { dr: -1, dc: 0 } // Vertical up
+    { dr: 0, dc: 1 },  // Yatay sağ
+    { dr: 1, dc: 0 },  // Dikey aşağı
+    { dr: 1, dc: 1 },  // Çapraz sağ-aşağı
+    { dr: 0, dc: -1 }, // Yatay sol
+    { dr: -1, dc: 0 }, // Dikey yukarı
+    { dr: -1, dc: 1 }, // Çapraz sağ-yukarı
+    { dr: 1, dc: -1 }  // Çapraz sol-aşağı
   ];
+
+  // Calculate dynamic grid size: at least 12 and large enough for the longest word (+2 margin)
+  const maxWordLen = Math.max(...clues.map((c) => c.word.length), 0);
+  const size = customSize || Math.max(12, maxWordLen + 1);
 
   const sortedClues = [...clues].sort((a, b) => b.word.length - a.word.length);
 
-  for (let attempt = 0; attempt < 50; attempt++) {
+  // 1. Randomized placement attempts (up to 120 attempts)
+  for (let attempt = 0; attempt < 120; attempt++) {
     const grid: string[][] = Array.from({ length: size }, () => Array(size).fill(''));
     const placed: PlacedWord[] = [];
     let allPlaced = true;
@@ -683,10 +734,46 @@ function generateWordGrid(clues: WordClue[], size = GRID_SIZE): { grid: string[]
     }
   }
 
-  const fallbackGrid = Array.from({ length: size }, () =>
-    Array.from({ length: size }, () => TURKISH_CHARS[Math.floor(Math.random() * TURKISH_CHARS.length)])
-  );
-  return { grid: fallbackGrid, placed: [] };
+  // 2. Guaranteed Deterministic Fallback:
+  // Place every clue word in clean, non-conflicting dedicated rows/columns so 100% of words exist!
+  const detGrid: string[][] = Array.from({ length: size }, () => Array(size).fill(''));
+  const detPlaced: PlacedWord[] = [];
+
+  sortedClues.forEach((clue, idx) => {
+    const letters = Array.from(clue.word);
+    const len = letters.length;
+    // Alternate row and col placement to give variation
+    if (idx % 2 === 0) {
+      const row = Math.min((idx * 2), size - 1);
+      const startCol = Math.max(0, Math.floor((size - len) / 2));
+      const cells: CellPos[] = [];
+      for (let i = 0; i < len; i++) {
+        detGrid[row][startCol + i] = letters[i];
+        cells.push({ row, col: startCol + i });
+      }
+      detPlaced.push({ id: clue.id, word: clue.word, cells });
+    } else {
+      const col = Math.min((idx * 2), size - 1);
+      const startRow = Math.max(0, Math.floor((size - len) / 2));
+      const cells: CellPos[] = [];
+      for (let i = 0; i < len; i++) {
+        detGrid[startRow + i][col] = letters[i];
+        cells.push({ row: startRow + i, col });
+      }
+      detPlaced.push({ id: clue.id, word: clue.word, cells });
+    }
+  });
+
+  // Fill empty spaces with random Turkish letters
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (detGrid[r][c] === '') {
+        detGrid[r][c] = TURKISH_CHARS[Math.floor(Math.random() * TURKISH_CHARS.length)];
+      }
+    }
+  }
+
+  return { grid: detGrid, placed: detPlaced };
 }
 
 export function WordSearchGame() {
@@ -696,13 +783,24 @@ export function WordSearchGame() {
   const code = selectedOutcome?.code || '';
   const title = (selectedOutcome?.title || '').toLowerCase();
 
+  const isMat511 =
+    id === 'MAT.5.1.1' ||
+    code.includes('5.1.1') ||
+    id.includes('5-1-1') ||
+    title.includes('doğal sayılar') ||
+    title.includes('basamak') ||
+    title.includes('bölük');
+
   const isMat713 =
-    id === 'MAT.7.1.3' ||
-    code.includes('7.1.3') ||
-    title.includes('toplama') ||
-    title.includes('çıkarma');
+    !isMat511 && (
+      id === 'MAT.7.1.3' ||
+      code.includes('7.1.3') ||
+      title.includes('toplama') ||
+      title.includes('çıkarma')
+    );
 
   const isMat712 =
+    !isMat511 &&
     !isMat713 && (
       id === 'MAT.7.1.2' ||
       code.includes('7.1.2') ||
@@ -711,6 +809,7 @@ export function WordSearchGame() {
     );
 
   const isMat711W2 =
+    !isMat511 &&
     !isMat713 &&
     !isMat712 && (
       id === 'MAT.7.1.1-2' ||
@@ -718,17 +817,19 @@ export function WordSearchGame() {
       title.includes('derinleşme') ||
       title.includes('yoğunluk')
     );
-  const isMat711 = !isMat713 && !isMat712 && !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
-  const isMat611 = id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları');
-  const isMat612 = id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme');
-  const isMat613 = id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal');
-  const isMat614 = id === 'MAT.6.1.4' || code.includes('6.1.4') || title.includes('ortak kat') || title.includes('ortak bölen');
+  const isMat711 = !isMat511 && !isMat713 && !isMat712 && !isMat711W2 && (id === 'MAT.7.1.1' || code.includes('7.1.1') || title.includes('rasyonel'));
+  const isMat611 = !isMat511 && (id === 'MAT.6.1.1' || code.includes('6.1.1') || title.includes('çarpanları ve katları'));
+  const isMat612 = !isMat511 && (id === 'MAT.6.1.2' || code.includes('6.1.2') || title.includes('bölünebilme'));
+  const isMat613 = !isMat511 && (id === 'MAT.6.1.3' || code.includes('6.1.3') || title.includes('asal'));
+  const isMat614 = !isMat511 && (id === 'MAT.6.1.4' || code.includes('6.1.4') || title.includes('ortak kat') || title.includes('ortak bölen'));
 
-  const isLinesAnglesTopic = id === 'MAT.5.3.4' || code.includes('5.3.4');
-  const isAngleTopic = id === 'MAT.5.3.3' || code.includes('5.3.3');
-  const isSelimiyeTopic = id === 'MAT.5.3.2' || code.includes('5.3.2');
+  const isLinesAnglesTopic = !isMat511 && (id === 'MAT.5.3.4' || code.includes('5.3.4'));
+  const isAngleTopic = !isMat511 && (id === 'MAT.5.3.3' || code.includes('5.3.3'));
+  const isSelimiyeTopic = !isMat511 && (id === 'MAT.5.3.2' || code.includes('5.3.2'));
 
-  const activeClues = isMat713
+  const activeClues = isMat511
+    ? MAT_5_1_1_CLUES
+    : isMat713
     ? MAT_7_1_3_CLUES
     : isMat712
     ? MAT_7_1_2_CLUES
@@ -757,19 +858,21 @@ export function WordSearchGame() {
   const [foundWordIds, setFoundWordIds] = useState<string[]>([]);
   const [selectedCells, setSelectedCells] = useState<CellPos[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
+  const [tapStart, setTapStart] = useState<CellPos | null>(null);
   const [revealedHints, setRevealedHints] = useState<Record<string, boolean>>({});
   const [foundCellColors, setFoundCellColors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     initRandomGrid();
-  }, [selectedOutcome?.id]);
+  }, [selectedOutcome?.id, selectedOutcome?.code, activeClues]);
 
   const initRandomGrid = () => {
-    const generated = generateWordGrid(activeClues, GRID_SIZE);
+    const generated = generateWordGrid(activeClues);
     setGridMatrix(generated.grid);
     setPlacedWords(generated.placed);
     setFoundWordIds([]);
     setSelectedCells([]);
+    setTapStart(null);
     setFoundCellColors({});
     setRevealedHints({});
   };
@@ -782,37 +885,9 @@ export function WordSearchGame() {
     return foundCellColors[`${r},${c}`];
   };
 
-  const handleCellMouseDown = (r: number, c: number) => {
-    setIsSelecting(true);
-    setSelectedCells([{ row: r, col: c }]);
-    playSound('select');
-  };
-
-  const handleCellMouseEnter = (r: number, c: number) => {
-    if (!isSelecting) return;
-    const start = selectedCells[0];
-    if (!start) return;
-
-    const dr = r - start.row;
-    const dc = c - start.col;
-    const stepR = dr === 0 ? 0 : dr > 0 ? 1 : -1;
-    const stepC = dc === 0 ? 0 : dc > 0 ? 1 : -1;
-
-    if (dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc)) {
-      const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
-      const newSelection: CellPos[] = [];
-      for (let i = 0; i < length; i++) {
-        newSelection.push({ row: start.row + i * stepR, col: start.col + i * stepC });
-      }
-      setSelectedCells(newSelection);
-    }
-  };
-
-  const handleCellMouseUp = () => {
-    if (!isSelecting) return;
-    setIsSelecting(false);
-
-    const selectedWordLetters = selectedCells.map((c) => gridMatrix[c.row]?.[c.col] || '').join('');
+  const checkSelectedWord = (cells: CellPos[]): boolean => {
+    if (cells.length === 0) return false;
+    const selectedWordLetters = cells.map((c) => gridMatrix[c.row]?.[c.col] || '').join('');
     const reverseSelectedWord = selectedWordLetters.split('').reverse().join('');
 
     const matchedPlaced = placedWords.find(
@@ -848,17 +923,100 @@ export function WordSearchGame() {
           });
         } catch (e) {}
       }
-    } else {
-      playSound('click');
+      return true;
     }
+    return false;
+  };
 
-    setSelectedCells([]);
+  // Two-tap selection: tap first letter, then tap last letter (Akıllı Tahta / Touch Friendly)
+  const handleCellClick = (r: number, c: number) => {
+    if (!tapStart) {
+      setTapStart({ row: r, col: c });
+      setSelectedCells([{ row: r, col: c }]);
+      playSound('select');
+    } else if (tapStart.row === r && tapStart.col === c) {
+      // Tap on same cell cancels
+      setTapStart(null);
+      setSelectedCells([]);
+      playSound('click');
+    } else {
+      const dr = r - tapStart.row;
+      const dc = c - tapStart.col;
+      if (dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc)) {
+        const stepR = dr === 0 ? 0 : dr > 0 ? 1 : -1;
+        const stepC = dc === 0 ? 0 : dc > 0 ? 1 : -1;
+        const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
+        const lineCells: CellPos[] = [];
+        for (let i = 0; i < length; i++) {
+          lineCells.push({ row: tapStart.row + i * stepR, col: tapStart.col + i * stepC });
+        }
+        setSelectedCells(lineCells);
+        const matched = checkSelectedWord(lineCells);
+        if (!matched) {
+          playSound('click');
+          setTimeout(() => setSelectedCells([]), 350);
+        } else {
+          setTimeout(() => setSelectedCells([]), 200);
+        }
+      } else {
+        // Not aligned, switch start to this cell
+        setTapStart({ row: r, col: c });
+        setSelectedCells([{ row: r, col: c }]);
+        playSound('select');
+        return;
+      }
+      setTapStart(null);
+    }
+  };
+
+  // Mouse Drag Handlers
+  const handleCellMouseDown = (r: number, c: number) => {
+    setIsSelecting(true);
+    setSelectedCells([{ row: r, col: c }]);
+    setTapStart({ row: r, col: c });
+    playSound('select');
+  };
+
+  const handleCellMouseEnter = (r: number, c: number) => {
+    if (!isSelecting) return;
+    const start = selectedCells[0] || tapStart;
+    if (!start) return;
+
+    const dr = r - start.row;
+    const dc = c - start.col;
+    const stepR = dr === 0 ? 0 : dr > 0 ? 1 : -1;
+    const stepC = dc === 0 ? 0 : dc > 0 ? 1 : -1;
+
+    if (dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc)) {
+      const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
+      const newSelection: CellPos[] = [];
+      for (let i = 0; i < length; i++) {
+        newSelection.push({ row: start.row + i * stepR, col: start.col + i * stepC });
+      }
+      setSelectedCells(newSelection);
+    }
+  };
+
+  const handleCellMouseUp = () => {
+    if (!isSelecting) return;
+    setIsSelecting(false);
+
+    if (selectedCells.length > 1) {
+      const matched = checkSelectedWord(selectedCells);
+      if (!matched) {
+        playSound('click');
+      }
+      setSelectedCells([]);
+      setTapStart(null);
+    }
   };
 
   const toggleHint = (clueId: string) => {
     playSound('select');
     setRevealedHints((prev) => ({ ...prev, [clueId]: !prev[clueId] }));
   };
+
+  const gridSize = gridMatrix.length || 12;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
@@ -868,11 +1026,21 @@ export function WordSearchGame() {
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-xs font-bold uppercase">
             <Search className="w-3.5 h-3.5 text-blue-300" />
-            <span>Matematiksel Kelime Avı Bulmacası</span>
+            <span>
+              {isMat511 ? '5. Sınıf MAT.5.1.1 • Kelime Avı' : 'Matematiksel Kelime Avı Bulmacası'}
+            </span>
           </div>
-          <h3 className="text-xl font-black text-white">Gizli Geometrik Kavramları Yakala!</h3>
+          <h3 className="text-xl font-black text-white">
+            {isMat511
+              ? 'Doğal Sayılar & Bölükleri Yakala!'
+              : isMat713 || isMat712 || isMat711 || isMat711W2
+              ? 'Gizli Rasyonel Sayı Kavramlarını Yakala!'
+              : isMat611 || isMat612 || isMat613 || isMat614
+              ? 'Gizli Sayı & Çarpan Kavramlarını Yakala!'
+              : 'Gizli Geometrik Kavramları Yakala!'}
+          </h3>
           <p className="text-xs text-blue-200 max-w-lg">
-            Aşağıdaki soruları oku, harf ızgarasında gizlenen doğru kavramı fare veya dokunmatik ekranla sürükleyerek seç!
+            Soruları oku, harf ızgarasında gizlenen doğru kavramı fareyle sürükleyerek veya sırayla ilk ve son harfe dokunarak seç!
           </p>
         </div>
 
@@ -885,7 +1053,7 @@ export function WordSearchGame() {
           </div>
           <button
             onClick={initRandomGrid}
-            className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5 text-xs font-bold"
+            className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer"
           >
             <Shuffle className="w-4 h-4" />
             <span className="hidden sm:inline">Yeni Izgara</span>
@@ -896,10 +1064,10 @@ export function WordSearchGame() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* LEFT: WORD SEARCH GRID */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col items-center justify-center">
+        <div className="lg:col-span-7 bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col items-center justify-center overflow-x-auto">
           <div
-            className="grid gap-1.5 select-none touch-none"
-            style={{ gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}
+            className="grid gap-1 sm:gap-1.5 select-none touch-none"
+            style={{ gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))` }}
             onMouseLeave={handleCellMouseUp}
           >
             {gridMatrix.map((row, r) =>
@@ -910,10 +1078,12 @@ export function WordSearchGame() {
                 return (
                   <button
                     key={`${r}-${c}`}
+                    type="button"
+                    onClick={() => handleCellClick(r, c)}
                     onMouseDown={() => handleCellMouseDown(r, c)}
                     onMouseEnter={() => handleCellMouseEnter(r, c)}
                     onMouseUp={handleCellMouseUp}
-                    className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl font-black text-xs sm:text-sm font-mono flex items-center justify-center transition-all ${
+                    className={`w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 rounded-xl font-black text-[11px] sm:text-xs lg:text-sm font-mono flex items-center justify-center transition-all cursor-pointer ${
                       selected
                         ? 'bg-amber-400 text-slate-950 scale-110 shadow-md ring-2 ring-amber-500 z-10'
                         : foundColor

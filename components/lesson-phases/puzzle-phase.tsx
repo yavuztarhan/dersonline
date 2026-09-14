@@ -332,6 +332,13 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
       data.title?.toLowerCase().includes('pergel') ||
       data.title?.toLowerCase().includes('ray'));
 
+  const isMat511Topic =
+    selectedOutcome?.id === 'MAT.5.1.1' ||
+    selectedOutcome?.code?.includes('5.1.1') ||
+    data.title?.toLowerCase().includes('doğal sayılar') ||
+    data.title?.toLowerCase().includes('basamak') ||
+    data.title?.toLowerCase().includes('bölük');
+
   const baseGamesList: Array<{
     id: PuzzleGameId;
     title: string;
@@ -645,6 +652,8 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Ortak Bölen & Kat Hafıza Kartları'
         : isFactorsMultiplesTopic
         ? 'Çarpanlar & Katlar Hafıza Kartları'
+        : isMat511Topic
+        ? 'Doğal Sayılar & Basamaklar Hafıza Kartları'
         : 'Kavram & Tanım Hafıza Kartları',
       tagline: 'Kavramsal Eşleştirme & Bellek',
       description: isRationalOperationsTopic
@@ -661,6 +670,8 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Ortak bölen, ortak kat, periyot ve aralarında asallık kavramlarını eşleştir.'
         : isFactorsMultiplesTopic
         ? 'Çarpan, kat, bölen, tam kare ve gökkuşağı kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
+        : isMat511Topic
+        ? 'Bölük, basamak değeri, çözümleme, milyonlar ve doğal sayı kavramlarını tanımlarıyla 3D kartları çevirerek eşleştir.'
         : 'Bir kartta kavramın adı & sembolü, diğerinde tanımı! Kartları çevirerek geometrik kavram-tanım çiftlerini hafızanda eşleştir.',
       icon: <Layers className="w-8 h-8" />,
       badge: '12 / 16 Kart • 3D Çevirme',
@@ -687,8 +698,10 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Doğrular & Açı Çıkarımları Eşleştirme'
         : isAngleTopic
         ? 'Açı Çeşitleri & İletki Eşleştirme'
+        : isMat511Topic
+        ? 'Doğal Sayılar & Basamak Eşleştirme'
         : 'Kavram & Sembol Eşleştirme',
-      tagline: isRationalOperationsTopic || isRationalNumbersWeek2 || isRationalNumbersTopic || isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic
+      tagline: isRationalOperationsTopic || isRationalNumbersWeek2 || isRationalNumbersTopic || isDivisibilityTopic || isPrimeFactorsTopic || isCommonTopic || isFactorsMultiplesTopic || isMat511Topic
         ? 'Matematiksel Modelleri Tanı'
         : 'Geometrik Modelleri Tanı',
       description: isRationalOperationsTopic
@@ -709,6 +722,8 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Ters, komşu, tümler, bütünler açıları ve doğruların durumlarını sembol ve tanımlarıyla eşleştirin.'
         : isAngleTopic
         ? 'Açı çeşitleri, ışın ve köşe kavramlarını görsel modelleri ve sembolik formülleriyle eşleştir.'
+        : isMat511Topic
+        ? 'Doğal sayılar, basamak değerleri, bölük modelleri ve çözümleme gösterimlerini tanımlarıyla eşleştirin.'
         : 'Geometrik kavramları görsel modelleri, tanımları ve sembolik gösterimleriyle eşleştirin.',
       icon: <Puzzle className="w-8 h-8" />,
       badge: `${data.items?.length || 4} Çift • Eşleştirme`,
@@ -731,6 +746,8 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Ortak Kat & Bölen Kelime Avı'
         : isFactorsMultiplesTopic
         ? 'Çarpan & Kat Kelime Avı'
+        : isMat511Topic
+        ? 'Doğal Sayılar & Bölükler Kelime Avı'
         : 'Matematiksel Kelime Avı',
       tagline: 'Soru Odaklı Akıl Yürütme',
       description: isRationalOperationsTopic
@@ -747,6 +764,8 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'İpuçlarını oku, ortak bölen, ortak kat, periyot ve aralarında asallık terimlerini yakala!'
         : isFactorsMultiplesTopic
         ? 'İpuçlarını oku, gizli çarpan, kat, bölen ve gökkuşağı kavramlarını bulmaca ızgarasında yakala!'
+        : isMat511Topic
+        ? 'İpuçlarını oku; bölük, milyonlar, basamak, çözümleme, binler ve birler terimlerini bulmaca ızgarasında yakala!'
         : 'Soruları ve ipuçlarını oku, gizli geometrik kavramları dinamik bulmaca ızgarasında bulup yakala!',
       icon: <Search className="w-8 h-8" />,
       badge: '6 Soru • Rastgele Izgara',
@@ -769,6 +788,8 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Ortak Bölen & Kat Hızlı D/Y Testi'
         : isFactorsMultiplesTopic
         ? 'Çarpanlar & Katlar D/Y Testi'
+        : isMat511Topic
+        ? 'Doğal Sayılar Hızlı D/Y Testi'
         : 'Hızlı Doğru / Yanlış Testi',
       tagline: 'Hız ve Kavramsal Refleks',
       description: isRationalOperationsTopic
@@ -785,6 +806,8 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
         ? 'Ortak kat, ortak bölen ve aralarında asallık önermelerini hızla değerlendir!'
         : isFactorsMultiplesTopic
         ? 'Çarpan ve kat önermelerini hızlıca değerlendir, matematiksel gerekçelerini öğren ve puanları topla!'
+        : isMat511Topic
+        ? 'Basamak değerleri, bölük ayrımları ve milyonlu sayılar önermelerini hızla değerlendir, puanları topla!'
         : 'Geometrik önermeleri hızlıca değerlendir, pedagojik gerekçelerini öğren ve puanları topla!',
       icon: <Zap className="w-8 h-8" />,
       badge: '7 Önerme • Hız & Refleks',

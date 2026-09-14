@@ -537,6 +537,18 @@ export function AppDrawer({
                   <ChevronRight className="w-3.5 h-3.5 opacity-60" />
                 </button>
 
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('/neler-yapabilirsiniz')}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-teal-950 bg-teal-50/90 hover:bg-teal-100 border border-teal-200 transition-all cursor-pointer shadow-2xs group"
+                >
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-teal-600 group-hover:rotate-12 transition-transform" />
+                    <span>Neler Yapabilirsiniz?</span>
+                  </div>
+                  <span className="text-[9px] bg-teal-600 text-white font-black px-1.5 py-0.5 rounded-full">Rehber</span>
+                </button>
+
 
                 {/* Geçici olarak yoruma alındı:
                 <button
@@ -741,6 +753,18 @@ export function AppDrawer({
                     <span>Oyun Salonu</span>
                   </div>
                   <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('/neler-yapabilirsiniz')}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-teal-950 bg-teal-50/90 hover:bg-teal-100 border border-teal-200 transition-all cursor-pointer shadow-2xs group"
+                >
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-teal-600 group-hover:rotate-12 transition-transform" />
+                    <span>Neler Yapabilirsiniz?</span>
+                  </div>
+                  <span className="text-[9px] bg-teal-600 text-white font-black px-1.5 py-0.5 rounded-full">Rehber</span>
                 </button>
 
                 {/* Geçici olarak yoruma alındı:

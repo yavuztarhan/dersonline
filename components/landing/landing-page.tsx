@@ -25,7 +25,10 @@ import {
   ChevronRight,
   Play,
   FileCheck2,
-  Sparkle
+  Sparkle,
+  QrCode,
+  FileText,
+  Gamepad2
 } from 'lucide-react';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG, isMascotEnabled } from '@/lib/mascot-config';
@@ -208,7 +211,126 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
         </div>
       </section>
 
-      {/* 2. PROTECTED CURRICULUM OUTCOMES SHOWCASE */}
+      {/* 2. NELER YAPABİLİRSİNİZ? FEATURE TEASER SHOWCASE */}
+      <section className="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-10 border border-teal-800/40 text-white shadow-xl space-y-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-black uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+              <span>Keşfedin & Fark Yaratın</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Akıllı Tahtada Sınırları Kaldırın: <span className="text-teal-400">Neler Yapabilirsiniz?</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Mimar Sinan Selimiye hikâyesinden dokunmatik geometri atölyesine, 70+ zeka oyunundan tek tıkla resmi MEB ders planı çıktısına kadar sınıfınızda devrim yaratan tüm araçlar hazır.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Link
+              href="/neler-yapabilirsiniz"
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+            >
+              <span>Detaylı Kullanım Rehberi</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                playSound('select');
+                setIntroVideoOpen(true);
+              }}
+              className="px-4 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-teal-300 font-bold text-xs sm:text-sm border border-teal-500/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+            >
+              <Play className="w-3.5 h-3.5 fill-teal-300" />
+              <span>Tanıtımı İzle</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 4 Quick Pillars Grid */}
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+          
+          <Link
+            href="/neler-yapabilirsiniz"
+            className="p-4 rounded-2xl bg-slate-800/60 hover:bg-slate-800/90 border border-slate-700/70 hover:border-teal-500/50 transition-all space-y-2 group cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xl">📖</span>
+              <span className="text-[10px] font-black uppercase text-teal-400 bg-teal-950/60 px-2 py-0.5 rounded-md border border-teal-800">
+                4 Fazlı Akış
+              </span>
+            </div>
+            <h3 className="font-extrabold text-sm text-white group-hover:text-teal-300 transition-colors">
+              Maarif Ders Mimarisi
+            </h3>
+            <p className="text-[11px] text-slate-400 leading-snug">
+              Hikâye, sanal atölye, oyunlaştırma ve anlık ölçmeyle 40 dakikalık sürükleyici ders.
+            </p>
+          </Link>
+
+          <Link
+            href="/neler-yapabilirsiniz"
+            className="p-4 rounded-2xl bg-slate-800/60 hover:bg-slate-800/90 border border-slate-700/70 hover:border-teal-500/50 transition-all space-y-2 group cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xl">📄</span>
+              <span className="text-[10px] font-black uppercase text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-800">
+                Resmi MEB
+              </span>
+            </div>
+            <h3 className="font-extrabold text-sm text-white group-hover:text-emerald-300 transition-colors">
+              Tek Tıkla PDF Planı
+            </h3>
+            <p className="text-[11px] text-slate-400 leading-snug">
+              Kazanım ve SDB becerileri eksiksiz hazır; haftada en az 3 saat serbest zaman kazanın!
+            </p>
+          </Link>
+
+          <Link
+            href="/neler-yapabilirsiniz"
+            className="p-4 rounded-2xl bg-slate-800/60 hover:bg-slate-800/90 border border-slate-700/70 hover:border-teal-500/50 transition-all space-y-2 group cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xl">📱</span>
+              <span className="text-[10px] font-black uppercase text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-800">
+                3 Saniye
+              </span>
+            </div>
+            <h3 className="font-extrabold text-sm text-white group-hover:text-amber-300 transition-colors">
+              Şifresiz Tahta Girişi
+            </h3>
+            <p className="text-[11px] text-slate-400 leading-snug">
+              QR kod ve 4 haneli PIN ile tahtada şifrenizi öğrencilere göstermeden anında açın.
+            </p>
+          </Link>
+
+          <Link
+            href="/neler-yapabilirsiniz"
+            className="p-4 rounded-2xl bg-slate-800/60 hover:bg-slate-800/90 border border-slate-700/70 hover:border-teal-500/50 transition-all space-y-2 group cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xl">🎮</span>
+              <span className="text-[10px] font-black uppercase text-indigo-400 bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-800">
+                70+ Oyun
+              </span>
+            </div>
+            <h3 className="font-extrabold text-sm text-white group-hover:text-indigo-300 transition-colors">
+              Kazanım Oyun Odası
+            </h3>
+            <p className="text-[11px] text-slate-400 leading-snug">
+              3D hafıza kartları, çengel bulmaca, hız yarışları ve takım kura çarkıyla eğlenceli pekiştirme.
+            </p>
+          </Link>
+
+        </div>
+      </section>
+
+      {/* 3. PROTECTED CURRICULUM OUTCOMES SHOWCASE */}
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
