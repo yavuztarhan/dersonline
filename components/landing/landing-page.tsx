@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG, isMascotEnabled } from '@/lib/mascot-config';
+import { IntroVideoModal } from '@/components/landing/intro-video-modal';
 
 interface LandingPageProps {
   onOpenAuth?: (tab: 'login' | 'register') => void;
@@ -39,6 +40,7 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
   const { setRole, playSound } = useApp();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
+  const [introVideoOpen, setIntroVideoOpen] = useState(false);
 
   const handleOpenLogin = () => {
     playSound('click');
@@ -115,16 +117,19 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
                 <span>Öğretmen Kaydı</span>
               </button>
 
-
-              {/* Geçici olarak yoruma alındı:
-              <Link
-                href="/tanitim"
-                className="px-4 py-3 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-black text-xs sm:text-sm border border-amber-500/30 transition-all flex items-center gap-2 cursor-pointer"
+              <button
+                type="button"
+                onClick={() => {
+                  playSound('select');
+                  setIntroVideoOpen(true);
+                }}
+                className="px-4 py-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/10 hover:from-amber-500/30 hover:to-orange-500/30 text-amber-300 font-black text-xs sm:text-sm border border-amber-400/40 shadow-lg shadow-amber-500/10 transition-all flex items-center gap-2 cursor-pointer active:scale-95 group"
               >
-                <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>📸 Instagram Tanıtım Kiti</span>
-              </Link>
-              */}
+                <span className="w-5 h-5 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-bold text-xs shadow-md group-hover:scale-110 transition-transform">
+                  <Play className="w-3 h-3 fill-slate-950 translate-x-0.5" />
+                </span>
+                <span>Tanıtımı İzle (1 Dk)</span>
+              </button>
             </div>
 
             {/* Key Indicators */}
@@ -169,17 +174,32 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
                   alt="Selim - Anadolu'nun Matematik Dahisi"
                   width={360}
                   height={420}
-                  className="w-full h-full object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.6)] hover:scale-103 transition-transform duration-300"
+                  className="w-full h-full object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.6)] hover:scale-103 transition-transform duration-300 cursor-pointer"
+                  onClick={() => {
+                    playSound('select');
+                    setIntroVideoOpen(true);
+                  }}
                   priority
                 />
               </div>
 
               {/* Bottom Glass Quote */}
-              <div className="w-full max-w-sm bg-slate-900/90 backdrop-blur-xl border border-teal-400/30 rounded-2xl p-3 shadow-xl text-center space-y-0.5 z-10 -mt-4">
+              <div className="w-full max-w-sm bg-slate-900/90 backdrop-blur-xl border border-teal-400/30 rounded-2xl p-3 shadow-xl text-center space-y-1.5 z-10 -mt-4">
                 <div className="text-xs font-black text-amber-300">Öğrenme Yoldaşın Selim</div>
                 <p className="text-[11px] text-slate-200 italic font-medium leading-snug">
                   "{MASCOT_CONFIG.quotes.heroWelcome}"
                 </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playSound('select');
+                    setIntroVideoOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-extrabold transition-all cursor-pointer active:scale-95"
+                >
+                  <Play className="w-2.5 h-2.5 fill-amber-300" />
+                  <span>Selim'den Dinle • 1 Dk Tanıtım Videosu</span>
+                </button>
               </div>
 
             </div>
@@ -574,6 +594,14 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         defaultTab={authModalTab}
+      />
+
+      {/* Intro Video Modal */}
+      <IntroVideoModal
+        isOpen={introVideoOpen}
+        onClose={() => setIntroVideoOpen(false)}
+        onOpenLogin={handleOpenLogin}
+        onOpenRegister={handleOpenRegister}
       />
 
     </div>
