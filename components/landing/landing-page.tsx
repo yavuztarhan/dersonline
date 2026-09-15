@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG, isMascotEnabled } from '@/lib/mascot-config';
-import { IntroVideoModal } from '@/components/landing/intro-video-modal';
+import { IntroVideoModal, HIDE_INTRO_VIDEO_STORAGE_KEY } from '@/components/landing/intro-video-modal';
 
 interface LandingPageProps {
   onOpenAuth?: (tab: 'login' | 'register') => void;
@@ -44,6 +44,21 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
   const [introVideoOpen, setIntroVideoOpen] = useState(false);
+
+  // Auto-launch welcome video on first visit unless user opted out
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const isHidden = localStorage.getItem(HIDE_INTRO_VIDEO_STORAGE_KEY) === 'true';
+        if (!isHidden) {
+          const timer = setTimeout(() => {
+            setIntroVideoOpen(true);
+          }, 600);
+          return () => clearTimeout(timer);
+        }
+      }
+    } catch (e) {}
+  }, []);
 
   const handleOpenLogin = () => {
     playSound('click');
@@ -133,6 +148,19 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
                 </span>
                 <span>Tanıtımı İzle (1 Dk)</span>
               </button>
+
+              {/* Tanıtım Kitapçığı PDF İndirme Butonu (Daha sonra aktif edilecek):
+              <a
+                href="/downloads/maarif-akademi-tanitim-rehberi.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="maarif-akademi-tanitim-rehberi.pdf"
+                className="px-4 py-3 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-teal-300 hover:text-white font-bold text-xs sm:text-sm border border-teal-500/30 transition-all flex items-center gap-2 cursor-pointer shadow-md"
+              >
+                <FileText className="w-4 h-4 text-teal-400" />
+                <span>Tanıtım Kitapçığı (PDF)</span>
+              </a>
+              */}
             </div>
 
             {/* Key Indicators */}

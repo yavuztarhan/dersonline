@@ -34,6 +34,12 @@ import {
   RocketInverterDivisionGame,
   SimplificationLaserGame
 } from '@/components/lesson-phases/mat7-w5-games';
+import {
+  LaserShieldDefenseGame,
+  OrbitRescueCompassGame,
+  GeometryScissorsMaglevGame,
+  LighthouseAngleGame
+} from '@/components/lesson-phases/mat5-geom-games';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import { useAuth } from '@/lib/auth-store';
 import {
@@ -67,7 +73,8 @@ import {
   Scale,
   Thermometer,
   Wind,
-  Rocket
+  Rocket,
+  Anchor
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -87,6 +94,10 @@ interface MatchCard {
 }
 
 export type PuzzleGameId = 
+  | 'lasershield'
+  | 'orbitrescue'
+  | 'geometryscissors'
+  | 'lighthouseangle'
   | 'quantumareamultiplier'
   | 'rocketinverterdivision'
   | 'simplificationlaser'
@@ -353,6 +364,11 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
       data.title?.toLowerCase().includes('pergel') ||
       data.title?.toLowerCase().includes('ray'));
 
+  const isMat531Topic =
+    selectedOutcome?.id === 'MAT.5.3.1' ||
+    selectedOutcome?.code?.includes('5.3.1') ||
+    (data.title?.toLowerCase().includes('doğru') && (data.title?.toLowerCase().includes('ışın') || data.title?.toLowerCase().includes('doğru parçası')));
+
   const isMat511Topic =
     selectedOutcome?.id === 'MAT.5.1.1' ||
     selectedOutcome?.code?.includes('5.1.1') ||
@@ -370,6 +386,51 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     gradient: string;
     reward: string;
   }> = [];
+
+  if (isMat531Topic) {
+    baseGamesList.push(
+      {
+        id: 'lasershield',
+        title: 'Lazer Kalkanı: Dikme Savunması',
+        tagline: 'Sanal Gönye ile 90° Dikme İndirme',
+        description: 'Siber şehre yaklaşan lazer doğrularına sanal gönyeni oturt, 90° dikme indirerek kalkanı etkinleştir ve lazeri yansıt!',
+        icon: <Zap className="w-8 h-8" />,
+        badge: '3 Seviye • Gönye & Dikme',
+        gradient: 'from-teal-500 via-cyan-600 to-slate-900',
+        reward: '+100 XP & Lazer Ustası'
+      },
+      {
+        id: 'orbitrescue',
+        title: 'Yörünge Kurtarma: Pergelin Dansı',
+        tagline: 'Sanal Pergel ile 360° Çember Çizimi',
+        description: 'Pergelin iğneli ucunu merkez noktaya batır, yarıçapı uydunun mesafesine ayarla ve 360° döndürerek çember yörüngeyi kilitle!',
+        icon: <Compass className="w-8 h-8" />,
+        badge: '3 Gezegen • Çember & Pergel',
+        gradient: 'from-indigo-600 via-purple-700 to-slate-900',
+        reward: '+100 XP & Yörünge Mimarı'
+      },
+      {
+        id: 'geometryscissors',
+        title: 'Geometri Makası: Doğru, Işın, Doğru Parçası',
+        tagline: 'Maglev Ray Döşeme & Sınırlar',
+        description: 'Kontrol kulesinin sinyallerine göre doğru parçası, ışın veya doğru raylarını döşeyip Maglev trenini hızla geçir!',
+        icon: <Train className="w-8 h-8" />,
+        badge: '3 Parkur • Geometrik Terimler',
+        gradient: 'from-emerald-600 via-teal-700 to-slate-900',
+        reward: '+100 XP & Maglev Makasçısı'
+      },
+      {
+        id: 'lighthouseangle',
+        title: 'Fener Bekçisi: Açı Kıskacı',
+        tagline: 'Dar, Dik ve Geniş Açı İletkisi',
+        description: 'Tarihi deniz fenerinin ışık kollarını dar, dik veya geniş açılara ayarlayarak gemileri sis ve kayalıklardan kurtar!',
+        icon: <Anchor className="w-8 h-8" />,
+        badge: '3 Görev • İletki & Açı Türleri',
+        gradient: 'from-amber-500 via-orange-600 to-slate-900',
+        reward: '+100 XP & Fener Bekçisi'
+      }
+    );
+  }
 
   if (isRationalMultDivTopic) {
     baseGamesList.push(
@@ -1045,6 +1106,34 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
 
           {/* Teacher Smart Board Student Delegation Widget */}
           <BoardStudentWidget activityTitle={currentGameInfo?.title || 'Aktif Oyun'} />
+
+          {/* FEATURED GAME: LAZER KALKANI: DİKME SAVUNMASI (MAT.5.3.1) */}
+          {selectedGameId === 'lasershield' && (
+            <div className="animate-in fade-in duration-200">
+              <LaserShieldDefenseGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: YÖRÜNGE KURTARMA: PERGELİN DANSI (MAT.5.3.1) */}
+          {selectedGameId === 'orbitrescue' && (
+            <div className="animate-in fade-in duration-200">
+              <OrbitRescueCompassGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: GEOMETRİ MAKASI: DOĞRU, IŞIN, DOĞRU PARÇASI (MAT.5.3.1) */}
+          {selectedGameId === 'geometryscissors' && (
+            <div className="animate-in fade-in duration-200">
+              <GeometryScissorsMaglevGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: FENER BEKÇİSİ: AÇI KISKACI (MAT.5.3.1) */}
+          {selectedGameId === 'lighthouseangle' && (
+            <div className="animate-in fade-in duration-200">
+              <LighthouseAngleGame />
+            </div>
+          )}
 
           {/* FEATURED GAME: KUANTUM ALAN ÇARPANI (MAT.7.1.4) */}
           {selectedGameId === 'quantumareamultiplier' && (

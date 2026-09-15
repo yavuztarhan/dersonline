@@ -27,11 +27,14 @@ import {
 import { MascotCharacter } from '@/components/mascot';
 import { MASCOT_CONFIG } from '@/lib/mascot-config';
 import { SuspendedTeacherView } from '@/components/teacher/suspended-teacher-view';
+import { IntroVideoModal } from '@/components/landing/intro-video-modal';
+import { Play } from 'lucide-react';
 
 export default function HomePage() {
   const { role, playSound } = useApp();
   const { currentUser } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [introVideoOpen, setIntroVideoOpen] = useState(false);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -134,6 +137,17 @@ export default function HomePage() {
                 <Compass className="w-3.5 h-3.5 text-emerald-400" />
                 <span>SDB Becerileri & Süreç Odaklı Rubrik</span>
               </div>
+              <button
+                type="button"
+                onClick={() => {
+                  playSound('select');
+                  setIntroVideoOpen(true);
+                }}
+                className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 text-amber-300 px-3 py-1.5 rounded-xl border border-amber-400/40 font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                <Play className="w-3 h-3 fill-amber-300" />
+                <span>Tanıtım Videosu</span>
+              </button>
             </div>
           </div>
 
@@ -187,6 +201,12 @@ export default function HomePage() {
       <div id="onboarding-home-direct-launch">
         <DirectLaunchSection />
       </div>
+
+      {/* Intro Video Modal */}
+      <IntroVideoModal
+        isOpen={introVideoOpen}
+        onClose={() => setIntroVideoOpen(false)}
+      />
 
     </div>
   );
