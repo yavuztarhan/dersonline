@@ -71,9 +71,9 @@ export const authOptions: NextAuthOptions = {
               update: {},
               create: {
                 userId: dbUser.id,
-                city: 'Edirne',
-                district: 'Merkez',
-                school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+                city: '',
+                district: '',
+                school: '',
                 branch: 'Matematik',
                 status: 'APPROVED',
               },
