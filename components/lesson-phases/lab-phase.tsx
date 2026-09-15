@@ -42,7 +42,12 @@ import {
   XCircle,
   Check,
   Ruler,
-  Palette
+  Palette,
+  Star,
+  Eraser,
+  Magnet,
+  RotateCw,
+  Trophy
 } from 'lucide-react';
 import { MascotLabHelper } from '@/components/mascot';
 import { GeometryFlowSelector, GeometryStationId } from '@/components/lesson-phases/geometry-flow-selector';
@@ -73,6 +78,9 @@ interface GeoObject {
   distance?: number;
   color: string;
   motifType?: 'seljuk-star' | 'tile' | 'maritime';
+  hideLength?: boolean;
+  hideLabel?: boolean;
+  baseLineId?: string;
 }
 
 interface GeoAngle {
@@ -84,6 +92,7 @@ interface GeoAngle {
   type: 'sifir' | 'dar' | 'dik' | 'genis' | 'dogru';
   label: string;
   color: string;
+  hideLabel?: boolean;
 }
 
 export interface GeoPolygon {
@@ -94,6 +103,7 @@ export interface GeoPolygon {
   fillOpacity: number;
   perimeter: number;
   area: number;
+  hideLabel?: boolean;
 }
 
 const GRID_SIZE = 30; // 30px = 1 cm in GeoGebra coordinate grid
@@ -128,6 +138,207 @@ function calculatePolygonPerimeter(pts: GeoPoint[]): number {
 
 const POINT_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'O'];
 const COLORS = ['#10b396', '#0284c7', '#f59e0b', '#8b5cf6', '#ec4899', '#ef4444'];
+
+export interface MotifGuideElement {
+  id: string;
+  name: string;
+  requiredTool: 'compass' | 'line' | 'setsquare' | 'ray' | 'segment';
+  toolTitle: string;
+  toolIcon: string;
+  type: 'circle' | 'line' | 'perpendicular' | 'ray' | 'segment';
+  p1Label: string;
+  p2Label?: string;
+  x1?: number;
+  y1?: number;
+  x2?: number;
+  y2?: number;
+  cx?: number;
+  cy?: number;
+  r?: number;
+  instruction: string;
+}
+
+export const MOTIF_1_GUIDES: MotifGuideElement[] = [
+  {
+    id: 'motif-circle',
+    name: 'Selçuklu Çemberi',
+    requiredTool: 'compass',
+    toolTitle: 'Pergel',
+    toolIcon: '⭕',
+    type: 'circle',
+    cx: 380,
+    cy: 225,
+    r: 115,
+    p1Label: 'M',
+    p2Label: 'A',
+    instruction: 'Pergel aracını seçerek M merkezli ve A noktasından geçen çemberi çizin.'
+  },
+  {
+    id: 'motif-line-h',
+    name: 'Yatay Eksen Doğrusu',
+    requiredTool: 'line',
+    toolTitle: 'Doğru',
+    toolIcon: '↔️',
+    type: 'line',
+    x1: 195,
+    y1: 225,
+    x2: 565,
+    y2: 225,
+    p1Label: 'D',
+    p2Label: 'B',
+    instruction: 'Doğru aracını seçerek D ve B noktalarından geçen doğruyu çizin.'
+  },
+  {
+    id: 'motif-perp-v',
+    name: 'Düşey Dikme Ekseni (90°)',
+    requiredTool: 'setsquare',
+    toolTitle: 'Gönye & Dikme',
+    toolIcon: '⊥',
+    type: 'perpendicular',
+    x1: 380,
+    y1: 65,
+    x2: 380,
+    y2: 385,
+    p1Label: 'A',
+    p2Label: 'M',
+    instruction: 'Gönye & Dikme aracını seçerek 90° dikme eksenini oluşturun.'
+  },
+  {
+    id: 'motif-ray-diag',
+    name: 'Yıldız Köşe Işını [ME>',
+    requiredTool: 'ray',
+    toolTitle: 'Işın',
+    toolIcon: '⚡',
+    type: 'ray',
+    x1: 380,
+    y1: 225,
+    x2: 515,
+    y2: 90,
+    p1Label: 'M',
+    p2Label: 'E',
+    instruction: 'Işın aracını seçerek M noktasından E köşesine uzanan ışını çizin.'
+  },
+  {
+    id: 'motif-seg-ab',
+    name: 'Doğru Parçası [AB]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 380,
+    y1: 110,
+    x2: 495,
+    y2: 225,
+    p1Label: 'A',
+    p2Label: 'B',
+    instruction: 'Doğru Parçası aracını seçerek A ve B noktalarını birleştirin.'
+  },
+  {
+    id: 'motif-seg-bc',
+    name: 'Doğru Parçası [BC]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 495,
+    y1: 225,
+    x2: 380,
+    y2: 340,
+    p1Label: 'B',
+    p2Label: 'C',
+    instruction: 'Doğru Parçası aracını seçerek B ve C noktalarını birleştirin.'
+  },
+  {
+    id: 'motif-seg-cd',
+    name: 'Doğru Parçası [CD]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 380,
+    y1: 340,
+    x2: 265,
+    y2: 225,
+    p1Label: 'C',
+    p2Label: 'D',
+    instruction: 'Doğru Parçası aracını seçerek C ve D noktalarını birleştirin.'
+  },
+  {
+    id: 'motif-seg-da',
+    name: 'Doğru Parçası [DA]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 265,
+    y1: 225,
+    x2: 380,
+    y2: 110,
+    p1Label: 'D',
+    p2Label: 'A',
+    instruction: 'Doğru Parçası aracını seçerek D ve A noktalarını birleştirin.'
+  },
+  {
+    id: 'motif-seg-ef',
+    name: 'Doğru Parçası [EF]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 461,
+    y1: 144,
+    x2: 461,
+    y2: 306,
+    p1Label: 'E',
+    p2Label: 'F',
+    instruction: 'Doğru Parçası aracını seçerek E ve F noktalarını birleştirin.'
+  },
+  {
+    id: 'motif-seg-fg',
+    name: 'Doğru Parçası [FG]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 461,
+    y1: 306,
+    x2: 299,
+    y2: 306,
+    p1Label: 'F',
+    p2Label: 'G',
+    instruction: 'Doğru Parçası aracını seçerek F ve G noktalarını birleştirin.'
+  },
+  {
+    id: 'motif-seg-gh',
+    name: 'Doğru Parçası [GH]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 299,
+    y1: 306,
+    x2: 299,
+    y2: 144,
+    p1Label: 'G',
+    p2Label: 'H',
+    instruction: 'Doğru Parçası aracını seçerek G ve H noktalarını birleştirin.'
+  },
+  {
+    id: 'motif-seg-he',
+    name: 'Doğru Parçası [HE]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 299,
+    y1: 144,
+    x2: 461,
+    y2: 144,
+    p1Label: 'H',
+    p2Label: 'E',
+    instruction: 'Doğru Parçası aracını seçerek H ve E noktalarını birleştirin.'
+  }
+];
 
 // Angle calculation between [vertex -> p1] and [vertex -> p2]
 function getAngleDegree(vertex: { x: number; y: number }, p1: { x: number; y: number }, p2: { x: number; y: number }): number {
@@ -246,11 +457,11 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
   // Active Tool: 'angle' | 'measure-angle' | 'measure-length' for MAT.5.3.3, or geometry tools for MAT.5.3.1
   const [activeTool, setActiveTool] = useState<
-    'angle' | 'measure-angle' | 'measure-length' | 'ray' | 'segment' | 'line' | 'point' | 'compass' | 'setsquare' | 'artmotif' | 'polygon' | 'drag'
+    'angle' | 'measure-angle' | 'measure-length' | 'ray' | 'segment' | 'line' | 'point' | 'compass' | 'setsquare' | 'artmotif' | 'polygon' | 'drag' | 'eraser' | 'protractor'
   >(isAngleTopic ? 'angle' : 'point');
 
   // Professional digital toolbar active category
-  const [activeToolCategory, setActiveToolCategory] = useState<'all' | 'basic' | 'lines' | 'angle' | 'shapes' | 'special'>('all');
+  const [activeToolCategory, setActiveToolCategory] = useState<'all' | 'basic' | 'lines' | 'angle' | 'shapes' | 'special'>('lines');
 
   // Multi-station Flow for MAT.5.3.1
   const [activeStation, setActiveStation] = useState<GeometryStationId>('lines');
@@ -265,6 +476,58 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const [measureLengthPoints, setMeasureLengthPoints] = useState<GeoPoint[]>([]);
   const [isSnapToGrid, setIsSnapToGrid] = useState<boolean>(true);
   const [snapCandidate, setSnapCandidate] = useState<{ x: number; y: number; isPoint: boolean; label?: string } | null>(null);
+
+  // Motif 1: Selçuklu Yıldızı Görevi State
+  const [isMotif1Active, setIsMotif1Active] = useState<boolean>(false);
+  const [motifCompletedGuides, setMotifCompletedGuides] = useState<string[]>([]);
+  const [motifCelebrated, setMotifCelebrated] = useState<boolean>(false);
+  const [motifHintGuideId, setMotifHintGuideId] = useState<string | null>(null);
+
+  // Açı Tahmin ve İletki Ölçüm Oyunu State
+  const [isAngleGameActive, setIsAngleGameActive] = useState<boolean>(false);
+  const [angleGameStage, setAngleGameStage] = useState<'estimate' | 'measure' | 'result'>('estimate');
+  const [angleGameTarget, setAngleGameTarget] = useState<{
+    vertex: { x: number; y: number };
+    p1: { x: number; y: number };
+    p2: { x: number; y: number };
+    angleDeg: number;
+    baseDeg: number;
+    type: 'dar' | 'dik' | 'genis' | 'dogru';
+  } | null>(null);
+  const [angleGameEstimate, setAngleGameEstimate] = useState<string>('');
+  const [angleGameMeasurement, setAngleGameMeasurement] = useState<string>('');
+  const [angleGameRound, setAngleGameRound] = useState<number>(1);
+  const [angleGameTotalScore, setAngleGameTotalScore] = useState<number>(0);
+  const [angleGameResult, setAngleGameResult] = useState<{
+    trueDeg: number;
+    estimate: number;
+    measurement: number;
+    estimateAccuracy: number;
+    measureAccuracy: number;
+    totalRoundScore: number;
+    message: string;
+  } | null>(null);
+  const [angleMeasureError, setAngleMeasureError] = useState<string | null>(null);
+  const [angleMeasureAttempts, setAngleMeasureAttempts] = useState<number>(0);
+
+  // İnteraktif İletki (Açıölçer) State
+  const [protractorCenter, setProtractorCenter] = useState<{ x: number; y: number }>({ x: 380, y: 350 });
+  const [protractorRotation, setProtractorRotation] = useState<number>(0);
+  const [isDraggingProtractorCenter, setIsDraggingProtractorCenter] = useState<boolean>(false);
+  const [isRotatingProtractor, setIsRotatingProtractor] = useState<boolean>(false);
+  const [isProtractorOnCanvas, setIsProtractorOnCanvas] = useState<boolean>(false);
+
+  // İnteraktif Gönye (Dik Üçgen Cetveli) State
+  const [setSquareOrigin, setSetSquareOrigin] = useState<{ x: number; y: number }>({ x: 320, y: 300 }); // 90° dik köşe H
+  const [setSquareRotation, setSetSquareRotation] = useState<number>(0);
+  const [isDraggingSetSquare, setIsDraggingSetSquare] = useState<boolean>(false);
+  const [isRotatingSetSquare, setIsRotatingSetSquare] = useState<boolean>(false);
+  const [isSetSquareOnCanvas, setIsSetSquareOnCanvas] = useState<boolean>(false);
+  const [snappedLineInfo, setSnappedLineInfo] = useState<{
+    lineId: string;
+    lineSymbol: string;
+    footPt: { x: number; y: number };
+  } | null>(null);
 
   const [selectedPointForLink, setSelectedPointForLink] = useState<GeoPoint | null>(null);
   const [angleStepPoint1, setAngleStepPoint1] = useState<GeoPoint | null>(null); // Vertex O
@@ -601,9 +864,9 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     playSound('click');
     const pD1: GeoPoint = { id: 'pt-d1', label: 'E', x: 80, y: 320, color: '#38bdf8' };
     const pD2: GeoPoint = { id: 'pt-d2', label: 'F', x: 560, y: 320, color: '#38bdf8' };
-    const pTop: GeoPoint = { id: 'pt-P', label: 'P', x: 300, y: 120, color: '#f43f5e' };
+    const pTop: GeoPoint = { id: 'pt-P', label: 'P', x: 300, y: 170, color: '#f43f5e' };
     const pH: GeoPoint = { id: 'pt-H', label: 'H', x: 300, y: 320, color: '#10b396' };
-    const pSlant: GeoPoint = { id: 'pt-S', label: 'S', x: 460, y: 320, color: '#94a3b8' };
+    const pSlant: GeoPoint = { id: 'pt-S', label: 'S', x: 450, y: 320, color: '#94a3b8' };
     setPoints([pD1, pD2, pTop, pH, pSlant]);
 
     const dLine: GeoObject = {
@@ -623,7 +886,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       symbol: '[PH] ⊥ d',
       label: 'En Kısa Yol: Dikme [PH] ⊥ d (15 cm)',
       distance: 15,
-      color: '#f43f5e'
+      color: '#f43f5e',
+      baseLineId: 'line-d-base'
     };
     const slantSeg: GeoObject = {
       id: 'slant-ps',
@@ -635,9 +899,549 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       length: 23,
       color: '#94a3b8'
     };
+    const angle90: GeoAngle = {
+      id: 'ang-ph-90',
+      vertex: pH,
+      p1: pD2,
+      p2: pTop,
+      degree: 90,
+      type: 'dik',
+      label: 's(∠FHP) = 90°',
+      color: '#10b981'
+    };
     setObjects([dLine, perpSeg, slantSeg]);
+    setAngles([angle90]);
+    setIsSetSquareOnCanvas(true);
+    setSetSquareOrigin({ x: 300, y: 320 });
+    setSetSquareRotation(0);
+    setSnappedLineInfo({ lineId: 'line-d-base', lineSymbol: 'd Doğrusu', footPt: { x: 300, y: 320 } });
+    setActiveTool('setsquare');
+    setActiveToolCategory('lines');
+    setFeedbackMsg('📐 İnteraktif Gönye tuvale yerleştirildi: [PH] ⊥ d dikmesi (15 cm) ve 90° dik açı incelenebilir.');
+  };
+
+  // Motif 1 (Selçuklu Yıldızı) Mission Handlers
+  const loadMotif1Mission = () => {
+    playSound('click');
+    setIsMotif1Active(true);
+    setMotifCompletedGuides([]);
+    setMotifCelebrated(false);
+    setMotifHintGuideId(null);
+
+    // 8 star vertices + 1 center point M
+    // Center: (380, 225), R = 115
+    const pM: GeoPoint = { id: 'pt-m1-M', label: 'M', x: 380, y: 225, color: '#f59e0b' };
+    const pA: GeoPoint = { id: 'pt-m1-A', label: 'A', x: 380, y: 110, color: '#0284c7' };
+    const pB: GeoPoint = { id: 'pt-m1-B', label: 'B', x: 495, y: 225, color: '#0284c7' };
+    const pC: GeoPoint = { id: 'pt-m1-C', label: 'C', x: 380, y: 340, color: '#0284c7' };
+    const pD: GeoPoint = { id: 'pt-m1-D', label: 'D', x: 265, y: 225, color: '#0284c7' };
+
+    const pE: GeoPoint = { id: 'pt-m1-E', label: 'E', x: 461, y: 144, color: '#10b396' };
+    const pF: GeoPoint = { id: 'pt-m1-F', label: 'F', x: 461, y: 306, color: '#10b396' };
+    const pG: GeoPoint = { id: 'pt-m1-G', label: 'G', x: 299, y: 306, color: '#10b396' };
+    const pH: GeoPoint = { id: 'pt-m1-H', label: 'H', x: 299, y: 144, color: '#10b396' };
+
+    setPoints([pM, pA, pB, pC, pD, pE, pF, pG, pH]);
+    setObjects([]);
     setAngles([]);
-    setFeedbackMsg('📐 Gönye Dikmesi yüklendi: [PH] ⊥ d mesafesi (15 cm), eğik yol [PS] mesafesinden (23 cm) daha kısadır!');
+    setPolygons([]);
+    setPolygonDraft([]);
+    setMeasureAnglePoints([]);
+    setMeasureLengthPoints([]);
+    setSelectedPointForLink(null);
+    setCompassCenterPoint(null);
+    setAngleStepPoint1(null);
+    setAngleStepPoint2(null);
+    setActiveToolCategory('all');
+    setActiveTool('segment');
+    setFeedbackMsg('⭐ Motif 1 Başladı! Kesik çizgilerle verilen Selçuklu Yıldızı modelini tamamlamak için uygun araçları (Doğru Parçası, Pergel, Doğru, Işın, Gönye) seçip şekli tamamlayın.');
+  };
+
+  const completeMotifGuide = (guideId: string) => {
+    if (motifCompletedGuides.includes(guideId)) return;
+    const newCompleted = [...motifCompletedGuides, guideId];
+    setMotifCompletedGuides(newCompleted);
+    playSound('success');
+    addPoints(15);
+
+    const guide = MOTIF_1_GUIDES.find((g) => g.id === guideId);
+    if (guide) {
+      setFeedbackMsg(`✨ Harika! ${guide.name} başarıyla tamamlandı! (${newCompleted.length}/${MOTIF_1_GUIDES.length})`);
+    }
+
+    if (newCompleted.length === MOTIF_1_GUIDES.length) {
+      setMotifCelebrated(true);
+      playSound('success');
+      addPoints(100);
+      unlockBadge('seljuk-architect');
+      try {
+        confetti({
+          particleCount: 140,
+          spread: 85,
+          origin: { y: 0.55 }
+        });
+      } catch (e) {}
+    }
+  };
+
+  const checkAndCompleteMotifObject = (newObj: GeoObject) => {
+    if (!isMotif1Active) return;
+    const l1 = newObj.p1?.label;
+    const l2 = newObj.p2?.label;
+
+    if (newObj.type === 'segment' && l1 && l2) {
+      const pair = [l1, l2].sort().join('-');
+      if (pair === 'A-B') completeMotifGuide('motif-seg-ab');
+      else if (pair === 'B-C') completeMotifGuide('motif-seg-bc');
+      else if (pair === 'C-D') completeMotifGuide('motif-seg-cd');
+      else if (pair === 'A-D') completeMotifGuide('motif-seg-da');
+      else if (pair === 'E-F') completeMotifGuide('motif-seg-ef');
+      else if (pair === 'F-G') completeMotifGuide('motif-seg-fg');
+      else if (pair === 'G-H') completeMotifGuide('motif-seg-gh');
+      else if (pair === 'E-H') completeMotifGuide('motif-seg-he');
+    } else if (newObj.type === 'circle' && (l1 === 'M' || l2 === 'M')) {
+      completeMotifGuide('motif-circle');
+    } else if (newObj.type === 'line' && l1 && l2) {
+      const pair = [l1, l2].sort().join('-');
+      if (pair === 'B-D' || l1 === 'M' || l2 === 'M') {
+        completeMotifGuide('motif-line-h');
+      }
+    } else if (newObj.type === 'ray' && (l1 === 'M' || l2 === 'M' || l1 === 'E' || l2 === 'E')) {
+      completeMotifGuide('motif-ray-diag');
+    } else if (newObj.type === 'perpendicular') {
+      completeMotifGuide('motif-perp-v');
+    }
+  };
+
+  const giveMotifNextHint = () => {
+    if (!isMotif1Active) return;
+    const remaining = MOTIF_1_GUIDES.find((g) => !motifCompletedGuides.includes(g.id));
+    if (!remaining) {
+      setFeedbackMsg('⭐ Tebrikler! Tüm Selçuklu motifi çizgilerini zaten tamamladınız!');
+      return;
+    }
+    setMotifHintGuideId(remaining.id);
+    setActiveTool(remaining.requiredTool);
+    playSound('click');
+    setFeedbackMsg(`💡 İpucu: Sıradaki parça "${remaining.name}". Sol menüden "${remaining.toolTitle}" aracını seçip kesik çizgiye tıklayın veya noktaları birleştirin.`);
+  };
+
+  const autoCompleteMotifMission = () => {
+    if (!isMotif1Active) return;
+    const allIds = MOTIF_1_GUIDES.map((g) => g.id);
+    setMotifCompletedGuides(allIds);
+    setMotifCelebrated(true);
+    playSound('success');
+    addPoints(100);
+    unlockBadge('seljuk-architect');
+    try {
+      confetti({
+        particleCount: 150,
+        spread: 90,
+        origin: { y: 0.55 }
+      });
+    } catch (e) {}
+    setFeedbackMsg('🎉 Harika! Selçuklu Yıldızı motifinin tüm kesik çizgileri başarıyla tamamlandı!');
+  };
+
+  // ==========================================
+  // AÇI TAHMİN VE İLETKİ ÖLÇÜM OYUNU FONKSİYONLARI
+  // ==========================================
+  const generateRandomAngleTarget = () => {
+    const anglesPool = [
+      25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90,
+      95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155
+    ];
+    const targetDeg = anglesPool[Math.floor(Math.random() * anglesPool.length)];
+    const vertex = { x: 380, y: 240 };
+    const baseTilts = [0, 0, 0, 15, -15, 20, -20];
+    const baseDeg = baseTilts[Math.floor(Math.random() * baseTilts.length)];
+    const armLen = 170;
+
+    const baseRad = (baseDeg * Math.PI) / 180;
+    const p1 = {
+      x: Math.round(vertex.x + armLen * Math.cos(baseRad)),
+      y: Math.round(vertex.y + armLen * Math.sin(baseRad))
+    };
+
+    // Second arm sweeps counter-clockwise (upwards on screen, so baseDeg - targetDeg)
+    const secondRad = ((baseDeg - targetDeg) * Math.PI) / 180;
+    const p2 = {
+      x: Math.round(vertex.x + armLen * Math.cos(secondRad)),
+      y: Math.round(vertex.y + armLen * Math.sin(secondRad))
+    };
+
+    let type: 'dar' | 'dik' | 'genis' | 'dogru' = 'dar';
+    if (targetDeg === 90) type = 'dik';
+    else if (targetDeg > 90) type = 'genis';
+
+    return {
+      vertex,
+      p1,
+      p2,
+      angleDeg: targetDeg,
+      baseDeg,
+      type
+    };
+  };
+
+  const getProtractorDegreeAtPoint = (pt: { x: number; y: number }) => {
+    const dx = pt.x - protractorCenter.x;
+    const dy = pt.y - protractorCenter.y;
+    const rad = (protractorRotation * Math.PI) / 180;
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const xLocal = dx * cos + dy * sin;
+    const yLocal = -dx * sin + dy * cos;
+    let deg = (Math.atan2(-yLocal, xLocal) * 180) / Math.PI;
+    if (deg < 0) deg += 360;
+    return Math.round(deg);
+  };
+
+  const startAngleGame = () => {
+    playSound('click');
+    setIsMotif1Active(false);
+    setIsAngleGameActive(true);
+    setAngleGameRound(1);
+    setAngleGameTotalScore(0);
+    loadAngleGameRound(1);
+  };
+
+  const loadAngleGameRound = (roundNum: number) => {
+    const target = generateRandomAngleTarget();
+    setAngleGameTarget(target);
+    setAngleGameStage('estimate');
+    setAngleGameEstimate('');
+    setAngleGameMeasurement('');
+    setAngleGameResult(null);
+    setAngleMeasureError(null);
+    setAngleMeasureAttempts(0);
+
+    // Position protractor parked below canvas
+    setProtractorCenter({ x: 380, y: 350 });
+    setProtractorRotation(0);
+
+    // Clear normal workshop items so canvas is focused on the game
+    setPoints([]);
+    setObjects([]);
+    setAngles([]);
+    setPolygons([]);
+    setPolygonDraft([]);
+    setMeasureAnglePoints([]);
+    setMeasureLengthPoints([]);
+    setSelectedPointForLink(null);
+
+    setFeedbackMsg(`🎯 Tur ${roundNum}: Ekranda çizili olan açının ölçüsünü göz kararı tahmin edin ve onaylayın.`);
+  };
+
+  const submitAngleEstimate = () => {
+    const est = parseInt(angleGameEstimate, 10);
+    if (isNaN(est) || est <= 0 || est >= 180) {
+      playSound('click');
+      setFeedbackMsg('⚠️ Lütfen 1° ile 179° arasında geçerli bir açı tahmini girin.');
+      return;
+    }
+
+    playSound('success');
+    setAngleGameStage('measure');
+    setAngleMeasureError(null);
+    setAngleMeasureAttempts(0);
+    setFeedbackMsg('📐 Harika! Şimdi iletkiyi merkezinden (turuncu) açının O köşesine taşıyın, mavi halkadan taban koluna dayayın ve doğru ölçümü girin.');
+  };
+
+  const submitAngleMeasurement = () => {
+    if (!angleGameTarget) return;
+    const meas = parseInt(angleGameMeasurement, 10);
+    if (isNaN(meas) || meas <= 0 || meas >= 180) {
+      playSound('click');
+      setAngleMeasureError('Lütfen 1° ile 179° arasında bir sayı girin.');
+      setFeedbackMsg('⚠️ Lütfen iletkinin gösterdiği 1° ile 179° arasında geçerli bir ölçüm değeri girin.');
+      return;
+    }
+
+    const trueDeg = angleGameTarget.angleDeg;
+
+    // 1. İletki açının O köşesine yerleştirildi mi?
+    const distToVertex = Math.hypot(
+      protractorCenter.x - angleGameTarget.vertex.x,
+      protractorCenter.y - angleGameTarget.vertex.y
+    );
+    if (distToVertex > 35) {
+      playSound('click');
+      setAngleMeasureError('İletki açının O köşesine yerleştirilmedi!');
+      setFeedbackMsg('⚠️ İletkiyi açının O köşesine yerleştirmediniz! Turuncu merkez halkasından tutarak O köşesine taşıyın veya "Köşeye Dayat" butonuna basın.');
+      return;
+    }
+
+    // 2. İletki taban çizgisine hizalandı mı?
+    const baseDegNorm = ((angleGameTarget.baseDeg % 360) + 360) % 360;
+    const rotNorm = ((protractorRotation % 360) + 360) % 360;
+    const diffRot = Math.abs(rotNorm - baseDegNorm);
+    const isAligned = diffRot <= 4 || Math.abs(diffRot - 360) <= 4;
+    if (!isAligned) {
+      playSound('click');
+      setAngleMeasureError('İletki taban koluna hizalanmadı!');
+      setFeedbackMsg('⚠️ İletkinin taban çizgisi açının koluna hizalanmadı! Mavi halkadan çevirerek taban çizgisine tam oturtun.');
+      return;
+    }
+
+    // 3. Ölçüm Doğruluk Kontrolü (Hatalıysa İlerleme Yapma!)
+    if (meas !== trueDeg && Math.abs(meas - trueDeg) > 1) {
+      playSound('click');
+      setAngleMeasureAttempts((prev) => prev + 1);
+
+      // Ters skala kontrolü (180 - trueDeg)
+      if (Math.abs(meas - (180 - trueDeg)) <= 1) {
+        const typeStr = trueDeg < 90 ? 'Dar Açı (<90°)' : 'Geniş Açı (>90°)';
+        setAngleMeasureError(`Ters skala okundu (${meas}°). Doğru değer için 0°'dan başlayan tarafı okuyun.`);
+        setFeedbackMsg(`⚠️ Ters yöndeki skalayı okudunuz (${meas}°)! Açınız ${typeStr} olduğundan 0°'dan başlayan doğru skala tarafını okumalısınız.`);
+        return;
+      }
+
+      const directionHint = meas < trueDeg ? 'daha büyük' : 'daha küçük';
+      setAngleMeasureError(`Hatalı Ölçüm: ${meas}°. Doğru açı bundan ${directionHint}!`);
+      setFeedbackMsg(`❌ Hatalı Ölçüm! Girdiğiniz ${meas}° doğru değil. İletkide diğer kolun denk geldiği sayıyı dikkatle okuyun (İpucu: Açı ${meas}°'den ${directionHint}).`);
+      return;
+    }
+
+    // 4. ÖLÇÜM KUSURSUZ VEYA ±1° TOLERANSTA DOĞRU
+    setAngleMeasureError(null);
+    const est = parseInt(angleGameEstimate, 10);
+    const estDiff = Math.abs(est - trueDeg);
+    const estAcc = Math.max(0, Math.round(100 - estDiff * 2.5));
+    const measAcc = 100; // İletki ölçümü doğrulanarak kabul edildi!
+
+    // Skor hesaplama: Tahmin (%40) + Kusursuz Ölçüm (%60)
+    const penalty = Math.min(20, angleMeasureAttempts * 5);
+    const totalRoundScore = Math.max(10, Math.round(estAcc * 0.4 + measAcc * 0.6) - penalty);
+
+    let message = '';
+    if (estAcc >= 90) {
+      message = `🏆 Muhteşem Ölçüm! Açıyı hem göz kararı harika tahmin ettiniz (%${estAcc}) hem de iletkiyle tam doğru (${trueDeg}°) ölçtünüz!`;
+    } else if (estAcc >= 70) {
+      message = `🌟 Çok Başarılı! İletkiyle doğru ölçümü (${trueDeg}°) buldunuz. Göz kararı tahmininiz de gayet iyiydi (%${estAcc}).`;
+    } else {
+      message = `👏 Tebrikler! İletkiyi doğru kullanarak açının gerçek ölçüsünü (${trueDeg}°) başarıyla buldunuz!`;
+    }
+
+    setAngleGameResult({
+      trueDeg,
+      estimate: est,
+      measurement: trueDeg,
+      estimateAccuracy: estAcc,
+      measureAccuracy: 100,
+      totalRoundScore,
+      message
+    });
+
+    setAngleGameTotalScore((prev) => prev + totalRoundScore);
+    addPoints(totalRoundScore);
+    setAngleGameStage('result');
+    playSound('success');
+
+    try {
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.55 }
+      });
+    } catch (e) {}
+
+    setFeedbackMsg(`🎉 Tebrikler! Açıyı başarıyla ve doğru olarak ${trueDeg}° ölçtünüz!`);
+  };
+
+  const nextAngleGameRound = () => {
+    playSound('click');
+    const nextR = angleGameRound + 1;
+    setAngleGameRound(nextR);
+    loadAngleGameRound(nextR);
+  };
+
+  const exitAngleGame = () => {
+    playSound('click');
+    setIsAngleGameActive(false);
+    setAngleGameTarget(null);
+    setAngleGameStage('estimate');
+    setFeedbackMsg('Geometri Atölyesine geri dönüldü.');
+  };
+
+  const snapProtractorToVertex = () => {
+    if (!angleGameTarget) return;
+    playSound('click');
+    setProtractorCenter({ ...angleGameTarget.vertex });
+    setProtractorRotation(angleGameTarget.baseDeg);
+    setFeedbackMsg('🧲 İletki doğrudan açının O köşesine ve taban koluna hizalandı!');
+  };
+
+  // İnteraktif Gönye (Dik Üçgen Cetveli) Yardımcıları
+  const SET_SQUARE_BASE_WIDTH = 210; // 7 cm
+  const SET_SQUARE_HEIGHT = 150;     // 5 cm
+
+  const getSetSquareFreeTip = (origin = setSquareOrigin, rot = setSquareRotation) => {
+    const rad = (rot * Math.PI) / 180;
+    return {
+      x: Math.round(origin.x + SET_SQUARE_HEIGHT * Math.sin(rad)),
+      y: Math.round(origin.y - SET_SQUARE_HEIGHT * Math.cos(rad))
+    };
+  };
+
+  const getSetSquareBaseTip = (origin = setSquareOrigin, rot = setSquareRotation) => {
+    const rad = (rot * Math.PI) / 180;
+    return {
+      x: Math.round(origin.x + SET_SQUARE_BASE_WIDTH * Math.cos(rad)),
+      y: Math.round(origin.y + SET_SQUARE_BASE_WIDTH * Math.sin(rad))
+    };
+  };
+
+  const findNearestLineSnap = (x: number, y: number, snapThreshold = 35) => {
+    const straightLines = objects.filter(
+      (o) => o.p2 && (o.type === 'segment' || o.type === 'line' || o.type === 'ray' || o.type === 'distance' || o.type === 'perpendicular')
+    );
+    let bestMatch: {
+      line: GeoObject;
+      proj: { x: number; y: number };
+      dist: number;
+      angleDeg: number;
+    } | null = null;
+
+    for (const line of straightLines) {
+      const p1 = points.find((p) => p.id === line.p1.id) || line.p1;
+      const p2 = points.find((p) => p.id === line.p2?.id) || line.p2!;
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const len = Math.hypot(dx, dy);
+      if (len < 1) continue;
+
+      const ux = dx / len;
+      const uy = dy / len;
+      const vx = x - p1.x;
+      const vy = y - p1.y;
+      let t = vx * ux + vy * uy;
+
+      if (line.type === 'segment') {
+        t = Math.max(-10, Math.min(len + 10, t));
+      } else if (line.type === 'ray') {
+        t = Math.max(-10, t);
+      }
+
+      const proj = {
+        x: Math.round(p1.x + t * ux),
+        y: Math.round(p1.y + t * uy)
+      };
+      const dist = Math.hypot(x - proj.x, y - proj.y);
+
+      if (dist <= snapThreshold && (!bestMatch || dist < bestMatch.dist)) {
+        const angleDeg = (Math.atan2(dy, dx) * 180) / Math.PI;
+        bestMatch = { line, proj, dist, angleDeg };
+      }
+    }
+
+    return bestMatch;
+  };
+
+  const dropPerpendicularFromSetSquare = () => {
+    const freeTip = getSetSquareFreeTip();
+    const foot = setSquareOrigin;
+
+    // Reuse existing points or create new ones
+    let ptP = getPointNear(freeTip.x, freeTip.y, points, 22);
+    let createdP = false;
+    if (!ptP) {
+      ptP = {
+        id: `pt-P-${Date.now()}`,
+        label: 'P',
+        x: freeTip.x,
+        y: freeTip.y,
+        color: '#f43f5e'
+      };
+      createdP = true;
+    }
+
+    let ptH = getPointNear(foot.x, foot.y, points, 22);
+    let createdH = false;
+    if (!ptH) {
+      ptH = {
+        id: `pt-H-${Date.now()}`,
+        label: 'H',
+        x: foot.x,
+        y: foot.y,
+        color: '#10b396'
+      };
+      createdH = true;
+    }
+
+    const snappedBaseLine = snappedLineInfo ? objects.find((o) => o.id === snappedLineInfo.lineId) : null;
+    let baseArmPoint =
+      snappedBaseLine && snappedBaseLine.p2
+        ? snappedBaseLine.p2.id !== ptH.id
+          ? (points.find((p) => p.id === snappedBaseLine.p2!.id) || snappedBaseLine.p2)
+          : (points.find((p) => p.id === snappedBaseLine.p1.id) || snappedBaseLine.p1)
+        : null;
+
+    let ptB: GeoPoint;
+    let createdB = false;
+    if (baseArmPoint) {
+      ptB = baseArmPoint;
+    } else {
+      const baseTip = getSetSquareBaseTip();
+      const existingB = getPointNear(baseTip.x, baseTip.y, points, 22);
+      if (existingB) {
+        ptB = existingB;
+      } else {
+        ptB = {
+          id: `pt-B-${Date.now()}`,
+          label: 'B',
+          x: baseTip.x,
+          y: baseTip.y,
+          color: '#38bdf8'
+        };
+        createdB = true;
+      }
+    }
+
+    const lineName = snappedLineInfo ? snappedLineInfo.lineSymbol : 'd Doğrusu';
+    const distCm = Math.round((SET_SQUARE_HEIGHT / 30) * 10) / 10;
+
+    const perpObj: GeoObject = {
+      id: `perp-${Date.now()}`,
+      type: 'perpendicular',
+      p1: ptP,
+      p2: ptH,
+      symbol: `[${ptP.label}${ptH.label}] ⊥ ${lineName}`,
+      label: `Dikme [${ptP.label}${ptH.label}] ⊥ ${lineName} (${distCm} cm)`,
+      distance: distCm,
+      color: '#f43f5e',
+      baseLineId: snappedLineInfo?.lineId
+    };
+
+    const angle90: GeoAngle = {
+      id: `ang-90-${Date.now()}`,
+      vertex: ptH,
+      p1: ptB,
+      p2: ptP,
+      degree: 90,
+      type: 'dik',
+      label: `s(∠${ptB.label}${ptH.label}${ptP.label}) = 90°`,
+      color: '#10b981'
+    };
+
+    const newPointsToAdd: GeoPoint[] = [];
+    if (createdP) newPointsToAdd.push(ptP);
+    if (createdH) newPointsToAdd.push(ptH);
+    if (createdB) newPointsToAdd.push(ptB);
+
+    if (newPointsToAdd.length > 0) {
+      setPoints((prev) => [...prev, ...newPointsToAdd]);
+    }
+    setObjects((prev) => [...prev, perpObj]);
+    setAngles((prev) => [...prev, angle90]);
+
+    checkAndCompleteMotifObject(perpObj);
+    playSound('success');
+    addPoints(25);
+    setFeedbackMsg(
+      `📐 Gönye ile [${ptP.label}${ptH.label}] ⊥ ${lineName} dikmesi çizildi! Kesişim noktasında 90° dik açı ve diklik sembolü (⊾) oluşturuldu.`
+    );
   };
 
   const loadArtMotifStationPreset = () => {
@@ -741,6 +1545,91 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setFeedbackMsg('Geometrik nesne silindi.');
   };
 
+  const toggleObjectLengthVisibility = (id: string) => {
+    playSound('click');
+    setObjects((prev) =>
+      prev.map((o) => {
+        if (o.id === id) {
+          if (o.type === 'ray' || o.type === 'line') {
+            const nextHidden = !o.hideLabel;
+            setFeedbackMsg(
+              nextHidden
+                ? `👁️‍🗨️ ${o.symbol} üzerindeki yazı etiketi gizlendi.`
+                : `👁️ ${o.symbol} üzerindeki yazı etiketi görünür yapıldı.`
+            );
+            return { ...o, hideLabel: nextHidden, hideLength: nextHidden };
+          }
+          const nextHidden = !o.hideLength;
+          setFeedbackMsg(
+            nextHidden
+              ? o.type === 'circle'
+                ? `👁️‍🗨️ ${o.symbol} çemberinin yarıçap (r) ifadesi gizlendi.`
+                : `👁️‍🗨️ ${o.symbol} üzerindeki uzunluk bilgisi gizlendi.`
+              : o.type === 'circle'
+                ? `👁️ ${o.symbol} çemberinin yarıçap (r) ifadesi görünür yapıldı.`
+                : `👁️ ${o.symbol} üzerindeki uzunluk bilgisi görünür yapıldı.`
+          );
+          return { ...o, hideLength: nextHidden };
+        }
+        return o;
+      })
+    );
+  };
+
+  const toggleObjectLabelVisibility = (id: string) => {
+    playSound('click');
+    setObjects((prev) =>
+      prev.map((o) => {
+        if (o.id === id) {
+          const nextHidden = !o.hideLabel;
+          setFeedbackMsg(
+            nextHidden
+              ? `👁️‍🗨️ ${o.symbol} üzerindeki yazı etiketi gizlendi.`
+              : `👁️ ${o.symbol} üzerindeki yazı etiketi görünür yapıldı.`
+          );
+          return { ...o, hideLabel: nextHidden };
+        }
+        return o;
+      })
+    );
+  };
+
+  const toggleAngleLabelVisibility = (id: string) => {
+    playSound('click');
+    setAngles((prev) =>
+      prev.map((a) => {
+        if (a.id === id) {
+          const nextHidden = !a.hideLabel;
+          setFeedbackMsg(
+            nextHidden
+              ? `👁️‍🗨️ ${a.label} açı etiketi gizlendi.`
+              : `👁️ ${a.label} açı etiketi görünür yapıldı.`
+          );
+          return { ...a, hideLabel: nextHidden };
+        }
+        return a;
+      })
+    );
+  };
+
+  const togglePolygonLabelVisibility = (id: string) => {
+    playSound('click');
+    setPolygons((prev) =>
+      prev.map((p) => {
+        if (p.id === id) {
+          const nextHidden = !p.hideLabel;
+          setFeedbackMsg(
+            nextHidden
+              ? `👁️‍🗨️ ${p.label} çokgen etiketi gizlendi.`
+              : `👁️ ${p.label} çokgen etiketi görünür yapıldı.`
+          );
+          return { ...p, hideLabel: nextHidden };
+        }
+        return p;
+      })
+    );
+  };
+
   const deletePoint = (id: string) => {
     playSound('click');
     setPoints((prev) => prev.filter((p) => p.id !== id));
@@ -775,6 +1664,16 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setAngleNameInput('');
     setAngleNameStatus('idle');
     setAngleNameFeedback(null);
+    setIsMotif1Active(false);
+    setMotifCompletedGuides([]);
+    setMotifCelebrated(false);
+    setMotifHintGuideId(null);
+    setIsAngleGameActive(false);
+    setAngleGameTarget(null);
+    setAngleMeasureError(null);
+    setIsProtractorOnCanvas(false);
+    setIsSetSquareOnCanvas(false);
+    setSnappedLineInfo(null);
     setFeedbackMsg('Tahta temizlendi. Yeni geometrik şekil, açı veya çokgen inşa edebilirsiniz.');
   };
 
@@ -882,12 +1781,113 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     const rawX = Math.round(e.clientX - rect.left);
     const rawY = Math.round(e.clientY - rect.top);
 
-    // If near existing point (within 20px), snap to that point (point reuse / chaining)
-    const hitPoint = getPointNear(rawX, rawY, points, 20);
+    // If Angle Game is active, canvas is controlled by game
+    if (isAngleGameActive) {
+      return;
+    }
+
+    // If near existing point (within 28px), snap to that point (point reuse / chaining)
+    const hitPoint = getPointNear(rawX, rawY, points, 28);
 
     // Otherwise apply grid snap if enabled (precisely to grid intersection)
     const x = hitPoint ? hitPoint.x : isSnapToGrid ? snapCoordinate(rawX) : rawX;
     const y = hitPoint ? hitPoint.y : isSnapToGrid ? snapCoordinate(rawY) : rawY;
+
+    // 0. PROTRACTOR TOOL (İletki / Açıölçer Konumlandırma)
+    if (activeTool === 'protractor') {
+      const targetPt = hitPoint ? { x: hitPoint.x, y: hitPoint.y } : { x, y };
+      setProtractorCenter(targetPt);
+      setIsProtractorOnCanvas(true);
+      playSound('click');
+      if (hitPoint) {
+        setFeedbackMsg(`📐 İletki ${hitPoint.label} noktasına yerleştirildi. Mavi tutamaktan döndürebilir, diğer araçlarla (nokta, ışın, doğru) çizim yapabilirsiniz.`);
+      } else {
+        setFeedbackMsg(`📐 İletki tuvale bırakıldı. Turuncu merkezden taşıyabilir, mavi tutamaktan döndürebilirsiniz.`);
+      }
+      return;
+    }
+
+    // 1. ERASER TOOL (Tekil Silme Aracı)
+    if (activeTool === 'eraser') {
+      if (hitPoint) {
+        deletePoint(hitPoint.id);
+        playSound('click');
+        setFeedbackMsg(`🗑️ ${hitPoint.label} noktası ve bağlı şekiller silindi.`);
+        return;
+      }
+
+      // Check if clicked near any object (segment, line, ray, circle, perpendicular, distance)
+      const hitObj = objects.find((obj) => {
+        const p1 = points.find((p) => p.id === obj.p1.id) || obj.p1;
+        const p2 = obj.p2 ? (points.find((p) => p.id === obj.p2?.id) || obj.p2) : undefined;
+
+        if (p1 && p2) {
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
+          const lenSq = dx * dx + dy * dy;
+          if (lenSq === 0) return Math.hypot(rawX - p1.x, rawY - p1.y) <= 18;
+          let t = ((rawX - p1.x) * dx + (rawY - p1.y) * dy) / lenSq;
+          if (obj.type === 'segment' || obj.type === 'perpendicular' || obj.type === 'distance') {
+            t = Math.max(0, Math.min(1, t));
+          } else if (obj.type === 'ray') {
+            t = Math.max(0, t);
+          }
+          const projX = p1.x + t * dx;
+          const projY = p1.y + t * dy;
+          return Math.hypot(rawX - projX, rawY - projY) <= 18;
+        } else if (obj.type === 'circle' && p1) {
+          const rad = p2 ? Math.hypot(p2.x - p1.x, p2.y - p1.y) : (obj.radius || 60);
+          const distToCenter = Math.hypot(rawX - p1.x, rawY - p1.y);
+          return Math.abs(distToCenter - rad) <= 18;
+        } else if (obj.type === 'art-motif' && p1) {
+          const rad = obj.radius || 65;
+          return Math.hypot(rawX - p1.x, rawY - p1.y) <= rad;
+        }
+        return false;
+      });
+
+      if (hitObj) {
+        deleteObject(hitObj.id);
+        playSound('click');
+        setFeedbackMsg(`🗑️ ${hitObj.label || hitObj.symbol} silindi.`);
+        return;
+      }
+
+      // Check if clicked inside/near any polygon
+      const hitPoly = polygons.find((poly) => {
+        const pts = poly.points.map((p) => points.find((pt) => pt.id === p.id) || p);
+        let inside = false;
+        for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+          const xi = pts[i].x, yi = pts[i].y;
+          const xj = pts[j].x, yj = pts[j].y;
+          const intersect = ((yi > rawY) !== (yj > rawY)) && (rawX < (xj - xi) * (rawY - yi) / (yj - yi) + xi);
+          if (intersect) inside = !inside;
+        }
+        return inside;
+      });
+
+      if (hitPoly) {
+        deletePolygon(hitPoly.id);
+        playSound('click');
+        setFeedbackMsg(`🗑️ ${hitPoly.label} çokgeni silindi.`);
+        return;
+      }
+
+      // Check if clicked near any angle vertex
+      const hitAngle = angles.find((ang) => {
+        const v = points.find((p) => p.id === ang.vertex.id) || ang.vertex;
+        return Math.hypot(rawX - v.x, rawY - v.y) <= 30;
+      });
+
+      if (hitAngle) {
+        deleteAngle(hitAngle.id);
+        playSound('click');
+        setFeedbackMsg(`🗑️ ${hitAngle.label} açısı silindi.`);
+        return;
+      }
+
+      return;
+    }
 
     // 1. DRAG TOOL: Move existing points
     if (activeTool === 'drag') {
@@ -1161,6 +2161,50 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     if (activeTool === 'segment' || activeTool === 'ray' || activeTool === 'line') {
       const toolName = activeTool === 'segment' ? 'Doğru Parçası' : activeTool === 'ray' ? 'Işın' : 'Doğru';
 
+      // Check if user is clicking on or near the set square magnetic free tip or 90° corner
+      if (isSetSquareOnCanvas) {
+        const freeTip = getSetSquareFreeTip();
+        const distFreeTip = Math.hypot(rawX - freeTip.x, rawY - freeTip.y);
+        const foot = setSquareOrigin;
+        const distFoot = Math.hypot(rawX - foot.x, rawY - foot.y);
+
+        if (!selectedPointForLink && distFreeTip <= 26) {
+          let ptP = getPointNear(freeTip.x, freeTip.y, points, 22);
+          if (!ptP) {
+            ptP = {
+              id: `pt-P-${Date.now()}`,
+              label: 'P',
+              x: freeTip.x,
+              y: freeTip.y,
+              color: '#f43f5e'
+            };
+            setPoints((prev) => [...prev, ptP!]);
+          }
+          setSelectedPointForLink(ptP);
+          setHoverPos({ x: rawX, y: rawY });
+          touchDrawStartRef.current = { x: ptP.x, y: ptP.y, point: ptP, tool: activeTool };
+          playSound('select');
+          setFeedbackMsg(`🧲 Gönyenin mıknatıslı ucuna (${ptP.label}) kilitlendi! Şimdi kesişim noktasına (H) doğru çizgiyi uzatarak 90° dikmeyi indirebilirsiniz.`);
+          return;
+        }
+
+        if (selectedPointForLink && Math.hypot(selectedPointForLink.x - freeTip.x, selectedPointForLink.y - freeTip.y) <= 24 && distFoot <= 30) {
+          dropPerpendicularFromSetSquare();
+          setSelectedPointForLink(null);
+          setHoverPos(null);
+          touchDrawStartRef.current = null;
+          return;
+        }
+
+        if (selectedPointForLink && Math.hypot(selectedPointForLink.x - foot.x, selectedPointForLink.y - foot.y) <= 24 && distFreeTip <= 30) {
+          dropPerpendicularFromSetSquare();
+          setSelectedPointForLink(null);
+          setHoverPos(null);
+          touchDrawStartRef.current = null;
+          return;
+        }
+      }
+
       if (!selectedPointForLink) {
         // First point (1. Nokta - dokununca nokta koyar / var olan noktayı seçer)
         const p1: GeoPoint = hitPoint || {
@@ -1229,10 +2273,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           symbol: symbolText,
           label: labelText,
           length: cmLen,
-          color: activeColor
+          color: activeColor,
+          hideLength: isMotif1Active ? true : false
         };
 
         setObjects((prev) => [...prev, newObj]);
+        checkAndCompleteMotifObject(newObj);
         setSelectedPointForLink(null);
         setHoverPos(null);
         touchDrawStartRef.current = null;
@@ -1300,6 +2346,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         };
 
         setObjects((prev) => [...prev, newCircle]);
+        checkAndCompleteMotifObject(newCircle);
         setCompassCenterPoint(null);
         setHoverPos(null);
         touchDrawStartRef.current = null;
@@ -1312,54 +2359,20 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
     // 7. SET SQUARE / PERPENDICULAR TOOL (MAT.5.3.1)
     if (activeTool === 'setsquare') {
-      const pTop: GeoPoint = hitPoint || {
-        id: `pt-${Date.now()}-${Math.random()}`,
-        label: 'P',
-        x,
-        y,
-        color: '#f43f5e'
-      };
-      if (!hitPoint) setPoints([...points, pTop]);
-
-      const groundY = Math.min(Math.max(pTop.y + 120, 240), 400);
-      const pH: GeoPoint = {
-        id: `pt-H-${Date.now()}`,
-        label: 'H',
-        x: pTop.x,
-        y: groundY,
-        color: '#10b396'
-      };
-
-      const pD1: GeoPoint = { id: `pt-d1-${Date.now()}`, label: 'd1', x: Math.max(pTop.x - 140, 40), y: groundY, color: '#38bdf8' };
-      const pD2: GeoPoint = { id: `pt-d2-${Date.now()}`, label: 'd2', x: Math.min(pTop.x + 140, 720), y: groundY, color: '#38bdf8' };
-
-      const baseLine: GeoObject = {
-        id: `line-d-${Date.now()}`,
-        type: 'line',
-        p1: pD1,
-        p2: pD2,
-        symbol: 'd Doğrusu',
-        label: 'Kıyı d Doğrusu',
-        color: '#38bdf8'
-      };
-
-      const distCm = Math.round(((groundY - pTop.y) / GRID_SIZE) * 10) / 10;
-      const perpObj: GeoObject = {
-        id: `perp-${Date.now()}`,
-        type: 'perpendicular',
-        p1: pTop,
-        p2: pH,
-        symbol: `[${pTop.label}${pH.label}] ⊥ d`,
-        label: `Dikme [${pTop.label}${pH.label}] ⊥ d (En Kısa Yol: ${distCm} cm)`,
-        distance: distCm,
-        color: '#f43f5e'
-      };
-
-      setPoints([...points, pTop, pH, pD1, pD2]);
-      setObjects([...objects, baseLine, perpObj]);
-      playSound('success');
-      addPoints(25);
-      setFeedbackMsg(`📐 Gönye ile ${pTop.label} noktasından d doğrusuna [${pTop.label}${pH.label}] ⊥ d dikmesi indirildi! En kısa mesafe: ${distCm} cm.`);
+      const targetPt = hitPoint ? { x: hitPoint.x, y: hitPoint.y } : { x, y };
+      const snap = findNearestLineSnap(targetPt.x, targetPt.y, 40);
+      if (snap) {
+        setSetSquareOrigin(snap.proj);
+        setSetSquareRotation(snap.angleDeg);
+        setSnappedLineInfo({ lineId: snap.line.id, lineSymbol: snap.line.symbol, footPt: snap.proj });
+        setFeedbackMsg(`🧲 Gönye ${snap.line.symbol} çizgisine yapıştı! Mıknatıslı ucundan 90° dikme indirebilirsiniz.`);
+      } else {
+        setSetSquareOrigin(targetPt);
+        setSnappedLineInfo(null);
+        setFeedbackMsg('📐 Gönye tuvale bırakıldı. Çizgilere yaklaştırarak yapıştırabilir veya tutamaçlardan yönetebilirsiniz.');
+      }
+      setIsSetSquareOnCanvas(true);
+      playSound('click');
       return;
     }
 
@@ -1399,6 +2412,110 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     const rect = svgRef.current.getBoundingClientRect();
     const rawX = Math.round(e.clientX - rect.left);
     const rawY = Math.round(e.clientY - rect.top);
+
+    // Interactive Protractor Dragging & Rotation
+    if (isDraggingProtractorCenter) {
+      let nextX = rawX;
+      let nextY = rawY;
+      if (angleGameTarget) {
+        const d = Math.hypot(rawX - angleGameTarget.vertex.x, rawY - angleGameTarget.vertex.y);
+        if (d <= 28) {
+          nextX = angleGameTarget.vertex.x;
+          nextY = angleGameTarget.vertex.y;
+        }
+      } else {
+        // Free workshop mode: snap center to any existing point in points if within 25px
+        const nearPt = getPointNear(rawX, rawY, points, 25);
+        if (nearPt) {
+          nextX = nearPt.x;
+          nextY = nearPt.y;
+        }
+      }
+      setProtractorCenter({ x: nextX, y: nextY });
+      return;
+    }
+
+    if (isRotatingProtractor) {
+      const dx = rawX - protractorCenter.x;
+      const dy = rawY - protractorCenter.y;
+      let deg = Math.round((Math.atan2(dy, dx) * 180) / Math.PI);
+      if (deg < 0) deg += 360;
+
+      // Auto-snap rotation to base arm angle if within 6 degrees
+      if (angleGameTarget) {
+        const baseDegNorm = ((angleGameTarget.baseDeg % 360) + 360) % 360;
+        const diff = Math.abs(deg - baseDegNorm);
+        if (diff <= 6 || Math.abs(diff - 360) <= 6) {
+          deg = baseDegNorm;
+        }
+      } else {
+        // Free workshop mode: snap to cardinal angles (0, 45, 90, 135, 180, 225, 270, 315) if within 4 degrees
+        const cardinalAngles = [0, 45, 90, 135, 180, 225, 270, 315, 360];
+        for (const card of cardinalAngles) {
+          if (Math.abs(deg - card) <= 4 || Math.abs(deg - card + 360) <= 4) {
+            deg = card % 360;
+            break;
+          }
+        }
+        // Also snap to any ray formed by protractorCenter to another point
+        for (const pt of points) {
+          const pdx = pt.x - protractorCenter.x;
+          const pdy = pt.y - protractorCenter.y;
+          if (Math.hypot(pdx, pdy) >= 20) {
+            let ptDeg = Math.round((Math.atan2(pdy, pdx) * 180) / Math.PI);
+            if (ptDeg < 0) ptDeg += 360;
+            if (Math.abs(deg - ptDeg) <= 4 || Math.abs(deg - ptDeg + 360) <= 4) {
+              deg = ptDeg;
+              break;
+            }
+          }
+        }
+      }
+      setProtractorRotation(deg);
+      return;
+    }
+
+    // Interactive Set Square Dragging & Rotation
+    if (isDraggingSetSquare) {
+      const snap = findNearestLineSnap(rawX, rawY, 38);
+      if (snap) {
+        const normRot = ((setSquareRotation % 360) + 360) % 360;
+        const normA1 = ((snap.angleDeg % 360) + 360) % 360;
+        const normA2 = (((snap.angleDeg + 180) % 360) + 360) % 360;
+        const diff1 = Math.min(Math.abs(normRot - normA1), 360 - Math.abs(normRot - normA1));
+        const diff2 = Math.min(Math.abs(normRot - normA2), 360 - Math.abs(normRot - normA2));
+        const targetRot = diff1 <= diff2 ? normA1 : normA2;
+
+        setSetSquareOrigin(snap.proj);
+        setSetSquareRotation(targetRot);
+        setSnappedLineInfo({
+          lineId: snap.line.id,
+          lineSymbol: snap.line.symbol,
+          footPt: snap.proj
+        });
+      } else {
+        setSetSquareOrigin({ x: rawX, y: rawY });
+        setSnappedLineInfo(null);
+      }
+      return;
+    }
+
+    if (isRotatingSetSquare) {
+      const dx = rawX - setSquareOrigin.x;
+      const dy = rawY - setSquareOrigin.y;
+      let deg = Math.round((Math.atan2(dy, dx) * 180) / Math.PI);
+      if (deg < 0) deg += 360;
+
+      const cardinal = [0, 45, 90, 135, 180, 225, 270, 315, 360];
+      for (const card of cardinal) {
+        if (Math.abs(deg - card) <= 4 || Math.abs(deg - card + 360) <= 4) {
+          deg = card % 360;
+          break;
+        }
+      }
+      setSetSquareRotation(deg);
+      return;
+    }
 
     // Snap candidate calculation for visual feedback
     const nearPt = getPointNear(rawX, rawY, points, 20);
@@ -1534,6 +2651,30 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       playSound('click');
     }
 
+    if (isDraggingProtractorCenter) {
+      setIsDraggingProtractorCenter(false);
+      playSound('click');
+    }
+
+    if (isRotatingProtractor) {
+      setIsRotatingProtractor(false);
+      playSound('click');
+    }
+
+    if (isDraggingSetSquare) {
+      setIsDraggingSetSquare(false);
+      playSound('click');
+      if (snappedLineInfo) {
+        playSound('select');
+        setFeedbackMsg(`🧲 Gönye ${snappedLineInfo.lineSymbol} üzerine yapıştı! Şimdi mıknatıslı ucundan 90° dikme indirebilirsiniz.`);
+      }
+    }
+
+    if (isRotatingSetSquare) {
+      setIsRotatingSetSquare(false);
+      playSound('click');
+    }
+
     if (!touchDrawStartRef.current || !svgRef.current) {
       return;
     }
@@ -1548,7 +2689,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       const rect = svgRef.current.getBoundingClientRect();
       const rawUpX = Math.round(e.clientX - rect.left);
       const rawUpY = Math.round(e.clientY - rect.top);
-      const nearPt = getPointNear(rawUpX, rawUpY, points.filter((p) => p.id !== startInfo.point.id), 20);
+      const nearPt = getPointNear(rawUpX, rawUpY, points.filter((p) => p.id !== startInfo.point.id), 28);
       upX = nearPt ? nearPt.x : isSnapToGrid ? snapCoordinate(rawUpX) : rawUpX;
       upY = nearPt ? nearPt.y : isSnapToGrid ? snapCoordinate(rawUpY) : rawUpY;
     }
@@ -1559,8 +2700,25 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     if (dist >= 20) {
       const p1 = startInfo.point;
 
+      // Check if user dragged between set square magnetic free tip and foot
+      if (isSetSquareOnCanvas) {
+        const freeTip = getSetSquareFreeTip();
+        const foot = setSquareOrigin;
+        const startedAtFree = Math.hypot(p1.x - freeTip.x, p1.y - freeTip.y) <= 25;
+        const endedAtFoot = Math.hypot(upX - foot.x, upY - foot.y) <= 30;
+        const startedAtFoot = Math.hypot(p1.x - foot.x, p1.y - foot.y) <= 25;
+        const endedAtFree = Math.hypot(upX - freeTip.x, upY - freeTip.y) <= 30;
+
+        if ((startedAtFree && endedAtFoot) || (startedAtFoot && endedAtFree)) {
+          dropPerpendicularFromSetSquare();
+          setSelectedPointForLink(null);
+          setHoverPos(null);
+          return;
+        }
+      }
+
       // Check if finger lifted over an existing point (snap)
-      const hitPoint = getPointNear(upX, upY, points.filter((p) => p.id !== p1.id), 20);
+      const hitPoint = getPointNear(upX, upY, points.filter((p) => p.id !== p1.id), 28);
 
       const nextLabel = POINT_LABELS[points.length % POINT_LABELS.length];
       const p2: GeoPoint = hitPoint || {
@@ -1603,10 +2761,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           symbol: symbolText,
           label: labelText,
           length: cmLen,
-          color: activeColor
+          color: activeColor,
+          hideLength: isMotif1Active ? true : false
         };
 
         setObjects((prev) => [...prev, newObj]);
+        checkAndCompleteMotifObject(newObj);
         setSelectedPointForLink(null);
         setHoverPos(null);
         playSound('success');
@@ -1632,6 +2792,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         };
 
         setObjects((prev) => [...prev, newCircle]);
+        checkAndCompleteMotifObject(newCircle);
         setCompassCenterPoint(null);
         setHoverPos(null);
         playSound('success');
@@ -1722,7 +2883,18 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     const isRightAngle = liveDeg === 90;
 
     return (
-      <g key={ang.id} className="animate-in fade-in duration-200">
+      <g
+        key={ang.id}
+        className={`animate-in fade-in duration-200 ${activeTool === 'eraser' ? 'cursor-pointer hover:opacity-50 transition-opacity' : ''}`}
+        onClick={(e) => {
+          if (activeTool === 'eraser') {
+            e.stopPropagation();
+            deleteAngle(ang.id);
+            playSound('click');
+            setFeedbackMsg(`🗑️ ${ang.label} silindi.`);
+          }
+        }}
+      >
         {/* Right Angle Square or Arc */}
         {isRightAngle ? (
           <g>
@@ -1779,39 +2951,41 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         )}
 
         {/* Floating Angle Badge */}
-        <g transform={`translate(${labelX}, ${labelY})`}>
-          <rect
-            x="-70"
-            y="-16"
-            width="140"
-            height="32"
-            rx="10"
-            fill="#0f172a"
-            stroke={liveTypeInfo.color}
-            strokeWidth="2"
-            className="shadow-lg"
-          />
-          <text
-            x="0"
-            y="-2"
-            textAnchor="middle"
-            fill="#ffffff"
-            fontSize="11"
-            fontWeight="900"
-          >
-            ∠{p1.label}{v.label}{p2.label} = {liveDeg}°
-          </text>
-          <text
-            x="0"
-            y="10"
-            textAnchor="middle"
-            fill={liveTypeInfo.color}
-            fontSize="9"
-            fontWeight="bold"
-          >
-            {liveTypeInfo.title}
-          </text>
-        </g>
+        {!ang.hideLabel && (
+          <g transform={`translate(${labelX}, ${labelY})`}>
+            <rect
+              x="-70"
+              y="-16"
+              width="140"
+              height="32"
+              rx="10"
+              fill="#0f172a"
+              stroke={liveTypeInfo.color}
+              strokeWidth="2"
+              className="shadow-lg"
+            />
+            <text
+              x="0"
+              y="-2"
+              textAnchor="middle"
+              fill="#ffffff"
+              fontSize="11"
+              fontWeight="900"
+            >
+              ∠{p1.label}{v.label}{p2.label} = {liveDeg}°
+            </text>
+            <text
+              x="0"
+              y="10"
+              textAnchor="middle"
+              fill={liveTypeInfo.color}
+              fontSize="9"
+              fontWeight="bold"
+            >
+              {liveTypeInfo.title}
+            </text>
+          </g>
+        )}
       </g>
     );
   };
@@ -1880,6 +3054,623 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
         {/* Center Origin Mark */}
         <circle cx="0" cy="0" r="4" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
+      </g>
+    );
+  };
+
+  // ==========================================
+  // İNTERAKTİF İLETKİ (AÇIÖLÇER) OYUN ARACI
+  // ==========================================
+  const renderInteractiveProtractor = () => {
+    const isProtractorVisible = (isAngleGameActive && angleGameStage !== 'estimate') || isProtractorOnCanvas;
+    if (!isProtractorVisible) return null;
+
+    const radius = 150;
+    const innerRadius = 55;
+
+    // Check distance to vertex and baseline alignment
+    let isNearVertex = false;
+    let isAligned = false;
+    let interceptedList: Array<{ deg: number; label: string; pt: { x: number; y: number } }> = [];
+
+    if (angleGameTarget) {
+      const distToVertex = Math.hypot(protractorCenter.x - angleGameTarget.vertex.x, protractorCenter.y - angleGameTarget.vertex.y);
+      isNearVertex = distToVertex <= 32;
+
+      const baseDegNorm = ((angleGameTarget.baseDeg % 360) + 360) % 360;
+      const rotNorm = ((protractorRotation % 360) + 360) % 360;
+      const diffRot = Math.abs(rotNorm - baseDegNorm);
+      isAligned = isNearVertex && (diffRot <= 3 || Math.abs(diffRot - 360) <= 3);
+
+      if (isNearVertex) {
+        const rawDeg = getProtractorDegreeAtPoint(angleGameTarget.p2);
+        if (rawDeg >= 0 && rawDeg <= 180) {
+          interceptedList.push({ deg: rawDeg, label: 'B', pt: angleGameTarget.p2 });
+        }
+      }
+    } else {
+      // Free workshop mode: check points on the canvas
+      const nearVertexPt = getPointNear(protractorCenter.x, protractorCenter.y, points, 28);
+      isNearVertex = !!nearVertexPt;
+
+      // Find points on the canvas that cross the protractor upper semi-circle
+      for (const pt of points) {
+        if (nearVertexPt && pt.id === nearVertexPt.id) continue;
+        const d = Math.hypot(pt.x - protractorCenter.x, pt.y - protractorCenter.y);
+        if (d >= 25 && d <= 500) {
+          const rawDeg = getProtractorDegreeAtPoint(pt);
+          if (rawDeg >= 0 && rawDeg <= 180) {
+            interceptedList.push({ deg: rawDeg, label: pt.label, pt });
+          }
+        }
+      }
+
+      // Check baseline alignment (is there a point at ~0° or ~180°?)
+      if (isNearVertex) {
+        const hasBaselinePt = points.some((p) => {
+          if (nearVertexPt && p.id === nearVertexPt.id) return false;
+          const d = Math.hypot(p.x - protractorCenter.x, p.y - protractorCenter.y);
+          if (d < 25) return false;
+          const deg = getProtractorDegreeAtPoint(p);
+          return Math.abs(deg - 0) <= 3 || Math.abs(deg - 180) <= 3 || Math.abs(deg - 360) <= 3;
+        });
+        isAligned = hasBaselinePt;
+      }
+    }
+
+    return (
+      <g
+        transform={`translate(${protractorCenter.x}, ${protractorCenter.y}) rotate(${protractorRotation})`}
+        className="select-none"
+      >
+        {/* Semi-Circle Plastic Transparent Body with Soft Shadow */}
+        <path
+          d={`M ${-radius} 0 A ${radius} ${radius} 0 0 1 ${radius} 0 Z`}
+          fill="#0284c7"
+          fillOpacity="0.16"
+          stroke={isAligned ? '#10b981' : isNearVertex ? '#f59e0b' : '#0284c7'}
+          strokeWidth={isAligned ? '3' : '2'}
+          className={`transition-colors duration-200 ${activeTool === 'eraser' ? 'cursor-pointer hover:opacity-50' : ''}`}
+          pointerEvents={activeTool === 'eraser' ? 'auto' : 'none'}
+          onPointerDown={(e) => {
+            if (activeTool === 'eraser') {
+              e.stopPropagation();
+              setIsProtractorOnCanvas(false);
+              playSound('click');
+              setFeedbackMsg('🗑️ İletki tuvalden silindi.');
+            }
+          }}
+        />
+
+        {/* Inner Arch Cutout */}
+        <path
+          d={`M ${-innerRadius} 0 A ${innerRadius} ${innerRadius} 0 0 1 ${innerRadius} 0 Z`}
+          fill="#ffffff"
+          fillOpacity="0.65"
+          stroke="#0284c7"
+          strokeWidth="1.2"
+        />
+
+        {/* Baseline Line with Millimeter Ticks */}
+        <line
+          x1={-radius}
+          y1="0"
+          x2={radius}
+          y2="0"
+          stroke={isAligned ? '#10b981' : '#0369a1'}
+          strokeWidth="2.5"
+        />
+
+        {/* Protractor Scale Ticks & Numbers (0° to 180°) */}
+        {Array.from({ length: 181 }).map((_, deg) => {
+          if (deg % 5 !== 0 && deg % 10 !== 0 && deg % 1 !== 0) return null;
+          // Filter to save SVG DOM elements: render every 1 degree only for major ticks, or 2 degrees
+          if (deg % 2 !== 0 && deg % 5 !== 0) return null;
+
+          const isMajor = deg % 10 === 0;
+          const isMedium = deg % 5 === 0 && !isMajor;
+          const tickLen = isMajor ? 14 : isMedium ? 9 : 5;
+
+          const rad = (deg * Math.PI) / 180;
+          // In SVG upper semi-circle: angle -rad
+          const cos = Math.cos(-rad);
+          const sin = Math.sin(-rad);
+
+          const x1 = (radius - tickLen) * cos;
+          const y1 = (radius - tickLen) * sin;
+          const x2 = radius * cos;
+          const y2 = radius * sin;
+
+          const outerTextX = (radius - 23) * cos;
+          const outerTextY = (radius - 23) * sin;
+
+          const innerTextX = (radius - 36) * cos;
+          const innerTextY = (radius - 36) * sin;
+
+          return (
+            <g key={`deg-${deg}`}>
+              <line
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                stroke={isMajor ? '#0f172a' : '#0369a1'}
+                strokeWidth={isMajor ? 1.8 : isMedium ? 1.2 : 0.7}
+              />
+              {/* Outer Scale (0° right to 180° left) */}
+              {isMajor && (
+                <text
+                  x={outerTextX}
+                  y={outerTextY + 3}
+                  textAnchor="middle"
+                  fill="#0f172a"
+                  fontSize="7.5"
+                  fontWeight="900"
+                >
+                  {deg}
+                </text>
+              )}
+              {/* Inner Scale (180° right to 0° left) */}
+              {isMajor && deg % 20 === 0 && deg > 0 && deg < 180 && (
+                <text
+                  x={innerTextX}
+                  y={innerTextY + 2.5}
+                  textAnchor="middle"
+                  fill="#64748b"
+                  fontSize="6"
+                  fontWeight="700"
+                >
+                  {180 - deg}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
+        {/* Dynamic Second Arm Laser Intercept Line & Badge */}
+        {interceptedList.map((item, idx) => {
+          const rad = (item.deg * Math.PI) / 180;
+          const cos = Math.cos(-rad);
+          const sin = Math.sin(-rad);
+          const lx = (radius + 20) * cos;
+          const ly = (radius + 20) * sin;
+          const badgeDist = radius + 38 + (idx * 28);
+          const bx = badgeDist * cos;
+          const by = badgeDist * sin;
+
+          return (
+            <g key={`intercept-${item.label}-${idx}`} className="animate-in fade-in duration-200">
+              {/* Laser Sight Line from Vertex */}
+              <line
+                x1="0"
+                y1="0"
+                x2={lx}
+                y2={ly}
+                stroke="#f59e0b"
+                strokeWidth="2.5"
+                strokeDasharray="4,3"
+                className="animate-pulse"
+              />
+              {/* Laser Endpoint Marker */}
+              <circle cx={lx} cy={ly} r="4.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
+
+              {/* Intercept Value Badge */}
+              <g
+                transform={`translate(${bx}, ${by})`}
+                className="cursor-pointer pointer-events-auto"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  if (isAngleGameActive) {
+                    setAngleGameMeasurement(String(item.deg));
+                    setAngleMeasureError(null);
+                    playSound('click');
+                    setFeedbackMsg(`🎯 İletkide okunan ${item.deg}° değeri ölçüm kutusuna aktarıldı. Şimdi "Ölçümü Onayla" butonuna basabilirsiniz.`);
+                  } else {
+                    playSound('click');
+                    setFeedbackMsg(`🎯 İletki ile ölçülen ${item.label} açısı: ${item.deg}°. Taban: ${isAligned ? 'Hizalandı' : 'Serbest'}`);
+                  }
+                }}
+              >
+                <rect
+                  x="-46"
+                  y="-13"
+                  width="92"
+                  height="26"
+                  rx="8"
+                  fill="#0f172a"
+                  stroke={isAligned ? '#10b981' : '#f59e0b'}
+                  strokeWidth="2"
+                  className="shadow-lg hover:scale-105 transition-transform"
+                />
+                <text
+                  x="0"
+                  y="4.5"
+                  textAnchor="middle"
+                  fill={isAligned ? '#34d399' : '#fde047'}
+                  fontSize="10.5"
+                  fontWeight="900"
+                >
+                  🎯 {item.deg}° {isAngleGameActive ? '(Yaz)' : `(${item.label})`}
+                </text>
+              </g>
+            </g>
+          );
+        })}
+
+        {/* Alignment Success Banner */}
+        {isAligned && (
+          <g transform="translate(0, -32)" className="pointer-events-none animate-in zoom-in-95 duration-200">
+            <rect
+              x="-68"
+              y="-11"
+              width="136"
+              height="22"
+              rx="6"
+              fill="#065f46"
+              stroke="#34d399"
+              strokeWidth="1.5"
+              className="shadow-md"
+            />
+            <text x="0" y="4" textAnchor="middle" fill="#ecfdf5" fontSize="10" fontWeight="900">
+              ✅ Taban Koluna Hizalandı!
+            </text>
+          </g>
+        )}
+
+        {/* Center Drag Grip Handle (Turuncu Halka) */}
+        <g
+          className="cursor-grab active:cursor-grabbing pointer-events-auto"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            try {
+              (e.currentTarget as SVGElement)?.setPointerCapture?.(e.pointerId);
+            } catch {}
+            setIsDraggingProtractorCenter(true);
+            playSound('click');
+          }}
+        >
+          <circle
+            cx="0"
+            cy="0"
+            r="16"
+            fill="#f59e0b"
+            fillOpacity="0.25"
+            stroke="#f59e0b"
+            strokeWidth="2.5"
+            className="animate-pulse"
+          />
+          <circle cx="0" cy="0" r="4.5" fill="#d97706" stroke="#ffffff" strokeWidth="1.5" />
+          <g transform="translate(0, 20)">
+            <rect x="-38" y="-9" width="76" height="18" rx="5" fill="#0f172a" opacity="0.85" />
+            <text x="0" y="3.5" textAnchor="middle" fill="#fde047" fontSize="9" fontWeight="900">
+              🎯 Merkez (Taşı)
+            </text>
+          </g>
+        </g>
+
+        {/* Baseline Right End - Döndürme Tutamağı (Mavi Halka) */}
+        <g
+          transform={`translate(${radius + 14}, 0)`}
+          className="cursor-pointer pointer-events-auto group"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            try {
+              (e.currentTarget as SVGElement)?.setPointerCapture?.(e.pointerId);
+            } catch {}
+            setIsRotatingProtractor(true);
+            playSound('click');
+          }}
+        >
+          {/* Geniş Görünmez Hedef Alanı */}
+          <circle cx="0" cy="0" r="24" fill="transparent" />
+          <circle
+            cx="0"
+            cy="0"
+            r="16"
+            fill="#0284c7"
+            stroke="#ffffff"
+            strokeWidth="2.5"
+            className="shadow-lg transition-colors group-hover:fill-sky-500 group-hover:stroke-sky-200"
+          />
+          {/* Rotate icon text or glyph */}
+          <text
+            x="0"
+            y="4"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="12"
+            fontWeight="bold"
+            className="pointer-events-none"
+          >
+            🔄
+          </text>
+          <g transform="translate(0, 20)">
+            <rect x="-30" y="-9" width="60" height="18" rx="5" fill="#0f172a" opacity="0.85" className="transition-opacity group-hover:opacity-100" />
+            <text x="0" y="3.5" textAnchor="middle" fill="#7dd3fc" fontSize="9" fontWeight="900">
+              Döndür
+            </text>
+          </g>
+        </g>
+
+        {/* Baseline Left End - Tuvalden Kaldırma (✕) Butonu */}
+        {!isAngleGameActive && (
+          <g
+            transform={`translate(${-radius - 14}, 0)`}
+            className="cursor-pointer pointer-events-auto group"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              setIsProtractorOnCanvas(false);
+              if (activeTool === 'protractor') setActiveTool('point');
+              playSound('click');
+              setFeedbackMsg('İletki tuvalden kaldırıldı.');
+            }}
+          >
+            {/* Geniş Görünmez Hedef Alanı */}
+            <circle cx="0" cy="0" r="22" fill="transparent" />
+            <circle
+              cx="0"
+              cy="0"
+              r="14"
+              fill="#ef4444"
+              stroke="#ffffff"
+              strokeWidth="2"
+              className="shadow-md transition-colors group-hover:fill-rose-600 group-hover:stroke-rose-200"
+            />
+            <text
+              x="0"
+              y="4.5"
+              textAnchor="middle"
+              fill="#ffffff"
+              fontSize="13"
+              fontWeight="900"
+              className="pointer-events-none"
+            >
+              ✕
+            </text>
+            <g transform="translate(0, 18)">
+              <rect x="-24" y="-8" width="48" height="16" rx="4" fill="#0f172a" opacity="0.85" className="transition-opacity group-hover:opacity-100" />
+              <text x="0" y="3.5" textAnchor="middle" fill="#fca5a5" fontSize="8.5" fontWeight="900">
+                Kaldır
+              </text>
+            </g>
+          </g>
+        )}
+      </g>
+    );
+  };
+
+  // ==========================================
+  // İNTERAKTİF GÖNYE (DİK ÜÇGEN CETVELİ) ARACI
+  // ==========================================
+  const renderInteractiveSetSquare = () => {
+    if (!isSetSquareOnCanvas) return null;
+
+    const W = SET_SQUARE_BASE_WIDTH; // 210 px = 7 cm
+    const H = SET_SQUARE_HEIGHT;     // 150 px = 5 cm
+    const isSnapped = !!snappedLineInfo;
+
+    return (
+      <g
+        transform={`translate(${setSquareOrigin.x}, ${setSquareOrigin.y}) rotate(${setSquareRotation})`}
+        className="select-none"
+      >
+        {/* Dik Üçgen Şeffaf Akrilik Gövde (30px = 1 cm) */}
+        <polygon
+          points={`0,0 ${W},0 0,${-H}`}
+          fill="#059669"
+          fillOpacity="0.18"
+          stroke={isSnapped ? '#10b981' : '#059669'}
+          strokeWidth={isSnapped ? '3.5' : '2'}
+          className={`transition-colors duration-200 ${activeTool === 'eraser' ? 'cursor-pointer hover:opacity-50' : ''}`}
+          pointerEvents={activeTool === 'eraser' ? 'auto' : 'none'}
+          onPointerDown={(e) => {
+            if (activeTool === 'eraser') {
+              e.stopPropagation();
+              setIsSetSquareOnCanvas(false);
+              playSound('click');
+              setFeedbackMsg('🗑️ Gönye tuvalden silindi.');
+            }
+          }}
+        />
+
+        {/* İç Üçgen Kesit (Şeffaf Beyaz) */}
+        <polygon
+          points={`32,-24 ${W - 65},-24 32,${-H + 45}`}
+          fill="#ffffff"
+          fillOpacity="0.72"
+          stroke="#059669"
+          strokeWidth="1.2"
+        />
+
+        {/* 90° Dik Açı Köşesi Sembolü (Kare & Yeşil Nokta) */}
+        <rect
+          x="0"
+          y="-20"
+          width="20"
+          height="20"
+          fill="#10b981"
+          fillOpacity="0.3"
+          stroke="#047857"
+          strokeWidth="1.8"
+        />
+        <circle cx="10" cy="-10" r="3" fill="#047857" />
+        <text
+          x="28"
+          y="-8"
+          fill="#065f46"
+          fontSize="10"
+          fontWeight="900"
+          className="pointer-events-none"
+        >
+          90°
+        </text>
+
+        {/* Taban Dik Kenarı Cetvel Çizgileri (0 to 7 cm) */}
+        <line x1="0" y1="0" x2={W} y2="0" stroke={isSnapped ? '#10b981' : '#047857'} strokeWidth="2.5" />
+        {Array.from({ length: 36 }).map((_, i) => {
+          const x = i * 6;
+          if (x > W) return null;
+          const isCm = i % 5 === 0;
+          const tickH = isCm ? 12 : 5;
+          const cmNum = i / 5;
+          return (
+            <g key={`base-tick-${i}`}>
+              <line x1={x} y1="0" x2={x} y2={-tickH} stroke="#0f172a" strokeWidth={isCm ? 1.5 : 0.8} />
+              {isCm && (
+                <text x={x} y={-15} textAnchor="middle" fill="#0f172a" fontSize="8" fontWeight="bold">
+                  {cmNum}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
+        {/* Dikey Dik Kenarı Cetvel Çizgileri (0 to 5 cm) */}
+        <line x1="0" y1="0" x2="0" y2={-H} stroke={isSnapped ? '#10b981' : '#047857'} strokeWidth="2.5" />
+        {Array.from({ length: 26 }).map((_, i) => {
+          const y = -i * 6;
+          if (-y > H) return null;
+          const isCm = i % 5 === 0;
+          const tickW = isCm ? 12 : 5;
+          const cmNum = i / 5;
+          return (
+            <g key={`perp-tick-${i}`}>
+              <line x1="0" y1={y} x2={tickW} y2={y} stroke="#0f172a" strokeWidth={isCm ? 1.5 : 0.8} />
+              {isCm && cmNum > 0 && (
+                <text x={16} y={y + 3} textAnchor="start" fill="#0f172a" fontSize="8" fontWeight="bold">
+                  {cmNum}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
+        {/* Değmeyen Uç (Mıknatıslı Tepe Noktası P) */}
+        <g
+          className="cursor-pointer pointer-events-auto group/magnet"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            dropPerpendicularFromSetSquare();
+          }}
+        >
+          {/* Geniş Görünmez Tıklama/Mıknatıs Alanı */}
+          <circle cx="0" cy={-H} r="22" fill="transparent" />
+          <circle
+            cx="0"
+            cy={-H}
+            r="16"
+            fill="#f43f5e"
+            fillOpacity="0.25"
+            stroke="#f43f5e"
+            strokeWidth="2.5"
+            className="animate-pulse"
+          />
+          <circle cx="0" cy={-H} r="5" fill="#f43f5e" stroke="#ffffff" strokeWidth="2" />
+        </g>
+
+        {/* Merkez Taşıma Tutamağı (Turuncu Halka - Centroid) */}
+        <g
+          transform="translate(70, -48)"
+          className="cursor-grab active:cursor-grabbing pointer-events-auto group"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            try {
+              (e.currentTarget as SVGElement)?.setPointerCapture?.(e.pointerId);
+            } catch {}
+            setIsDraggingSetSquare(true);
+            playSound('click');
+          }}
+        >
+          <title>Gönyeyi Taşı</title>
+          {/* Geniş Görünmez Tıklama/Sürükleme Alanı - Zıplamayı ve kaçırmayı engeller */}
+          <circle cx="0" cy="0" r="26" fill="transparent" />
+          <circle
+            cx="0"
+            cy="0"
+            r="16"
+            fill="#f59e0b"
+            fillOpacity="0.25"
+            stroke="#f59e0b"
+            strokeWidth="2.5"
+            className="transition-colors group-hover:fill-opacity-40 group-hover:stroke-amber-400"
+          />
+          <circle cx="0" cy="0" r="4.5" fill="#d97706" stroke="#ffffff" strokeWidth="1.5" />
+        </g>
+
+        {/* Döndürme Tutamağı (Mavi Halka - Taban Ucu) */}
+        <g
+          transform={`translate(${W + 14}, 0)`}
+          className="cursor-pointer pointer-events-auto group"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            try {
+              (e.currentTarget as SVGElement)?.setPointerCapture?.(e.pointerId);
+            } catch {}
+            setIsRotatingSetSquare(true);
+            playSound('click');
+          }}
+        >
+          <title>Gönyeyi Döndür</title>
+          {/* Geniş Görünmez Tıklama/Tutma Alanı (48x48px hit target) - Asla zıplamaz */}
+          <circle cx="0" cy="0" r="24" fill="transparent" />
+          <circle
+            cx="0"
+            cy="0"
+            r="16"
+            fill="#0284c7"
+            stroke="#ffffff"
+            strokeWidth="2.5"
+            className="shadow-lg transition-colors group-hover:fill-sky-500 group-hover:stroke-sky-200"
+          />
+          <text
+            x="0"
+            y="4"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="12"
+            fontWeight="bold"
+            className="pointer-events-none"
+          >
+            🔄
+          </text>
+        </g>
+
+        {/* Kaldırma (✕) Butonu */}
+        <g
+          transform={`translate(${W / 2 + 10}, ${-H / 2 - 20})`}
+          className="cursor-pointer pointer-events-auto group"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            setIsSetSquareOnCanvas(false);
+            if (activeTool === 'setsquare') setActiveTool('point');
+            playSound('click');
+            setFeedbackMsg('Gönye tuvalden kaldırıldı.');
+          }}
+        >
+          <title>Gönyeyi Tuvalden Kaldır</title>
+          {/* Geniş Görünmez Tıklama Alanı (44x44px hit target) - Asla zıplamaz */}
+          <circle cx="0" cy="0" r="22" fill="transparent" />
+          <circle
+            cx="0"
+            cy="0"
+            r="13"
+            fill="#ef4444"
+            stroke="#ffffff"
+            strokeWidth="2"
+            className="shadow-md transition-colors group-hover:fill-rose-600 group-hover:stroke-rose-200"
+          />
+          <text
+            x="0"
+            y="4"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="12"
+            fontWeight="900"
+            className="pointer-events-none"
+          >
+            ✕
+          </text>
+        </g>
       </g>
     );
   };
@@ -2694,6 +4485,10 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                     </g>
                   );
                 })}
+
+                {/* İnteraktif İletki & Gönye Araçları */}
+                {renderInteractiveProtractor()}
+                {renderInteractiveSetSquare()}
               </svg>
 
               {/* Angle Naming & Hat Symbol Verification Card */}
@@ -2869,19 +4664,23 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           >
             Izgara: {showGrid ? 'Açık 🔲' : 'Kapalı'}
           </button>
-          {/* Magnetic Grid Snapping Toggle */}
+          {/* Magnetic Grid Snapping Toggle (Yazısız, Sadece İkon) */}
           <button
             onClick={() => {
-              setIsSnapToGrid(!isSnapToGrid);
+              const nextVal = !isSnapToGrid;
+              setIsSnapToGrid(nextVal);
               playSound('click');
+              setFeedbackMsg(nextVal ? '🧲 Mıknatıs Açıldı (Izgara Çizgilerine Yapışma Aktif).' : '🧲 Mıknatıs Kapatıldı (Serbest Çizim Aktif).');
             }}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
-              isSnapToGrid ? 'bg-amber-50 border-amber-300 text-amber-900 shadow-xs' : 'bg-slate-50 border-slate-200 text-slate-600'
+            className={`p-2.5 rounded-xl border transition-all flex items-center justify-center cursor-pointer ${
+              isSnapToGrid
+                ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-sm ring-2 ring-amber-200 scale-102'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-400 border-slate-300'
             }`}
-            title="Noktaların ızgara çizgilerine mıknatıs gibi yapışmasını sağlar"
+            title={isSnapToGrid ? 'Mıknatıs Açık (Kapatmak için tıklayın)' : 'Mıknatıs Kapalı (Açmak için tıklayın)'}
+            aria-label="Mıknatıs Aç/Kapa"
           >
-            <span>🧲 Nokta Mıknatısı:</span>
-            <span className="font-extrabold">{isSnapToGrid ? 'Açık' : 'Kapalı'}</span>
+            <Magnet className="w-4 h-4" />
           </button>
           {/* Polygon Draft Actions if in progress */}
           {polygonDraft.length >= 3 && (
@@ -2928,8 +4727,29 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             setFeedbackMsg('3. İstasyon: Pergel aracı ile merkez (M) ve yarıçap (r) belirleyerek Çember ve Eş Çemberler çiziniz.');
           } else if (st === 'perpendicular') {
             setActiveTool('setsquare');
-            setActiveToolCategory('special');
-            setFeedbackMsg('4. İstasyon: Gönye aracı ile doğruya dış noktadan 90° en kısa dikmeyi (d ⊥ k) indiriniz.');
+            setIsSetSquareOnCanvas(true);
+            setActiveToolCategory('lines');
+            // If no lines on canvas, provide baseline d and point P so the set square immediately snaps to it
+            if (!objects.some((o) => o.type === 'line' || o.type === 'segment')) {
+              const pD1: GeoPoint = { id: 'pt-d1', label: 'E', x: 80, y: 320, color: '#38bdf8' };
+              const pD2: GeoPoint = { id: 'pt-d2', label: 'F', x: 560, y: 320, color: '#38bdf8' };
+              const pTop: GeoPoint = { id: 'pt-P', label: 'P', x: 300, y: 170, color: '#f43f5e' };
+              setPoints((prev) => [...prev.filter((p) => p.id !== 'pt-d1' && p.id !== 'pt-d2' && p.id !== 'pt-P'), pD1, pD2, pTop]);
+              const dLine: GeoObject = {
+                id: 'line-d-base',
+                type: 'line',
+                p1: pD1,
+                p2: pD2,
+                symbol: 'd Doğrusu',
+                label: 'Kıyı d Doğrusu',
+                color: '#38bdf8'
+              };
+              setObjects((prev) => [...prev.filter((o) => o.id !== 'line-d-base'), dLine]);
+              setSetSquareOrigin({ x: 300, y: 320 });
+              setSetSquareRotation(0);
+              setSnappedLineInfo({ lineId: 'line-d-base', lineSymbol: 'd Doğrusu', footPt: { x: 300, y: 320 } });
+            }
+            setFeedbackMsg('4. İstasyon: İnteraktif Gönye tuvalde! Doğruya yapışan gönyenin mıknatıslı ucundan (P) 90° dikme indiriniz.');
           } else if (st === 'art') {
             setActiveTool('artmotif');
             setActiveToolCategory('special');
@@ -2961,43 +4781,10 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 </h3>
                 <p className="text-[11px] text-slate-500 font-medium">Profesyonel dijital çizim & ölçüm menüleri</p>
               </div>
-              <span className="text-[10px] font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
-                GeoGebra Modeli
-              </span>
             </div>
 
             {/* Category Menus Ribbon (Menü Seçici Sekmeler) */}
             <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
-              <button
-                onClick={() => {
-                  setActiveToolCategory('all');
-                  playSound('click');
-                }}
-                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  activeToolCategory === 'all'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>🌐</span>
-                <span>Tümü</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setActiveToolCategory('basic');
-                  playSound('click');
-                }}
-                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  activeToolCategory === 'basic'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>📍</span>
-                <span>Temel</span>
-              </button>
-
               <button
                 onClick={() => {
                   setActiveToolCategory('lines');
@@ -3005,7 +4792,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 }}
                 className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
                   activeToolCategory === 'lines'
-                    ? 'bg-white text-slate-900 shadow-xs'
+                    ? 'bg-white text-sky-900 shadow-xs font-black'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -3021,12 +4808,26 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 relative ${
                   activeToolCategory === 'angle'
                     ? 'bg-white text-blue-900 shadow-xs font-black'
-                    : 'text-blue-700 hover:text-blue-900 font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <span>📐</span>
                 <span>Açı</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveToolCategory('basic');
+                  playSound('click');
+                }}
+                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
+                  activeToolCategory === 'basic'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>📍</span>
+                <span>Temel</span>
               </button>
 
               <button
@@ -3058,135 +4859,35 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 <span>🎨</span>
                 <span>Özel</span>
               </button>
+
+              <button
+                onClick={() => {
+                  setActiveToolCategory('all');
+                  playSound('click');
+                }}
+                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
+                  activeToolCategory === 'all'
+                    ? 'bg-white text-slate-900 shadow-xs font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>🌐</span>
+                <span>Tümü</span>
+              </button>
             </div>
 
             {/* TOOL SECTIONS */}
             <div className="space-y-4">
-              {/* 1. AÇI MENÜSÜ */}
-              {(activeToolCategory === 'angle' || activeToolCategory === 'all') && (
-                <div className="space-y-2 p-3 rounded-2xl bg-blue-50/50 border border-blue-100">
-                  <div className="flex items-center justify-between text-[11px] font-black text-blue-800 uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5">
-                      <Maximize2 className="w-3.5 h-3.5 text-blue-600" />
-                      <span>📐 Açı Menüsü (Çiz & Ölç)</span>
-                    </span>
-                    <span className="text-[10px] text-blue-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-blue-200">
-                      2 Araç
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {/* Açı Çiz */}
-                    <button
-                      onClick={() => {
-                        setActiveTool('angle');
-                        setSelectedPointForLink(null);
-                        setAngleStepPoint1(null);
-                        setAngleStepPoint2(null);
-                        setMeasureAnglePoints([]);
-                        setMeasureLengthPoints([]);
-                        playSound('click');
-                        setFeedbackMsg('📐 AÇI ÇİZ: Tahtaya tıklayarak 1. Köşe (O), 2. Taban kolu (A) ve 3. Dönen kolu (B) belirleyip açı oluşturun.');
-                      }}
-                      className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                        activeTool === 'angle'
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-blue-50 hover:border-blue-200'
-                      }`}
-                    >
-                      <div className="flex items-center gap-1">
-                        <Maximize2 className="w-4 h-4" />
-                        <span className="font-extrabold text-sm">Açı Çiz</span>
-                      </div>
-                      <span className="text-[10px] font-normal opacity-85 text-center line-clamp-1">
-                        Köşe & kollar ile çiz
-                      </span>
-                    </button>
-
-                    {/* Açı Ölç */}
-                    <button
-                      onClick={() => {
-                        setActiveTool('measure-angle');
-                        setSelectedPointForLink(null);
-                        setAngleStepPoint1(null);
-                        setAngleStepPoint2(null);
-                        setMeasureAnglePoints([]);
-                        setMeasureLengthPoints([]);
-                        playSound('click');
-                        setFeedbackMsg('📏 AÇI ÖLÇ: Tahtadaki 3 noktayı sırayla seçin: 1. Kol noktası, 2. Köşe (Tepe) noktası, 3. İkinci Kol noktası.');
-                      }}
-                      className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all relative cursor-pointer ${
-                        activeTool === 'measure-angle'
-                          ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20 scale-102'
-                          : 'bg-white border-teal-200 text-teal-800 hover:bg-teal-50 hover:border-teal-300'
-                      }`}
-                    >
-                      <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 bg-amber-500 text-slate-950 font-black text-[9px] rounded-full uppercase shadow-xs">
-                        Yeni 🎯
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <Ruler className="w-4 h-4" />
-                        <span className="font-extrabold text-sm">Açı Ölç</span>
-                      </div>
-                      <span className="text-[10px] font-normal opacity-85 text-center line-clamp-1">
-                        3 nokta ile açıyı ölç
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* Açı Ölçüm Adım Rehberi */}
-                  {activeTool === 'measure-angle' && (
-                    <div className="p-3 rounded-2xl bg-white border border-teal-200 text-teal-950 space-y-2 text-xs shadow-xs animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between font-black text-teal-900">
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-teal-500 animate-ping" />
-                          Açı Ölçüm Adımları ({measureAnglePoints.length}/3)
-                        </span>
-                        {measureAnglePoints.length > 0 && (
-                          <button
-                            onClick={() => {
-                              setMeasureAnglePoints([]);
-                              setHoverPos(null);
-                              setFeedbackMsg('Ölçüm seçimi sıfırlandı. 1. Kol noktasını seçiniz.');
-                            }}
-                            className="text-[10px] text-rose-600 hover:underline font-bold cursor-pointer"
-                          >
-                            Sıfırla
-                          </button>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-3 gap-1 text-[10.5px] font-bold text-center">
-                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length >= 1 ? 'bg-teal-600 text-white border-teal-600' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>1. Kol</div>
-                          <div className="text-[9.5px] font-normal">{measureAnglePoints[0] ? `✓ ${measureAnglePoints[0].label}` : 'Seçiniz'}</div>
-                        </div>
-                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length >= 2 ? 'bg-amber-500 text-white border-amber-500' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>2. Köşe</div>
-                          <div className="text-[9.5px] font-normal">{measureAnglePoints[1] ? `✓ ${measureAnglePoints[1].label}` : 'Bekleniyor'}</div>
-                        </div>
-                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length === 2 ? 'bg-teal-100 border-teal-400 text-teal-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>3. Kol</div>
-                          <div className="text-[9.5px] font-normal">{measureAnglePoints.length === 2 ? 'Tıklayın!' : 'Bekleniyor'}</div>
-                        </div>
-                      </div>
-                      <p className="text-[10.5px] text-teal-800 leading-tight">
-                        💡 {measureAnglePoints.length === 0 ? 'Tahtadaki bir noktaya tıklayın veya yeni nokta belirleyin (1. Kol).' : measureAnglePoints.length === 1 ? 'Şimdi açının KÖŞE (Tepe) noktasını seçiniz.' : 'Son olarak 2. Kol noktasını seçerek açıyı ölçün!'}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* 2. ÇİZGİLER MENÜSÜ */}
+              {/* 1. ÇİZGİLER MENÜSÜ */}
               {(activeToolCategory === 'lines' || activeToolCategory === 'all') && (
                 <div className="space-y-2 p-3 rounded-2xl bg-sky-50/50 border border-sky-100">
                   <div className="flex items-center justify-between text-[11px] font-black text-sky-800 uppercase tracking-wider">
                     <span className="flex items-center gap-1.5">
                       <Minus className="w-3.5 h-3.5 text-sky-600 stroke-[3]" />
-                      <span>📏 Çizgiler & Uzunluk Ölçümü</span>
+                      <span>📏 Çizgiler &amp; Uzunluk Ölçümü</span>
                     </span>
                     <span className="text-[10px] text-sky-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-sky-200">
-                      4 Araç
+                      5 Araç
                     </span>
                   </div>
 
@@ -3214,30 +4915,33 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <span className="text-[10px] font-normal opacity-85">İki nokta arası</span>
                     </button>
 
-                    {/* Uzunluk Ölç */}
+                    {/* Gönye (Dik Üçgen Cetveli) */}
                     <button
                       onClick={() => {
-                        setActiveTool('measure-length');
+                        setIsSetSquareOnCanvas(true);
+                        setActiveTool('setsquare');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
-                        setFeedbackMsg('📏 UZUNLUK ÖLÇ: Tahtadaki 2 noktayı seçin, aralarındaki mesafeyi |AB| = ... cm olarak gösterin.');
+                        setFeedbackMsg('📐 İnteraktif Gönye tuvale bırakıldı! Cetveli çizgilere yaklaştırarak yapıştırabilir, mıknatıslı ucundan 90° dikme indirebilirsiniz.');
                       }}
                       className={`p-2.5 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all relative cursor-pointer ${
-                        activeTool === 'measure-length'
-                          ? 'bg-cyan-600 text-white border-cyan-600 shadow-md shadow-cyan-600/20 scale-102'
-                          : 'bg-white border-cyan-200 text-cyan-900 hover:bg-cyan-50'
+                        isSetSquareOnCanvas || activeTool === 'setsquare'
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/30 scale-102 ring-2 ring-emerald-300'
+                          : 'bg-white border-emerald-300 text-emerald-950 hover:bg-emerald-50 hover:border-emerald-400'
                       }`}
                     >
-                      <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 bg-amber-500 text-slate-950 font-black text-[9px] rounded-full uppercase shadow-xs">
-                        Yeni 🎯
+                      <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 bg-emerald-500 text-white font-black text-[9px] rounded-full uppercase shadow-xs">
+                        90° ⊥
                       </span>
                       <div className="flex items-center gap-1">
-                        <Ruler className="w-4 h-4" />
-                        <span className="text-xs font-extrabold">Uzunluk Ölç</span>
+                        <span className="font-black text-sm leading-none">📐</span>
+                        <span className="text-xs font-extrabold">Gönye (Dikme)</span>
                       </div>
-                      <span className="text-[10px] font-normal opacity-85">|AB| = cm göster</span>
+                      <span className="text-[10px] font-normal opacity-90">
+                        {isSetSquareOnCanvas ? 'Tuvalde (Açık)' : '90° Dik Üçgen Cetveli'}
+                      </span>
                     </button>
 
                     {/* Işın */}
@@ -3285,7 +4989,28 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       </div>
                       <span className="text-[10px] font-normal opacity-85">İki yön sonsuz</span>
                     </button>
+
+                    {/* Uzunluk Ölç (Col span 2) */}
+                    <button
+                      onClick={() => {
+                        setActiveTool('measure-length');
+                        setSelectedPointForLink(null);
+                        setMeasureAnglePoints([]);
+                        setMeasureLengthPoints([]);
+                        playSound('click');
+                        setFeedbackMsg('📏 UZUNLUK ÖLÇ: Tahtadaki 2 noktayı seçin, aralarındaki mesafeyi |AB| = ... cm olarak gösterin.');
+                      }}
+                      className={`col-span-2 p-2.5 rounded-xl border text-center font-bold text-xs flex items-center justify-center gap-2 transition-all relative cursor-pointer ${
+                        activeTool === 'measure-length'
+                          ? 'bg-cyan-600 text-white border-cyan-600 shadow-md shadow-cyan-600/20 scale-101'
+                          : 'bg-white border-cyan-200 text-cyan-900 hover:bg-cyan-50'
+                      }`}
+                    >
+                      <Ruler className="w-4 h-4" />
+                      <span className="text-xs font-extrabold">Uzunluk Ölç (|AB| = cm göster)</span>
+                    </button>
                   </div>
+
 
                   {/* Uzunluk Ölçüm Adım Rehberi */}
                   {activeTool === 'measure-length' && (
@@ -3326,20 +5051,212 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 </div>
               )}
 
-              {/* 3. TEMEL MENÜ (Nokta & Taşı) */}
+              {/* 2. AÇI MENÜSÜ */}
+              {(activeToolCategory === 'angle' || activeToolCategory === 'all') && (
+                <div className="space-y-2 p-3 rounded-2xl bg-blue-50/50 border border-blue-100">
+                  <div className="flex items-center justify-between text-[11px] font-black text-blue-800 uppercase tracking-wider">
+                    <span className="flex items-center gap-1.5">
+                      <Maximize2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>📐 Açı Menüsü (Çiz &amp; Ölç)</span>
+                    </span>
+                    <span className="text-[10px] text-blue-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-blue-200">
+                      3 Araç
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    {/* Açı Çiz */}
+                    <button
+                      onClick={() => {
+                        setActiveTool('angle');
+                        setSelectedPointForLink(null);
+                        setAngleStepPoint1(null);
+                        setAngleStepPoint2(null);
+                        setMeasureAnglePoints([]);
+                        setMeasureLengthPoints([]);
+                        playSound('click');
+                        setFeedbackMsg('📐 AÇI ÇİZ: Tahtaya tıklayarak 1. Köşe (O), 2. Taban kolu (A) ve 3. Dönen kolu (B) belirleyip açı oluşturun.');
+                      }}
+                      className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
+                        activeTool === 'angle'
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-102'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-blue-50 hover:border-blue-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1">
+                        <Maximize2 className="w-4 h-4" />
+                        <span className="font-extrabold text-xs">Açı Çiz</span>
+                      </div>
+                      <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
+                        Köşe &amp; kol
+                      </span>
+                    </button>
+
+                    {/* Açı Ölç */}
+                    <button
+                      onClick={() => {
+                        setActiveTool('measure-angle');
+                        setSelectedPointForLink(null);
+                        setAngleStepPoint1(null);
+                        setAngleStepPoint2(null);
+                        setMeasureAnglePoints([]);
+                        setMeasureLengthPoints([]);
+                        playSound('click');
+                        setFeedbackMsg('📏 AÇI ÖLÇ: Tahtadaki 3 noktayı sırayla seçin: 1. Kol noktası, 2. Köşe (Tepe) noktası, 3. İkinci Kol noktası.');
+                      }}
+                      className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all relative cursor-pointer ${
+                        activeTool === 'measure-angle'
+                          ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20 scale-102'
+                          : 'bg-white border-teal-200 text-teal-800 hover:bg-teal-50 hover:border-teal-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1">
+                        <Ruler className="w-4 h-4" />
+                        <span className="font-extrabold text-xs">Açı Ölç</span>
+                      </div>
+                      <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
+                        3 nokta ile
+                      </span>
+                    </button>
+
+                    {/* İletki (Açıölçer) */}
+                    <button
+                      onClick={() => {
+                        if (!isProtractorOnCanvas) {
+                          setIsProtractorOnCanvas(true);
+                          setActiveTool('protractor');
+                          if (protractorCenter.y > 380 || protractorCenter.x < 80) {
+                            setProtractorCenter({ x: 380, y: 240 });
+                          }
+                          playSound('click');
+                          setFeedbackMsg('📐 İletki tuvale bırakıldı. Açının köşesine taşıyabilir, taban koluna döndürebilirsiniz. İletki tuvaldeyken diğer araçlarla (nokta, ışın, doğru) çizim yapabilirsiniz.');
+                        } else {
+                          // Already on canvas: toggle between protractor tool and point tool
+                          if (activeTool === 'protractor') {
+                            setActiveTool('point');
+                            playSound('click');
+                            setFeedbackMsg('Nokta aracı seçildi. İletki tuvalde kalmaya devam ediyor.');
+                          } else {
+                            setActiveTool('protractor');
+                            playSound('click');
+                            setFeedbackMsg('📐 İletki aracı seçildi. Tuvale tıklayarak iletkiyi taşıyabilirsiniz.');
+                          }
+                        }
+                      }}
+                      className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all relative cursor-pointer ${
+                        isProtractorOnCanvas
+                          ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/30 scale-102 ring-2 ring-amber-300'
+                          : 'bg-white border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1">
+                        <Compass className="w-4 h-4 text-current" />
+                        <span className="font-extrabold text-xs">İletki</span>
+                      </div>
+                      <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
+                        {isProtractorOnCanvas ? 'Tuvalde (Açık)' : 'Açıölçer aracı'}
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* İletki Araç Rehberi */}
+                  {(isProtractorOnCanvas || activeTool === 'protractor') && (
+                    <div className="p-3 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-950 space-y-2 text-xs shadow-xs animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between font-black text-amber-900">
+                        <span className="flex items-center gap-1.5">
+                          <Compass className="w-3.5 h-3.5 text-amber-600" />
+                          İnteraktif Açıölçer (İletki)
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 font-bold">
+                          Dönüş: {protractorRotation}°
+                        </span>
+                      </div>
+                      <p className="text-[10.5px] text-amber-800 leading-tight">
+                        💡 İletkiyi merkez noktadan açının tepe noktasına taşıyın. Dış tutamaçtan döndürerek taban koluna hizalayın. İletki tuvaldeyken diğer çizim araçlarını özgürce kullanabilirsiniz.
+                      </p>
+                      <div className="flex items-center gap-2 pt-1">
+                        <button
+                          onClick={() => {
+                            setProtractorRotation(0);
+                            playSound('click');
+                            setFeedbackMsg('İletki açısı 0° (yatay) konumuna sıfırlandı.');
+                          }}
+                          className="py-1 px-2.5 bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 rounded-lg font-bold text-[10.5px] cursor-pointer"
+                        >
+                          🔄 0° Sıfırla
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsProtractorOnCanvas(false);
+                            setActiveTool('point');
+                            playSound('click');
+                            setFeedbackMsg('İletki tuvalden kaldırıldı.');
+                          }}
+                          className="py-1 px-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg font-bold text-[10.5px] cursor-pointer"
+                        >
+                          ✕ Kaldır
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Açı Ölçüm Adım Rehberi */}
+                  {activeTool === 'measure-angle' && (
+                    <div className="p-3 rounded-2xl bg-white border border-teal-200 text-teal-950 space-y-2 text-xs shadow-xs animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between font-black text-teal-900">
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-teal-500 animate-ping" />
+                          Açı Ölçüm Adımları ({measureAnglePoints.length}/3)
+                        </span>
+                        {measureAnglePoints.length > 0 && (
+                          <button
+                            onClick={() => {
+                              setMeasureAnglePoints([]);
+                              setHoverPos(null);
+                              setFeedbackMsg('Açı seçimi sıfırlandı. 1. Kol noktasını seçiniz.');
+                            }}
+                            className="text-[10px] text-rose-600 hover:underline font-bold cursor-pointer"
+                          >
+                            Sıfırla
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 text-[10.5px] font-bold text-center">
+                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length >= 1 ? 'bg-teal-600 text-white border-teal-600' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                          <div>1. Kol</div>
+                          <div className="text-[9.5px] font-normal">{measureAnglePoints[0] ? `✓ ${measureAnglePoints[0].label}` : 'Seçiniz'}</div>
+                        </div>
+                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length >= 2 ? 'bg-blue-600 text-white border-blue-600' : measureAnglePoints.length === 1 ? 'bg-amber-100 border-amber-400 text-amber-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                          <div>Köşe (O)</div>
+                          <div className="text-[9.5px] font-normal">{measureAnglePoints[1] ? `✓ ${measureAnglePoints[1].label}` : measureAnglePoints.length === 1 ? 'Tıklayın!' : 'Bekleniyor'}</div>
+                        </div>
+                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length === 3 ? 'bg-teal-600 text-white border-teal-600' : measureAnglePoints.length === 2 ? 'bg-teal-100 border-teal-400 text-teal-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                          <div>2. Kol</div>
+                          <div className="text-[9.5px] font-normal">{measureAnglePoints[2] ? `✓ ${measureAnglePoints[2].label}` : measureAnglePoints.length === 2 ? 'Tıklayın!' : 'Bekleniyor'}</div>
+                        </div>
+                      </div>
+                      <p className="text-[10.5px] text-teal-800 leading-tight">
+                        💡 {measureAnglePoints.length === 0 ? 'Tahtadaki bir noktaya tıklayın veya yeni nokta belirleyin (1. Kol).' : measureAnglePoints.length === 1 ? 'Şimdi açının KÖŞE (Tepe) noktasını seçiniz.' : 'Son olarak 2. Kol noktasını seçerek açıyı ölçün!'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 3. TEMEL MENÜ (Nokta, Taşı & Silgi) */}
               {(activeToolCategory === 'basic' || activeToolCategory === 'all') && (
                 <div className="space-y-2 p-3 rounded-2xl bg-slate-50 border border-slate-200">
                   <div className="flex items-center justify-between text-[11px] font-black text-slate-700 uppercase tracking-wider">
                     <span className="flex items-center gap-1.5">
                       <Dot className="w-4 h-4 text-teal-600" />
-                      <span>📍 Temel Araçlar (Nokta & Taşı)</span>
+                      <span>📍 Temel Araçlar (Nokta, Taşı & Silgi)</span>
                     </span>
                     <span className="text-[10px] text-slate-500 font-semibold bg-white px-2 py-0.5 rounded-full border border-slate-200">
-                      2 Araç
+                      3 Araç
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {/* Taşı / Düzenle */}
                     <button
                       onClick={() => {
@@ -3350,14 +5267,14 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         playSound('click');
                         setFeedbackMsg('🖐️ Taşıma Aracı: Tahtadaki noktaları sürükleyerek şekilleri dinamik boyutlandırın.');
                       }}
-                      className={`p-2.5 rounded-xl border text-left font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      className={`p-2 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                         activeTool === 'drag'
                           ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm scale-102'
                           : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
                       <Move className="w-4 h-4" />
-                      <span>Taşı & Düzenle</span>
+                      <span className="text-[11px]">Taşı</span>
                     </button>
 
                     {/* Nokta Ekle */}
@@ -3370,14 +5287,34 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         playSound('click');
                         setFeedbackMsg('📍 Nokta Aracı: Tahtaya tıklayarak isimlendirilmiş noktalar yerleştiriniz.');
                       }}
-                      className={`p-2.5 rounded-xl border text-left font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      className={`p-2 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                         activeTool === 'point'
                           ? 'bg-teal-600 text-white border-teal-600 shadow-sm scale-102'
                           : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
-                      <Dot className="w-5 h-5" />
-                      <span>Nokta (•)</span>
+                      <Dot className="w-4 h-4" />
+                      <span className="text-[11px]">Nokta (•)</span>
+                    </button>
+
+                    {/* Tekil Silgi */}
+                    <button
+                      onClick={() => {
+                        setActiveTool('eraser');
+                        setSelectedPointForLink(null);
+                        setMeasureAnglePoints([]);
+                        setMeasureLengthPoints([]);
+                        playSound('click');
+                        setFeedbackMsg('🧹 TEKİL SİLME ARACI: Tahtada silmek istediğiniz noktaya, doğru parçasına veya çembere tıklayın.');
+                      }}
+                      className={`p-2 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
+                        activeTool === 'eraser'
+                          ? 'bg-rose-600 text-white border-rose-600 shadow-sm scale-102'
+                          : 'bg-white border-rose-200 text-rose-700 hover:bg-rose-50'
+                      }`}
+                    >
+                      <Eraser className="w-4 h-4" />
+                      <span className="text-[11px]">Silgi</span>
                     </button>
                   </div>
                 </div>
@@ -3450,29 +5387,30 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <span>🎨 Özel & Sanat</span>
                     </span>
                     <span className="text-[10px] text-amber-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-amber-200">
-                      2 Araç
+                      3 Araç & Görev
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
-                    {/* Gönye & Dikme */}
+                    {/* Gönye (Dik Üçgen) */}
                     <button
                       onClick={() => {
                         setActiveTool('setsquare');
+                        setIsSetSquareOnCanvas(true);
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
-                        setFeedbackMsg('📐 Gönye & Dikme: Noktaya tıklayarak doğruya 90° en kısa dikmeyi indirin.');
+                        setFeedbackMsg('📐 Gönye tuvale bırakıldı! Cetveli çizgilere yaklaştırarak yapıştırabilir, mıknatıslı ucundan 90° dikme indirebilirsiniz.');
                       }}
                       className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'setsquare'
-                          ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-600/20 scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-rose-50'
+                        activeTool === 'setsquare' || isSetSquareOnCanvas
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20 scale-102'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-emerald-50'
                       }`}
                     >
-                      <span className="font-black text-sm">⊥</span>
-                      <span className="font-bold text-xs text-center">Gönye & Dikme</span>
+                      <span className="font-black text-sm">📐 ⊥</span>
+                      <span className="font-bold text-xs text-center">Gönye (Dik Üçgen)</span>
                     </button>
 
                     {/* Sanat Motifi */}
@@ -3495,6 +5433,74 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <span className="font-bold text-xs text-center">Sanat [D7.1]</span>
                     </button>
                   </div>
+
+                  {/* Motif 1: Selçuklu Yıldızı Görevi */}
+                  <button
+                    onClick={loadMotif1Mission}
+                    className={`w-full p-2.5 rounded-2xl border text-left font-bold text-xs flex items-center justify-between gap-2 transition-all cursor-pointer shadow-xs ${
+                      isMotif1Active
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/30 scale-[1.01]'
+                        : 'bg-gradient-to-r from-amber-50 to-amber-100/70 border-amber-300 text-amber-950 hover:bg-amber-100 hover:border-amber-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shadow-inner shrink-0 ${
+                        isMotif1Active ? 'bg-white/20 text-white' : 'bg-amber-500 text-white'
+                      }`}>
+                        ⭐
+                      </span>
+                      <div>
+                        <div className="font-extrabold text-xs flex items-center gap-1.5">
+                          <span>Motif 1: Selçuklu Yıldızı</span>
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
+                            isMotif1Active ? 'bg-white/20 text-white' : 'bg-amber-200 text-amber-900'
+                          }`}>
+                            Görev
+                          </span>
+                        </div>
+                        <div className={`text-[10px] font-normal line-clamp-1 ${
+                          isMotif1Active ? 'text-amber-100' : 'text-amber-800'
+                        }`}>
+                          Türk-İslam sanatı: Kesik çizgileri tamamla!
+                        </div>
+                      </div>
+                    </div>
+                    <Sparkles className={`w-4 h-4 shrink-0 ${isMotif1Active ? 'text-white' : 'text-amber-600'}`} />
+                  </button>
+
+                  {/* Açı Tahmin & İletki Oyunu Butonu */}
+                  <button
+                    onClick={startAngleGame}
+                    className={`w-full p-2.5 rounded-2xl border text-left font-bold text-xs flex items-center justify-between gap-2 transition-all cursor-pointer shadow-xs ${
+                      isAngleGameActive
+                        ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white border-sky-500 shadow-md shadow-sky-600/30 scale-[1.01]'
+                        : 'bg-gradient-to-r from-sky-50 to-indigo-50/80 border-sky-200 text-sky-950 hover:bg-sky-100 hover:border-sky-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shadow-inner shrink-0 ${
+                        isAngleGameActive ? 'bg-white/20 text-white' : 'bg-sky-600 text-white'
+                      }`}>
+                        🎯
+                      </span>
+                      <div>
+                        <div className="font-extrabold text-xs flex items-center gap-1.5">
+                          <span>Açı Tahmin Oyunu</span>
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
+                            isAngleGameActive ? 'bg-white/20 text-white' : 'bg-sky-200 text-sky-900'
+                          }`}>
+                            Oyun
+                          </span>
+                        </div>
+                        <div className={`text-[10px] font-normal line-clamp-1 ${
+                          isAngleGameActive ? 'text-sky-100' : 'text-sky-800'
+                        }`}>
+                          Göz kararı tahmin et &amp; iletkiyle ölç!
+                        </div>
+                      </div>
+                    </div>
+                    <Target className={`w-4 h-4 shrink-0 ${isAngleGameActive ? 'text-white' : 'text-sky-600'}`} />
+                  </button>
                 </div>
               )}
             </div>
@@ -3519,21 +5525,65 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               </div>
             </div>
 
-            {/* Clear & Undo Buttons */}
-            <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+            {/* Clear, Eraser, Magnet & Undo Buttons */}
+            <div className="pt-2 border-t border-slate-100 flex items-center gap-1.5">
               <button
                 onClick={undoLast}
-                className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1"
+                className="flex-1 py-2 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer"
+                title="Son işlemi geri al"
               >
                 <Undo2 className="w-3.5 h-3.5" />
                 <span>Geri Al</span>
               </button>
+              {/* Magnet Toggle Button (Yazısız Sadece İkon) */}
+              <button
+                onClick={() => {
+                  const nextVal = !isSnapToGrid;
+                  setIsSnapToGrid(nextVal);
+                  playSound('click');
+                  setFeedbackMsg(nextVal ? '🧲 Mıknatıs Açıldı (Izgaraya Yapışma Aktif).' : '🧲 Mıknatıs Kapatıldı (Serbest Çizim Aktif).');
+                }}
+                className={`py-2 px-2.5 rounded-xl border text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
+                  isSnapToGrid
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-sm ring-2 ring-amber-200 scale-102'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-400 border-slate-200'
+                }`}
+                title={isSnapToGrid ? 'Mıknatıs Açık (Kapatmak için tıklayın)' : 'Mıknatıs Kapalı (Açmak için tıklayın)'}
+                aria-label="Mıknatıs Aç/Kapa"
+              >
+                <Magnet className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  const nextTool = activeTool === 'eraser' ? 'point' : 'eraser';
+                  setActiveTool(nextTool);
+                  setSelectedPointForLink(null);
+                  setMeasureAnglePoints([]);
+                  setMeasureLengthPoints([]);
+                  playSound('click');
+                  if (nextTool === 'eraser') {
+                    setFeedbackMsg('🧹 TEKİL SİLME ARACI: Tahtada silmek istediğiniz herhangi bir noktaya veya çizgiye tıklayın.');
+                  } else {
+                    setFeedbackMsg('📍 Nokta aracı seçildi.');
+                  }
+                }}
+                className={`py-2 px-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                  activeTool === 'eraser'
+                    ? 'bg-rose-600 text-white border-rose-600 shadow-sm ring-2 ring-rose-300 scale-102'
+                    : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                }`}
+                title="Noktaları veya çizgileri tek tek sil"
+              >
+                <Eraser className="w-3.5 h-3.5" />
+                <span>Tekil Sil</span>
+              </button>
               <button
                 onClick={clearAll}
-                className="py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold flex items-center justify-center gap-1"
+                className="py-2 px-2 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer"
+                title="Tüm tahtayı temizle"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Temizle</span>
+                <span>Tümünü Sil</span>
               </button>
             </div>
           </div>
@@ -3630,20 +5680,29 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 </p>
               </div>
 
-              {/* Görev Kartı 5: Selçuklu Çinisi */}
+              {/* Görev Kartı 5: Selçuklu Çinisi & Motif 1 */}
               <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-extrabold text-amber-950 flex items-center gap-1.5">
                     <span className="w-5 h-5 rounded-full bg-amber-600 text-white text-[11px] font-black flex items-center justify-center">5</span>
                     <span>Selçuklu Yıldızı & Sanat [D7.1]</span>
                   </span>
-                  <button
-                    onClick={loadArtMotifStationPreset}
-                    className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Şablonu Yükle</span>
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={loadMotif1Mission}
+                      className="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
+                    >
+                      <Star className="w-3 h-3" />
+                      <span>Motif 1 Görevi</span>
+                    </button>
+                    <button
+                      onClick={loadArtMotifStationPreset}
+                      className="px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-[10px] transition-all flex items-center gap-1 cursor-pointer"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>Hazır Model</span>
+                    </button>
+                  </div>
                 </div>
                 <p className="text-[11px] text-amber-800 leading-snug">
                   Çember, kare ve dikmelerin estetik sentezi: Geleneksel 8 köşeli Selçuklu geometrik çini motifi.
@@ -3744,17 +5803,380 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           <div className="relative bg-white rounded-3xl border-2 border-slate-200 shadow-inner overflow-hidden min-h-[520px] flex flex-col justify-between">
             
             {/* Status & Feedback Bar */}
-            <div className="bg-slate-900 text-white px-5 py-3 flex items-center justify-between text-xs font-medium z-10 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
-                <span>{feedbackMsg}</span>
+            <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between text-xs font-medium z-10 border-b border-slate-800 gap-3">
+              <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${activeTool === 'eraser' ? 'bg-rose-500 animate-ping' : 'bg-teal-400 animate-pulse'}`} />
+                <span className="truncate text-slate-200 font-medium" title={feedbackMsg}>{feedbackMsg}</span>
+                {activeTool === 'eraser' && (
+                  <span className="shrink-0 px-2 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full font-bold text-[10px] animate-pulse">
+                    🧹 Silgi Aktif
+                  </span>
+                )}
+                {isProtractorOnCanvas && (
+                  <span className="shrink-0 px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full font-bold text-[10px] flex items-center gap-1">
+                    📐 İletki
+                    <button
+                      onClick={() => {
+                        setIsProtractorOnCanvas(false);
+                        playSound('click');
+                        setFeedbackMsg('İletki tuvalden kaldırıldı.');
+                      }}
+                      className="text-amber-400 hover:text-white font-black ml-0.5 cursor-pointer"
+                      title="İletkiyi Tuvalden Kaldır"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
+                {isSetSquareOnCanvas && (
+                  <span className="shrink-0 px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full font-bold text-[10px] flex items-center gap-1">
+                    📐 Gönye
+                    <button
+                      onClick={() => {
+                        setIsSetSquareOnCanvas(false);
+                        playSound('click');
+                        setFeedbackMsg('Gönye tuvalden kaldırıldı.');
+                      }}
+                      className="text-emerald-400 hover:text-white font-black ml-0.5 cursor-pointer"
+                      title="Gönyeyi Tuvalden Kaldır"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
               </div>
-              <div className="flex items-center gap-3 text-slate-300">
-                <span>Noktalar: {points.length}</span>
-                <span>Şekiller: {objects.length}</span>
-                {angles.length > 0 && <span>Açılar: {angles.length}</span>}
+              <div className="flex items-center gap-2 text-slate-300 shrink-0">
+                <span className="hidden sm:inline-block text-[11px] text-slate-400">Noktalar: {points.length}</span>
+                <span className="hidden sm:inline-block text-[11px] text-slate-400">Şekiller: {objects.length}</span>
+                {angles.length > 0 && <span className="hidden md:inline-block text-[11px] text-slate-400">Açılar: {angles.length}</span>}
+
+                {/* Mıknatıs Toggle Simgesi (Izgara Yapışması) */}
+                <button
+                  onClick={() => {
+                    const nextVal = !isSnapToGrid;
+                    setIsSnapToGrid(nextVal);
+                    playSound('click');
+                    setFeedbackMsg(nextVal ? '🧲 Mıknatıs Açıldı (Izgara Yapışması Aktif).' : '🧲 Mıknatıs Kapatıldı (Serbest Çizim Aktif).');
+                  }}
+                  className={`p-1.5 rounded-xl border transition-all flex items-center justify-center cursor-pointer shadow-xs ${
+                    isSnapToGrid
+                      ? 'bg-amber-500 text-white border-amber-400 shadow-amber-500/30 ring-2 ring-amber-300'
+                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white hover:bg-slate-700'
+                  }`}
+                  title={isSnapToGrid ? '🧲 Mıknatıs Açık (Izgara Yapışmasını Kapat)' : '🧲 Mıknatıs Kapalı (Izgara Yapışmasını Aç)'}
+                  aria-label="Izgara Mıknatısı Aç/Kapa"
+                >
+                  <Magnet className="w-4 h-4" />
+                </button>
+
+                {/* Çöp Sepeti Simgesi (Tümünü Temizle) */}
+                <button
+                  onClick={() => {
+                    clearAll();
+                    setFeedbackMsg('🗑️ Tahtadaki tüm çizimler ve noktalar silindi.');
+                  }}
+                  className="p-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 hover:text-rose-300 hover:border-rose-500/50 hover:bg-rose-950/60 transition-all flex items-center justify-center cursor-pointer shadow-xs"
+                  title="🗑️ Tümünü Temizle (Her Şeyi Sil)"
+                  aria-label="Tümünü Temizle"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
+
+            {/* Motif 1: Selçuklu Yıldızı Görev Paneli (HUD) */}
+            {isMotif1Active && (
+              <div className="bg-gradient-to-r from-amber-900 via-amber-800 to-amber-950 text-white p-3.5 border-b border-amber-700/60 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-md z-10 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                      <Star className="w-3 h-3 fill-amber-950" />
+                      <span>Motif 1 Görevi</span>
+                    </span>
+                    <h4 className="font-extrabold text-sm text-amber-100 flex items-center gap-1.5">
+                      <span>🏛️ 8 Köşeli Selçuklu Yıldızı</span>
+                      <span className="text-[10px] bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold">
+                        Maarif [D7.1]
+                      </span>
+                    </h4>
+                  </div>
+                  <p className="text-[11px] text-amber-200/90 leading-snug">
+                    Kesik çizgileri sol menüden uygun araçları seçerek tamamlayın (Doğru Parçası, Pergel, Doğru, Işın, Gönye).
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {/* Progress Badge */}
+                  <div className="flex items-center gap-2 bg-amber-950/70 border border-amber-600/50 px-3 py-1.5 rounded-xl">
+                    <div className="text-right">
+                      <div className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">İlerleme</div>
+                      <div className="text-xs font-black text-white">
+                        {motifCompletedGuides.length} / {MOTIF_1_GUIDES.length} (%{Math.round((motifCompletedGuides.length / MOTIF_1_GUIDES.length) * 100)})
+                      </div>
+                    </div>
+                    <div className="w-16 bg-amber-950 h-2.5 rounded-full overflow-hidden border border-amber-700/50">
+                      <div
+                        className="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-300 rounded-full"
+                        style={{ width: `${(motifCompletedGuides.length / MOTIF_1_GUIDES.length) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-1.5">
+                    {/* Magnet Toggle Button (Yazısız Sadece İkon) */}
+                    <button
+                      onClick={() => {
+                        const nextVal = !isSnapToGrid;
+                        setIsSnapToGrid(nextVal);
+                        playSound('click');
+                        setFeedbackMsg(nextVal ? '🧲 Mıknatıs Açıldı (Izgaraya Yapışma Aktif).' : '🧲 Mıknatıs Kapatıldı (Serbest Çizim Aktif).');
+                      }}
+                      className={`p-1.5 rounded-xl border transition-all flex items-center justify-center cursor-pointer ${
+                        isSnapToGrid
+                          ? 'bg-amber-400 text-amber-950 border-amber-300 shadow-sm ring-2 ring-amber-300'
+                          : 'bg-amber-950/60 text-amber-400/50 border-amber-700/60 hover:text-amber-200'
+                      }`}
+                      title={isSnapToGrid ? 'Mıknatıs Açık (Izgara Yapışmasını Kapatmak İçin Tıklayın)' : 'Mıknatıs Kapalı (Serbest Çizim - Açmak İçin Tıklayın)'}
+                      aria-label="Mıknatıs Aç/Kapa"
+                    >
+                      <Magnet className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={giveMotifNextHint}
+                      className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-amber-950 font-extrabold text-xs flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+                      title="Sıradaki tamamlanacak parçayı ve aracını göster"
+                    >
+                      <span>💡 İpucu</span>
+                    </button>
+                    <button
+                      onClick={autoCompleteMotifMission}
+                      className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+                      title="Tüm çizgileri otomatik tamamla"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Tamamla</span>
+                    </button>
+                    <button
+                      onClick={loadMotif1Mission}
+                      className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-amber-200 transition-all cursor-pointer"
+                      title="Görevi Sıfırla"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setIsMotif1Active(false)}
+                      className="p-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 transition-all cursor-pointer"
+                      title="Motif 1 Görevinden Çık"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Açı Tahmin ve İletki Ölçüm Oyunu HUD Paneli */}
+            {isAngleGameActive && (
+              <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-indigo-950 text-white p-3.5 border-b border-sky-600/40 shadow-lg z-10 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                  {/* Sol Bilgi & Talimat */}
+                  <div className="space-y-1 max-w-xl">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-amber-950 font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                        <Target className="w-3 h-3 text-amber-950" />
+                        <span>Açı Oyunu • Tur {angleGameRound}</span>
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold border border-sky-400/30 bg-sky-500/20 text-sky-200">
+                        {angleGameStage === 'estimate'
+                          ? '1. Aşama: Göz Kararı Tahmin'
+                          : angleGameStage === 'measure'
+                          ? '2. Aşama: İletki ile Ölçüm'
+                          : '3. Aşama: Sonuç & Başarı Skoru'}
+                      </span>
+                      {angleGameTotalScore > 0 && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                          <Trophy className="w-3 h-3 text-amber-400" />
+                          <span>Toplam: {angleGameTotalScore} Puan</span>
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-sky-100/90 leading-snug">
+                      {angleGameStage === 'estimate' && (
+                        <>Ekranda verilen açıyı inceleyin. Açının kaç derece olduğunu <strong>göz kararı tahmin edin</strong> ve aşağıdaki kutuya yazıp <em>&quot;Tahmini Onayla&quot;</em> butonuna basın.</>
+                      )}
+                      {angleGameStage === 'measure' && (
+                        <>İletkiyi merkezindeki turuncu halkadan tutup açının <strong>O köşesine</strong> yerleştirin. Mavi halkadan döndürüp <strong>taban koluna</strong> dayayın. Diğer kolun gösterdiği dereceyi kutuya yazıp onaylayın.</>
+                      )}
+                      {angleGameStage === 'result' && angleGameResult && (
+                        <span>{angleGameResult.message}</span>
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Sağ Kontroller & Giriş Alanları */}
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    {/* AŞAMA 1: TAHMİN GİRİŞİ */}
+                    {angleGameStage === 'estimate' && (
+                      <div className="flex items-center gap-2 bg-slate-800/80 p-1.5 px-3 rounded-2xl border border-sky-500/30">
+                        <div className="flex items-center gap-1.5">
+                          <label htmlFor="angle-estimate-input" className="text-[11px] font-bold text-sky-200">
+                            Tahminin:
+                          </label>
+                          <div className="relative flex items-center">
+                            <input
+                              id="angle-estimate-input"
+                              type="number"
+                              min="1"
+                              max="179"
+                              placeholder="Örn: 65"
+                              value={angleGameEstimate}
+                              onChange={(e) => setAngleGameEstimate(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && submitAngleEstimate()}
+                              className="w-20 px-2.5 py-1 text-sm font-black text-center bg-slate-900 border border-sky-400/60 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-sky-400 placeholder:text-slate-500"
+                            />
+                            <span className="ml-1 font-black text-sky-300 text-xs">°</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={submitAngleEstimate}
+                          disabled={!angleGameEstimate.trim()}
+                          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 disabled:opacity-50 text-white font-black text-xs transition-all shadow-md shadow-sky-600/30 flex items-center gap-1 cursor-pointer"
+                        >
+                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                          <span>Tahmini Onayla</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {/* AŞAMA 2: İLETKİ İLE ÖLÇÜM GİRİŞİ */}
+                    {angleGameStage === 'measure' && (
+                      <div className="flex flex-col gap-1.5">
+                        <div className="flex items-center gap-2 flex-wrap bg-slate-800/80 p-1.5 px-3 rounded-2xl border border-sky-500/30">
+                          {/* Hızlı Köşeye Oturt Butonu (Öğrenciye kolaylık) */}
+                          <button
+                            onClick={snapProtractorToVertex}
+                            className="px-2 py-1 rounded-xl bg-sky-900/60 hover:bg-sky-800/80 border border-sky-400/40 text-sky-200 text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                            title="İletkiyi otomatik olarak açının köşesine ve tabanına hizalar"
+                          >
+                            <Magnet className="w-3 h-3 text-sky-300" />
+                            <span>Köşeye Dayat</span>
+                          </button>
+
+                          <div className="flex items-center gap-1.5">
+                            <label htmlFor="angle-meas-input" className="text-[11px] font-bold text-sky-200">
+                              İletki Ölçümün:
+                            </label>
+                            <div className="relative flex items-center">
+                              <input
+                                id="angle-meas-input"
+                                type="number"
+                                min="1"
+                                max="179"
+                                placeholder="Örn: 70"
+                                value={angleGameMeasurement}
+                                onChange={(e) => {
+                                  setAngleGameMeasurement(e.target.value);
+                                  setAngleMeasureError(null);
+                                }}
+                                onKeyDown={(e) => e.key === 'Enter' && submitAngleMeasurement()}
+                                className={`w-20 px-2.5 py-1 text-sm font-black text-center bg-slate-900 border rounded-xl text-white focus:outline-none focus:ring-2 placeholder:text-slate-500 transition-all ${
+                                  angleMeasureError
+                                    ? 'border-rose-500 ring-2 ring-rose-500/50'
+                                    : 'border-emerald-400/60 focus:ring-emerald-400'
+                                }`}
+                              />
+                              <span className="ml-1 font-black text-emerald-300 text-xs">°</span>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={submitAngleMeasurement}
+                            disabled={!angleGameMeasurement.trim()}
+                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 disabled:opacity-50 text-white font-black text-xs transition-all shadow-md shadow-emerald-600/30 flex items-center gap-1 cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5 stroke-[3]" />
+                            <span>Ölçümü Onayla</span>
+                          </button>
+                        </div>
+
+                        {/* Hata ve Doğrulama Bildirimi (Yanlış ölçüm girildiğinde engeller ve uyarır) */}
+                        {angleMeasureError && (
+                          <div className="text-[11px] font-bold text-rose-300 bg-rose-950/90 border border-rose-600/70 px-3 py-1.5 rounded-xl flex items-center justify-between gap-2 animate-in fade-in slide-in-from-top-1 duration-200 shadow-sm">
+                            <span className="flex items-center gap-1.5">
+                              <span className="text-sm">⚠️</span>
+                              <span>{angleMeasureError}</span>
+                            </span>
+                            {angleMeasureAttempts >= 2 && angleGameTarget && (
+                              <button
+                                onClick={() => {
+                                  snapProtractorToVertex();
+                                  setAngleGameMeasurement(String(angleGameTarget.angleDeg));
+                                  setAngleMeasureError(null);
+                                  playSound('click');
+                                  setFeedbackMsg(`💡 İletki açının köşesine yerleştirildi ve doğru ölçüm (${angleGameTarget.angleDeg}°) kutuya aktarıldı. Şimdi onaylayabilirsiniz.`);
+                                }}
+                                className="px-2 py-0.5 rounded-lg bg-amber-500/30 hover:bg-amber-500/40 border border-amber-400/60 text-amber-200 text-[10px] font-bold cursor-pointer whitespace-nowrap"
+                              >
+                                İpucu: {angleGameTarget.angleDeg}° Yaz
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* AŞAMA 3: SONUÇ RAPORU & SIRADAKİ TUR */}
+                    {angleGameStage === 'result' && angleGameResult && (
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {/* Özet Skor Rozeti */}
+                        <div className="flex items-center gap-2 bg-slate-800/90 border border-slate-600 px-3 py-1 rounded-xl text-xs">
+                          <div className="text-center border-r border-slate-700 pr-2">
+                            <div className="text-[9px] text-slate-400 font-bold uppercase">Gerçek</div>
+                            <div className="font-black text-amber-400 text-xs">{angleGameResult.trueDeg}°</div>
+                          </div>
+                          <div className="text-center border-r border-slate-700 pr-2">
+                            <div className="text-[9px] text-slate-400 font-bold uppercase">Tahmin</div>
+                            <div className="font-black text-sky-300 text-xs">
+                              {angleGameResult.estimate}° (%{angleGameResult.estimateAccuracy})
+                            </div>
+                          </div>
+                          <div className="text-center border-r border-slate-700 pr-2">
+                            <div className="text-[9px] text-slate-400 font-bold uppercase">İletki</div>
+                            <div className="font-black text-emerald-300 text-xs">
+                              {angleGameResult.measurement}° (%{angleGameResult.measureAccuracy})
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-[9px] text-emerald-400 font-bold uppercase">Başarı</div>
+                            <div className="font-black text-emerald-400 text-xs">
+                              %{angleGameResult.totalRoundScore}
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={nextAngleGameRound}
+                          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs transition-all shadow-md shadow-amber-500/30 flex items-center gap-1 cursor-pointer"
+                        >
+                          <span>Sonraki Açı</span>
+                          <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Çıkış Butonu */}
+                    <button
+                      onClick={exitAngleGame}
+                      className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-rose-900/60 border border-slate-700 hover:border-rose-500/60 text-slate-400 hover:text-rose-200 transition-all cursor-pointer"
+                      title="Oyundan Çık ve Atölyeye Dön"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* SVG Interactive Canvas */}
             <svg
@@ -3764,7 +6186,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               onPointerUp={handlePointerUp}
               onPointerLeave={handlePointerUp}
               onPointerCancel={handlePointerUp}
-              className="w-full h-[470px] cursor-crosshair select-none touch-none bg-white"
+              className={`w-full h-[470px] ${activeTool === 'eraser' ? 'cursor-pointer' : activeTool === 'drag' ? 'cursor-grab' : activeTool === 'protractor' ? 'cursor-default' : 'cursor-crosshair'} select-none touch-none bg-white`}
             >
               <defs>
                 <pattern id="lab-canvas-grid" width={GRID_SIZE} height={GRID_SIZE} patternUnits="userSpaceOnUse">
@@ -3784,8 +6206,386 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 <rect width="100%" height="100%" fill="url(#lab-canvas-grid)" pointerEvents="none" />
               )}
 
+              {/* MOTIF 1: SELÇUKLU YILDIZI REHBER VE MODEL KATMANI */}
+              {isMotif1Active && (
+                <g id="motif-1-layer">
+                  {/* Outer decorative dashed boundary */}
+                  <circle
+                    cx="380"
+                    cy="225"
+                    r="125"
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="1"
+                    strokeDasharray="2,4"
+                    opacity="0.4"
+                    className="pointer-events-none"
+                  />
+
+                  {/* Translucent Star Fill */}
+                  <polygon
+                    points="380,110 495,225 380,340 265,225"
+                    fill="#0284c7"
+                    fillOpacity={motifCompletedGuides.length >= 8 ? 0.2 : 0.04}
+                    stroke="#0284c7"
+                    strokeWidth="1.5"
+                    strokeDasharray="4,4"
+                    className="transition-all duration-500 pointer-events-none"
+                  />
+                  <polygon
+                    points="461,144 461,306 299,306 299,144"
+                    fill="#10b396"
+                    fillOpacity={motifCompletedGuides.length >= 8 ? 0.2 : 0.04}
+                    stroke="#10b396"
+                    strokeWidth="1.5"
+                    strokeDasharray="4,4"
+                    className="transition-all duration-500 pointer-events-none"
+                  />
+
+                  {/* Center Medallion */}
+                  <circle
+                    cx="380"
+                    cy="225"
+                    r="24"
+                    fill="#f59e0b"
+                    fillOpacity={motifCompletedGuides.length === MOTIF_1_GUIDES.length ? 0.3 : 0.08}
+                    stroke="#f59e0b"
+                    strokeWidth="2"
+                    strokeDasharray="3,3"
+                    className="pointer-events-none"
+                  />
+                  <text
+                    x="380"
+                    y="229"
+                    textAnchor="middle"
+                    fill="#d97706"
+                    fontSize="11"
+                    fontWeight="bold"
+                    className="pointer-events-none select-none"
+                  >
+                    ✦
+                  </text>
+
+                  {/* Render the 12 Dashed or Completed Guide Elements */}
+                  {MOTIF_1_GUIDES.map((guide) => {
+                    const isDone = motifCompletedGuides.includes(guide.id);
+                    const isHinted = motifHintGuideId === guide.id;
+
+                    const handleGuideClick = (e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      if (activeTool === guide.requiredTool) {
+                        completeMotifGuide(guide.id);
+                      } else {
+                        playSound('click');
+                        setFeedbackMsg(`💡 Bu kesik çizgi bir ${guide.toolTitle} gerektirir! Lütfen sol menüden "${guide.toolTitle}" aracını seçip çizgiyi tamamlayın.`);
+                        setMotifHintGuideId(guide.id);
+                      }
+                    };
+
+                    if (guide.type === 'circle' && guide.cx !== undefined && guide.cy !== undefined && guide.r !== undefined) {
+                      return (
+                        <g key={guide.id} onClick={handleGuideClick} onPointerDown={(e) => e.stopPropagation()} className="cursor-pointer group">
+                          {/* Invisible wide hit target for easy clicking */}
+                          <circle cx={guide.cx} cy={guide.cy} r={guide.r} fill="none" stroke="transparent" strokeWidth="26" />
+                          {/* Visual circle */}
+                          <circle
+                            cx={guide.cx}
+                            cy={guide.cy}
+                            r={guide.r}
+                            fill="none"
+                            stroke={isDone ? '#f59e0b' : isHinted ? '#f97316' : '#94a3b8'}
+                            strokeWidth={isDone ? '3.5' : isHinted ? '3.5' : '2.2'}
+                            strokeDasharray={isDone ? 'none' : '7,5'}
+                            strokeOpacity={isDone ? 1 : 0.85}
+                            className={isHinted ? 'animate-pulse' : ''}
+                          />
+                          {!isDone && (
+                            <g transform={`translate(${guide.cx}, ${guide.cy - guide.r - 12})`} className="pointer-events-none">
+                              <rect x="-52" y="-10" width="104" height="20" rx="5" fill="#0f172a" stroke="#f59e0b" strokeWidth="1" />
+                              <text x="0" y="3" textAnchor="middle" fill="#fde047" fontSize="9.5" fontWeight="bold">
+                                ⭕ Pergel Çemberi
+                              </text>
+                            </g>
+                          )}
+                        </g>
+                      );
+                    }
+
+                    if (guide.type === 'line' && guide.x1 !== undefined && guide.y1 !== undefined && guide.x2 !== undefined && guide.y2 !== undefined) {
+                      return (
+                        <g key={guide.id} onClick={handleGuideClick} onPointerDown={(e) => e.stopPropagation()} className="cursor-pointer group">
+                          <line x1={guide.x1} y1={guide.y1} x2={guide.x2} y2={guide.y2} stroke="transparent" strokeWidth="26" />
+                          <line
+                            x1={guide.x1}
+                            y1={guide.y1}
+                            x2={guide.x2}
+                            y2={guide.y2}
+                            stroke={isDone ? '#0284c7' : isHinted ? '#f97316' : '#94a3b8'}
+                            strokeWidth={isDone ? '3.5' : isHinted ? '3.5' : '2.2'}
+                            strokeDasharray={isDone ? 'none' : '7,5'}
+                            strokeOpacity={isDone ? 1 : 0.8}
+                            className={isHinted ? 'animate-pulse' : ''}
+                          />
+                          {!isDone && (
+                            <g transform={`translate(${(guide.x1 + guide.x2) / 2}, ${guide.y1 - 12})`} className="pointer-events-none">
+                              <rect x="-44" y="-10" width="88" height="20" rx="5" fill="#0f172a" stroke="#0284c7" strokeWidth="1" />
+                              <text x="0" y="3" textAnchor="middle" fill="#38bdf8" fontSize="9.5" fontWeight="bold">
+                                ↔️ Eksen Doğrusu
+                              </text>
+                            </g>
+                          )}
+                        </g>
+                      );
+                    }
+
+                    if (guide.type === 'perpendicular' && guide.x1 !== undefined && guide.y1 !== undefined && guide.x2 !== undefined && guide.y2 !== undefined) {
+                      return (
+                        <g key={guide.id} onClick={handleGuideClick} onPointerDown={(e) => e.stopPropagation()} className="cursor-pointer group">
+                          <line x1={guide.x1} y1={guide.y1} x2={guide.x2} y2={guide.y2} stroke="transparent" strokeWidth="26" />
+                          <line
+                            x1={guide.x1}
+                            y1={guide.y1}
+                            x2={guide.x2}
+                            y2={guide.y2}
+                            stroke={isDone ? '#f43f5e' : isHinted ? '#f97316' : '#94a3b8'}
+                            strokeWidth={isDone ? '3.5' : isHinted ? '3.5' : '2.2'}
+                            strokeDasharray={isDone ? 'none' : '7,5'}
+                            strokeOpacity={isDone ? 1 : 0.8}
+                            className={isHinted ? 'animate-pulse' : ''}
+                          />
+                          {!isDone && (
+                            <g transform={`translate(${guide.x1 + 46}, ${guide.y1 + 30})`} className="pointer-events-none">
+                              <rect x="-46" y="-10" width="92" height="20" rx="5" fill="#0f172a" stroke="#f43f5e" strokeWidth="1" />
+                              <text x="0" y="3" textAnchor="middle" fill="#fda4af" fontSize="9.5" fontWeight="bold">
+                                ⊥ Düşey Dikme
+                              </text>
+                            </g>
+                          )}
+                        </g>
+                      );
+                    }
+
+                    if (guide.type === 'ray' && guide.x1 !== undefined && guide.y1 !== undefined && guide.x2 !== undefined && guide.y2 !== undefined) {
+                      return (
+                        <g key={guide.id} onClick={handleGuideClick} onPointerDown={(e) => e.stopPropagation()} className="cursor-pointer group">
+                          <line x1={guide.x1} y1={guide.y1} x2={guide.x2} y2={guide.y2} stroke="transparent" strokeWidth="26" />
+                          <line
+                            x1={guide.x1}
+                            y1={guide.y1}
+                            x2={guide.x2}
+                            y2={guide.y2}
+                            stroke={isDone ? '#10b396' : isHinted ? '#f97316' : '#94a3b8'}
+                            strokeWidth={isDone ? '3.5' : isHinted ? '3.5' : '2.2'}
+                            strokeDasharray={isDone ? 'none' : '7,5'}
+                            strokeOpacity={isDone ? 1 : 0.8}
+                            className={isHinted ? 'animate-pulse' : ''}
+                          />
+                          {!isDone && (
+                            <g transform={`translate(${(guide.x1 + guide.x2) / 2 + 10}, ${(guide.y1 + guide.y2) / 2 - 12})`} className="pointer-events-none">
+                              <rect x="-40" y="-10" width="80" height="20" rx="5" fill="#0f172a" stroke="#10b396" strokeWidth="1" />
+                              <text x="0" y="3" textAnchor="middle" fill="#6ee7b7" fontSize="9.5" fontWeight="bold">
+                                ⚡ Köşe Işını
+                              </text>
+                            </g>
+                          )}
+                        </g>
+                      );
+                    }
+
+                    if (guide.type === 'segment' && guide.x1 !== undefined && guide.y1 !== undefined && guide.x2 !== undefined && guide.y2 !== undefined) {
+                      const midX = (guide.x1 + guide.x2) / 2;
+                      const midY = (guide.y1 + guide.y2) / 2;
+                      return (
+                        <g key={guide.id} onClick={handleGuideClick} onPointerDown={(e) => e.stopPropagation()} className="cursor-pointer group">
+                          <line x1={guide.x1} y1={guide.y1} x2={guide.x2} y2={guide.y2} stroke="transparent" strokeWidth="24" />
+                          <line
+                            x1={guide.x1}
+                            y1={guide.y1}
+                            x2={guide.x2}
+                            y2={guide.y2}
+                            stroke={isDone ? '#0284c7' : isHinted ? '#f97316' : '#cbd5e1'}
+                            strokeWidth={isDone ? '4' : isHinted ? '3.5' : '2.5'}
+                            strokeDasharray={isDone ? 'none' : '6,4'}
+                            strokeLinecap="round"
+                            strokeOpacity={isDone ? 1 : 0.85}
+                            className={isHinted ? 'animate-pulse' : ''}
+                          />
+                          {!isDone && isHinted && (
+                            <g transform={`translate(${midX}, ${midY})`} className="pointer-events-none">
+                              <rect x="-32" y="-9" width="64" height="18" rx="4" fill="#0f172a" stroke="#f97316" strokeWidth="1" />
+                              <text x="0" y="3" textAnchor="middle" fill="#fdba74" fontSize="9" fontWeight="bold">
+                                📏 [{guide.p1Label}{guide.p2Label}]
+                              </text>
+                            </g>
+                          )}
+                        </g>
+                      );
+                    }
+
+                    return null;
+                  })}
+                </g>
+              )}
+
+              {/* AÇI TAHMİN OYUNU: HEDEF AÇI ÇİZİM KATMANI */}
+              {isAngleGameActive && angleGameTarget && (
+                <g id="angle-game-target-layer">
+                  {/* Angle Arc Fill Wedge */}
+                  {(() => {
+                    const v = angleGameTarget.vertex;
+                    const r = 52;
+                    const baseRad = (angleGameTarget.baseDeg * Math.PI) / 180;
+                    const secondRad = ((angleGameTarget.baseDeg - angleGameTarget.angleDeg) * Math.PI) / 180;
+                    const ax1 = v.x + r * Math.cos(baseRad);
+                    const ay1 = v.y + r * Math.sin(baseRad);
+                    const ax2 = v.x + r * Math.cos(secondRad);
+                    const ay2 = v.y + r * Math.sin(secondRad);
+
+                    const midRad = (baseRad + secondRad) / 2;
+                    const bx = v.x + 75 * Math.cos(midRad);
+                    const by = v.y + 75 * Math.sin(midRad);
+
+                    // Path for the sector arc
+                    const arcD = `M ${v.x} ${v.y} L ${ax1} ${ay1} A ${r} ${r} 0 0 0 ${ax2} ${ay2} Z`;
+
+                    return (
+                      <g key="angle-game-arc">
+                        <path
+                          d={arcD}
+                          fill="#0284c7"
+                          fillOpacity="0.16"
+                          stroke="#0284c7"
+                          strokeWidth="2"
+                        />
+                        {/* Question Mark Badge or Revealed Degree Badge */}
+                        <g transform={`translate(${bx}, ${by})`} className="pointer-events-none">
+                          <rect
+                            x="-24"
+                            y="-12"
+                            width="48"
+                            height="24"
+                            rx="7"
+                            fill={angleGameStage === 'result' ? '#065f46' : '#1e1b4b'}
+                            stroke={angleGameStage === 'result' ? '#34d399' : '#818cf8'}
+                            strokeWidth="1.5"
+                            className="shadow-md"
+                          />
+                          <text
+                            x="0"
+                            y="4.5"
+                            textAnchor="middle"
+                            fill={angleGameStage === 'result' ? '#6ee7b7' : '#c7d2fe'}
+                            fontSize="11"
+                            fontWeight="900"
+                          >
+                            {angleGameStage === 'result' ? `${angleGameTarget.angleDeg}°` : '?°'}
+                          </text>
+                        </g>
+                      </g>
+                    );
+                  })()}
+
+                  {/* Taban Işını (OA) */}
+                  <line
+                    x1={angleGameTarget.vertex.x}
+                    y1={angleGameTarget.vertex.y}
+                    x2={angleGameTarget.p1.x}
+                    y2={angleGameTarget.p1.y}
+                    stroke="#0284c7"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                  {/* Dönen Diğer Kol Işını (OB) */}
+                  <line
+                    x1={angleGameTarget.vertex.x}
+                    y1={angleGameTarget.vertex.y}
+                    x2={angleGameTarget.p2.x}
+                    y2={angleGameTarget.p2.y}
+                    stroke="#0284c7"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+
+                  {/* Kol Ok Başları (Rays) */}
+                  {(() => {
+                    const v = angleGameTarget.vertex;
+                    const p1 = angleGameTarget.p1;
+                    const p2 = angleGameTarget.p2;
+                    const ang1 = Math.atan2(p1.y - v.y, p1.x - v.x);
+                    const ang2 = Math.atan2(p2.y - v.y, p2.x - v.x);
+                    const arrowLen = 12;
+
+                    return (
+                      <g key="angle-game-arrows">
+                        <polygon
+                          points={`
+                            ${p1.x},${p1.y}
+                            ${p1.x - arrowLen * Math.cos(ang1 - 0.45)},${p1.y - arrowLen * Math.sin(ang1 - 0.45)}
+                            ${p1.x - arrowLen * Math.cos(ang1 + 0.45)},${p1.y - arrowLen * Math.sin(ang1 + 0.45)}
+                          `}
+                          fill="#0284c7"
+                        />
+                        <polygon
+                          points={`
+                            ${p2.x},${p2.y}
+                            ${p2.x - arrowLen * Math.cos(ang2 - 0.45)},${p2.y - arrowLen * Math.sin(ang2 - 0.45)}
+                            ${p2.x - arrowLen * Math.cos(ang2 + 0.45)},${p2.y - arrowLen * Math.sin(ang2 + 0.45)}
+                          `}
+                          fill="#0284c7"
+                        />
+                      </g>
+                    );
+                  })()}
+
+                  {/* Köşe O Noktası */}
+                  <circle
+                    cx={angleGameTarget.vertex.x}
+                    cy={angleGameTarget.vertex.y}
+                    r="6.5"
+                    fill="#f59e0b"
+                    stroke="#ffffff"
+                    strokeWidth="2.5"
+                  />
+                  <text
+                    x={angleGameTarget.vertex.x - 14}
+                    y={angleGameTarget.vertex.y + 16}
+                    fill="#0f172a"
+                    fontSize="13"
+                    fontWeight="900"
+                    textAnchor="middle"
+                  >
+                    O
+                  </text>
+
+                  {/* Kol Uç Noktaları A ve B */}
+                  <circle cx={angleGameTarget.p1.x} cy={angleGameTarget.p1.y} r="5" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
+                  <text
+                    x={angleGameTarget.p1.x + 14}
+                    y={angleGameTarget.p1.y + 12}
+                    fill="#0369a1"
+                    fontSize="12"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                  >
+                    A
+                  </text>
+
+                  <circle cx={angleGameTarget.p2.x} cy={angleGameTarget.p2.y} r="5" fill="#0284c7" stroke="#ffffff" strokeWidth="2" />
+                  <text
+                    x={angleGameTarget.p2.x + 14}
+                    y={angleGameTarget.p2.y - 8}
+                    fill="#0369a1"
+                    fontSize="12"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                  >
+                    B
+                  </text>
+                </g>
+              )}
+
               {/* Empty State Hint */}
-              {points.length === 0 && objects.length === 0 && angles.length === 0 && polygons.length === 0 && (
+              {points.length === 0 && objects.length === 0 && angles.length === 0 && polygons.length === 0 && !isMotif1Active && !isAngleGameActive && (
                 <g className="pointer-events-none">
                   <text
                     x="50%"
@@ -3853,7 +6653,18 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 const centroidY = Math.round(polyPoints.reduce((acc, p) => acc + p.y, 0) / polyPoints.length);
 
                 return (
-                  <g key={poly.id} className="animate-in fade-in duration-200">
+                  <g
+                    key={poly.id}
+                    className={`animate-in fade-in duration-200 ${activeTool === 'eraser' ? 'cursor-pointer hover:opacity-50 transition-opacity' : ''}`}
+                    onClick={(e) => {
+                      if (activeTool === 'eraser') {
+                        e.stopPropagation();
+                        deletePolygon(poly.id);
+                        playSound('click');
+                        setFeedbackMsg(`🗑️ ${poly.label} çokgeni silindi.`);
+                      }
+                    }}
+                  >
                     {/* Translucent Polygon Fill & Outline */}
                     <polygon
                       points={pointsString}
@@ -3865,46 +6676,49 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                     />
 
                     {/* Edge Length Badges */}
-                    {polyPoints.map((ptA, i) => {
-                      const ptB = polyPoints[(i + 1) % polyPoints.length];
-                      const edgeLenPix = Math.hypot(ptB.x - ptA.x, ptB.y - ptA.y);
-                      const edgeLenCm = Math.round((edgeLenPix / 30) * 10) / 10;
-                      const midX = (ptA.x + ptB.x) / 2;
-                      const midY = (ptA.y + ptB.y) / 2;
+                    {!poly.hideLabel &&
+                      polyPoints.map((ptA, i) => {
+                        const ptB = polyPoints[(i + 1) % polyPoints.length];
+                        const edgeLenPix = Math.hypot(ptB.x - ptA.x, ptB.y - ptA.y);
+                        const edgeLenCm = Math.round((edgeLenPix / 30) * 10) / 10;
+                        const midX = (ptA.x + ptB.x) / 2;
+                        const midY = (ptA.y + ptB.y) / 2;
 
-                      return (
-                        <g key={`edge-${poly.id}-${i}`} transform={`translate(${midX}, ${midY})`} className="pointer-events-none">
-                          <rect x="-32" y="-10" width="64" height="18" rx="5" fill="#0f172a" stroke={poly.color} strokeWidth="1" />
-                          <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
-                            |{ptA.label}{ptB.label}|={edgeLenCm}
-                          </text>
-                        </g>
-                      );
-                    })}
+                        return (
+                          <g key={`edge-${poly.id}-${i}`} transform={`translate(${midX}, ${midY})`} className="pointer-events-none">
+                            <rect x="-32" y="-10" width="64" height="18" rx="5" fill="#0f172a" stroke={poly.color} strokeWidth="1" />
+                            <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
+                              |{ptA.label}{ptB.label}|={edgeLenCm}
+                            </text>
+                          </g>
+                        );
+                      })}
 
                     {/* Centroid Badge: Label, Perimeter & Area */}
-                    <g transform={`translate(${centroidX}, ${centroidY})`} className="cursor-pointer">
-                      <rect
-                        x="-70"
-                        y="-22"
-                        width="140"
-                        height="44"
-                        rx="10"
-                        fill="#0f172a"
-                        stroke={poly.color}
-                        strokeWidth="2"
-                        className="drop-shadow-lg"
-                      />
-                      <text x="0" y="-6" textAnchor="middle" fill="#ffffff" fontSize="10.5" fontWeight="900">
-                        {poly.label}
-                      </text>
-                      <text x="0" y="7" textAnchor="middle" fill="#38bdf8" fontSize="9" fontWeight="bold">
-                        Ç = {poly.perimeter} cm
-                      </text>
-                      <text x="0" y="18" textAnchor="middle" fill="#4ade80" fontSize="9.5" fontWeight="black">
-                        Alan = {poly.area} cm²
-                      </text>
-                    </g>
+                    {!poly.hideLabel && (
+                      <g transform={`translate(${centroidX}, ${centroidY})`} className="cursor-pointer">
+                        <rect
+                          x="-70"
+                          y="-22"
+                          width="140"
+                          height="44"
+                          rx="10"
+                          fill="#0f172a"
+                          stroke={poly.color}
+                          strokeWidth="2"
+                          className="drop-shadow-lg"
+                        />
+                        <text x="0" y="-6" textAnchor="middle" fill="#ffffff" fontSize="10.5" fontWeight="900">
+                          {poly.label}
+                        </text>
+                        <text x="0" y="7" textAnchor="middle" fill="#38bdf8" fontSize="9" fontWeight="bold">
+                          Ç = {poly.perimeter} cm
+                        </text>
+                        <text x="0" y="18" textAnchor="middle" fill="#4ade80" fontSize="9.5" fontWeight="black">
+                          Alan = {poly.area} cm²
+                        </text>
+                      </g>
+                    )}
                   </g>
                 );
               })}
@@ -4157,6 +6971,16 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 const p2 = obj.p2 ? (points.find((p) => p.id === obj.p2?.id) || obj.p2) : undefined;
                 const { type, color, id, length, symbol } = obj;
 
+                const eraserProps = activeTool === 'eraser' ? {
+                  className: "cursor-pointer hover:opacity-50 transition-opacity",
+                  onClick: (e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    deleteObject(id);
+                    playSound('click');
+                    setFeedbackMsg(`🗑️ ${obj.label || obj.symbol || 'Geometrik nesne'} silindi.`);
+                  }
+                } : {};
+
                 // 1. SEGMENT: Two closed boundary dots + length badge
                 if (type === 'segment' && p2) {
                   const dx = p2.x - p1.x;
@@ -4167,16 +6991,22 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   const midY = (p1.y + p2.y) / 2;
 
                   return (
-                    <g key={id}>
+                    <g key={id} {...eraserProps}>
                       <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeWidth="4.5" strokeLinecap="round" />
                       <circle cx={p1.x} cy={p1.y} r="5.5" fill={color} stroke="#ffffff" strokeWidth="2" />
                       <circle cx={p2.x} cy={p2.y} r="5.5" fill={color} stroke="#ffffff" strokeWidth="2" />
-                      <g transform={`translate(${midX}, ${midY - 14})`}>
-                        <rect x="-46" y="-12" width="92" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
-                        <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
-                          |{p1.label}{p2.label}| = {currentCm} cm
-                        </text>
-                      </g>
+                      {(!obj.hideLength || !obj.hideLabel) && (
+                        <g transform={`translate(${midX}, ${midY - 14})`}>
+                          <rect x="-46" y="-12" width="92" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
+                          <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
+                            {!obj.hideLabel && !obj.hideLength
+                              ? `|${p1.label}${p2.label}| = ${currentCm} cm`
+                              : !obj.hideLabel
+                              ? `[${p1.label}${p2.label}]`
+                              : `${currentCm} cm`}
+                          </text>
+                        </g>
+                      )}
                     </g>
                   );
                 }
@@ -4203,16 +7033,18 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   const rightY = tipY - arrowLen * Math.sin(angle) - arrowWidth * Math.cos(angle);
 
                   return (
-                    <g key={id}>
+                    <g key={id} {...eraserProps}>
                       <line x1={p1.x} y1={p1.y} x2={extX} y2={extY} stroke={color} strokeWidth="4.5" strokeLinecap="round" />
                       <polygon points={`${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`} fill={color} />
                       <circle cx={p1.x} cy={p1.y} r="6.5" fill={color} stroke="#ffffff" strokeWidth="2" />
-                      <g transform={`translate(${midX}, ${midY - 14})`}>
-                        <rect x="-30" y="-12" width="60" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
-                        <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
-                          [{p1.label}{p2.label}&gt;
-                        </text>
-                      </g>
+                      {!obj.hideLabel && (
+                        <g transform={`translate(${midX}, ${midY - 14})`}>
+                          <rect x="-30" y="-12" width="60" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
+                          <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
+                            [{p1.label}{p2.label}&gt;
+                          </text>
+                        </g>
+                      )}
                     </g>
                   );
                 }
@@ -4250,16 +7082,18 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   const right1Y = tip1Y - arrowLen * Math.sin(oppAngle) - arrowWidth * Math.cos(oppAngle);
 
                   return (
-                    <g key={id}>
+                    <g key={id} {...eraserProps}>
                       <line x1={ext1X} y1={ext1Y} x2={ext2X} y2={ext2Y} stroke={color} strokeWidth="4.5" strokeLinecap="round" />
                       <polygon points={`${tip2X},${tip2Y} ${left2X},${left2Y} ${right2X},${right2Y}`} fill={color} />
                       <polygon points={`${tip1X},${tip1Y} ${left1X},${left1Y} ${right1X},${right1Y}`} fill={color} />
-                      <g transform={`translate(${midX}, ${midY - 14})`}>
-                        <rect x="-24" y="-12" width="48" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
-                        <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
-                          {p1.label}{p2.label}
-                        </text>
-                      </g>
+                      {!obj.hideLabel && (
+                        <g transform={`translate(${midX}, ${midY - 14})`}>
+                          <rect x="-24" y="-12" width="48" height="22" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.5" />
+                          <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
+                            {p1.label}{p2.label}
+                          </text>
+                        </g>
+                      )}
                     </g>
                   );
                 }
@@ -4271,50 +7105,174 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   const dCm = Math.round(rCm * 2 * 10) / 10;
 
                   return (
-                    <g key={id}>
+                    <g key={id} {...eraserProps}>
                       {obj.isDisk && (
                         <circle cx={p1.x} cy={p1.y} r={rad} fill={color} fillOpacity="0.2" />
                       )}
                       <circle cx={p1.x} cy={p1.y} r={rad} fill="none" stroke={color} strokeWidth="3.5" />
-                      {/* Radius line r */}
-                      <line x1={p1.x} y1={p1.y} x2={p1.x + rad} y2={p1.y} stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4,2" />
-                      <circle cx={p1.x + rad} cy={p1.y} r="4" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
-                      <text x={p1.x + rad / 2} y={p1.y - 6} fill="#f59e0b" fontSize="10" fontWeight="bold" textAnchor="middle">
-                        r = {rCm} cm
-                      </text>
+                      {/* Radius line r & measurement text */}
+                      {!obj.hideLength && (
+                        <>
+                          <line x1={p1.x} y1={p1.y} x2={p1.x + rad} y2={p1.y} stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4,2" />
+                          <circle cx={p1.x + rad} cy={p1.y} r="4" fill="#f59e0b" stroke="#ffffff" strokeWidth="1" />
+                          <text x={p1.x + rad / 2} y={p1.y - 6} fill="#f59e0b" fontSize="10" fontWeight="bold" textAnchor="middle">
+                            r = {rCm} cm
+                          </text>
+                        </>
+                      )}
                       {/* Center dot */}
                       <circle cx={p1.x} cy={p1.y} r="5" fill={color} stroke="#ffffff" strokeWidth="2" />
-                      <text x={p1.x} y={p1.y + 16} fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">
-                        {p1.label} (Merkez)
-                      </text>
-                      {/* Badge */}
-                      <g transform={`translate(${p1.x}, ${p1.y - rad - 14})`}>
-                        <rect x="-65" y="-12" width="130" height="24" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.2" />
-                        <text x="0" y="4" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
-                          ⭕ Çember (R = {dCm} cm)
-                        </text>
-                      </g>
+                      {!obj.hideLabel && (
+                        <>
+                          <text x={p1.x} y={p1.y + 16} fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">
+                            {p1.label} (Merkez)
+                          </text>
+                          {/* Badge */}
+                          <g transform={`translate(${p1.x}, ${p1.y - rad - 14})`}>
+                            <rect x="-65" y="-12" width="130" height="24" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.2" />
+                            <text x="0" y="4" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
+                              ⭕ Çember (R = {dCm} cm)
+                            </text>
+                          </g>
+                        </>
+                      )}
                     </g>
                   );
                 }
 
                 // 5. PERPENDICULAR: Point dropped to line with 90° right angle mark
                 if (type === 'perpendicular' && p2) {
+                  // Find the baseline this perpendicular was dropped to
+                  const baseLine =
+                    (obj.baseLineId && objects.find((o) => o.id === obj.baseLineId)) ||
+                    objects.find(
+                      (o) =>
+                        o.id !== id &&
+                        o.p2 &&
+                        (o.type === 'line' || o.type === 'segment' || o.type === 'ray') &&
+                        (() => {
+                          const bp1 = points.find((p) => p.id === o.p1.id) || o.p1;
+                          const bp2 = points.find((p) => p.id === o.p2!.id) || o.p2!;
+                          const dx = bp2.x - bp1.x;
+                          const dy = bp2.y - bp1.y;
+                          const len = Math.hypot(dx, dy);
+                          if (len < 1) return false;
+                          const dist = Math.abs((p2.x - bp1.x) * dy - (p2.y - bp1.y) * dx) / len;
+                          return dist <= 20;
+                        })()
+                    );
+
+                  // Calculate current angle between perpendicular [p2 -> p1] and baseline
+                  let isRightAngle = false;
+                  let baseDirX = 1;
+                  let baseDirY = 0;
+                  const pdx = p1.x - p2.x;
+                  const pdy = p1.y - p2.y;
+                  const plen = Math.hypot(pdx, pdy) || 1;
+                  const perpUnitX = pdx / plen;
+                  const perpUnitY = pdy / plen;
+
+                  if (baseLine && baseLine.p2) {
+                    const bp1 = points.find((p) => p.id === baseLine.p1.id) || baseLine.p1;
+                    const bp2 = points.find((p) => p.id === baseLine.p2!.id) || baseLine.p2!;
+                    const bdx = bp2.x - bp1.x;
+                    const bdy = bp2.y - bp1.y;
+                    const blen = Math.hypot(bdx, bdy) || 1;
+                    baseDirX = bdx / blen;
+                    baseDirY = bdy / blen;
+
+                    // Dot product: cos(theta) = dot / (blen * plen)
+                    const dot = (bdx * pdx + bdy * pdy) / (blen * plen);
+                    // If perpendicular, dot product is ~0 (dot <= 0.05 corresponds to approx 87° to 93°)
+                    if (Math.abs(dot) <= 0.05) {
+                      isRightAngle = true;
+                    }
+                  } else {
+                    // Check if there is an angle in angles for this vertex and arm
+                    const relAngle = angles.find(
+                      (ang) => ang.vertex.id === p2.id && (ang.p1.id === p1.id || ang.p2.id === p1.id)
+                    );
+                    if (relAngle) {
+                      const v = points.find((p) => p.id === relAngle.vertex.id) || relAngle.vertex;
+                      const ap1 = points.find((p) => p.id === relAngle.p1.id) || relAngle.p1;
+                      const ap2 = points.find((p) => p.id === relAngle.p2.id) || relAngle.p2;
+                      const liveDeg = getAngleDegree(v, ap1, ap2);
+                      if (liveDeg === 90) {
+                        isRightAngle = true;
+                        const adx = (relAngle.p1.id === p1.id ? ap2.x : ap1.x) - v.x;
+                        const ady = (relAngle.p1.id === p1.id ? ap2.y : ap1.y) - v.y;
+                        const alen = Math.hypot(adx, ady) || 1;
+                        baseDirX = adx / alen;
+                        baseDirY = ady / alen;
+                      }
+                    } else {
+                      // Standalone: if vertical (|p1.x - p2.x| <= 3), it's 90° to horizontal
+                      if (Math.abs(p1.x - p2.x) <= 3 && Math.abs(p1.y - p2.y) > 5) {
+                        isRightAngle = true;
+                        baseDirX = 1;
+                        baseDirY = 0;
+                      }
+                    }
+                  }
+
+                  // Check if angles already has a visual angle for this foot H
+                  const hasAngleVisualInAngles = angles.some(
+                    (ang) => ang.vertex.id === p2.id && (ang.p1.id === p1.id || ang.p2.id === p1.id)
+                  );
+
+                  // Calculate square corners oriented along baseline and perpendicular
+                  const sqSize = 16;
+                  const bSign = (baseDirX * perpUnitY - baseDirY * perpUnitX) >= 0 ? 1 : -1;
+                  const effBaseX = baseDirX * bSign;
+                  const effBaseY = baseDirY * bSign;
+
+                  const ptA = { x: p2.x + sqSize * effBaseX, y: p2.y + sqSize * effBaseY };
+                  const ptB = { x: p2.x + sqSize * perpUnitX, y: p2.y + sqSize * perpUnitY };
+                  const pCorner = {
+                    x: p2.x + sqSize * effBaseX + sqSize * perpUnitX,
+                    y: p2.y + sqSize * effBaseY + sqSize * perpUnitY
+                  };
+                  const dotCenter = {
+                    x: p2.x + (sqSize / 2) * (effBaseX + perpUnitX),
+                    y: p2.y + (sqSize / 2) * (effBaseY + perpUnitY)
+                  };
+
+                  const currentDistCm = Math.round((plen / GRID_SIZE) * 10) / 10;
+                  const lineName = baseLine ? baseLine.symbol : 'd';
+
                   return (
-                    <g key={id}>
+                    <g key={id} {...eraserProps}>
                       <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeWidth="4" strokeLinecap="round" />
                       <circle cx={p1.x} cy={p1.y} r="6" fill={color} stroke="#ffffff" strokeWidth="2" />
                       <circle cx={p2.x} cy={p2.y} r="6" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
-                      {/* 90° Square symbol at foot H */}
-                      <rect x={p2.x} y={p2.y - 16} width="16" height="16" fill="none" stroke={color} strokeWidth="2" />
-                      <circle cx={p2.x + 8} cy={p2.y - 8} r="2" fill={color} />
+                      {/* 90° Square symbol at foot H - SADECE AÇI 90° İSE GÖRÜNÜR */}
+                      {isRightAngle && !hasAngleVisualInAngles && (
+                        <g>
+                          <polygon
+                            points={`${p2.x},${p2.y} ${ptA.x},${ptA.y} ${pCorner.x},${pCorner.y} ${ptB.x},${ptB.y}`}
+                            fill="#10b981"
+                            fillOpacity="0.25"
+                            stroke="#059669"
+                            strokeWidth="1.8"
+                          />
+                          <circle cx={dotCenter.x} cy={dotCenter.y} r="2.5" fill="#059669" />
+                        </g>
+                      )}
                       {/* Shortest distance badge */}
-                      <g transform={`translate(${p1.x + 50}, ${(p1.y + p2.y) / 2})`}>
-                        <rect x="-45" y="-12" width="90" height="24" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.2" />
-                        <text x="0" y="4" textAnchor="middle" fill="#fb7185" fontSize="10" fontWeight="bold">
-                          |{p1.label}{p2.label}| ⊥ d ({obj.distance || 15} cm)
-                        </text>
-                      </g>
+                      {(!obj.hideLength || !obj.hideLabel) && (
+                        <g transform={`translate(${p1.x + 50}, ${(p1.y + p2.y) / 2})`}>
+                          <rect x="-48" y="-12" width="96" height="24" rx="6" fill="#0f172a" stroke={color} strokeWidth="1.2" />
+                          <text x="0" y="4" textAnchor="middle" fill="#fb7185" fontSize="10" fontWeight="bold">
+                            {isRightAngle
+                              ? (!obj.hideLabel && !obj.hideLength
+                                ? `|${p1.label}${p2.label}| ⊥ ${lineName} (${currentDistCm} cm)`
+                                : !obj.hideLabel
+                                ? `|${p1.label}${p2.label}| ⊥ ${lineName}`
+                                : `${currentDistCm} cm`)
+                              : `${p1.label}${p2.label} (${currentDistCm} cm)`}
+                          </text>
+                        </g>
+                      )}
                     </g>
                   );
                 }
@@ -4323,18 +7281,20 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 if (type === 'art-motif') {
                   const rad = obj.radius || 65;
                   return (
-                    <g key={id} transform={`translate(${p1.x}, ${p1.y})`}>
+                    <g key={id} transform={`translate(${p1.x}, ${p1.y})`} {...eraserProps}>
                       <circle cx="0" cy="0" r={rad} fill="none" stroke="#64748b" strokeWidth="1.5" strokeDasharray="3,3" />
                       <circle cx="0" cy="0" r={rad * 0.7} fill="none" stroke="#94a3b8" strokeWidth="1" />
                       <rect x={-rad * 0.55} y={-rad * 0.55} width={rad * 1.1} height={rad * 1.1} fill="none" stroke="#f59e0b" strokeWidth="2.5" />
                       <rect x={-rad * 0.55} y={-rad * 0.55} width={rad * 1.1} height={rad * 1.1} fill="none" stroke="#10b396" strokeWidth="2.5" transform="rotate(45)" />
                       <circle cx="0" cy="0" r="7" fill="#d97706" stroke="#ffffff" strokeWidth="2" />
-                      <g transform={`translate(0, ${rad + 16})`}>
-                        <rect x="-65" y="-10" width="130" height="20" rx="6" fill="#0f172a" stroke="#f59e0b" strokeWidth="1.2" />
-                        <text x="0" y="4" textAnchor="middle" fill="#fde047" fontSize="9.5" fontWeight="bold">
-                          🎨 Selçuklu Çinisi [D7.1]
-                        </text>
-                      </g>
+                      {!obj.hideLabel && (
+                        <g transform={`translate(0, ${rad + 16})`}>
+                          <rect x="-65" y="-10" width="130" height="20" rx="6" fill="#0f172a" stroke="#f59e0b" strokeWidth="1.2" />
+                          <text x="0" y="4" textAnchor="middle" fill="#fde047" fontSize="9.5" fontWeight="bold">
+                            🎨 Selçuklu Çinisi [D7.1]
+                          </text>
+                        </g>
+                      )}
                     </g>
                   );
                 }
@@ -4354,7 +7314,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   const tickLen = 9;
 
                   return (
-                    <g key={id} className="transition-all duration-150">
+                    <g key={id} className={`transition-all duration-150 ${activeTool === 'eraser' ? 'cursor-pointer hover:opacity-50' : ''}`} onClick={eraserProps.onClick}>
                       {/* Dimension guide line */}
                       <line
                         x1={p1.x}
@@ -4390,30 +7350,36 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <circle cx={p2.x} cy={p2.y} r="5" fill={color || '#0284c7'} stroke="#ffffff" strokeWidth="2" />
 
                       {/* Dimension Badge: |AB| = 12 cm */}
-                      <g transform={`translate(${midX}, ${midY - 14})`}>
-                        <rect
-                          x="-56"
-                          y="-13"
-                          width="112"
-                          height="26"
-                          rx="8"
-                          fill="#0f172a"
-                          stroke={color || '#38bdf8'}
-                          strokeWidth="2"
-                          className="shadow-md"
-                        />
-                        <text
-                          x="0"
-                          y="4"
-                          textAnchor="middle"
-                          fill="#ffffff"
-                          fontSize="11"
-                          fontWeight="bold"
-                          letterSpacing="0.5"
-                        >
-                          |{p1.label}{p2.label}| = {currentCm} cm
-                        </text>
-                      </g>
+                      {(!obj.hideLength || !obj.hideLabel) && (
+                        <g transform={`translate(${midX}, ${midY - 14})`}>
+                          <rect
+                            x="-56"
+                            y="-13"
+                            width="112"
+                            height="26"
+                            rx="8"
+                            fill="#0f172a"
+                            stroke={color || '#38bdf8'}
+                            strokeWidth="2"
+                            className="shadow-md"
+                          />
+                          <text
+                            x="0"
+                            y="4"
+                            textAnchor="middle"
+                            fill="#ffffff"
+                            fontSize="11"
+                            fontWeight="bold"
+                            letterSpacing="0.5"
+                          >
+                            {!obj.hideLabel && !obj.hideLength
+                              ? `|${p1.label}${p2.label}| = ${currentCm} cm`
+                              : !obj.hideLabel
+                              ? `|${p1.label}${p2.label}|`
+                              : `${currentCm} cm`}
+                          </text>
+                        </g>
+                      )}
                     </g>
                   );
                 }
@@ -4430,8 +7396,16 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 return (
                   <g
                     key={pt.id}
-                    className={`${activeTool === 'drag' ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} select-none`}
+                    className={`${activeTool === 'eraser' ? 'cursor-pointer hover:opacity-50 transition-opacity' : activeTool === 'drag' ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} select-none`}
                     onPointerDown={(e) => {
+                      if (activeTool === 'eraser') {
+                        e.stopPropagation();
+                        deletePoint(pt.id);
+                        playSound('click');
+                        setFeedbackMsg(`🗑️ ${pt.label} noktası ve bağlı şekiller silindi.`);
+                        return;
+                      }
+
                       if (activeTool === 'drag') {
                         e.stopPropagation();
                         try {
@@ -4500,7 +7474,78 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   </g>
                 );
               })}
+
+              {/* İnteraktif İletki (Açıölçer) Aracı */}
+              {renderInteractiveProtractor()}
+
+              {/* İnteraktif Gönye (Dik Üçgen Cetveli) Aracı */}
+              {renderInteractiveSetSquare()}
             </svg>
+
+            {/* Motif 1: Tamamlama & Kutlama Kartı (Türk-İslam Selçuklu Sanatı) */}
+            {isMotif1Active && motifCelebrated && (
+              <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-4 z-30 animate-in fade-in zoom-in-95 duration-300">
+                <div className="max-w-md w-full bg-white rounded-3xl p-6 border-2 border-amber-300 shadow-2xl space-y-4 text-center">
+                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-white flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30 animate-bounce">
+                    ⭐
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[11px] font-black text-amber-600 bg-amber-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                      Maarif Modeli [D7.1] Kültürel Miras
+                    </span>
+                    <h3 className="text-xl font-black text-slate-900">
+                      Selçuklu Yıldızını Tamamladın!
+                    </h3>
+                    <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                      Tebrikler! Çember, iki eş kare (doğru parçaları), dikme, eksen doğrusu ve ışın araçlarını kullanarak Türk-İslam medeniyetinin 800 yıllık Selçuklu Yıldızı geometrik motifini inşa ettiniz.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-amber-50/80 rounded-2xl border border-amber-200 text-left space-y-2 text-xs">
+                    <div className="font-extrabold text-amber-900 flex items-center gap-1.5">
+                      <span>✨ Selçuklu Yıldızı'nın 8 Erdemi:</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 text-[11px] text-amber-800 font-medium">
+                      <span>1. Merhamet</span>
+                      <span>5. Sır Tutma</span>
+                      <span>2. Şefkat</span>
+                      <span>6. Sadakat</span>
+                      <span>3. Sabır</span>
+                      <span>7. Cömertlik</span>
+                      <span>4. Doğruluk</span>
+                      <span>8. Şükür</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2 pt-1">
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" /> +100 Başarı Puanı
+                    </span>
+                    <span className="text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full flex items-center gap-1">
+                      <Award className="w-3.5 h-3.5" /> Selçuklu Mimarı
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2">
+                    <button
+                      onClick={loadMotif1Mission}
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      <span>Tekrar İnşa Et</span>
+                    </button>
+                    <button
+                      onClick={() => setMotifCelebrated(false)}
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition-all shadow-md shadow-amber-600/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>Motifi İncele</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Bottom Table: GeoGebra Cebir Görünümü & Nesne Denetçisi */}
             <div className="bg-slate-900 text-white border-t border-slate-700 p-4 space-y-4">
@@ -4543,10 +7588,26 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                             key={poly.id}
                             className="p-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 flex items-center justify-between gap-3"
                           >
-                            <div className="space-y-1">
-                              <div className="font-extrabold text-emerald-200 text-sm flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => togglePolygonLabelVisibility(poly.id)}
+                              className="space-y-1 text-left p-1 -m-1 rounded-xl hover:bg-emerald-900/30 transition-all cursor-pointer group/polylabel"
+                              title={poly.hideLabel ? 'Çokgen etiketini tahtada göster' : 'Çokgen etiketini tahtada gizle'}
+                            >
+                              <div
+                                className={`font-extrabold text-sm flex items-center gap-2 transition-colors ${
+                                  poly.hideLabel
+                                    ? 'text-slate-500 line-through'
+                                    : 'text-emerald-200 group-hover/polylabel:text-emerald-100'
+                                }`}
+                              >
                                 <span>{poly.label}</span>
-                                <span className="text-[10px] font-mono text-emerald-400">
+                                {poly.hideLabel && (
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] text-amber-400 font-sans font-bold px-1 py-0.2 rounded bg-amber-500/15 border border-amber-500/30">
+                                    <EyeOff className="w-2.5 h-2.5" /> Gizli
+                                  </span>
+                                )}
+                                <span className={`text-[10px] font-mono ${poly.hideLabel ? 'text-slate-600' : 'text-emerald-400'}`}>
                                   ({poly.points.map((p) => p.label).join(' - ')})
                                 </span>
                               </div>
@@ -4558,10 +7619,10 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                                   Alan: <strong>{poly.area} cm²</strong>
                                 </span>
                               </div>
-                            </div>
+                            </button>
                             <button
                               onClick={() => deletePolygon(poly.id)}
-                              className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 transition-all cursor-pointer"
+                              className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 transition-all cursor-pointer shrink-0"
                               title="Çokgeni Sil"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -4584,36 +7645,67 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                             key={obj.id}
                             className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between gap-2"
                           >
-                            <div className="min-w-0">
-                              <div className="font-mono font-black text-amber-300 text-sm">
-                                {obj.symbol}
+                            <button
+                              type="button"
+                              onClick={() => toggleObjectLabelVisibility(obj.id)}
+                              className="min-w-0 text-left p-1 -m-1 rounded-lg hover:bg-slate-700/50 transition-all cursor-pointer group/label"
+                              title={obj.hideLabel ? 'Yazı etiketini tahtada göster' : 'Yazı etiketini tahtada gizle'}
+                            >
+                              <div
+                                className={`font-mono font-black text-sm flex items-center gap-1.5 transition-colors ${
+                                  obj.hideLabel
+                                    ? 'text-slate-500 line-through'
+                                    : 'text-amber-300 group-hover/label:text-amber-200'
+                                }`}
+                              >
+                                <span>{obj.symbol}</span>
+                                {obj.hideLabel && (
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] text-amber-400 font-sans font-bold px-1 py-0.2 rounded bg-amber-500/15 border border-amber-500/30">
+                                    <EyeOff className="w-2.5 h-2.5" /> Gizli
+                                  </span>
+                                )}
                               </div>
-                              <div className="text-[11px] text-slate-300 line-clamp-1">{obj.label}</div>
-                            </div>
+                              <div
+                                className={`text-[11px] line-clamp-1 transition-colors ${
+                                  obj.hideLabel ? 'text-slate-600 line-through' : 'text-slate-300'
+                                }`}
+                              >
+                                {obj.label}
+                              </div>
+                            </button>
                             <div className="flex items-center gap-1.5 shrink-0">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                obj.type === 'segment'
-                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                                  : obj.type === 'distance'
-                                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                                  : obj.type === 'circle'
-                                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
-                                  : obj.type === 'perpendicular'
-                                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                                  : obj.type === 'art-motif'
-                                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                                  : 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
-                              }`}>
-                                {obj.type === 'segment' || obj.type === 'distance'
-                                  ? `${obj.length} cm`
-                                  : obj.type === 'circle'
-                                  ? `r=${obj.length} cm`
-                                  : obj.type === 'perpendicular'
-                                  ? `${obj.distance} cm ⊥`
-                                  : obj.type === 'art-motif'
-                                  ? 'Sanat'
-                                  : 'Sonsuz (∞)'}
-                              </span>
+                              <button
+                                onClick={() => toggleObjectLengthVisibility(obj.id)}
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                                  obj.hideLength
+                                    ? 'bg-slate-700/60 hover:bg-slate-700 text-slate-400 border border-slate-600 line-through opacity-80'
+                                    : obj.type === 'segment'
+                                    ? 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40'
+                                    : obj.type === 'distance'
+                                    ? 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40'
+                                    : obj.type === 'circle'
+                                    ? 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40'
+                                    : obj.type === 'perpendicular'
+                                    ? 'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40'
+                                    : obj.type === 'art-motif'
+                                    ? 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40'
+                                    : 'bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40'
+                                }`}
+                                title={obj.hideLength ? 'Uzunluk/değer etiketini göster' : 'Uzunluk/değer etiketini gizle'}
+                              >
+                                {obj.hideLength && <EyeOff className="w-2.5 h-2.5" />}
+                                <span>
+                                  {obj.type === 'segment' || obj.type === 'distance'
+                                    ? `${obj.length} cm`
+                                    : obj.type === 'circle'
+                                    ? `r=${obj.length} cm`
+                                    : obj.type === 'perpendicular'
+                                    ? `${obj.distance} cm ⊥`
+                                    : obj.type === 'art-motif'
+                                    ? 'Sanat'
+                                    : 'Sonsuz (∞)'}
+                                </span>
+                              </button>
                               <button
                                 onClick={() => deleteObject(obj.id)}
                                 className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 transition-all cursor-pointer"
@@ -4640,12 +7732,36 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                             key={ang.id}
                             className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between gap-2"
                           >
-                            <div>
-                              <div className="font-mono font-black text-amber-300 text-sm">
-                                s(∠{ang.p1.label}{ang.vertex.label}{ang.p2.label}) = {ang.degree}°
+                            <button
+                              type="button"
+                              onClick={() => toggleAngleLabelVisibility(ang.id)}
+                              className="min-w-0 text-left p-1 -m-1 rounded-lg hover:bg-slate-700/50 transition-all cursor-pointer group/anglabel"
+                              title={ang.hideLabel ? 'Açı etiketini tahtada göster' : 'Açı etiketini tahtada gizle'}
+                            >
+                              <div
+                                className={`font-mono font-black text-sm flex items-center gap-1.5 transition-colors ${
+                                  ang.hideLabel
+                                    ? 'text-slate-500 line-through'
+                                    : 'text-amber-300 group-hover/anglabel:text-amber-200'
+                                }`}
+                              >
+                                <span>
+                                  s(∠{ang.p1.label}{ang.vertex.label}{ang.p2.label}) = {ang.degree}°
+                                </span>
+                                {ang.hideLabel && (
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] text-amber-400 font-sans font-bold px-1 py-0.2 rounded bg-amber-500/15 border border-amber-500/30">
+                                    <EyeOff className="w-2.5 h-2.5" /> Gizli
+                                  </span>
+                                )}
                               </div>
-                              <div className="text-[11px] text-slate-300">{ang.label}</div>
-                            </div>
+                              <div
+                                className={`text-[11px] transition-colors ${
+                                  ang.hideLabel ? 'text-slate-600 line-through' : 'text-slate-300'
+                                }`}
+                              >
+                                {ang.label}
+                              </div>
+                            </button>
                             <div className="flex items-center gap-1.5 shrink-0">
                               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40">
                                 {ang.type.toUpperCase()} AÇI

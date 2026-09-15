@@ -1037,9 +1037,55 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                       {/* Dropped Perpendicular [PH] */}
                       {sceneSetSquareDropped ? (
                         <g className="animate-in fade-in duration-300">
-                          {/* Set Square Graphic (Gönye) */}
-                          <polygon points="200,170 200,90 260,170" fill="#f59e0b" fillOpacity="0.25" stroke="#f59e0b" strokeWidth="2" />
-                          <circle cx="218" cy="150" r="8" fill="#0f172a" opacity="0.6" />
+                          {/* Realistic Acrylic Set Square Graphic (Yeni Gönye) */}
+                          <g className="select-none animate-in zoom-in-95 duration-300">
+                            {/* Gönye Şeffaf Yeşil Akrilik Gövde */}
+                            <polygon
+                              points="200,170 290,170 200,50"
+                              fill="#059669"
+                              fillOpacity="0.22"
+                              stroke="#10b981"
+                              strokeWidth="2.5"
+                            />
+                            {/* İç Üçgen Kesit */}
+                            <polygon
+                              points="214,158 260,158 214,88"
+                              fill="#ffffff"
+                              fillOpacity="0.75"
+                              stroke="#059669"
+                              strokeWidth="1.2"
+                            />
+                            {/* 90° Köşe Sembolü */}
+                            <rect x="200" y="152" width="18" height="18" fill="#10b981" fillOpacity="0.35" stroke="#047857" strokeWidth="1.8" />
+                            <circle cx="209" cy="161" r="2.5" fill="#047857" />
+                            <text x="222" y="164" fill="#065f46" fontSize="9" fontWeight="900">90°</text>
+
+                            {/* Taban Cetvel Çizgileri */}
+                            {[0, 15, 30, 45, 60, 75, 90].map((dx, i) => (
+                              <g key={`st-base-${i}`}>
+                                <line x1={200 + dx} y1="170" x2={200 + dx} y2={170 - (i % 2 === 0 ? 8 : 4)} stroke="#0f172a" strokeWidth={i % 2 === 0 ? 1.2 : 0.7} />
+                                {i % 2 === 0 && dx > 0 && dx < 90 && (
+                                  <text x={200 + dx} y="158" textAnchor="middle" fill="#0f172a" fontSize="7" fontWeight="bold">{i}</text>
+                                )}
+                              </g>
+                            ))}
+                            {/* Dikey Cetvel Çizgileri */}
+                            {[0, 20, 40, 60, 80, 100, 120].map((dy, i) => (
+                              <g key={`st-vert-${i}`}>
+                                <line x1="200" y1={170 - dy} x2={200 + (i % 2 === 0 ? 8 : 4)} y2={170 - dy} stroke="#0f172a" strokeWidth={i % 2 === 0 ? 1.2 : 0.7} />
+                                {i % 2 === 0 && dy > 0 && dy < 120 && (
+                                  <text x="212" y={173 - dy} textAnchor="start" fill="#0f172a" fontSize="7" fontWeight="bold">{i}</text>
+                                )}
+                              </g>
+                            ))}
+
+                            {/* Mıknatıslı Uç (P) Rozeti */}
+                            <circle cx="200" cy="50" r="14" fill="#f43f5e" fillOpacity="0.25" stroke="#f43f5e" strokeWidth="2" className="animate-pulse" />
+                            <g transform="translate(200, 24)">
+                              <rect x="-44" y="-8" width="88" height="16" rx="5" fill="#0f172a" stroke="#f43f5e" strokeWidth="1" />
+                              <text x="0" y="3" textAnchor="middle" fill="#fda4af" fontSize="8.5" fontWeight="900">🧲 Mıknatıslı Uç</text>
+                            </g>
+                          </g>
 
                           {/* Perpendicular Line */}
                           <line x1="200" y1="50" x2="200" y2="170" stroke="#f43f5e" strokeWidth="4.5" strokeLinecap="round" />
@@ -1497,9 +1543,31 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     <circle cx="200" cy="65" r="7" fill="#f59e0b" stroke="#fff" strokeWidth="2" className="animate-pulse" />
                     <text fill="#fde047" fontSize="14" fontWeight="900" x="200" y="50" textAnchor="middle">Dış Nokta P</text>
 
-                    {/* Set Square (Gönye) Overlay Shape */}
-                    <polygon points="200,210 200,65 310,210" fill="rgba(14, 165, 233, 0.2)" stroke="#38bdf8" strokeWidth="2" />
-                    <text fill="#38bdf8" fontSize="10" fontWeight="900" x="240" y="160">GÖNYE</text>
+                    {/* Set Square (Yeni Gönye) Realistic Acrylic Design */}
+                    <g className="select-none animate-in zoom-in-95 duration-300">
+                      <polygon points="200,210 200,65 310,210" fill="#059669" fillOpacity="0.22" stroke="#10b981" strokeWidth="2.5" />
+                      <polygon points="214,198 214,105 285,198" fill="#ffffff" fillOpacity="0.75" stroke="#059669" strokeWidth="1.2" />
+                      {/* 90° Corner Symbol */}
+                      <rect x="200" y="192" width="18" height="18" fill="#10b981" fillOpacity="0.35" stroke="#047857" strokeWidth="1.8" />
+                      <circle cx="209" cy="201" r="2.5" fill="#047857" />
+                      <text fill="#065f46" fontSize="9" fontWeight="900" x="222" y="204">90°</text>
+
+                      {/* Base ticks */}
+                      {[0, 20, 40, 60, 80, 100].map((dx, i) => (
+                        <line key={`sq-b-${i}`} x1={200 + dx} y1="210" x2={200 + dx} y2={210 - (i % 2 === 0 ? 8 : 4)} stroke="#0f172a" strokeWidth={i % 2 === 0 ? 1.2 : 0.7} />
+                      ))}
+                      {/* Vertical ticks */}
+                      {[0, 20, 40, 60, 80, 100, 120, 140].map((dy, i) => (
+                        <line key={`sq-v-${i}`} x1="200" y1={210 - dy} x2={200 + (i % 2 === 0 ? 8 : 4)} y2={210 - dy} stroke="#0f172a" strokeWidth={i % 2 === 0 ? 1.2 : 0.7} />
+                      ))}
+
+                      {/* Magnetic tip pulse */}
+                      <circle cx="200" cy="65" r="14" fill="#f43f5e" fillOpacity="0.25" stroke="#f43f5e" strokeWidth="2" className="animate-pulse" />
+                      <g transform="translate(255, 155)">
+                        <rect x="-36" y="-9" width="72" height="18" rx="5" fill="#0f172a" stroke="#10b981" strokeWidth="1" />
+                        <text fill="#34d399" fontSize="9" fontWeight="900" x="0" y="3.5" textAnchor="middle">GÖNYE (⊥)</text>
+                      </g>
+                    </g>
 
                     {/* Perpendicular Line PH */}
                     <line x1="200" y1="65" x2="200" y2="210" stroke="#10b396" strokeWidth="4" strokeLinecap="round" />

@@ -620,13 +620,19 @@ export function ConstructionDeductionGame({
                       {/* If placed: Draw Gönye (Set Square) & Perpendicular Line */}
                       {isPlaced && (
                         <g className="animate-in zoom-in duration-300">
-                          {/* Virtual Set Square (Gönye) Shape at base point */}
+                          {/* Virtual Set Square (Gönye) Acrylic Shape at base point */}
                           <polygon
-                            points={`${pt.x - 30},${baseY} ${pt.x},${baseY} ${pt.x},${topY - 10}`}
-                            fill="rgba(20, 184, 166, 0.25)"
-                            stroke="#0d9488"
+                            points={`${pt.x - 38},${baseY} ${pt.x},${baseY} ${pt.x},${topY - 12}`}
+                            fill="rgba(5, 150, 105, 0.22)"
+                            stroke="#10b981"
                             strokeWidth="2"
-                            strokeDasharray="3 2"
+                          />
+                          <polygon
+                            points={`${pt.x - 26},${baseY - 10} ${pt.x - 6},${baseY - 10} ${pt.x - 6},${topY + 16}`}
+                            fill="#ffffff"
+                            fillOpacity="0.75"
+                            stroke="#059669"
+                            strokeWidth="1"
                           />
                           {/* 90 degree right angle symbol */}
                           <rect x={pt.x - 12} y={baseY - 12} width="12" height="12" fill="none" stroke="#0f766e" strokeWidth="2" />
