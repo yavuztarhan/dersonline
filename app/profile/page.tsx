@@ -27,7 +27,6 @@ import {
   Sparkles,
   Save,
   ArrowLeft,
-  Plus,
   ShieldCheck,
   Building2,
   AlertCircle,
@@ -57,13 +56,6 @@ const BRANCH_OPTIONS = [
   'Diğer'
 ];
 
-const GRADE_OPTIONS = ['5', '6', '7', '8'];
-const SECTION_OPTIONS = [
-  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'İ',
-  'J', 'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S',
-  'Ş', 'T', 'U', 'Ü', 'V', 'Y', 'Z'
-];
-
 export default function ProfilePage() {
   const { currentUser, updateUserProfile, setUserPassword } = useAuth();
   const { playSound } = useApp();
@@ -89,10 +81,6 @@ export default function ProfilePage() {
   const [studentNumber, setStudentNumber] = useState('');
   const [studentClassSection, setStudentClassSection] = useState('');
   const [studentClassCode, setStudentClassCode] = useState('');
-
-  // Dropdown Class Selector States
-  const [selectedGrade, setSelectedGrade] = useState<'5' | '6' | '7' | '8'>('5');
-  const [selectedSection, setSelectedSection] = useState<string>('A');
 
   // Password Setup States
   const [password, setPassword] = useState('');
@@ -273,24 +261,6 @@ export default function ProfilePage() {
   const filteredSchools = schoolsList.filter((s) =>
     s.name.toLocaleLowerCase('tr').includes(schoolSearchQuery.trim().toLocaleLowerCase('tr'))
   );
-
-  // Add Class tag via Dropdowns
-  const handleAddClass = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const tag = `${selectedGrade}-${selectedSection}`;
-    if (!assignedClasses.includes(tag)) {
-      setAssignedClasses([...assignedClasses, tag]);
-    }
-  };
-
-  // Remove Class tag
-  const handleRemoveClass = (cls: string) => {
-    if (assignedClasses.length <= 1) {
-      setErrorMsg('En az bir sınıf/şube seçili olmalıdır.');
-      return;
-    }
-    setAssignedClasses(assignedClasses.filter((c) => c !== cls));
-  };
 
   // Handle Password Direct Update
   const handleUpdatePassword = () => {
@@ -1135,79 +1105,6 @@ export default function ProfilePage() {
                   <p className="text-[11px] text-slate-400">
                     📄 İndireceğiniz MEB Maarif Modeli Günlük Ders Planı PDF çıktılarının sol/sağ alt imza bölümünde &quot;Okul Müdürü&quot; unvanıyla yer alır.
                   </p>
-                </div>
-              </div>
-
-              {/* Sınıflarım & Şubelerim */}
-              <div className="pt-4 border-t border-slate-100 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-black text-slate-900">Girdiğiniz Sınıflar & Şubeler</h3>
-                    <p className="text-xs text-slate-500">
-                      Ders vereceğiniz sınıf seviyesi ve şubeleri seçip ekleyiniz.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                    {/* 1. Menü: Sınıf Seviyesi (5, 6, 7, 8) */}
-                    <div className="flex items-center gap-1">
-                      <select
-                        value={selectedGrade}
-                        onChange={(e) => setSelectedGrade(e.target.value as any)}
-                        className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 bg-white cursor-pointer shadow-2xs"
-                      >
-                        {GRADE_OPTIONS.map((g) => (
-                          <option key={g} value={g}>
-                            {g}. Sınıf
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* 2. Menü: Şube Seçimi (A - Z) */}
-                    <div className="flex items-center gap-1">
-                      <select
-                        value={selectedSection}
-                        onChange={(e) => setSelectedSection(e.target.value)}
-                        className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 bg-white cursor-pointer min-w-[85px] shadow-2xs"
-                      >
-                        {SECTION_OPTIONS.map((s) => (
-                          <option key={s} value={s}>
-                            {s} Şubesi
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* + Şube Ekle Butonu */}
-                    <button
-                      type="button"
-                      onClick={handleAddClass}
-                      className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Şube Ekle</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {assignedClasses.map((cls) => (
-                    <span
-                      key={cls}
-                      className="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 font-extrabold text-xs flex items-center gap-2 shadow-2xs group hover:border-teal-300 transition-colors"
-                    >
-                      <span>📚 {cls}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveClass(cls)}
-                        className="w-4 h-4 rounded-full bg-slate-200 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors text-[10px] cursor-pointer"
-                        title="Şubeyi Kaldır"
-                      >
-                        ✕
-                      </button>
-                    </span>
-                  ))}
                 </div>
               </div>
             </>
