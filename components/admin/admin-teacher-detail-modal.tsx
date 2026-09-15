@@ -141,41 +141,62 @@ export function AdminTeacherDetailModal({
 
   // Merge students from API and local store for this classroom
   const apiStudents = activeClassroom?.students || [];
-  const localClassStudents = localStudents.filter(
-    (s) => s.classSection?.toUpperCase() === activeClassroom?.name?.toUpperCase() &&
-      (!s.teacherId || s.teacherId === teacher.id || (teacher.school && s.school === teacher.school))
-  );
+  const activeCode = (activeClassroom?.code || '').trim().toUpperCase();
+  const activeName = (activeClassroom?.name || '').trim().toUpperCase();
 
-  // Combine unique by studentNumber or id
+  const localClassStudents = localStudents.filter((s) => {
+    // 1. Match by classCode
+    if (activeCode && s.classCode && s.classCode.trim().toUpperCase() === activeCode) {
+      return true;
+    }
+    // If student has a different explicit classCode, exclude
+    if (activeCode && s.classCode && s.classCode.trim().toUpperCase() !== activeCode) {
+      return false;
+    }
+    // 2. Match by direct teacherId and classSection
+    if (s.teacherId === teacher.id && s.classSection?.toUpperCase() === activeName) {
+      return true;
+    }
+    // 3. Match by school and classSection when teacherId matches or is empty
+    if (
+      teacher.school &&
+      s.school &&
+      s.school.trim().toLowerCase() === teacher.school.trim().toLowerCase() &&
+      s.classSection?.toUpperCase() === activeName &&
+      (!s.teacherId || s.teacherId === teacher.id)
+    ) {
+      return true;
+    }
+    return false;
+  });
+
+  // Combine unique by studentNumber or id (prefer API students when available)
   const studentMap = new Map<string, any>();
   
-  // 1. Add local students first
-  localClassStudents.forEach((ls) => {
-    const key = ls.studentNumber || ls.id;
-    studentMap.set(key, {
-      id: ls.id,
-      studentNumber: ls.studentNumber || '—',
-      name: ls.name,
-      classSection: ls.classSection,
-      classCode: ls.classCode || activeClassroom?.code,
-      points: ls.points || 0,
-      lastLoginAt: null,
-      loginCount: 0,
-      rubricCount: 0,
-      journalCount: 0,
-      boardParticipationCount: 0,
-      isAtRisk: false,
+  if (apiStudents.length > 0) {
+    apiStudents.forEach((as: any) => {
+      const key = as.studentNumber || as.id;
+      studentMap.set(key, as);
     });
-  });
-
-  // 2. Overlay API students (which have real DB login counts and activity counts)
-  apiStudents.forEach((as: any) => {
-    const key = as.studentNumber || as.id;
-    studentMap.set(key, {
-      ...studentMap.get(key),
-      ...as,
+  } else {
+    localClassStudents.forEach((ls) => {
+      const key = ls.studentNumber || ls.id;
+      studentMap.set(key, {
+        id: ls.id,
+        studentNumber: ls.studentNumber || '—',
+        name: ls.name,
+        classSection: ls.classSection,
+        classCode: ls.classCode || activeClassroom?.code,
+        points: ls.points || 0,
+        lastLoginAt: null,
+        loginCount: 0,
+        rubricCount: 0,
+        journalCount: 0,
+        boardParticipationCount: 0,
+        isAtRisk: false,
+      });
     });
-  });
+  }
 
   const allDisplayStudents = Array.from(studentMap.values());
 

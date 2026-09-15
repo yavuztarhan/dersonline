@@ -243,13 +243,29 @@ export async function DELETE(req: NextRequest) {
     let deletedStudentsCount = 0;
     let deletedClassroomsCount = classrooms.length;
 
-    // 2. Cascade delete all students belonging to this teacher
+    // 2. Cascade delete all students belonging strictly to this teacher
     if (profile) {
+      const teacherSchool = (profile.school || '').trim();
       const studentsToDelete = await prisma.studentProfile.findMany({
         where: {
           OR: [
             { teacherId: profile.id },
-            ...(classNames.length > 0 ? [{ classSection: { in: classNames } }] : []),
+            ...(teacherSchool && classNames.length > 0
+              ? [
+                  {
+                    AND: [
+                      { school: { equals: teacherSchool, mode: 'insensitive' as const } },
+                      { classSection: { in: classNames } },
+                      {
+                        OR: [
+                          { teacherId: null },
+                          { teacherId: profile.id },
+                        ],
+                      },
+                    ],
+                  },
+                ]
+              : []),
           ],
         },
         select: { id: true, userId: true },

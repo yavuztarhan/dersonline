@@ -51,36 +51,59 @@ export async function GET(req: NextRequest) {
     const profile = user.teacherProfile;
     const classrooms: any[] = (profile as any)?.classrooms || [];
     const classNames = classrooms.map((c: any) => c.name.toUpperCase());
+    const classCodes = classrooms
+      .map((c: any) => (c.code ? String(c.code).trim().toUpperCase() : ''))
+      .filter(Boolean);
+    const teacherSchool = (profile?.school || '').trim();
 
-    // 2. Fetch all students belonging to this teacher or these classrooms
-    const studentsInDb = await prisma.studentProfile.findMany({
-      where: {
-        OR: [
-          profile ? { teacherId: profile.id } : undefined,
-          classNames.length > 0 ? { classSection: { in: classNames } } : undefined,
-        ].filter(Boolean) as any,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            lastLoginAt: true,
-            loginCount: true,
-            createdAt: true,
+    // 2. Fetch only students belonging strictly to this teacher, these class codes, or this school & section
+    const whereConditions: any[] = [];
+    if (profile?.id) {
+      whereConditions.push({ teacherId: profile.id });
+    }
+    if (classCodes.length > 0) {
+      whereConditions.push({ classCode: { in: classCodes } });
+    }
+    if (teacherSchool && classNames.length > 0) {
+      whereConditions.push({
+        AND: [
+          { school: { equals: teacherSchool, mode: 'insensitive' } },
+          { classSection: { in: classNames } },
+          {
+            OR: [
+              { teacherId: null },
+              profile ? { teacherId: profile.id } : undefined,
+            ].filter(Boolean),
           },
-        },
-        _count: {
-          select: {
-            selfAssessments: true,
-            learningJournals: true,
-            boardParticipations: true,
+        ],
+      });
+    }
+
+    const studentsInDb = whereConditions.length > 0
+      ? await prisma.studentProfile.findMany({
+          where: { OR: whereConditions },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                lastLoginAt: true,
+                loginCount: true,
+                createdAt: true,
+              },
+            },
+            _count: {
+              select: {
+                selfAssessments: true,
+                learningJournals: true,
+                boardParticipations: true,
+              },
+            },
           },
-        },
-      },
-      orderBy: { studentNumber: 'asc' },
-    });
+          orderBy: { studentNumber: 'asc' },
+        })
+      : [];
 
     // 3. Calculate Device Breakdown from Login Logs
     const deviceBreakdown = {
@@ -110,17 +133,45 @@ export async function GET(req: NextRequest) {
         where: {
           teacherFeedback: { not: null },
           classSection: { in: classNames },
+          ...(teacherSchool ? { school: { equals: teacherSchool, mode: 'insensitive' } } : {}),
         },
       });
     } catch (e) {}
 
-    // 5. Structure Students per Classroom
+    // 5. Structure Students per Classroom (Strict isolation by classCode, teacherId, or school)
     const now = Date.now();
     const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
 
     const classroomsWithStudents = classrooms.map((cls) => {
+      const clsCode = (cls.code || '').trim().toUpperCase();
+      const clsName = (cls.name || '').trim().toUpperCase();
+
       const clsStudents = studentsInDb
-        .filter((s) => s.classSection.toUpperCase() === cls.name.toUpperCase())
+        .filter((s) => {
+          // A. Direct classCode match (highest priority)
+          if (clsCode && s.classCode && s.classCode.trim().toUpperCase() === clsCode) {
+            return true;
+          }
+          // If student has an explicit DIFFERENT classCode, do not put in this classroom
+          if (clsCode && s.classCode && s.classCode.trim().toUpperCase() !== clsCode) {
+            return false;
+          }
+          // B. Direct teacherId match and matching classSection
+          if (profile && s.teacherId === profile.id && s.classSection.toUpperCase() === clsName) {
+            return true;
+          }
+          // C. School match and classSection match (when student teacherId is null or matches this teacher)
+          if (
+            teacherSchool &&
+            s.school &&
+            s.school.trim().toLowerCase() === teacherSchool.toLowerCase() &&
+            s.classSection.toUpperCase() === clsName &&
+            (!s.teacherId || (profile && s.teacherId === profile.id))
+          ) {
+            return true;
+          }
+          return false;
+        })
         .map((s) => {
           const lastActive = s.user.lastLoginAt ? new Date(s.user.lastLoginAt).getTime() : null;
           const isAtRisk = !lastActive || (now - lastActive > FOURTEEN_DAYS_MS);
