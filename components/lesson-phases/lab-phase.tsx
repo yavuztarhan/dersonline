@@ -456,9 +456,9 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       data.title.toLowerCase().includes('iletki') ||
       (data.title.toLowerCase().includes('açı') && !data.title.toLowerCase().includes('geometri')));
 
-  // Active Tool: 'angle' | 'measure-angle' | 'measure-length' for MAT.5.3.3, or geometry tools for MAT.5.3.1
+  // Active Tool: 'angle' | 'measure-angle' | 'measure-length' | 'three-point-angle' for MAT.5.3.3, or geometry tools for MAT.5.3.1
   const [activeTool, setActiveTool] = useState<
-    'angle' | 'measure-angle' | 'measure-length' | 'ray' | 'segment' | 'line' | 'point' | 'compass' | 'setsquare' | 'artmotif' | 'polygon' | 'drag' | 'eraser' | 'protractor'
+    'angle' | 'measure-angle' | 'measure-length' | 'three-point-angle' | 'ray' | 'segment' | 'line' | 'point' | 'compass' | 'setsquare' | 'artmotif' | 'polygon' | 'drag' | 'eraser' | 'protractor'
   >(isAngleTopic ? 'angle' : 'point');
 
   // Professional digital toolbar active category
@@ -474,6 +474,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const [polygons, setPolygons] = useState<GeoPolygon[]>([]);
   const [polygonDraft, setPolygonDraft] = useState<GeoPoint[]>([]);
   const [measureAnglePoints, setMeasureAnglePoints] = useState<GeoPoint[]>([]);
+  const [threePointAnglePoints, setThreePointAnglePoints] = useState<GeoPoint[]>([]);
   const [measureLengthPoints, setMeasureLengthPoints] = useState<GeoPoint[]>([]);
   const [isSnapToGrid, setIsSnapToGrid] = useState<boolean>(true);
   const [snapCandidate, setSnapCandidate] = useState<{ x: number; y: number; isPoint: boolean; label?: string } | null>(null);
@@ -1706,6 +1707,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setPolygons([]);
     setPolygonDraft([]);
     setMeasureAnglePoints([]);
+    setThreePointAnglePoints([]);
     setMeasureLengthPoints([]);
     setSelectedPointForLink(null);
     setCompassCenterPoint(null);
@@ -1732,7 +1734,10 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
   const undoLast = () => {
     playSound('click');
-    if (measureLengthPoints.length > 0) {
+    if (threePointAnglePoints.length > 0) {
+      setThreePointAnglePoints((prev) => prev.slice(0, -1));
+      setFeedbackMsg('3 noktadan açı oluşturma için son seçilen nokta geri alındı.');
+    } else if (measureLengthPoints.length > 0) {
       setMeasureLengthPoints((prev) => prev.slice(0, -1));
       setFeedbackMsg('Uzunluk ölçümü için seçilen nokta geri alındı.');
     } else if (measureAnglePoints.length > 0) {
@@ -2159,7 +2164,102 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       return;
     }
 
-    // 4c. MEASURE LENGTH TOOL (UZUNLUK ÖLÇ: Seçilen 2 Noktanın Uzunluğunu |AB| = 12 cm Göster)
+    // 4c. THREE-POINT ANGLE CREATION TOOL (3 Noktadan Açı Oluştur)
+    if (activeTool === 'three-point-angle') {
+      const pt: GeoPoint = hitPoint || {
+        id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        label: POINT_LABELS[points.length % POINT_LABELS.length],
+        x,
+        y,
+        color: activeColor
+      };
+
+      if (!hitPoint) {
+        setPoints((prev) => [...prev, pt]);
+      }
+
+      const currentPts = [...threePointAnglePoints];
+
+      // Avoid clicking the exact same point consecutively
+      if (currentPts.length > 0 && currentPts[currentPts.length - 1].id === pt.id) {
+        setFeedbackMsg(`⚠️ ${pt.label} noktası zaten seçildi. Lütfen farklı bir nokta seçiniz.`);
+        return;
+      }
+
+      if (currentPts.length === 0) {
+        setThreePointAnglePoints([pt]);
+        playSound('select');
+        setFeedbackMsg(`📍 [1/3] 1. Kol Noktası (${pt.label}) seçildi. Şimdi açının KÖŞE (Tepe) noktasını seçiniz.`);
+      } else if (currentPts.length === 1) {
+        setThreePointAnglePoints([currentPts[0], pt]);
+        playSound('select');
+
+        // Draw ray from vertex pt to first arm currentPts[0]
+        const ray1: GeoObject = {
+          id: `ray-1-${Date.now()}`,
+          type: 'ray',
+          p1: pt,
+          p2: currentPts[0],
+          symbol: `[${pt.label}${currentPts[0].label}>`,
+          label: `[${pt.label}${currentPts[0].label}> Kolu`,
+          color: '#0284c7'
+        };
+        setObjects((prev) => [...prev, ray1]);
+        setFeedbackMsg(`📍 [2/3] Açının Köşesi (${pt.label}) belirlendi ve [${pt.label}${currentPts[0].label}> kolu çizildi! Şimdi 2. Kol Noktasını seçiniz.`);
+      } else if (currentPts.length === 2) {
+        const p1 = currentPts[0];
+        const vertex = currentPts[1];
+        const p2 = pt;
+
+        if (p1.id === p2.id) {
+          setFeedbackMsg(`⚠️ 2. Kol noktası, 1. Kol noktası (${p1.label}) ile aynı olamaz. Lütfen farklı bir nokta seçiniz.`);
+          return;
+        }
+
+        // Draw ray from vertex to second arm p2
+        const ray2: GeoObject = {
+          id: `ray-2-${Date.now()}`,
+          type: 'ray',
+          p1: vertex,
+          p2,
+          symbol: `[${vertex.label}${p2.label}>`,
+          label: `[${vertex.label}${p2.label}> Kolu`,
+          color: '#10b396'
+        };
+
+        const deg = getAngleDegree(vertex, p1, p2);
+        const typeInfo = getAngleType(deg);
+
+        const newAngle: GeoAngle = {
+          id: `ang-${Date.now()}`,
+          vertex,
+          p1,
+          p2,
+          degree: deg,
+          type: typeInfo.type,
+          label: `s(∠${p1.label}${vertex.label}${p2.label}) = ${deg}° (${typeInfo.title})`,
+          color: typeInfo.color
+        };
+
+        setObjects((prev) => [...prev, ray2]);
+        setAngles((prev) => [...prev, newAngle]);
+        setThreePointAnglePoints([]);
+        setHoverPos(null);
+        playSound('success');
+        addPoints(35);
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 50,
+            origin: { y: 0.65 }
+          });
+        } catch {}
+        setFeedbackMsg(`🎉 3 Noktadan ∠${p1.label}${vertex.label}${p2.label} Açısı ve kollar başarıyla oluşturuldu! Köşe: ${vertex.label}, Ölçü: ${deg}° (${typeInfo.title}).`);
+      }
+      return;
+    }
+
+    // 4d. MEASURE LENGTH TOOL (UZUNLUK ÖLÇ: Seçilen 2 Noktanın Uzunluğunu |AB| = 12 cm Göster)
     if (activeTool === 'measure-length') {
       const pt: GeoPoint = hitPoint || {
         id: `pt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -2667,7 +2767,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       return;
     }
 
-    if (selectedPointForLink || angleStepPoint1 || compassCenterPoint || touchDrawStartRef.current || polygonDraft.length > 0 || measureAnglePoints.length > 0 || measureLengthPoints.length > 0) {
+    if (selectedPointForLink || angleStepPoint1 || compassCenterPoint || touchDrawStartRef.current || polygonDraft.length > 0 || measureAnglePoints.length > 0 || threePointAnglePoints.length > 0 || measureLengthPoints.length > 0) {
       let targetHoverX = rawX;
       let targetHoverY = rawY;
       if (snapTarget) {
@@ -4257,41 +4357,65 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 Açı Çizim ve Ölçüm Araçları
               </h3>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => {
+                    setActiveTool('three-point-angle');
+                    setSelectedPointForLink(null);
+                    setAngleStepPoint1(null);
+                    setAngleStepPoint2(null);
+                    setMeasureAnglePoints([]);
+                    setMeasureLengthPoints([]);
+                    setThreePointAnglePoints([]);
+                    playSound('click');
+                    setFeedbackMsg('📐 3 NOKTADAN AÇI: Sırasıyla 1. Kol (A), Köşe 📍 (B) ve 2. Kol (C) noktalarını seçiniz.');
+                  }}
+                  className={`p-2.5 rounded-2xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all relative ${
+                    activeTool === 'three-point-angle'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-102 ring-2 ring-blue-300'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  <Shapes className="w-5 h-5" />
+                  <span className="text-[11px] leading-tight">3 Noktadan Açı</span>
+                </button>
+
                 <button
                   onClick={() => {
                     setActiveTool('angle');
                     setSelectedPointForLink(null);
                     setAngleStepPoint1(null);
                     setAngleStepPoint2(null);
+                    setThreePointAnglePoints([]);
                     playSound('click');
                     setFeedbackMsg('Açı aracı seçildi: 1. Başlangıç köşesine (O), sonra 1. kola (A) ve 2. kola (B) tıklayınız.');
                   }}
-                  className={`p-3.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                  className={`p-2.5 rounded-2xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
                     activeTool === 'angle'
                       ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20 scale-102'
                       : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                   }`}
                 >
                   <Compass className="w-5 h-5" />
-                  <span>📐 Açı İnşa Et</span>
+                  <span className="text-[11px] leading-tight">Serbest Açı</span>
                 </button>
 
                 <button
                   onClick={() => {
                     setActiveTool('drag');
                     setSelectedPointForLink(null);
+                    setThreePointAnglePoints([]);
                     playSound('click');
                     setFeedbackMsg('🖐️ Tahtadaki açı kollarını veya köşesini sürükleyerek açıyı canlı değiştiriniz.');
                   }}
-                  className={`p-3.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
+                  className={`p-2.5 rounded-2xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1.5 transition-all ${
                     activeTool === 'drag'
                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/20 scale-102'
                       : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                   }`}
                 >
                   <Move className="w-5 h-5" />
-                  <span>🖐️ Kolu Döndür</span>
+                  <span className="text-[11px] leading-tight">Kolu Döndür</span>
                 </button>
               </div>
 
@@ -4627,6 +4751,83 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                     </g>
                   );
                 })}
+
+                {/* Three-Point Angle Creation Visual Overlay for Angle Topic */}
+                {activeTool === 'three-point-angle' && threePointAnglePoints.length > 0 && (
+                  <g className="pointer-events-none">
+                    {/* Point 1 (Arm 1) indicator */}
+                    {threePointAnglePoints[0] && (
+                      <g transform={`translate(${threePointAnglePoints[0].x}, ${threePointAnglePoints[0].y})`}>
+                        <circle cx="0" cy="0" r="18" fill="none" stroke="#0284c7" strokeWidth="2.5" strokeDasharray="4,3" className="animate-spin" />
+                        <circle cx="0" cy="0" r="6" fill="#0284c7" />
+                        <g transform="translate(0, -26)">
+                          <rect x="-44" y="-11" width="88" height="20" rx="6" fill="#0369a1" stroke="#38bdf8" strokeWidth="1" />
+                          <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="9.5" fontWeight="bold">
+                            1. Kol ({threePointAnglePoints[0].label})
+                          </text>
+                        </g>
+                      </g>
+                    )}
+
+                    {/* Stretch Line from Arm 1 to Cursor if selecting vertex */}
+                    {threePointAnglePoints.length === 1 && hoverPos && (
+                      <line
+                        x1={threePointAnglePoints[0].x}
+                        y1={threePointAnglePoints[0].y}
+                        x2={hoverPos.x}
+                        y2={hoverPos.y}
+                        stroke="#0284c7"
+                        strokeWidth="2.5"
+                        strokeDasharray="4,4"
+                        className="animate-pulse"
+                      />
+                    )}
+
+                    {/* Point 2 (Vertex) indicator */}
+                    {threePointAnglePoints[1] && (
+                      <g transform={`translate(${threePointAnglePoints[1].x}, ${threePointAnglePoints[1].y})`}>
+                        <circle cx="0" cy="0" r="22" fill="none" stroke="#f59e0b" strokeWidth="3" className="animate-pulse" />
+                        <circle cx="0" cy="0" r="7" fill="#f59e0b" />
+                        <g transform="translate(0, -28)">
+                          <rect x="-44" y="-11" width="88" height="20" rx="6" fill="#b45309" stroke="#fbbf24" strokeWidth="1" />
+                          <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="9.5" fontWeight="black">
+                            Köşe 📍 ({threePointAnglePoints[1].label})
+                          </text>
+                        </g>
+                      </g>
+                    )}
+
+                    {/* Stretch Line from Vertex to Cursor if selecting arm 2 */}
+                    {threePointAnglePoints.length === 2 && hoverPos && (
+                      <>
+                        <line
+                          x1={threePointAnglePoints[1].x}
+                          y1={threePointAnglePoints[1].y}
+                          x2={hoverPos.x}
+                          y2={hoverPos.y}
+                          stroke="#10b396"
+                          strokeWidth="2.5"
+                          strokeDasharray="4,4"
+                          className="animate-pulse"
+                        />
+                        {(() => {
+                          const v = threePointAnglePoints[1];
+                          const p1 = threePointAnglePoints[0];
+                          const liveDeg = getAngleDegree(v, p1, hoverPos);
+                          const typeInfo = getAngleType(liveDeg);
+                          return (
+                            <g transform={`translate(${hoverPos.x + 18}, ${hoverPos.y - 18})`}>
+                              <rect x="-6" y="-14" width="84" height="24" rx="7" fill="#0f172a" stroke={typeInfo.color} strokeWidth="1.5" className="shadow-lg" />
+                              <text x="36" y="2" textAnchor="middle" fill={typeInfo.color} fontSize="11" fontWeight="900">
+                                ~{liveDeg}°
+                              </text>
+                            </g>
+                          );
+                        })()}
+                      </>
+                    )}
+                  </g>
+                )}
 
                 {/* İnteraktif İletki & Gönye Araçları */}
                 {renderInteractiveProtractor()}
@@ -5040,6 +5241,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('segment');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('📏 Doğru Parçası [AB]: İki noktayı bağlayan boyu ölçülebilir çizgi oluşturunuz.');
@@ -5064,6 +5266,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('setsquare');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('📐 İnteraktif Gönye tuvale bırakıldı! Cetveli çizgilere yaklaştırarak yapıştırabilir, mıknatıslı ucundan 90° dikme indirebilirsiniz.');
@@ -5092,6 +5295,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('ray');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('🔦 Işın [CD>: 1. Tıklanan nokta başlangıçtır [C], 2. nokta yönü belirler.');
@@ -5115,6 +5319,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('line');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('↔️ Doğru EF (d): İki yönden de sonsuza uzayan çift oklu çizgi çiziniz.');
@@ -5138,6 +5343,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('measure-length');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('📏 UZUNLUK ÖLÇ: Tahtadaki 2 noktayı seçin, aralarındaki mesafeyi |AB| = ... cm olarak gösterin.');
@@ -5202,11 +5408,42 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <span>📐 Açı Menüsü (Çiz &amp; Ölç)</span>
                     </span>
                     <span className="text-[10px] text-blue-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-blue-200">
-                      3 Araç
+                      4 Araç
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* 3 Noktadan Açı Oluştur */}
+                    <button
+                      onClick={() => {
+                        setActiveTool('three-point-angle');
+                        setSelectedPointForLink(null);
+                        setAngleStepPoint1(null);
+                        setAngleStepPoint2(null);
+                        setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
+                        setMeasureLengthPoints([]);
+                        playSound('click');
+                        setFeedbackMsg('📐 3 NOKTADAN AÇI OLUŞTUR: Tahtada sırasıyla 1. Kol noktasını, 2. KÖŞE (Tepe) noktasını ve 3. İkinci Kol noktasını seçerek açıyı ve kollarını oluşturun.');
+                      }}
+                      className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all relative cursor-pointer ${
+                        activeTool === 'three-point-angle'
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-102 ring-2 ring-blue-300'
+                          : 'bg-white border-blue-200 text-blue-900 hover:bg-blue-50 hover:border-blue-300'
+                      }`}
+                    >
+                      <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 bg-blue-600 text-white font-black text-[9px] rounded-full uppercase shadow-xs">
+                        Yeni
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Shapes className="w-4 h-4" />
+                        <span className="font-extrabold text-xs">3 Noktadan Açı</span>
+                      </div>
+                      <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
+                        A-Köşe-B ile oluştur
+                      </span>
+                    </button>
+
                     {/* Açı Çiz */}
                     <button
                       onClick={() => {
@@ -5215,6 +5452,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setAngleStepPoint1(null);
                         setAngleStepPoint2(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('📐 AÇI ÇİZ: Tahtaya tıklayarak 1. Köşe (O), 2. Taban kolu (A) ve 3. Dönen kolu (B) belirleyip açı oluşturun.');
@@ -5242,6 +5480,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setAngleStepPoint1(null);
                         setAngleStepPoint2(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('📏 AÇI ÖLÇ: Tahtadaki 3 noktayı sırayla seçin: 1. Kol noktası, 2. Köşe (Tepe) noktası, 3. İkinci Kol noktası.');
@@ -5257,7 +5496,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         <span className="font-extrabold text-xs">Açı Ölç</span>
                       </div>
                       <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
-                        3 nokta ile
+                        3 nokta ile ölç
                       </span>
                     </button>
 
@@ -5270,6 +5509,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                           setSelectedPointForLink(null);
                           setMeasureAnglePoints([]);
                           setMeasureLengthPoints([]);
+                          setThreePointAnglePoints([]);
                           if (protractorCenter.y > 380 || protractorCenter.x < 80) {
                             setProtractorCenter({ x: 380, y: 240 });
                           }
@@ -5303,6 +5543,47 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       </span>
                     </button>
                   </div>
+
+                  {/* 3 Noktadan Açı Oluşturma Adım Rehberi */}
+                  {activeTool === 'three-point-angle' && (
+                    <div className="p-3 rounded-2xl bg-white border border-blue-200 text-blue-950 space-y-2 text-xs shadow-xs animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between font-black text-blue-900">
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
+                          3 Noktadan Açı Oluşturma ({threePointAnglePoints.length}/3)
+                        </span>
+                        {threePointAnglePoints.length > 0 && (
+                          <button
+                            onClick={() => {
+                              setThreePointAnglePoints([]);
+                              setHoverPos(null);
+                              setFeedbackMsg('Açı oluşturma adımları sıfırlandı. 1. Kol noktasını seçiniz.');
+                            }}
+                            className="text-[10px] text-rose-600 hover:underline font-bold cursor-pointer"
+                          >
+                            Sıfırla
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 text-[10.5px] font-bold text-center">
+                        <div className={`p-1.5 rounded-xl border ${threePointAnglePoints.length >= 1 ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                          <div>1. Kol (A)</div>
+                          <div className="text-[9.5px] font-normal">{threePointAnglePoints[0] ? `✓ ${threePointAnglePoints[0].label}` : 'Seçiniz'}</div>
+                        </div>
+                        <div className={`p-1.5 rounded-xl border ${threePointAnglePoints.length >= 2 ? 'bg-amber-500 text-white border-amber-500' : threePointAnglePoints.length === 1 ? 'bg-amber-100 border-amber-400 text-amber-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                          <div>Köşe 📍 (B)</div>
+                          <div className="text-[9.5px] font-normal">{threePointAnglePoints[1] ? `✓ ${threePointAnglePoints[1].label}` : threePointAnglePoints.length === 1 ? 'Tıklayın!' : 'Bekleniyor'}</div>
+                        </div>
+                        <div className={`p-1.5 rounded-xl border ${threePointAnglePoints.length === 3 ? 'bg-emerald-600 text-white border-emerald-600' : threePointAnglePoints.length === 2 ? 'bg-emerald-100 border-emerald-400 text-emerald-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                          <div>2. Kol (C)</div>
+                          <div className="text-[9.5px] font-normal">{threePointAnglePoints[2] ? `✓ ${threePointAnglePoints[2].label}` : threePointAnglePoints.length === 2 ? 'Tıklayın!' : 'Bekleniyor'}</div>
+                        </div>
+                      </div>
+                      <p className="text-[10.5px] text-blue-800 leading-tight">
+                        💡 {threePointAnglePoints.length === 0 ? 'Tahtadaki bir noktaya tıklayın veya yeni nokta oluşturun (1. Kol).' : threePointAnglePoints.length === 1 ? 'Şimdi açının KÖŞE (Tepe) noktasını belirleyin.' : 'Son olarak 2. Kol noktasını seçerek açıyı ve kollarını oluşturun!'}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Açı Ölçüm Adım Rehberi */}
                   {activeTool === 'measure-angle' && (
@@ -5367,6 +5648,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('drag');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('🖐️ Taşıma Aracı: Tahtadaki noktaları sürükleyerek şekilleri dinamik boyutlandırın.');
@@ -5387,6 +5669,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('point');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('📍 Nokta Aracı: Tahtaya tıklayarak isimlendirilmiş noktalar yerleştiriniz.');
@@ -5407,6 +5690,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('eraser');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('🧹 TEKİL SİLME ARACI: Tahtada silmek istediğiniz noktaya, doğru parçasına veya çembere tıklayın.');
@@ -5444,6 +5728,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('polygon');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('⬡ Çokgen Aracı: Köşeleri sırayla ekleyin. Kapatmak için 1. köşeye tıklayın veya "Çokgeni Kapat" butonuna basın.');
@@ -5465,6 +5750,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setSelectedPointForLink(null);
                         setCompassCenterPoint(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('⭕ Pergel: 1. Tıklama ile Merkez (M), 2. tıklama ile Yarıçap (r) belirleyip çember çizin.');
@@ -5503,6 +5789,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setIsSetSquareOnCanvas(true);
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('📐 Gönye tuvale bırakıldı! Cetveli çizgilere yaklaştırarak yapıştırabilir, mıknatıslı ucundan 90° dikme indirebilirsiniz.');
@@ -5523,6 +5810,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setActiveTool('artmotif');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
+                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
                         playSound('click');
                         setFeedbackMsg('🎨 Görsel Sanatlar: Tahtaya tıklayarak Selçuklu Çinisi motifi ekleyin.');
@@ -7026,6 +7314,83 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       {(() => {
                         const v = measureAnglePoints[1];
                         const p1 = measureAnglePoints[0];
+                        const liveDeg = getAngleDegree(v, p1, hoverPos);
+                        const typeInfo = getAngleType(liveDeg);
+                        return (
+                          <g transform={`translate(${hoverPos.x + 18}, ${hoverPos.y - 18})`}>
+                            <rect x="-6" y="-14" width="84" height="24" rx="7" fill="#0f172a" stroke={typeInfo.color} strokeWidth="1.5" className="shadow-lg" />
+                            <text x="36" y="2" textAnchor="middle" fill={typeInfo.color} fontSize="11" fontWeight="900">
+                              ~{liveDeg}°
+                            </text>
+                          </g>
+                        );
+                      })()}
+                    </>
+                  )}
+                </g>
+              )}
+
+              {/* Three-Point Angle Creation Visual Overlay */}
+              {activeTool === 'three-point-angle' && threePointAnglePoints.length > 0 && (
+                <g className="pointer-events-none">
+                  {/* Point 1 (Arm 1) indicator */}
+                  {threePointAnglePoints[0] && (
+                    <g transform={`translate(${threePointAnglePoints[0].x}, ${threePointAnglePoints[0].y})`}>
+                      <circle cx="0" cy="0" r="18" fill="none" stroke="#0284c7" strokeWidth="2.5" strokeDasharray="4,3" className="animate-spin" />
+                      <circle cx="0" cy="0" r="6" fill="#0284c7" />
+                      <g transform="translate(0, -26)">
+                        <rect x="-44" y="-11" width="88" height="20" rx="6" fill="#0369a1" stroke="#38bdf8" strokeWidth="1" />
+                        <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="9.5" fontWeight="bold">
+                          1. Kol ({threePointAnglePoints[0].label})
+                        </text>
+                      </g>
+                    </g>
+                  )}
+
+                  {/* Stretch Line from Arm 1 to Cursor if selecting vertex */}
+                  {threePointAnglePoints.length === 1 && hoverPos && (
+                    <line
+                      x1={threePointAnglePoints[0].x}
+                      y1={threePointAnglePoints[0].y}
+                      x2={hoverPos.x}
+                      y2={hoverPos.y}
+                      stroke="#0284c7"
+                      strokeWidth="2.5"
+                      strokeDasharray="4,4"
+                      className="animate-pulse"
+                    />
+                  )}
+
+                  {/* Point 2 (Vertex) indicator */}
+                  {threePointAnglePoints[1] && (
+                    <g transform={`translate(${threePointAnglePoints[1].x}, ${threePointAnglePoints[1].y})`}>
+                      <circle cx="0" cy="0" r="22" fill="none" stroke="#f59e0b" strokeWidth="3" className="animate-pulse" />
+                      <circle cx="0" cy="0" r="7" fill="#f59e0b" />
+                      <g transform="translate(0, -28)">
+                        <rect x="-44" y="-11" width="88" height="20" rx="6" fill="#b45309" stroke="#fbbf24" strokeWidth="1" />
+                        <text x="0" y="3" textAnchor="middle" fill="#ffffff" fontSize="9.5" fontWeight="black">
+                          Köşe 📍 ({threePointAnglePoints[1].label})
+                        </text>
+                      </g>
+                    </g>
+                  )}
+
+                  {/* Stretch Line from Vertex to Cursor if selecting arm 2 */}
+                  {threePointAnglePoints.length === 2 && hoverPos && (
+                    <>
+                      <line
+                        x1={threePointAnglePoints[1].x}
+                        y1={threePointAnglePoints[1].y}
+                        x2={hoverPos.x}
+                        y2={hoverPos.y}
+                        stroke="#10b396"
+                        strokeWidth="2.5"
+                        strokeDasharray="4,4"
+                        className="animate-pulse"
+                      />
+                      {(() => {
+                        const v = threePointAnglePoints[1];
+                        const p1 = threePointAnglePoints[0];
                         const liveDeg = getAngleDegree(v, p1, hoverPos);
                         const typeInfo = getAngleType(liveDeg);
                         return (
