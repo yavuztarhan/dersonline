@@ -119,3 +119,18 @@ export async function verifyPassword(
   return plainPassword === storedHashOrPlain;
 }
 
+/**
+ * Generates a random, high-readability 6-character alphanumeric class code.
+ * Excludes ambiguous characters (0, O, 1, I, L) for easy whiteboard reading and student input.
+ */
+export function generateRandomClassCode(length: number = 6): string {
+  const chars = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+  let code = '';
+  for (let i = 0; i < length; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+
+

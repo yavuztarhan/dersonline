@@ -208,7 +208,7 @@ export function AuthModal({
       return;
     }
     if (cleanCode.length < 2 || cleanCode.length > 12) {
-      setStudentLoginError('Lütfen geçerli bir sınıf kodu veya şube giriniz (Örn: MRF5A1 veya 5-A).');
+      setStudentLoginError('Lütfen geçerli bir sınıf kodu veya şube giriniz (Örn: 7B4M9Q veya 5-A).');
       return;
     }
 
@@ -549,7 +549,7 @@ export function AuthModal({
                         spellCheck={false}
                         value={studentClassCode}
                         onChange={(e) => setStudentClassCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                        placeholder="Örn: MRF5A1"
+                        placeholder="Örn: 7B4M9Q"
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-mono font-black tracking-widest text-indigo-950 placeholder:font-sans placeholder:text-xs placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all uppercase"
                       />
                     </div>

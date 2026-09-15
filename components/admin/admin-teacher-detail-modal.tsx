@@ -36,6 +36,7 @@ import { TeacherUser } from '@/types/auth';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { AdminSendMessageModal } from '@/components/admin/admin-send-message-modal';
 import { AdminDeleteTeacherModal } from '@/components/admin/admin-delete-teacher-modal';
+import { generateRandomClassCode } from '@/lib/password';
 
 interface AdminTeacherDetailModalProps {
   isOpen: boolean;
@@ -125,7 +126,7 @@ export function AdminTeacherDetailModal({
     : (teacher.assignedClasses || []).map((cls: string) => ({
         id: `cls-${cls}`,
         name: cls,
-        code: `MRF${cls.replace(/[^A-Z0-9]/g, '')}`,
+        code: generateRandomClassCode(),
         gradeLevel: parseInt(cls.charAt(0)) || 5,
         school: teacher.school || '',
         totalStudents: 0,

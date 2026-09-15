@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isUserAdmin } from '@/lib/auth-options';
-import { hashPassword, isPasswordHashed } from '@/lib/password';
+import { hashPassword, isPasswordHashed, generateRandomClassCode } from '@/lib/password';
 
 export const dynamic = 'force-dynamic';
 
@@ -175,13 +175,20 @@ export async function POST(req: NextRequest) {
               if (!existingNames.has(clsName)) {
                 const gradeMatch = clsName.match(/^(\d+)/);
                 const grade = gradeMatch ? parseInt(gradeMatch[1], 10) : 5;
-                const safeCode = `MRF${clsName.replace(/[^A-Z0-9]/g, '')}${Math.floor(10 + Math.random() * 90)}`;
+                let safeCode = generateRandomClassCode();
+                let attempts = 0;
+                while (attempts < 10) {
+                  const exists = await prisma.classroom.findUnique({ where: { code: safeCode } });
+                  if (!exists) break;
+                  safeCode = generateRandomClassCode();
+                  attempts++;
+                }
                 await prisma.classroom.create({
                   data: {
                     name: clsName,
                     code: safeCode,
                     gradeLevel: grade,
-                    school: school || profile.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+                    school: school || profile.school || '',
                     teacherId: profile.id,
                   },
                 });

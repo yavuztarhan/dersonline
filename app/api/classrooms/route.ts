@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Role } from '@prisma/client';
+import { generateRandomClassCode } from '@/lib/password';
 
 export const dynamic = 'force-dynamic';
 
@@ -211,7 +212,16 @@ export async function POST(req: NextRequest) {
         if (!cleanName) continue;
 
         const grade = gradeLevel || parseInt(cleanName.charAt(0)) || 5;
-        const generatedCode = code ? String(code).trim().toUpperCase() : `MRF${cleanName.replace(/[^A-Z0-9]/g, '')}${Math.floor(10 + Math.random() * 90)}`;
+        let generatedCode = code ? String(code).trim().toUpperCase() : generateRandomClassCode();
+        if (!code) {
+          let attempts = 0;
+          while (attempts < 10) {
+            const codeExists = await prisma.classroom.findUnique({ where: { code: generatedCode } });
+            if (!codeExists) break;
+            generatedCode = generateRandomClassCode();
+            attempts++;
+          }
+        }
 
         if (tProf) {
           // Öğretmende bu sınıf zaten var mı?
