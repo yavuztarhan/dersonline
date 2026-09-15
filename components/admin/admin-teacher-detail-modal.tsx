@@ -75,7 +75,10 @@ export function AdminTeacherDetailModal({
       if (data?.success) {
         setApiData(data);
         if (data.classrooms && data.classrooms.length > 0) {
-          setSelectedClass((prev) => prev || data.classrooms[0].name);
+          const classWithStudents = data.classrooms.find(
+            (c: any) => (c.students?.length || c.totalStudents || 0) > 0
+          );
+          setSelectedClass(classWithStudents ? classWithStudents.name : data.classrooms[0].name);
         }
       }
     } catch (err) {
@@ -199,6 +202,11 @@ export function AdminTeacherDetailModal({
   }
 
   const allDisplayStudents = Array.from(studentMap.values());
+
+  const totalTeacherStudents = classroomsList.reduce(
+    (sum: number, cls: any) => sum + (cls.students?.length ?? cls.totalStudents ?? 0),
+    0
+  );
 
   // Filtered by search and at-risk
   const filteredStudents = allDisplayStudents.filter((s) => {
@@ -363,7 +371,7 @@ export function AdminTeacherDetailModal({
                 <Users className="w-4 h-4 text-teal-500" />
               </div>
               <div className="text-base font-black text-slate-900">
-                {classroomsList.length} Şube / {allDisplayStudents.length} Öğrenci
+                {classroomsList.length} Şube / {totalTeacherStudents} Öğrenci
               </div>
               <p className="text-[10px] text-slate-400 truncate">
                 {classroomsList.map((c: any) => c.name).join(', ') || 'Şube yok'}
@@ -457,6 +465,7 @@ export function AdminTeacherDetailModal({
                 ) : (
                   classroomsList.map((cls: any) => {
                     const isSelected = cls.name.toUpperCase() === activeClassroom?.name?.toUpperCase();
+                    const studentCount = cls.students?.length ?? cls.totalStudents ?? 0;
                     return (
                       <button
                         key={cls.id || cls.name}
@@ -468,6 +477,17 @@ export function AdminTeacherDetailModal({
                         }`}
                       >
                         <span>{cls.name}</span>
+                        <span
+                          className={`px-1.5 py-0.5 rounded-md text-[10px] font-black ${
+                            isSelected
+                              ? 'bg-teal-800 text-teal-100'
+                              : studentCount > 0
+                              ? 'bg-teal-50 text-teal-700 border border-teal-200'
+                              : 'bg-slate-100 text-slate-400'
+                          }`}
+                        >
+                          {studentCount} Öğr.
+                        </span>
                         <span
                           className={`px-1.5 py-0.2 rounded-md text-[10px] ${
                             isSelected ? 'bg-teal-800 text-teal-100' : 'bg-slate-100 text-slate-600'

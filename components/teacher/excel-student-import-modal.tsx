@@ -278,9 +278,9 @@ export function ExcelStudentImportModal({
 
     try {
       const gradeLevel = parseInt(targetClass.charAt(0)) || 5;
-      const schoolName = teacher?.school || 'Edirne Selimiye İmam Hatip Ortaokulu';
-      const cityName = teacher?.city || 'Edirne';
-      const districtName = teacher?.district || 'Merkez';
+      const schoolName = teacher?.school || '';
+      const cityName = teacher?.city || '';
+      const districtName = teacher?.district || '';
       const teacherId = teacher?.id;
       const todayStr = new Date().toISOString().split('T')[0];
       const classCode = getClassCodeForClass ? getClassCodeForClass(targetClass, teacherId) : undefined;

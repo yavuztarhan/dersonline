@@ -217,17 +217,32 @@ export async function POST(req: NextRequest) {
         }
         const cleanSection = (st.classSection || '5-A').trim().toUpperCase();
         const cleanClassCode = st.classCode ? String(st.classCode).trim().toUpperCase() : null;
+        let resolvedClassCode = cleanClassCode;
+        let teacherSchool = (st.school || '').trim();
+        let teacherCity = (st.city || '').trim();
+        let teacherDistrict = (st.district || '').trim();
 
-        // Resolve teacher profile id
+        // Resolve teacher profile id and own classroom
         let dbTeacherProfileId = null;
         const targetTeacherId = st.teacherId || teacherId;
         if (targetTeacherId) {
           const tProf = await prisma.teacherProfile.findFirst({
             where: {
               OR: [{ id: targetTeacherId }, { userId: targetTeacherId }]
-            }
+            },
+            include: { classrooms: true }
           });
-          if (tProf) dbTeacherProfileId = tProf.id;
+          if (tProf) {
+            dbTeacherProfileId = tProf.id;
+            if (tProf.school) teacherSchool = tProf.school;
+            if (tProf.city) teacherCity = tProf.city;
+            if (tProf.district) teacherDistrict = tProf.district;
+
+            const tClass = tProf.classrooms?.find((c) => c.name.toUpperCase() === cleanSection);
+            if (tClass?.code) {
+              resolvedClassCode = tClass.code;
+            }
+          }
         }
 
         // Check if student profile already exists by studentNumber and school/teacher
@@ -255,9 +270,12 @@ export async function POST(req: NextRequest) {
               studentProfile: {
                 update: {
                   classSection: cleanSection,
-                  classCode: cleanClassCode || existingUser.studentProfile.classCode,
+                  classCode: resolvedClassCode || existingUser.studentProfile.classCode,
                   points: st.points !== undefined ? st.points : existingUser.studentProfile.points,
                   teacherId: dbTeacherProfileId || existingUser.studentProfile.teacherId,
+                  school: teacherSchool || existingUser.studentProfile.school,
+                  city: teacherCity || existingUser.studentProfile.city,
+                  district: teacherDistrict || existingUser.studentProfile.district,
                   isPasswordChangedByStudent: st.isPasswordChangedByStudent !== undefined
                     ? Boolean(st.isPasswordChangedByStudent)
                     : existingUser.studentProfile.isPasswordChangedByStudent
@@ -283,10 +301,10 @@ export async function POST(req: NextRequest) {
                   studentNumber: studentNo,
                   gradeLevel: st.gradeLevel || parseInt(cleanSection.charAt(0)) || 5,
                   classSection: cleanSection,
-                  classCode: cleanClassCode,
-                  city: st.city || 'Edirne',
-                  district: st.district || 'Merkez',
-                  school: st.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+                  classCode: resolvedClassCode,
+                  city: teacherCity || st.city || '',
+                  district: teacherDistrict || st.district || '',
+                  school: teacherSchool || st.school || '',
                   teacherId: dbTeacherProfileId,
                   points: st.points || 0,
                   isPasswordChangedByStudent: Boolean(st.isPasswordChangedByStudent)

@@ -13,6 +13,7 @@ import {
   StudentRegistrationPayload
 } from '@/types/auth';
 import { validatePassword } from '@/lib/password-validator';
+import { generateRandomClassCode } from '@/lib/password';
 
 export interface AdminCreateUserPayload {
   email: string;
@@ -1638,13 +1639,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const trimmed = (className || '').trim().toUpperCase();
     if (!trimmed) return '';
 
-    const match = classrooms.find(
-      (c) => c.name.toUpperCase() === trimmed && (!teacherId || c.teacherId === teacherId)
-    ) || classrooms.find((c) => c.name.toUpperCase() === trimmed);
+    // Strictly match by teacherId when teacherId is provided so we NEVER grab another teacher's classCode
+    const match = teacherId
+      ? classrooms.find((c) => c.name.toUpperCase() === trimmed && c.teacherId === teacherId)
+      : classrooms.find((c) => c.name.toUpperCase() === trimmed);
 
     if (match) return match.code;
 
-    const newCode = generateUniqueClassCode(classrooms);
+    const newCode = generateRandomClassCode();
     const newCls: ClassroomInfo = {
       id: `cls-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       name: trimmed,
