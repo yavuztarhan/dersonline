@@ -8,7 +8,7 @@ import {
   OutcomePerformanceItem,
   getStudentPerformanceProfile
 } from '@/lib/student-performance-store';
-import { downloadStudentDevelopmentReportPDF } from '@/lib/pdf-report-generator';
+import { downloadStudentDevelopmentReportPDF, downloadStudentRubricPDF } from '@/lib/pdf-report-generator';
 import { useAuth } from '@/lib/auth-store';
 import {
   X,
@@ -634,6 +634,15 @@ export function StudentOutcomeDetailModal({
                           <span className="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-900 font-black text-xs">
                             {sub.totalScore || 0} / {sub.maxScore || 20} Puan (%{sub.percentage || 0})
                           </span>
+                          <button
+                            type="button"
+                            onClick={() => downloadStudentRubricPDF(sub)}
+                            className="px-2.5 py-1 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-all cursor-pointer"
+                            title="Bu Öz Değerlendirme Formunu PDF Olarak İndir"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>PDF</span>
+                          </button>
                         </div>
                       </div>
 

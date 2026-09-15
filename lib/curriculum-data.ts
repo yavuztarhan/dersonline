@@ -4604,6 +4604,413 @@ export const CURRICULUM_DATA: Grade[] = [
                           }
                         }
                       ]
+                    },
+                    {
+                      "id": "topic-7-rasyonel-5",
+                      "unitId": "unit-7-sayilar",
+                      "title": "Rasyonel Sayılarla Çarpma ve Bölme İşlemleri",
+                      "description": "Pay ve paydaların çarpımı, alan modeli, çarpmaya göre ters eleman, bölmede ters çevirip çarpma mantığı, çapraz sadeleştirme ve çok adımlı işlemler.",
+                      "outcomes": [
+                        {
+                          "id": "MAT.7.1.4",
+                          "code": "MAT.7.1.4",
+                          "title": "Rasyonel Sayılarla Çarpma ve Bölme İşlemleri",
+                          "shortTitle": "Rasyonel Sayılarla Çarpma ve Bölme",
+                          "description": "Rasyonel sayılarla çarpma ve bölme işlemlerini yapar; alan modeliyle çarpmanın anlamını kavrar; bölme işleminde çarpmaya göre ters eleman ve ters çevirip çarpma mantığını açıklar; çok adımlı işlemlerde işlem önceliğini uygular; uzay teknolojisi, robotik ve günlük yaşam problemlerinde rasyonel çarpanları modeller.",
+                          "gradeId": "grade-7",
+                          "subjectId": "mat-7",
+                          "unitId": "unit-7-sayilar",
+                          "topicId": "topic-7-rasyonel-5",
+                          "durationMinutes": 40,
+                          "pedagogyGuide": {
+                            "maarifSDBs": [
+                              "SDB1.2: Kendini Düzenleme / Öz Düzenleme (Çarpma işleminde payda eşitlememe, bölme işleminde daima 2. kesri ters çevirme ve tam sayılı kesirleri bileşiğe çevirme kurallarını sistematik kontrol etme)",
+                              "SDB2.2: İş Birliği ve Akran Öğrenmesi (CubeSat mikro uydu projesinde güneş paneli alan verimi ve iyon itki motoru kalibrasyonunu akranlarıyla tartışarak ortak strateji belirleme)",
+                              "SDB3.3: Matematiksel Muhakeme ve Problem Çözme (Alan modeliyle çarpmanın geometrik ispatını yapma, çarpmaya göre ters elemanın çarpma etkisiz elemanını (1) oluşturduğunu gerekçelendirme)"
+                            ],
+                            "processComponents": [
+                              "a) Rasyonel sayılarda çarpma işlemini payların çarpımının paya, paydaların çarpımının paydaya yazılması olarak açıklar ve alan modeliyle görselleştirir.",
+                              "b) Bir rasyonel sayının çarpmaya göre tersini kavrar (sıfır hariç a/b -> b/a) ve çarpımlarının 1 olduğunu modeller.",
+                              "c) Rasyonel sayılarda bölme işlemini, bölünen sayının bölen sayının çarpmaya göre tersiyle çarpılması olarak açıklar (a/b ÷ c/d = a/b · d/c).",
+                              "ç) Çok adımlı işlemlerde parantez, çarpma/bölme ve toplama/çıkarma işlem önceliğini hatasız uygular."
+                            ],
+                            "learningGoals": [
+                              "Rasyonel sayılarda çarpma işlemini (a/b) · (c/d) = (a·c)/(b·d) kuralına göre hatasız yapar.",
+                              "Çarpma işleminde payda eşitlenmeyeceğini, alan modeli üzerinden somutlaştırır.",
+                              "İşlem öncesi pay ve paydaları çapraz veya alt-üst sadeleştirerek pratik çözüm üretir.",
+                              "Sıfır dışındaki bir rasyonel sayının çarpmaya göre tersini bulur ve çarpımlarının 1 olduğunu fark eder.",
+                              "Bölme işleminde ilk kesrin aynen kaldığını, ikinci kesrin ters çevrilerek çarpıldığını uygular.",
+                              "Tam sayılı kesirlerle çarpma ve bölme yapmadan önce mutlaka bileşik kesre çevirir.",
+                              "Günlük yaşam ve teknoloji problemlerinde rasyonel çarpan ve bölen modellerini yorumlar."
+                            ],
+                            "teacherTips": [
+                              "Derse CubeSat mikro uydu ve kuantum robotik laboratuvarı senaryosuyla başlayınız; güneş panelinin 2/3'sinin 3/4'ünü almanın alan kesişimi olduğunu gösteriniz.",
+                              "Öğrencilerin en büyük yanılgısı olan 'çarpma yaparken de payda eşitleme' refleksini alan modeli ve dikdörtgen dilimleme ile gideriniz.",
+                              "Bölme kuralını '5 elmayı yarımşar parçalara bölersek kaç parça çıkar? (5 ÷ 1/2 = 10)' sorusuyla sezdiriniz; sayıyı 1/2'ye bölmenin 2 ile çarpmak olduğunu fark ettiriniz.",
+                              "Tam sayılı kesirleri doğrudan çarpmaya çalışan öğrencilere (1 1/2 · 2 1/3) alan modelini çizdirerek tam kısımları çarpmanın eksik alan bıraktığını ispatlayınız."
+                            ],
+                            "misconceptions": [
+                              "Çarpma yaparken paydaları da toplamaya veya eşitlemeye çalışmak (Örn: 2/3 x 3/4 = 5/7 yanılgısı; doğrusu 6/12 = 1/2'dir).",
+                              "Bölme işleminde 1. kesri ters çevirmek (Daima 2. kesir ters çevrilir).",
+                              "Bölme için ters çevirirken sayının işaretini de ters çevirmek (2/3'ün tersi 3/2'dir; işareti pozitif kalır).",
+                              "Tam sayılı kesirleri bileşik kesre çevirmeden tamları tamla, kesirleri kesirle çarpmak."
+                            ],
+                            "keyQuestions": [
+                              "Bir sayıyı 1/2 ile çarpmak o sayıyı büyütür mü, yoksa küçültür mü? Neden?",
+                              "5 metrelik bir halatı 1/4 metrelik parçalara bölersek toplam kaç parça elde ederiz?",
+                              "Bir kesri çarpmaya göre tersiyle çarptığımızda sonucun daima 1 çıkması ne anlama gelir?"
+                            ]
+                          },
+                          "phases": {
+                            "story": {
+                              "title": "Kuantum & Robotik Laboratuvarı: Nanorobotların Enerji ve İtki Çarpanları",
+                              "character": {
+                                "name": "Mühendis Selim & Yazılımcı Ece",
+                                "role": "Uzay ve Robotik Araştırmacıları",
+                                "avatar": "🛰️"
+                              },
+                              "scenario": "Selim ve Ece, yerli CubeSat mikro uydu projesinde güneş panellerinin enerji verimliliğini ve iyon itki motorlarının güç çarpanlarını optimize ediyorlar. Holografik ekranda rasyonel alan modelleriyle mikroçipleri boyutlandırırken, ters takla itki motorlarıyla uyduyu tam yörüngesine oturtuyorlar.",
+                              "realLifeConnection": "Güneş panelinin 2/3'lük kısmının 3/4 verimle çalışması (2/3 x 3/4 = 1/2), roket itki yakıtının 3/5'ini 1/10'luk mikro püskürtücülere paylaştırma (3/5 ÷ 1/10 = 6 püskürtücü) gibi uzay ve havacılık hesaplamalarının tamamı rasyonel çarpma ve bölme temellidir.",
+                              "reflectionQuestion": "Bir rasyonel sayıyı kendisinden küçük bir basit kesirle (örneğin 1/2 ile) çarptığımızda sonuç neden başlangıçtaki sayıdan daha küçük çıkar?",
+                              "keyTakeaway": "Çarpma payların ve paydaların karşılıklı buluşmasıdır, Bölme ise ikinci kesrin takla atarak çarpıma dönüşmesidir.",
+                              "pages": [
+                                {
+                                  "id": "p-7-5-1",
+                                  "pageNumber": 1,
+                                  "chapterTitle": "1. Bölüm: Holografik Alan Modeli & Mikroçip Matrisi",
+                                  "conceptTitle": "Rasyonel Sayılarda Çarpma ve Alan Modeli",
+                                  "conceptBadge": "Çarpma (•)",
+                                  "symbolicCode": "(a/b) · (c/d) = (a·c)/(b·d)",
+                                  "narrativeText": "Ece, CubeSat uydusunun yeni nesil fotovoltaik mikroçipini tasarlıyordu. Çipin eni 3/4 cm, boyu ise 2/3 cm olarak ayarlandı. Ece holografik ekranda bu iki kesri üst üste bindirdiğinde, kesişen alanın tam 1/2 cm² olduğunu fark etti.",
+                                  "characterDialogue": {
+                                    "speaker": "Yazılımcı Ece",
+                                    "text": "Harika! 3/4'ün 2/3'ünü almak, payları kendi arasında (3x2=6) ve paydaları kendi arasında (4x3=12) çarpmak demektir. 6/12 sadeleşince tam 1/2 cm² nano-enerji paneli elde ederiz!"
+                                  },
+                                  "visualScene": {
+                                    "type": "quantum-area-matrix",
+                                    "caption": "Holografik Çip: 3/4 ile 2/3'ün kesişen alanı 6/12 = 1/2 cm²."
+                                  },
+                                  "interactiveAction": {
+                                    "prompt": "Holografik ekranda 3/4 ve 2/3 matrislerini birleştirerek kesişen alanı aktive edin!",
+                                    "actionLabel": "Nano-Matrisi Çarp (×)",
+                                    "feedbackRevealed": "Kuantum Çip Aktif! (3/4) × (2/3) = 6/12 = 1/2 cm² alan başarıyla üretildi."
+                                  },
+                                  "mathTakeaway": "Rasyonel sayılarda çarpma yapılırken pay ile pay çarpılıp paya, payda ile payda çarpılıp paydaya yazılır. Payda eşitlenmez!"
+                                },
+                                {
+                                  "id": "p-7-5-2",
+                                  "pageNumber": 2,
+                                  "chapterTitle": "2. Bölüm: Çarpmaya Göre Ters Eleman & Enerji Dengesi",
+                                  "conceptTitle": "Çarpmaya Göre Ters Eleman & Birim Etkisiz",
+                                  "conceptBadge": "Ters Eleman",
+                                  "symbolicCode": "(a/b) · (b/a) = 1",
+                                  "narrativeText": "Selim, uydunun güç regülatörünü incelerken voltaj çarpanının -4/5 olduğunu gördü. Sistemi sıfırlayıp tam 1 birim referans seviyesine döndürmek için regülatöre çarpmaya göre tersi olan -5/4 sinyalini gönderdi.",
+                                  "characterDialogue": {
+                                    "speaker": "Mühendis Selim",
+                                    "text": "Sıfır hariç her rasyonel sayının çarpmaya göre tersi, pay ve paydasının yer değiştirmesidir! (-4/5) ile (-5/4)'ü çarptığımızda işaretler (+) olur ve sonuç tam 1 (etkisiz eleman) çıkar."
+                                  },
+                                  "visualScene": {
+                                    "type": "inverse-element-balance",
+                                    "caption": "Ters Eleman Prensibi: (-4/5) × (-5/4) = +20/20 = 1 Tam Referans."
+                                  },
+                                  "interactiveAction": {
+                                    "prompt": "Regülatöre çarpmaya göre ters katsayıyı uygulayarak voltajı 1 tam dengesine getirin!",
+                                    "actionLabel": "Ters Çarpanı Gönder (🔄)",
+                                    "feedbackRevealed": "Voltaj dengelendi! (-4/5) × (-5/4) = 1. Bir kesrin çarpmaya göre tersiyle çarpımı daima 1'dir."
+                                  },
+                                  "mathTakeaway": "Sıfır dışındaki her rasyonel sayının çarpmaya göre tersi pay ve paydasının yer değiştirmiş halidir. Bir sayının çarpmaya göre tersiyle çarpımı 1'dir."
+                                },
+                                {
+                                  "id": "p-7-5-3",
+                                  "pageNumber": 3,
+                                  "chapterTitle": "3. Bölüm: İyon İtki Motoru & Ters Takla Bölme Kuralı",
+                                  "conceptTitle": "Rasyonel Sayılarda Bölme İşlemi",
+                                  "conceptBadge": "Bölme (÷)",
+                                  "symbolicCode": "(a/b) ÷ (c/d) = (a/b) · (d/c)",
+                                  "narrativeText": "CubeSat'ın ana tankında 3/4 litre plazma yakıtı vardı. İyon motorlarının her biri her manevrada 1/8 litre yakıt tüketiyordu. Selim, kaç manevra yapılabileceğini bulmak için 3/4 litreyi 1/8'e böldü.",
+                                  "characterDialogue": {
+                                    "speaker": "Mühendis Selim",
+                                    "text": "Bölme işleminde kural çok nettir: Birinci kesir aynen kalır (3/4), bölme işareti çarpmaya dönüşür, ikinci kesir ters takla atar (8/1)! (3/4) x (8/1) = 24/4 = 6 tam manevra!"
+                                  },
+                                  "visualScene": {
+                                    "type": "rocket-inverter-flow",
+                                    "caption": "İyon İtki Bölme: (3/4) ÷ (1/8) = (3/4) × (8/1) = 6 Manevra."
+                                  },
+                                  "interactiveAction": {
+                                    "prompt": "İkinci kesri ters çevirip çarparak iyon motoru manevra sayısını hesaplayın!",
+                                    "actionLabel": "Bölme İşlemini Çöz (÷)",
+                                    "feedbackRevealed": "İyon motorları hazır! (3/4) × (8/1) = 6 manevra hakkı tespit edildi."
+                                  },
+                                  "mathTakeaway": "Rasyonel sayılarda bölme işlemi yapılırken birinci kesir aynen yazılır, ikinci kesir ters çevrilip (çarpmaya göre tersi alınıp) çarpılır."
+                                },
+                                {
+                                  "id": "p-7-5-4",
+                                  "pageNumber": 4,
+                                  "chapterTitle": "4. Bölüm: Kuantum İşlem Zinciri & Çok Adımlı Hesaplama",
+                                  "conceptTitle": "İşlem Önceliği & Sadeleştirme Sanatı",
+                                  "conceptBadge": "İşlem Önceliği",
+                                  "symbolicCode": "(a/b + c/d) · (e/f) ÷ (g/h)",
+                                  "narrativeText": "Yörüngeye yerleşmeden önceki son hesaplamada Ece, telemetri verilerindeki parantezli karmaşık işlem zincirini çözmek için önce parantez içini, ardından çarpma ve bölmeyi, en son ise çapraz sadeleştirmeyi kullandı.",
+                                  "characterDialogue": {
+                                    "speaker": "Yazılımcı Ece",
+                                    "text": "Büyük sayılarla uğraşmak yerine önce çapraz sadeleştirme yaparız! İşlem önceliğine uyarak hatasız yörünge koordinatlarına ulaştık."
+                                  },
+                                  "visualScene": {
+                                    "type": "simplification-laser-flow",
+                                    "caption": "Kuantum Zinciri: Parantez İçi ➔ Çarpma/Bölme ➔ Toplama/Çıkarma."
+                                  },
+                                  "interactiveAction": {
+                                    "prompt": "Çapraz sadeleştirme lazerini ateşleyerek en sade yörünge koordinatını belirleyin!",
+                                    "actionLabel": "Lazerle Sadeleştir (⚡)",
+                                    "feedbackRevealed": "Yörünge kilitlendi! Çapraz sadeleştirme ile işlem saniyeler içinde hatasız tamamlandı."
+                                  },
+                                  "mathTakeaway": "Çok adımlı işlemlerde önce parantez içi ve üslü ifadeler, ardından çarpma ve bölme, son olarak toplama ve çıkarma yapılır."
+                                }
+                              ]
+                            },
+                            "lab": {
+                              "title": "Kuantum Çarpım & Bölme Laboratuvarı",
+                              "toolType": "rational-mult-div-bench",
+                              "instructions": "Holografik ekranda rasyonel sayıları çarpın, bölün, ters çevirin ve alan modelleriyle ispatlayın.",
+                              "taskGoal": "Rasyonel çarpma ve bölme işlemlerini ve çarpmaya göre ters eleman kurallarını keşfedin.",
+                              "interactiveTips": [
+                                "Çarpma yaparken payları kendi arasında, paydaları kendi arasında çarpınız.",
+                                "Bölme işleminde ikinci kesrin takla atarak çarpmaya dönüştüğünü gözlemleyiniz.",
+                                "Büyük sayılarda işlem yapmadan önce çapraz sadeleştirme düğmesini kullanınız."
+                              ]
+                            },
+                            "puzzle": {
+                              "title": "Kuantum Çarpım & Bölme Oyun Arenası",
+                              "instructions": "Kavramları, sembolleri ve modelleri doğru eşleştirerek kuantum matrisini tamamlayın.",
+                              "items": [
+                                {
+                                  "id": "item_7_5_1",
+                                  "concept": "Rasyonel Çarpma Kuralı",
+                                  "definition": "Pay ile pay çarpılıp paya, payda ile payda çarpılıp paydaya yazılır.",
+                                  "symbol": "(a/b) · (c/d) = (a·c)/(b·d)",
+                                  "visualType": "area-model"
+                                },
+                                {
+                                  "id": "item_7_5_2",
+                                  "concept": "Çarpmaya Göre Ters Eleman",
+                                  "definition": "Sıfır hariç bir sayının pay ve paydası yer değiştirir; çarpımları 1'dir.",
+                                  "symbol": "(a/b) · (b/a) = 1",
+                                  "visualType": "balance"
+                                },
+                                {
+                                  "id": "item_7_5_3",
+                                  "concept": "Rasyonel Bölme Kuralı",
+                                  "definition": "Birinci kesir aynen kalır, ikinci kesir ters çevrilip çarpılır.",
+                                  "symbol": "(a/b) ÷ (c/d) = (a/b) · (d/c)",
+                                  "visualType": "rocket"
+                                },
+                                {
+                                  "id": "item_7_5_4",
+                                  "concept": "Çapraz Sadeleştirme",
+                                  "definition": "Çarpma öncesi çapraz veya dikey ortak bölenler sadeleştirilerek işlem kolaylaşır.",
+                                  "symbol": "(15/28) · (14/25) = 3/10",
+                                  "visualType": "laser"
+                                },
+                                {
+                                  "id": "item_7_5_5",
+                                  "concept": "Tam Sayılı Kesir Kuralı",
+                                  "definition": "Çarpma veya bölme yapmadan önce mutlaka bileşik kesre çevrilmelidir.",
+                                  "symbol": "1 tam 1/2 = 3/2",
+                                  "visualType": "fraction"
+                                }
+                              ]
+                            },
+                            "assessment": {
+                              "title": "Kazanım Pekiştirme & Süreç Değerlendirme Testi",
+                              "instructions": "Rasyonel sayılarda çarpma, bölme, ters eleman ve çok adımlı problem çözme becerilerinizi ölçün.",
+                              "questions": [
+                                {
+                                  "id": "mat714_q1",
+                                  "questionText": "(3/4) × (2/5) işleminin en sade sonucu aşağıdakilerden hangisidir?",
+                                  "options": [
+                                    "3/10",
+                                    "5/9",
+                                    "6/20",
+                                    "8/15"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "(3/4) x (2/5) = (3x2)/(4x5) = 6/20. 2 ile sadeleştirildiğinde 3/10 elde edilir.",
+                                  "bloomLevel": "Uygulama"
+                                },
+                                {
+                                  "id": "mat714_q2",
+                                  "questionText": "(-2/3) × (-9/10) işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "+3/5",
+                                    "-3/5",
+                                    "+5/3",
+                                    "-18/30"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "İki negatif sayının çarpımı pozitiftir (+). (-2 x -9) / (3 x 10) = +18/30 = +3/5.",
+                                  "bloomLevel": "Uygulama"
+                                },
+                                {
+                                  "id": "mat714_q3",
+                                  "questionText": "(-5/8) ÷ (5/4) işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "-1/2",
+                                    "+1/2",
+                                    "-25/32",
+                                    "-2"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "1. kesir aynen yazılır (-5/8), 2. kesir ters çevrilip çarpılır (4/5): (-5/8) x (4/5) = -20/40 = -1/2.",
+                                  "bloomLevel": "Uygulama"
+                                },
+                                {
+                                  "id": "mat714_q4",
+                                  "questionText": "-3/7 rasyonel sayısının çarpmaya göre tersi aşağıdakilerden hangisidir?",
+                                  "options": [
+                                    "-7/3",
+                                    "+3/7",
+                                    "+7/3",
+                                    "-3/7"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "Çarpmaya göre ters eleman bulunurken sayı ters çevrilir (pay ve payda yer değiştirir), işareti değişmez. -3/7'nin tersi -7/3'tür.",
+                                  "bloomLevel": "Kavrama"
+                                },
+                                {
+                                  "id": "mat714_q5",
+                                  "questionText": "4 ÷ (2/3) işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "6",
+                                    "8/3",
+                                    "2/3",
+                                    "1/6"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "4'ün gizli paydası 1'dir (4/1). (4/1) ÷ (2/3) = (4/1) x (3/2) = 12/2 = 6 tam.",
+                                  "bloomLevel": "Uygulama"
+                                },
+                                {
+                                  "id": "mat714_q6",
+                                  "questionText": "1 tam 1/2 × 2 tam 2/3 işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "4",
+                                    "2 tam 2/6",
+                                    "3 tam 1/3",
+                                    "5"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "Önce bileşik kesre çevrilir: 1 tam 1/2 = 3/2, 2 tam 2/3 = 8/3. (3/2) x (8/3) = 24/6 = 4 tam.",
+                                  "bloomLevel": "Uygulama"
+                                },
+                                {
+                                  "id": "mat714_q7",
+                                  "questionText": "Bir uzay aracının yakıt deposunun 4/5'i doludur. Depodaki yakıtın 3/8'i bir manevrada harcanırsa, harcanan yakıt tüm deponun kaçta kaçıdır?",
+                                  "options": [
+                                    "3/10",
+                                    "7/13",
+                                    "12/40",
+                                    "1/2"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "Tüm deponun 4/5'inin 3/8'i: (4/5) x (3/8) = 12/40 = 3/10'udur.",
+                                  "bloomLevel": "Problem Çözme"
+                                },
+                                {
+                                  "id": "mat714_q8",
+                                  "questionText": "60 metrelik bir fiber optik kablo, her biri 3/4 metre uzunluğunda eş parçalara ayrılacaktır. Toplam kaç parça kablo elde edilir?",
+                                  "options": [
+                                    "80",
+                                    "45",
+                                    "75",
+                                    "90"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "60 ÷ (3/4) = 60 x (4/3) = 240/3 = 80 parça kablo elde edilir.",
+                                  "bloomLevel": "Problem Çözme"
+                                },
+                                {
+                                  "id": "mat714_q9",
+                                  "questionText": "(1 - 1/2) × (1 - 1/3) × (1 - 1/4) işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "1/4",
+                                    "1/2",
+                                    "3/4",
+                                    "1/24"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "Parantez içleri: (1/2) x (2/3) x (3/4). Çapraz sadeleştirmelerle 2'ler ve 3'ler sadeleşir, geriye 1/4 kalır.",
+                                  "bloomLevel": "Analiz"
+                                },
+                                {
+                                  "id": "mat714_q10",
+                                  "questionText": "(-1/3)² × (-6/5) işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "-2/15",
+                                    "+2/15",
+                                    "-6/45",
+                                    "-2/5"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "(-1/3)² = +1/9. (+1/9) x (-6/5) = -6/45 = -2/15.",
+                                  "bloomLevel": "Analiz"
+                                },
+                                {
+                                  "id": "mat714_q11",
+                                  "questionText": "[ (2/3 + 1/6) ÷ (5/4) ] işleminin sonucu kaçtır?",
+                                  "options": [
+                                    "2/3",
+                                    "5/6",
+                                    "1/2",
+                                    "4/5"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "Parantez içi: 2/3 + 1/6 = 4/6 + 1/6 = 5/6. Bölme: (5/6) ÷ (5/4) = (5/6) x (4/5) = 4/6 = 2/3.",
+                                  "bloomLevel": "Çok Adımlı İşlem"
+                                },
+                                {
+                                  "id": "mat714_q12",
+                                  "questionText": "Bir güneş panelinin ürettiği elektrik enerjisi, kış aylarında yaz aylarındakinin 2/5 katına düşmektedir. Yazın 350 kWh üreten bu panel kışın kaç kWh üretir?",
+                                  "options": [
+                                    "140 kWh",
+                                    "120 kWh",
+                                    "175 kWh",
+                                    "150 kWh"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "350 x (2/5) = (350 / 5) x 2 = 70 x 2 = 140 kWh.",
+                                  "bloomLevel": "Problem Çözme"
+                                },
+                                {
+                                  "id": "mat714_q13",
+                                  "questionText": "Aşağıdaki işlemlerden hangisinin sonucu 1'e eşittir?",
+                                  "options": [
+                                    "(-4/7) × (-7/4)",
+                                    "(-3/5) ÷ (+3/5)",
+                                    "(2/3) + (3/2)",
+                                    "(5/8) × (8/5) × 0"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "Bir rasyonel sayının çarpmaya göre tersiyle çarpımı daima +1'dir: (-4/7) x (-7/4) = +28/28 = 1.",
+                                  "bloomLevel": "Kavrama"
+                                },
+                                {
+                                  "id": "mat714_q14",
+                                  "questionText": "Bir su deposunun 3/4'ü doludur. Depodaki su 3/16 litrelik şişelere doldurulacaktır. Depoda toplam 24 litre su olduğuna göre kaç şişe doldurulabilir?",
+                                  "options": [
+                                    "128",
+                                    "96",
+                                    "64",
+                                    "160"
+                                  ],
+                                  "correctOptionIndex": 0,
+                                  "explanation": "Mevcut su 24 litredir. 24 litreyi 3/16 litrelik şişelere paylaştırmak: 24 ÷ (3/16) = 24 x (16/3) = 8 x 16 = 128 şişe.",
+                                  "bloomLevel": "Sentez / Problem Çözme"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
                     }
           ]
 }

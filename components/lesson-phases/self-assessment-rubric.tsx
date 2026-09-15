@@ -11,6 +11,7 @@ import {
   clearActiveBoardStudent,
   saveBoardParticipation
 } from '@/lib/board-participation-store';
+import { downloadStudentRubricPDF } from '@/lib/pdf-report-generator';
 import confetti from 'canvas-confetti';
 import {
   ClipboardCheck,
@@ -29,7 +30,11 @@ import {
   Smile,
   ShieldCheck,
   HelpCircle,
-  FileCheck2
+  FileCheck2,
+  Download,
+  FileDown,
+  Printer,
+  Loader2
 } from 'lucide-react';
 
 interface SelfAssessmentRubricProps {
@@ -221,6 +226,47 @@ export function SelfAssessmentRubricComponent({
     }
   };
 
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    playSound('select');
+    setIsDownloadingPdf(true);
+
+    try {
+      const activeBoardStu = getStoredActiveBoardStudent();
+      const performanceLevel =
+        totalScore >= 17 ? 'Mükemmel' : totalScore >= 13 ? 'Başarılı' : totalScore >= 9 ? 'Orta' : 'Geliştirilmeli';
+
+      const submissionRecord = {
+        id: `rubric-pdf-${Date.now()}`,
+        studentId: student?.id || activeBoardStu?.id || 'ogrenci-1',
+        studentName: student?.name || activeBoardStu?.name || 'Öğrenci',
+        studentNumber: student?.studentNumber || activeBoardStu?.studentNumber || '101',
+        gradeLevel: student?.gradeLevel || 5,
+        classSection: student?.classSection || activeBoardStu?.classSection || '5-A',
+        school: student?.school || activeBoardStu?.school || 'Edirne Selimiye İmam Hatip Ortaokulu',
+        teacherId: student?.teacherId || currentUser?.id,
+        outcomeId,
+        outcomeCode,
+        outcomeTitle: rubric.title,
+        ratings,
+        totalScore,
+        maxScore: maxPossibleScore,
+        percentage: scorePercentage,
+        performanceLevel: performanceLevel as 'Mükemmel' | 'Başarılı' | 'Orta' | 'Geliştirilmeli',
+        studentNote: studentNote.trim() || undefined,
+        submittedAt: new Date().toISOString()
+      };
+
+      await downloadStudentRubricPDF(submissionRecord);
+      playSound('success');
+    } catch (err) {
+      console.error('PDF indirme hatası:', err);
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
+
   const handleReset = () => {
     playSound('clear');
     setRatings({});
@@ -264,7 +310,7 @@ export function SelfAssessmentRubricComponent({
       {/* 1. Header Banner */}
       <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 border border-teal-500/30 shadow-xl space-y-4">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 flex-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-300 text-xs font-black uppercase tracking-wider">
               <ClipboardCheck className="w-4 h-4 text-teal-400" />
               <span>Türkiye Yüzyılı Maarif Modeli • Dereceli Öz Değerlendirme</span>
@@ -275,19 +321,37 @@ export function SelfAssessmentRubricComponent({
             </p>
           </div>
 
-          {/* Quick Score Widget */}
-          <div className="bg-slate-900/90 border border-teal-400/30 p-4 rounded-2xl flex items-center gap-4 shrink-0 shadow-inner">
-            <div className="text-center">
-              <div className="text-[10px] uppercase font-bold text-slate-400">İlerleme</div>
-              <div className="text-lg font-mono font-black text-teal-400">
-                {ratedCount} / {totalCriteriaCount}
+          {/* Header Action & Score Group */}
+          <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap shrink-0">
+            {/* PDF İNDİR BUTONU */}
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isDownloadingPdf}
+              className="px-4 py-3 rounded-2xl bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-300 hover:to-emerald-300 text-slate-950 font-black text-xs shadow-lg shadow-teal-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+              title="Bu Öz Değerlendirme Formunu Resmi MEB Maarif Formatında PDF Olarak İndir"
+            >
+              {isDownloadingPdf ? (
+                <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+              ) : (
+                <Download className="w-4 h-4 text-slate-950" />
+              )}
+              <span>{isDownloadingPdf ? 'Hazırlanıyor...' : 'PDF İndir'}</span>
+            </button>
+
+            {/* Quick Score Widget */}
+            <div className="bg-slate-900/90 border border-teal-400/30 p-3.5 rounded-2xl flex items-center gap-4 shadow-inner">
+              <div className="text-center">
+                <div className="text-[10px] uppercase font-bold text-slate-400">İlerleme</div>
+                <div className="text-base font-mono font-black text-teal-400">
+                  {ratedCount} / {totalCriteriaCount}
+                </div>
               </div>
-            </div>
-            <div className="h-8 w-px bg-slate-700" />
-            <div className="text-center">
-              <div className="text-[10px] uppercase font-bold text-slate-400">Rubrik Puanı</div>
-              <div className="text-lg font-mono font-black text-amber-400">
-                {totalScore} / {maxPossibleScore}
+              <div className="h-7 w-px bg-slate-700" />
+              <div className="text-center">
+                <div className="text-[10px] uppercase font-bold text-slate-400">Rubrik Puanı</div>
+                <div className="text-base font-mono font-black text-amber-400">
+                  {totalScore} / {maxPossibleScore}
+                </div>
               </div>
             </div>
           </div>

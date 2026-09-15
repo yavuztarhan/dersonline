@@ -15,6 +15,7 @@ import { RationalNumbersBench } from '@/components/lesson-phases/rational-number
 import { RationalRulerDensityBench } from '@/components/lesson-phases/rational-ruler-density-bench';
 import { RationalComparisonBench } from '@/components/lesson-phases/rational-comparison-bench';
 import { RationalOperationsBench } from '@/components/lesson-phases/rational-operations-bench';
+import { RationalMultDivBench } from '@/components/lesson-phases/rational-mult-div-bench';
 import confetti from 'canvas-confetti';
 import {
   Shapes,
@@ -604,14 +605,23 @@ function getAngleType(deg: number): { type: 'sifir' | 'dar' | 'dik' | 'genis' | 
 export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const { playSound, unlockBadge, addPoints, selectedOutcome } = useApp();
 
+  const isRationalMultDivBench =
+    selectedOutcome?.id === 'MAT.7.1.4' ||
+    selectedOutcome?.code?.includes('7.1.4') ||
+    data.toolType === 'rational-mult-div-bench' ||
+    (data.title.toLowerCase().includes('çarpma') && data.title.toLowerCase().includes('bölme')) ||
+    data.title.toLowerCase().includes('kuantum çarpım');
+
   const isRationalOperationsBench =
-    selectedOutcome?.id === 'MAT.7.1.3' ||
-    selectedOutcome?.code?.includes('7.1.3') ||
-    data.toolType === 'rational-operations-bench' ||
-    data.title.toLowerCase().includes('toplama ve çıkarma') ||
-    data.title.toLowerCase().includes('yakıt tankı');
+    !isRationalMultDivBench &&
+    (selectedOutcome?.id === 'MAT.7.1.3' ||
+      selectedOutcome?.code?.includes('7.1.3') ||
+      data.toolType === 'rational-operations-bench' ||
+      data.title.toLowerCase().includes('toplama ve çıkarma') ||
+      data.title.toLowerCase().includes('yakıt tankı'));
 
   const isRationalComparisonBench =
+    !isRationalMultDivBench &&
     !isRationalOperationsBench &&
     (selectedOutcome?.id === 'MAT.7.1.2' ||
       selectedOutcome?.code?.includes('7.1.2') ||
@@ -4238,6 +4248,20 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       </g>
     );
   };
+
+  // ==========================================
+  // OUTCOME: MAT.7.1.4 (RATIONAL MULTIPLICATION & DIVISION BENCH)
+  // ==========================================
+  if (isRationalMultDivBench) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <RationalMultDivBench
+          onComplete={() => addPoints(100)}
+          onNextPhase={onNextPhase}
+        />
+      </div>
+    );
+  }
 
   // ==========================================
   // OUTCOME: MAT.7.1.3 (RATIONAL OPERATIONS BENCH)

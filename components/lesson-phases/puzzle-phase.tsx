@@ -29,6 +29,11 @@ import {
   TurbineSpeedSortGame
 } from '@/components/lesson-phases/mat7-w3-games';
 import { GokbeyFuelTankGame } from '@/components/lesson-phases/mat7-w4-games';
+import {
+  QuantumAreaMultiplierGame,
+  RocketInverterDivisionGame,
+  SimplificationLaserGame
+} from '@/components/lesson-phases/mat7-w5-games';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import { useAuth } from '@/lib/auth-store';
 import {
@@ -82,6 +87,9 @@ interface MatchCard {
 }
 
 export type PuzzleGameId = 
+  | 'quantumareamultiplier'
+  | 'rocketinverterdivision'
+  | 'simplificationlaser'
   | 'gokbeyfueltank'
   | 'rationalscale'
   | 'negativefreeze'
@@ -244,12 +252,22 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     }
   };
 
+  const isRationalMultDivTopic =
+    selectedOutcome?.id === 'MAT.7.1.4' ||
+    selectedOutcome?.code?.includes('7.1.4') ||
+    selectedOutcome?.title?.toLowerCase().includes('çarpma') ||
+    selectedOutcome?.title?.toLowerCase().includes('bölme') ||
+    data.title?.toLowerCase().includes('çarpma') ||
+    data.title?.toLowerCase().includes('bölme');
+
   const isRationalOperationsTopic =
-    selectedOutcome?.id === 'MAT.7.1.3' ||
-    selectedOutcome?.code?.includes('7.1.3') ||
-    selectedOutcome?.title?.toLowerCase().includes('toplama ve çıkarma') ||
-    data.title?.toLowerCase().includes('toplama ve çıkarma') ||
-    data.title?.toLowerCase().includes('rasyonel sayılarla toplama');
+    !isRationalMultDivTopic && (
+      selectedOutcome?.id === 'MAT.7.1.3' ||
+      selectedOutcome?.code?.includes('7.1.3') ||
+      selectedOutcome?.title?.toLowerCase().includes('toplama ve çıkarma') ||
+      data.title?.toLowerCase().includes('toplama ve çıkarma') ||
+      data.title?.toLowerCase().includes('rasyonel sayılarla toplama')
+    );
 
   const isRationalComparisonTopic =
     !isRationalOperationsTopic &&
@@ -352,6 +370,41 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
     gradient: string;
     reward: string;
   }> = [];
+
+  if (isRationalMultDivTopic) {
+    baseGamesList.push(
+      {
+        id: 'quantumareamultiplier',
+        title: 'Kuantum Alan Çarpanı (Nano-Grid)',
+        tagline: 'Kesişen Alan Modeli & Sadeleştirme',
+        description: 'Satır ve sütun dilimlerini seçerek çarpım modelini kur, kesişen kuantum hücreleri aydınlat ve en sade sonuca ulaş!',
+        icon: <Layers className="w-8 h-8" />,
+        badge: '4 Seviye • Alan Modeli',
+        gradient: 'from-teal-600 via-emerald-700 to-slate-900',
+        reward: '+100 XP & Kuantum Çarpanı'
+      },
+      {
+        id: 'rocketinverterdivision',
+        title: 'Ters Takla Roket İtkisi (Bölme)',
+        tagline: 'Yörünge Motoru & Ters Çevirip Çarpma',
+        description: 'Bölme işlemini ters çevirip çarpma kuralına dönüştür, takla atan kesirle itki gücünü hesaplayıp roketi yörüngeye fırlat!',
+        icon: <Rocket className="w-8 h-8" />,
+        badge: '4 Görev • Yörünge İtkisi',
+        gradient: 'from-indigo-600 via-purple-700 to-slate-900',
+        reward: '+120 XP & Yörünge Pilotu'
+      },
+      {
+        id: 'simplificationlaser',
+        title: 'Sadeleştirme Lazeri & Ters Eleman',
+        tagline: 'Çapraz Sadeleştirme & Hızlı Çözüm',
+        description: 'Çapraz ortak bölenleri lazerle vurup sayıları küçült, çarpmaya göre ters elemanları 1 yaparak sonucu yıldırım hızında bul!',
+        icon: <Crosshair className="w-8 h-8" />,
+        badge: '4 Hedef • Çapraz Lazer',
+        gradient: 'from-rose-600 via-pink-700 to-slate-900',
+        reward: '+140 XP & Keskin Lazer'
+      }
+    );
+  }
 
   if (isRationalOperationsTopic) {
     baseGamesList.push({
@@ -992,6 +1045,27 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
 
           {/* Teacher Smart Board Student Delegation Widget */}
           <BoardStudentWidget activityTitle={currentGameInfo?.title || 'Aktif Oyun'} />
+
+          {/* FEATURED GAME: KUANTUM ALAN ÇARPANI (MAT.7.1.4) */}
+          {selectedGameId === 'quantumareamultiplier' && (
+            <div className="animate-in fade-in duration-200">
+              <QuantumAreaMultiplierGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: TERS TAKLA ROKET İTKİSİ (MAT.7.1.4) */}
+          {selectedGameId === 'rocketinverterdivision' && (
+            <div className="animate-in fade-in duration-200">
+              <RocketInverterDivisionGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: SADELEŞTİRME LAZERİ (MAT.7.1.4) */}
+          {selectedGameId === 'simplificationlaser' && (
+            <div className="animate-in fade-in duration-200">
+              <SimplificationLaserGame />
+            </div>
+          )}
 
           {/* FEATURED GAME: GÖKBEY YAKIT TANKI (MAT.7.1.3) */}
           {selectedGameId === 'gokbeyfueltank' && (

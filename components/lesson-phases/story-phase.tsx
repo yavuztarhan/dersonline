@@ -5548,6 +5548,181 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   );
                 })()}
 
+                {/* 7. SINIF MAT.7.1.4: 1. BÖLÜM - KUANTUM ALAN MODELİ VE ÇARPMA */}
+                {currentPage.visualScene.type === 'quantum-area-matrix' && (
+                  <div className="w-full h-full p-4 bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 rounded-2xl flex flex-col justify-between text-white space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full bg-teal-500/20 border border-teal-400/40 text-teal-300 text-[10px] font-black uppercase tracking-wider">
+                        🛰️ Kuantum Nano-Matris (Alan Modeli)
+                      </span>
+                      <span className="text-[10px] font-mono text-teal-300 font-bold bg-teal-950 px-2 py-0.5 rounded-md border border-teal-500/30">
+                        (3/4) × (2/3) = 6/12 = 1/2 cm²
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                      {/* Generated Story Image Card */}
+                      <div className="relative rounded-2xl overflow-hidden border-2 border-teal-500/40 shadow-xl group">
+                        <img
+                          src="/story/rational-mult-story.jpg"
+                          alt="Kuantum Laboratuvarı"
+                          className="w-full h-36 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent flex items-end p-2">
+                          <span className="text-[10px] text-teal-200 font-bold">Laboratuvar Holografik Ekranı</span>
+                        </div>
+                      </div>
+
+                      {/* Interactive Area Matrix */}
+                      <div className="flex flex-col items-center justify-center p-3 bg-slate-900/90 rounded-2xl border border-teal-500/30 space-y-2">
+                        <div className="grid grid-cols-4 gap-1 p-1.5 bg-slate-950 rounded-xl border border-slate-800">
+                          {Array.from({ length: 3 }).map((_, r) =>
+                            Array.from({ length: 4 }).map((_, c) => {
+                              const inRow = r < 2;
+                              const inCol = c < 3;
+                              const isOverlap = inRow && inCol;
+                              return (
+                                <div
+                                  key={`${r}-${c}`}
+                                  className={`w-6 h-6 rounded flex items-center justify-center text-[9px] font-black transition-all ${
+                                    isOverlap
+                                      ? 'bg-teal-400 text-slate-950 ring-1 ring-teal-200 shadow-md animate-pulse'
+                                      : inRow
+                                      ? 'bg-indigo-600/40 text-indigo-300'
+                                      : inCol
+                                      ? 'bg-purple-600/40 text-purple-300'
+                                      : 'bg-slate-800/40 text-slate-600'
+                                  }`}
+                                >
+                                  {isOverlap ? '⚡' : ''}
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-bold">
+                          6 Kesişen Kare / 12 Toplam Kare = <strong>1/2 cm²</strong>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-teal-950/60 border border-teal-500/30 text-[11px] text-teal-200 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                      <span><strong>Çarpma Kuralı:</strong> Paylar kendi arasında (3×2=6), paydalar kendi arasında (4×3=12) çarpılır. Payda eşitlenmez!</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.4: 2. BÖLÜM - ÇARPMAYA GÖRE TERS ELEMAN */}
+                {currentPage.visualScene.type === 'inverse-element-balance' && (
+                  <div className="w-full h-full p-4 bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 rounded-2xl flex flex-col justify-between text-white space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-300 text-[10px] font-black uppercase tracking-wider">
+                        🔄 Çarpmaya Göre Ters Eleman Prensibi
+                      </span>
+                      <span className="text-[10px] font-mono text-purple-300 font-bold bg-purple-950 px-2 py-0.5 rounded-md border border-purple-500/30">
+                        (-4/5) × (-5/4) = +1
+                      </span>
+                    </div>
+
+                    {/* Balance Mechanism */}
+                    <div className="flex items-center justify-center p-4 bg-slate-900/80 rounded-2xl border border-purple-500/30 gap-6">
+                      <div className="text-center">
+                        <div className="text-xs text-slate-400">Voltaj Çarpanı</div>
+                        <div className="text-2xl font-black font-mono text-rose-400">-4/5</div>
+                      </div>
+
+                      <div className="text-2xl font-black text-amber-400 animate-spin">×</div>
+
+                      <div className="text-center">
+                        <div className="text-xs text-slate-400">Ters Çarpan</div>
+                        <div className="text-2xl font-black font-mono text-indigo-400">-5/4</div>
+                      </div>
+
+                      <div className="text-2xl font-black text-emerald-400">=</div>
+
+                      <div className="text-center px-4 py-2 bg-emerald-950/80 rounded-2xl border border-emerald-500/50 shadow-lg shadow-emerald-500/20">
+                        <div className="text-[10px] text-emerald-300 font-bold">Birim Referans</div>
+                        <div className="text-2xl font-black text-emerald-400">+1 Tam</div>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-purple-950/60 border border-purple-500/30 text-[11px] text-purple-200 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                      <span><strong>Ters Eleman Kuralı:</strong> Bir kesrin pay ve paydası yer değiştirince çarpmaya göre tersi elde edilir. Çarpımları daima 1'dir!</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.4: 3. BÖLÜM - İYON İTKİ VE BÖLME */}
+                {currentPage.visualScene.type === 'rocket-inverter-flow' && (
+                  <div className="w-full h-full p-4 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 rounded-2xl flex flex-col justify-between text-white space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 text-[10px] font-black uppercase tracking-wider">
+                        🚀 İyon İtki Bölme Motoru
+                      </span>
+                      <span className="text-[10px] font-mono text-indigo-300 font-bold bg-indigo-950 px-2 py-0.5 rounded-md border border-indigo-500/30">
+                        (3/4) ÷ (1/8) = (3/4) × (8/1) = 6
+                      </span>
+                    </div>
+
+                    {/* Step by step division mechanism */}
+                    <div className="grid grid-cols-3 gap-2 text-center p-3 bg-slate-900/90 rounded-2xl border border-indigo-500/30">
+                      <div className="p-2 rounded-xl bg-slate-950 border border-slate-800">
+                        <div className="text-[10px] text-slate-400 font-bold">1. Adım</div>
+                        <div className="text-base font-black text-teal-300 mt-1">3/4</div>
+                        <div className="text-[9px] text-teal-400">Aynen Yaz</div>
+                      </div>
+
+                      <div className="p-2 rounded-xl bg-slate-950 border border-slate-800">
+                        <div className="text-[10px] text-slate-400 font-bold">2. Adım</div>
+                        <div className="text-base font-black text-amber-300 mt-1">÷ ➔ ×</div>
+                        <div className="text-[9px] text-amber-400">Çarpmaya Çevir</div>
+                      </div>
+
+                      <div className="p-2 rounded-xl bg-slate-950 border border-slate-800">
+                        <div className="text-[10px] text-slate-400 font-bold">3. Adım</div>
+                        <div className="text-base font-black text-purple-300 mt-1">8/1</div>
+                        <div className="text-[9px] text-purple-400">Ters Çevir</div>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-indigo-950/60 border border-indigo-500/30 text-[11px] text-indigo-200 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-indigo-400 flex-shrink-0" />
+                      <span><strong>Bölme Kuralı:</strong> Birinci kesir aynen yazılır, bölme çarpmaya döner, ikinci kesir takla atar (ters çevrilir)!</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. SINIF MAT.7.1.4: 4. BÖLÜM - ÇOK ADIMLI İŞLEM VE LAZER */}
+                {currentPage.visualScene.type === 'simplification-laser-flow' && (
+                  <div className="w-full h-full p-4 bg-gradient-to-br from-slate-950 via-rose-950 to-slate-900 rounded-2xl flex flex-col justify-between text-white space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 text-[10px] font-black uppercase tracking-wider">
+                        ⚡ Çapraz Sadeleştirme Lazeri & İşlem Önceliği
+                      </span>
+                      <span className="text-[10px] font-mono text-rose-300 font-bold bg-rose-950 px-2 py-0.5 rounded-md border border-rose-500/30">
+                        (15/28) × (14/25) = 3/10
+                      </span>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-slate-900/90 border border-rose-500/30 space-y-2 text-center">
+                      <div className="text-xs text-slate-300 font-bold">Çapraz Sadeleştirme Gücü:</div>
+                      <div className="text-lg font-black font-mono text-amber-300">
+                        (15 ÷ 5) / (28 ÷ 14) × (14 ÷ 14) / (25 ÷ 5)
+                      </div>
+                      <div className="text-xs font-mono text-emerald-300 font-bold">
+                        = (3 / 2) × (1 / 5) = 3/10!
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-rose-950/60 border border-rose-500/30 text-[11px] text-rose-200 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                      <span><strong>İşlem Önceliği:</strong> Önce parantez içi, ardından çarpma/bölme (önce sadeleştirme), en son toplama/çıkarma yapılır!</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* GENERIC GEOMETRIC CHALKBOARD SCENE FALLBACK (For any unexpected scene type) */}
                 {![
                   'point-map',
@@ -5606,7 +5781,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   'fraction-tank-addition',
                   'common-denominator-stepper',
                   'signed-vector-number-line',
-                  'thermal-difference-scale'
+                  'thermal-difference-scale',
+                  'quantum-area-matrix',
+                  'inverse-element-balance',
+                  'rocket-inverter-flow',
+                  'simplification-laser-flow'
                 ].includes(currentPage.visualScene.type) && (
                   <div className="w-full h-full p-5 bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 flex flex-col items-center justify-center text-center space-y-3">
                     <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border-2 border-teal-400 text-teal-300 flex items-center justify-center">

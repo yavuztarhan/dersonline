@@ -76,7 +76,8 @@ export interface LabPhaseData {
     | 'rational-numbers-bench'
     | 'rational-ruler-density-bench'
     | 'rational-comparison-bench'
-    | 'rational-operations-bench';
+    | 'rational-operations-bench'
+    | 'rational-mult-div-bench';
   instructions: string;
   taskGoal: string;
   interactiveTips: string[];

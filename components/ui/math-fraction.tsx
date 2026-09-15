@@ -118,24 +118,24 @@ export function MathFraction({
   }
 
   const fractionNode = (
-    <span className={`inline-flex items-center align-middle font-sans leading-none select-none mx-0.5 ${className}`}>
-      {displaySign && <span className="mr-0.5 font-bold">{displaySign}</span>}
-      {displayWhole && <span className="mr-1 font-bold">{displayWhole}</span>}
+    <span className={`inline-flex items-center align-middle font-serif leading-none select-none mx-0.5 ${className}`}>
+      {displaySign && <span className="mr-1 font-bold text-[1.1em]">{displaySign}</span>}
+      {displayWhole && <span className="mr-1.5 font-bold text-[1.1em]">{displayWhole}</span>}
       <span className="inline-flex flex-col items-center justify-center align-middle mx-0.5">
-        <span className="text-[0.80em] font-black leading-none px-0.5 pb-[2px]">{displayNum}</span>
-        <span className="w-full h-[1.5px] bg-current rounded-full" />
-        <span className="text-[0.80em] font-black leading-none px-0.5 pt-[2px]">{displayDen}</span>
+        <span className="text-[0.9em] font-bold leading-tight px-1 pb-[2px] text-center">{displayNum}</span>
+        <span className="w-full min-w-[1.2em] h-[2px] bg-current rounded-full my-[1px]" />
+        <span className="text-[0.9em] font-bold leading-tight px-1 pt-[2px] text-center">{displayDen}</span>
       </span>
-      {displayUnit && <span className="ml-1 text-[0.9em] font-normal">{displayUnit}</span>}
+      {displayUnit && <span className="ml-1 text-[0.85em] font-sans font-normal">{displayUnit}</span>}
     </span>
   );
 
   if (displayAbsolute) {
     return (
-      <span className={`inline-flex items-center align-middle font-sans font-bold leading-none ${className}`}>
-        <span className="text-[1.15em] leading-none px-0.5 opacity-80">|</span>
+      <span className={`inline-flex items-center align-middle font-serif font-bold leading-none ${className}`}>
+        <span className="text-[1.2em] leading-none px-0.5 opacity-80">|</span>
         {fractionNode}
-        <span className="text-[1.15em] leading-none px-0.5 opacity-80">|</span>
+        <span className="text-[1.2em] leading-none px-0.5 opacity-80">|</span>
       </span>
     );
   }
