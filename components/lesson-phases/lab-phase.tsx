@@ -63,6 +63,7 @@ interface GeoPoint {
   x: number;
   y: number;
   color: string;
+  hideLabel?: boolean;
 }
 
 interface GeoObject {
@@ -1631,6 +1632,55 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         return p;
       })
     );
+  };
+
+  const togglePointLabelVisibility = (id: string) => {
+    playSound('click');
+    setPoints((prev) =>
+      prev.map((p) => {
+        if (p.id === id) {
+          const nextHidden = !p.hideLabel;
+          setFeedbackMsg(
+            nextHidden
+              ? `👁️‍🗨️ ${p.label} noktası etiketi gizlendi.`
+              : `👁️ ${p.label} noktası etiketi görünür yapıldı.`
+          );
+          return { ...p, hideLabel: nextHidden };
+        }
+        return p;
+      })
+    );
+  };
+
+  const hasAnyElement = points.length > 0 || objects.length > 0 || angles.length > 0 || polygons.length > 0;
+
+  const areAllLabelsHidden = Boolean(
+    hasAnyElement &&
+      (points.length === 0 || points.every((p) => p.hideLabel)) &&
+      (objects.length === 0 || objects.every((o) => o.hideLabel && o.hideLength)) &&
+      (angles.length === 0 || angles.every((a) => a.hideLabel)) &&
+      (polygons.length === 0 || polygons.every((p) => p.hideLabel))
+  );
+
+  const toggleAllLabelsVisibility = () => {
+    playSound('click');
+    if (!hasAnyElement) {
+      setFeedbackMsg('Tahtada henüz etiket içeren bir geometrik eleman bulunmuyor.');
+      return;
+    }
+    if (areAllLabelsHidden) {
+      setPoints((prev) => prev.map((p) => ({ ...p, hideLabel: false })));
+      setObjects((prev) => prev.map((o) => ({ ...o, hideLabel: false, hideLength: false })));
+      setAngles((prev) => prev.map((a) => ({ ...a, hideLabel: false })));
+      setPolygons((prev) => prev.map((p) => ({ ...p, hideLabel: false })));
+      setFeedbackMsg('👁️ Tahtadaki tüm etiketler ve ölçü yazıları görünür yapıldı.');
+    } else {
+      setPoints((prev) => prev.map((p) => ({ ...p, hideLabel: true })));
+      setObjects((prev) => prev.map((o) => ({ ...o, hideLabel: true, hideLength: true })));
+      setAngles((prev) => prev.map((a) => ({ ...a, hideLabel: true })));
+      setPolygons((prev) => prev.map((p) => ({ ...p, hideLabel: true })));
+      setFeedbackMsg('👁️‍🗨️ Tahtadaki tüm etiketler ve ölçü yazıları kaldırıldı.');
+    }
   };
 
   const deletePoint = (id: string) => {
@@ -4561,17 +4611,19 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       />
 
                       {/* Point Label */}
-                      <text
-                        x={pt.x}
-                        y={pt.y - 13}
-                        textAnchor="middle"
-                        fill="#0f172a"
-                        fontSize="13"
-                        fontWeight="900"
-                        className="pointer-events-none select-none drop-shadow-xs"
-                      >
-                        {pt.label}
-                      </text>
+                      {!pt.hideLabel && (
+                        <text
+                          x={pt.x}
+                          y={pt.y - 13}
+                          textAnchor="middle"
+                          fill="#0f172a"
+                          fontSize="13"
+                          fontWeight="900"
+                          className="pointer-events-none select-none drop-shadow-xs"
+                        >
+                          {pt.label}
+                        </text>
+                      )}
                     </g>
                   );
                 })}
@@ -7538,17 +7590,19 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                     />
 
                     {/* Point Label */}
-                    <text
-                      x={pt.x}
-                      y={pt.y - 13}
-                      textAnchor="middle"
-                      fill="#0f172a"
-                      fontSize="13"
-                      fontWeight="900"
-                      className="pointer-events-none select-none drop-shadow-xs"
-                    >
-                      {pt.label}
-                    </text>
+                    {!pt.hideLabel && (
+                      <text
+                        x={pt.x}
+                        y={pt.y - 13}
+                        textAnchor="middle"
+                        fill="#0f172a"
+                        fontSize="13"
+                        fontWeight="900"
+                        className="pointer-events-none select-none drop-shadow-xs"
+                      >
+                        {pt.label}
+                      </text>
+                    )}
                   </g>
                 );
               })}
@@ -7628,10 +7682,39 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             {/* Bottom Table: GeoGebra Cebir Görünümü & Nesne Denetçisi */}
             <div className="bg-slate-900 text-white border-t border-slate-700 p-4 space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
-                <span className="text-xs font-black uppercase text-teal-300 tracking-wider flex items-center gap-1.5">
-                  <Shapes className="w-4 h-4" />
-                  <span>GeoGebra Cebir Görünümü & Nesne Denetçisi</span>
-                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-xs font-black uppercase text-teal-300 tracking-wider flex items-center gap-1.5">
+                    <Shapes className="w-4 h-4" />
+                    <span>GeoGebra Cebir Görünümü & Nesne Denetçisi</span>
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={toggleAllLabelsVisibility}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs border ${
+                      areAllLabelsHidden
+                        ? 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/40'
+                        : 'bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-rose-200 border-rose-500/40'
+                    }`}
+                    title={
+                      areAllLabelsHidden
+                        ? 'Tahtadaki tüm etiketleri ve ölçüleri tekrar göster'
+                        : 'Tahtadaki tüm etiketleri ve ölçü yazılarını kaldır/gizle'
+                    }
+                  >
+                    {areAllLabelsHidden ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Tüm Etiketleri Göster</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5 text-rose-400" />
+                        <span>Tüm Etiketleri Kaldır</span>
+                      </>
+                    )}
+                  </button>
+                </div>
                 <div className="flex items-center gap-2 text-[11px] text-slate-300 font-bold flex-wrap">
                   <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     Çokgen: {polygons.length}
@@ -7871,10 +7954,26 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                             key={pt.id}
                             className="px-2.5 py-1 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"
                           >
-                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: pt.color }} />
-                            <span className="font-black text-slate-200">{pt.label}</span>
+                            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: pt.color }} />
+                            <span className={`font-black ${pt.hideLabel ? 'text-slate-500 line-through' : 'text-slate-200'}`}>
+                              {pt.label}
+                            </span>
+                            {pt.hideLabel && (
+                              <span className="inline-flex items-center gap-0.5 text-[9px] text-amber-400 font-sans font-bold px-1 py-0.2 rounded bg-amber-500/15 border border-amber-500/30">
+                                <EyeOff className="w-2.5 h-2.5" /> Gizli
+                              </span>
+                            )}
                             <span className="font-mono text-[10px] text-slate-400">({pt.x}, {pt.y})</span>
                             <button
+                              type="button"
+                              onClick={() => togglePointLabelVisibility(pt.id)}
+                              className="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-amber-300 transition-colors cursor-pointer"
+                              title={pt.hideLabel ? `${pt.label} etiketini tahtada göster` : `${pt.label} etiketini tahtada gizle`}
+                            >
+                              {pt.hideLabel ? <EyeOff className="w-3 h-3 text-amber-400" /> : <Eye className="w-3 h-3 text-slate-400" />}
+                            </button>
+                            <button
+                              type="button"
                               onClick={() => deletePoint(pt.id)}
                               className="p-0.5 rounded hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 transition-colors cursor-pointer"
                               title={`${pt.label} Noktasını Sil`}
