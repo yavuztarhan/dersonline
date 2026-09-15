@@ -55,9 +55,9 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
     password: '',
     passwordConfirm: '',
     phone: '',
-    city: 'Edirne',
-    district: 'Merkez',
-    school: 'Edirne Selimiye İmam Hatip Ortaokulu',
+    city: '',
+    district: '',
+    school: '',
     customSchool: '',
     branch: 'Matematik'
   });
@@ -88,9 +88,9 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
       name: account.name,
       email: account.email,
       password: 'google_oauth_verified',
-      city: formData.city,
-      district: formData.district,
-      school: formData.school,
+      city: '',
+      district: '',
+      school: '',
       branch: formData.branch
     });
 
@@ -115,15 +115,15 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
   useEffect(() => {
     let isMounted = true;
     async function loadDistricts() {
+      if (!formData.city) {
+        setDistrictsList([]);
+        return;
+      }
       setLoadingDistricts(true);
       try {
         const districts = await fetchDistrictsApi(formData.city);
         if (isMounted) {
           setDistrictsList(districts);
-          if (!districts.includes(formData.district)) {
-            const firstDist = districts[0] || 'Merkez';
-            setFormData((prev) => ({ ...prev, district: firstDist }));
-          }
         }
       } catch (e) {
         if (isMounted) {
@@ -144,18 +144,15 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
   useEffect(() => {
     let isMounted = true;
     async function loadSchools() {
-      if (!formData.district) return;
+      if (!formData.city || !formData.district) {
+        setSchoolsList([]);
+        return;
+      }
       setLoadingSchools(true);
       try {
         const schools = await fetchSchoolsApi(formData.city, formData.district);
         if (isMounted) {
           setSchoolsList(schools);
-          if (schools.length > 0 && formData.school !== 'custom') {
-            const exists = schools.some((s) => s.name.toLocaleLowerCase('tr') === formData.school.toLocaleLowerCase('tr'));
-            if (!exists) {
-              setFormData((prev) => ({ ...prev, school: schools[0].name }));
-            }
-          }
         }
       } catch (e) {
         if (isMounted) {
@@ -177,6 +174,8 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
     setFormData((prev) => ({
       ...prev,
       city: newCity,
+      district: '',
+      school: '',
       customSchool: ''
     }));
     setSchoolSearchQuery('');
@@ -187,6 +186,7 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
     setFormData((prev) => ({
       ...prev,
       district: newDistrict,
+      school: '',
       customSchool: ''
     }));
     setSchoolSearchQuery('');
@@ -307,8 +307,16 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
     e.preventDefault();
     setErrorMessage('');
 
+    if (!formData.city.trim() || formData.city === 'Seçiniz') {
+      setErrorMessage('Lütfen görev yaptığınız ili seçiniz.');
+      return;
+    }
+    if (!formData.district.trim() || formData.district === 'Seçiniz') {
+      setErrorMessage('Lütfen görev yaptığınız ilçeyi seçiniz.');
+      return;
+    }
     const finalSchool = formData.school === 'custom' ? formData.customSchool.trim() : formData.school;
-    if (!finalSchool) {
+    if (!finalSchool || finalSchool === 'Seçiniz') {
       setErrorMessage('Lütfen okul adınızı seçiniz veya yazınız.');
       return;
     }
@@ -641,6 +649,7 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
                 onChange={(e) => handleCityChange(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 text-xs sm:text-sm font-bold text-slate-800 bg-white outline-none cursor-pointer"
               >
+                <option value="">İl Seçiniz...</option>
                 {allProvinces.map((prov) => (
                   <option key={prov} value={prov}>
                     {prov}
@@ -652,15 +661,16 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
             {/* 2. İLÇE SEÇİMİ (DROPDOWN) */}
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
-                <span>İlçe ({formData.city}) <span className="text-rose-500">*</span></span>
+                <span>İlçe {formData.city ? `(${formData.city})` : ''} <span className="text-rose-500">*</span></span>
                 {loadingDistricts && <Loader2 className="w-3 h-3 text-teal-600 animate-spin" />}
               </label>
               <select
                 value={formData.district}
                 onChange={(e) => handleDistrictChange(e.target.value)}
-                disabled={loadingDistricts}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 text-xs sm:text-sm font-bold text-slate-800 bg-white outline-none cursor-pointer disabled:bg-slate-100"
+                disabled={loadingDistricts || !formData.city}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 text-xs sm:text-sm font-bold text-slate-800 bg-white outline-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400"
               >
+                <option value="">{formData.city ? 'İlçe Seçiniz...' : 'Önce İl Seçiniz'}</option>
                 {districtsList.map((dist) => (
                   <option key={dist} value={dist}>
                     {dist}
@@ -673,7 +683,7 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <span>Okul Adı ({formData.city} / {formData.district}) <span className="text-rose-500">*</span></span>
+                  <span>Okul Adı {formData.city && formData.district ? `(${formData.city} / ${formData.district})` : ''} <span className="text-rose-500">*</span></span>
                   {loadingSchools && <Loader2 className="w-3 h-3 text-teal-600 animate-spin" />}
                 </span>
                 <button
@@ -703,8 +713,10 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
                   <select
                     value={formData.school}
                     onChange={(e) => setFormData({ ...formData, school: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 text-xs sm:text-sm font-bold text-slate-800 bg-white outline-none cursor-pointer"
+                    disabled={loadingSchools || !formData.district}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 text-xs sm:text-sm font-bold text-slate-800 bg-white outline-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400"
                   >
+                    <option value="">{formData.district ? 'Okul Seçiniz...' : 'Önce İl ve İlçe Seçiniz'}</option>
                     {filteredSchools.map((sch) => (
                       <option key={sch.id} value={sch.name}>
                         {sch.name} ({sch.type})
@@ -720,7 +732,7 @@ export function TeacherRegisterWizard({ onComplete, onSwitchToLogin }: TeacherRe
                     <input
                       type="text"
                       required
-                      placeholder="Örn: Edirne Selimiye Ortaokulu"
+                      placeholder="Örn: Mehmet Akif Ersoy Ortaokulu"
                       value={formData.customSchool}
                       onChange={(e) => setFormData({ ...formData, customSchool: e.target.value })}
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-teal-400 focus:border-teal-600 text-xs sm:text-sm outline-none"

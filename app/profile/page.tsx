@@ -76,8 +76,8 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
   const [branch, setBranch] = useState('Matematik');
-  const [city, setCity] = useState('Edirne');
-  const [district, setDistrict] = useState('Merkez');
+  const [city, setCity] = useState('');
+  const [district, setDistrict] = useState('');
   const [school, setSchool] = useState('');
   const [principalName, setPrincipalName] = useState('');
   const [isCustomSchool, setIsCustomSchool] = useState(false);
@@ -135,8 +135,8 @@ export default function ProfilePage() {
       setBranch(userObj.branch || 'Matematik');
       setPrincipalName(userObj.principalName || '');
 
-      const userCity = userObj.city || 'Edirne';
-      const userDistrict = userObj.district || 'Merkez';
+      const userCity = userObj.city || '';
+      const userDistrict = userObj.district || '';
       const userSchool = userObj.school || '';
 
       setCity(userCity);
@@ -173,7 +173,10 @@ export default function ProfilePage() {
 
   // Load districts when city changes
   useEffect(() => {
-    if (!city) return;
+    if (!city) {
+      setDistrictsList([]);
+      return;
+    }
     const currentSeq = ++cityFetchSeq.current;
     setLoadingDistricts(true);
 
@@ -198,7 +201,10 @@ export default function ProfilePage() {
 
   // Load schools when city or district changes
   useEffect(() => {
-    if (!city || !district) return;
+    if (!city || !district) {
+      setSchoolsList([]);
+      return;
+    }
     const currentSeq = ++schoolFetchSeq.current;
     setLoadingSchools(true);
 
@@ -224,14 +230,21 @@ export default function ProfilePage() {
   // Handle City Change
   const handleCityChange = (newCity: string) => {
     setCity(newCity);
+    if (!newCity) {
+      setDistrictsList([]);
+      setDistrict('');
+      setSchoolsList([]);
+      setSchool('');
+      setIsCustomSchool(false);
+      setCustomSchoolName('');
+      setSchoolSearchQuery('');
+      return;
+    }
     const districts = getDistrictsByProvince(newCity);
     setDistrictsList(districts);
-    const firstDist = districts[0] || 'Merkez';
-    setDistrict(firstDist);
-
-    const schools = getSchoolsByDistrict(newCity, firstDist);
-    setSchoolsList(schools);
-    setSchool(schools[0]?.name || '');
+    setDistrict('');
+    setSchoolsList([]);
+    setSchool('');
     setIsCustomSchool(false);
     setCustomSchoolName('');
     setSchoolSearchQuery('');
@@ -240,9 +253,17 @@ export default function ProfilePage() {
   // Handle District Change
   const handleDistrictChange = (newDist: string) => {
     setDistrict(newDist);
+    if (!newDist) {
+      setSchoolsList([]);
+      setSchool('');
+      setIsCustomSchool(false);
+      setCustomSchoolName('');
+      setSchoolSearchQuery('');
+      return;
+    }
     const schools = getSchoolsByDistrict(city, newDist);
     setSchoolsList(schools);
-    setSchool(schools[0]?.name || '');
+    setSchool('');
     setIsCustomSchool(false);
     setCustomSchoolName('');
     setSchoolSearchQuery('');
@@ -368,9 +389,19 @@ export default function ProfilePage() {
       ? customSchoolName.trim()
       : (school || '').trim();
 
-    if (currentUser?.role === 'teacher' && !finalSchoolName) {
-      setErrorMsg('Lütfen okulunuzu seçiniz veya adını yazınız.');
-      return;
+    if (currentUser?.role === 'teacher') {
+      if (!city.trim() || city === 'Seçiniz') {
+        setErrorMsg('Lütfen görev yaptığınız ili seçiniz.');
+        return;
+      }
+      if (!district.trim() || district === 'Seçiniz') {
+        setErrorMsg('Lütfen görev yaptığınız ilçeyi seçiniz.');
+        return;
+      }
+      if (!finalSchoolName || finalSchoolName === 'Seçiniz') {
+        setErrorMsg('Lütfen okulunuzu seçiniz veya adını yazınız.');
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -522,7 +553,7 @@ export default function ProfilePage() {
               <span>•</span>
               <span className="flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-amber-400" />
-                <span>{city} / {district}</span>
+                <span>{city && district ? `${city} / ${district}` : city || 'İl / İlçe Belirtilmedi'}</span>
               </span>
             </div>
             <div className="pt-2 text-[11px] text-slate-300">
@@ -968,6 +999,7 @@ export default function ProfilePage() {
                       onChange={(e) => handleCityChange(e.target.value)}
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
                     >
+                      <option value="">İl Seçiniz...</option>
                       {allProvinces.map((p) => (
                         <option key={p} value={p}>
                           {p}
@@ -985,9 +1017,10 @@ export default function ProfilePage() {
                     <select
                       value={district}
                       onChange={(e) => handleDistrictChange(e.target.value)}
-                      disabled={loadingDistricts}
-                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer disabled:bg-slate-100"
+                      disabled={loadingDistricts || !city}
+                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer disabled:bg-slate-100 disabled:text-slate-400"
                     >
+                      <option value="">{city ? 'İlçe Seçiniz...' : 'Önce İl Seçiniz'}</option>
                       {districtsList.map((d) => (
                         <option key={d} value={d}>
                           {d}
@@ -1048,8 +1081,10 @@ export default function ProfilePage() {
                               setSchool(e.target.value);
                             }
                           }}
-                          className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer"
+                          disabled={loadingSchools || !district}
+                          className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-white outline-none focus:border-teal-500 transition-all cursor-pointer disabled:bg-slate-100 disabled:text-slate-400"
                         >
+                          <option value="">{district ? 'Okul Seçiniz...' : 'Önce İl ve İlçe Seçiniz'}</option>
                           {/* Make sure currently selected/saved school is always an option */}
                           {school && !filteredSchools.some((s) => s.name === school) && (
                             <option value={school}>

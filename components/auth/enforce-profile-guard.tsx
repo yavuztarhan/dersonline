@@ -20,7 +20,13 @@ export function EnforceProfileGuard() {
     (currentUser as any)?.status === 'SUSPENDED';
 
   const hasAcceptedKvkk = Boolean(currentUser?.isKvkkAccepted || currentUser?.kvkkAcceptedAt);
-  const isProfileComplete = Boolean((currentUser as any)?.isProfileComplete && (currentUser as any)?.school && (currentUser as any)?.phone);
+  const isProfileComplete = Boolean(
+    (currentUser as any)?.isProfileComplete &&
+    (currentUser as any)?.school &&
+    (currentUser as any)?.city &&
+    (currentUser as any)?.district &&
+    (currentUser as any)?.phone
+  );
 
   useEffect(() => {
     if (!currentUser || isSuspended || isDemoMode) return;

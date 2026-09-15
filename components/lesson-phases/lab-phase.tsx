@@ -1339,12 +1339,37 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     return bestMatch;
   };
 
-  const dropPerpendicularFromSetSquare = () => {
+  const createPerpendicularBetween = (ptP: GeoPoint, ptH: GeoPoint) => {
+    const lineName = snappedLineInfo ? snappedLineInfo.lineSymbol : 'd Doğrusu';
+    const distCm = Math.round((SET_SQUARE_HEIGHT / 30) * 10) / 10;
+
+    const perpObj: GeoObject = {
+      id: `perp-${Date.now()}`,
+      type: 'perpendicular',
+      p1: ptP,
+      p2: ptH,
+      symbol: `[${ptP.label}${ptH.label}] ⊥ ${lineName}`,
+      label: `Dikme [${ptP.label}${ptH.label}] ⊥ ${lineName} (${distCm} cm)`,
+      distance: distCm,
+      color: activeColor || '#f43f5e',
+      baseLineId: snappedLineInfo?.lineId
+    };
+
+    setObjects((prev) => [...prev, perpObj]);
+    checkAndCompleteMotifObject(perpObj);
+    playSound('success');
+    addPoints(25);
+    setFeedbackMsg(
+      `🎉 Harika! Gönyeyi kullanarak [${ptP.label}${ptH.label}] ⊥ ${lineName} dikmesini kendiniz çizdiniz! Kesişim yerinde 90° diklik sembolü (⊾) oluşturuldu.`
+    );
+  };
+
+  const handleSetSquarePointClick = (which: 'freeTip' | 'foot') => {
     const freeTip = getSetSquareFreeTip();
     const foot = setSquareOrigin;
 
     // Reuse existing points or create new ones
-    let ptP = getPointNear(freeTip.x, freeTip.y, points, 22);
+    let ptP = getPointNear(freeTip.x, freeTip.y, points, 24);
     let createdP = false;
     if (!ptP) {
       ptP = {
@@ -1357,7 +1382,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       createdP = true;
     }
 
-    let ptH = getPointNear(foot.x, foot.y, points, 22);
+    let ptH = getPointNear(foot.x, foot.y, points, 24);
     let createdH = false;
     if (!ptH) {
       ptH = {
@@ -1370,78 +1395,56 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       createdH = true;
     }
 
-    const snappedBaseLine = snappedLineInfo ? objects.find((o) => o.id === snappedLineInfo.lineId) : null;
-    let baseArmPoint =
-      snappedBaseLine && snappedBaseLine.p2
-        ? snappedBaseLine.p2.id !== ptH.id
-          ? (points.find((p) => p.id === snappedBaseLine.p2!.id) || snappedBaseLine.p2)
-          : (points.find((p) => p.id === snappedBaseLine.p1.id) || snappedBaseLine.p1)
-        : null;
-
-    let ptB: GeoPoint;
-    let createdB = false;
-    if (baseArmPoint) {
-      ptB = baseArmPoint;
-    } else {
-      const baseTip = getSetSquareBaseTip();
-      const existingB = getPointNear(baseTip.x, baseTip.y, points, 22);
-      if (existingB) {
-        ptB = existingB;
-      } else {
-        ptB = {
-          id: `pt-B-${Date.now()}`,
-          label: 'B',
-          x: baseTip.x,
-          y: baseTip.y,
-          color: '#38bdf8'
-        };
-        createdB = true;
-      }
-    }
-
-    const lineName = snappedLineInfo ? snappedLineInfo.lineSymbol : 'd Doğrusu';
-    const distCm = Math.round((SET_SQUARE_HEIGHT / 30) * 10) / 10;
-
-    const perpObj: GeoObject = {
-      id: `perp-${Date.now()}`,
-      type: 'perpendicular',
-      p1: ptP,
-      p2: ptH,
-      symbol: `[${ptP.label}${ptH.label}] ⊥ ${lineName}`,
-      label: `Dikme [${ptP.label}${ptH.label}] ⊥ ${lineName} (${distCm} cm)`,
-      distance: distCm,
-      color: '#f43f5e',
-      baseLineId: snappedLineInfo?.lineId
-    };
-
-    const angle90: GeoAngle = {
-      id: `ang-90-${Date.now()}`,
-      vertex: ptH,
-      p1: ptB,
-      p2: ptP,
-      degree: 90,
-      type: 'dik',
-      label: `s(∠${ptB.label}${ptH.label}${ptP.label}) = 90°`,
-      color: '#10b981'
-    };
-
     const newPointsToAdd: GeoPoint[] = [];
     if (createdP) newPointsToAdd.push(ptP);
     if (createdH) newPointsToAdd.push(ptH);
-    if (createdB) newPointsToAdd.push(ptB);
-
     if (newPointsToAdd.length > 0) {
       setPoints((prev) => [...prev, ...newPointsToAdd]);
     }
-    setObjects((prev) => [...prev, perpObj]);
-    setAngles((prev) => [...prev, angle90]);
 
-    checkAndCompleteMotifObject(perpObj);
-    playSound('success');
-    addPoints(25);
-    setFeedbackMsg(
-      `📐 Gönye ile [${ptP.label}${ptH.label}] ⊥ ${lineName} dikmesi çizildi! Kesişim noktasında 90° dik açı ve diklik sembolü (⊾) oluşturuldu.`
-    );
+    const clickedPoint = which === 'freeTip' ? ptP : ptH;
+    const targetPoint = which === 'freeTip' ? ptH : ptP;
+
+    // If student already selected the other end of the set square vertical edge
+    if (selectedPointForLink) {
+      const isOppositeSelected =
+        selectedPointForLink.id === targetPoint.id ||
+        Math.hypot(selectedPointForLink.x - targetPoint.x, selectedPointForLink.y - targetPoint.y) <= 28;
+
+      if (isOppositeSelected) {
+        createPerpendicularBetween(ptP, ptH);
+        setSelectedPointForLink(null);
+        setHoverPos(null);
+        touchDrawStartRef.current = null;
+        return;
+      }
+
+      if (selectedPointForLink.id === clickedPoint.id) {
+        setSelectedPointForLink(null);
+        setHoverPos(null);
+        touchDrawStartRef.current = null;
+        playSound('click');
+        return;
+      }
+    }
+
+    // 1st point clicked: start drawing line from this magnetic point
+    setSelectedPointForLink(clickedPoint);
+    setHoverPos({ x: clickedPoint.x, y: clickedPoint.y });
+    touchDrawStartRef.current = { x: clickedPoint.x, y: clickedPoint.y, point: clickedPoint, tool: activeTool };
+    if (activeTool !== 'segment' && activeTool !== 'ray' && activeTool !== 'line') {
+      setActiveTool('segment');
+    }
+    playSound('select');
+    if (which === 'freeTip') {
+      setFeedbackMsg(
+        `🧲 Mıknatıslı tepe noktasına (${ptP.label}) kilitlendi! Şimdi kesişim noktasına (${ptH.label}) doğru çizginizi uzatınız veya kesişim noktasına tıklayınız.`
+      );
+    } else {
+      setFeedbackMsg(
+        `🧲 Mıknatıslı kesişim noktasına (${ptH.label}) kilitlendi! Şimdi tepe noktasına (${ptP.label}) doğru çizginizi uzatınız veya tepe noktasına tıklayınız.`
+      );
+    }
   };
 
   const loadArtMotifStationPreset = () => {
@@ -1798,11 +1801,15 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       const targetPt = hitPoint ? { x: hitPoint.x, y: hitPoint.y } : { x, y };
       setProtractorCenter(targetPt);
       setIsProtractorOnCanvas(true);
+      setActiveTool('drag');
+      setSelectedPointForLink(null);
+      setMeasureAnglePoints([]);
+      setMeasureLengthPoints([]);
       playSound('click');
       if (hitPoint) {
-        setFeedbackMsg(`📐 İletki ${hitPoint.label} noktasına yerleştirildi. Mavi tutamaktan döndürebilir, diğer araçlarla (nokta, ışın, doğru) çizim yapabilirsiniz.`);
+        setFeedbackMsg(`📐 İletki ${hitPoint.label} noktasına yerleştirildi. Taşıma aracı aktif: Turuncu merkezden taşıyabilir, mavi tutamaktan döndürebilirsiniz.`);
       } else {
-        setFeedbackMsg(`📐 İletki tuvale bırakıldı. Turuncu merkezden taşıyabilir, mavi tutamaktan döndürebilirsiniz.`);
+        setFeedbackMsg(`📐 İletki tuvale bırakıldı. Taşıma aracı aktif: Turuncu merkezden taşıyabilir, mavi tutamaktan döndürebilirsiniz.`);
       }
       return;
     }
@@ -2161,46 +2168,20 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     if (activeTool === 'segment' || activeTool === 'ray' || activeTool === 'line') {
       const toolName = activeTool === 'segment' ? 'Doğru Parçası' : activeTool === 'ray' ? 'Işın' : 'Doğru';
 
-      // Check if user is clicking on or near the set square magnetic free tip or 90° corner
+      // Check if user is clicking on or near the set square magnetic free tip or 90° foot corner
       if (isSetSquareOnCanvas) {
         const freeTip = getSetSquareFreeTip();
         const distFreeTip = Math.hypot(rawX - freeTip.x, rawY - freeTip.y);
         const foot = setSquareOrigin;
         const distFoot = Math.hypot(rawX - foot.x, rawY - foot.y);
 
-        if (!selectedPointForLink && distFreeTip <= 26) {
-          let ptP = getPointNear(freeTip.x, freeTip.y, points, 22);
-          if (!ptP) {
-            ptP = {
-              id: `pt-P-${Date.now()}`,
-              label: 'P',
-              x: freeTip.x,
-              y: freeTip.y,
-              color: '#f43f5e'
-            };
-            setPoints((prev) => [...prev, ptP!]);
-          }
-          setSelectedPointForLink(ptP);
-          setHoverPos({ x: rawX, y: rawY });
-          touchDrawStartRef.current = { x: ptP.x, y: ptP.y, point: ptP, tool: activeTool };
-          playSound('select');
-          setFeedbackMsg(`🧲 Gönyenin mıknatıslı ucuna (${ptP.label}) kilitlendi! Şimdi kesişim noktasına (H) doğru çizgiyi uzatarak 90° dikmeyi indirebilirsiniz.`);
+        if (distFreeTip <= 28) {
+          handleSetSquarePointClick('freeTip');
           return;
         }
 
-        if (selectedPointForLink && Math.hypot(selectedPointForLink.x - freeTip.x, selectedPointForLink.y - freeTip.y) <= 24 && distFoot <= 30) {
-          dropPerpendicularFromSetSquare();
-          setSelectedPointForLink(null);
-          setHoverPos(null);
-          touchDrawStartRef.current = null;
-          return;
-        }
-
-        if (selectedPointForLink && Math.hypot(selectedPointForLink.x - foot.x, selectedPointForLink.y - foot.y) <= 24 && distFreeTip <= 30) {
-          dropPerpendicularFromSetSquare();
-          setSelectedPointForLink(null);
-          setHoverPos(null);
-          touchDrawStartRef.current = null;
+        if (distFoot <= 28) {
+          handleSetSquarePointClick('foot');
           return;
         }
       }
@@ -2518,21 +2499,33 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     }
 
     // Snap candidate calculation for visual feedback
-    const nearPt = getPointNear(rawX, rawY, points, 20);
-    if (nearPt) {
-      setSnapCandidate({ x: nearPt.x, y: nearPt.y, isPoint: true, label: nearPt.label });
-    } else if (isSnapToGrid) {
-      const gx = snapCoordinate(rawX);
-      const gy = snapCoordinate(rawY);
-      const dist = Math.hypot(rawX - gx, rawY - gy);
-      if (dist <= 18) {
-        setSnapCandidate({ x: gx, y: gy, isPoint: false });
-      } else {
-        setSnapCandidate(null);
+    let snapTarget: { x: number; y: number; isPoint: boolean; label?: string } | null = null;
+
+    if (isSetSquareOnCanvas) {
+      const freeTip = getSetSquareFreeTip();
+      const foot = setSquareOrigin;
+      if (Math.hypot(rawX - freeTip.x, rawY - freeTip.y) <= 24) {
+        snapTarget = { x: freeTip.x, y: freeTip.y, isPoint: true, label: 'P (Mıknatıs)' };
+      } else if (Math.hypot(rawX - foot.x, rawY - foot.y) <= 24) {
+        snapTarget = { x: foot.x, y: foot.y, isPoint: true, label: 'H (Kesişim)' };
       }
-    } else {
-      setSnapCandidate(null);
     }
+
+    if (!snapTarget) {
+      const nearPt = getPointNear(rawX, rawY, points, 20);
+      if (nearPt) {
+        snapTarget = { x: nearPt.x, y: nearPt.y, isPoint: true, label: nearPt.label };
+      } else if (isSnapToGrid) {
+        const gx = snapCoordinate(rawX);
+        const gy = snapCoordinate(rawY);
+        const dist = Math.hypot(rawX - gx, rawY - gy);
+        if (dist <= 18) {
+          snapTarget = { x: gx, y: gy, isPoint: false };
+        }
+      }
+    }
+
+    setSnapCandidate(snapTarget);
 
     if (draggingPointId) {
       const targetX = isSnapToGrid ? snapCoordinate(rawX) : rawX;
@@ -2627,9 +2620,9 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     if (selectedPointForLink || angleStepPoint1 || compassCenterPoint || touchDrawStartRef.current || polygonDraft.length > 0 || measureAnglePoints.length > 0 || measureLengthPoints.length > 0) {
       let targetHoverX = rawX;
       let targetHoverY = rawY;
-      if (nearPt) {
-        targetHoverX = nearPt.x;
-        targetHoverY = nearPt.y;
+      if (snapTarget) {
+        targetHoverX = snapTarget.x;
+        targetHoverY = snapTarget.y;
       } else if (isSnapToGrid) {
         targetHoverX = snapCoordinate(rawX);
         targetHoverY = snapCoordinate(rawY);
@@ -2704,15 +2697,26 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       if (isSetSquareOnCanvas) {
         const freeTip = getSetSquareFreeTip();
         const foot = setSquareOrigin;
-        const startedAtFree = Math.hypot(p1.x - freeTip.x, p1.y - freeTip.y) <= 25;
-        const endedAtFoot = Math.hypot(upX - foot.x, upY - foot.y) <= 30;
-        const startedAtFoot = Math.hypot(p1.x - foot.x, p1.y - foot.y) <= 25;
-        const endedAtFree = Math.hypot(upX - freeTip.x, upY - freeTip.y) <= 30;
+        const startedAtFree = Math.hypot(p1.x - freeTip.x, p1.y - freeTip.y) <= 28;
+        const endedAtFoot = Math.hypot(upX - foot.x, upY - foot.y) <= 32;
+        const startedAtFoot = Math.hypot(p1.x - foot.x, p1.y - foot.y) <= 28;
+        const endedAtFree = Math.hypot(upX - freeTip.x, upY - freeTip.y) <= 32;
 
         if ((startedAtFree && endedAtFoot) || (startedAtFoot && endedAtFree)) {
-          dropPerpendicularFromSetSquare();
+          let ptP = getPointNear(freeTip.x, freeTip.y, points, 24);
+          if (!ptP) {
+            ptP = { id: `pt-P-${Date.now()}`, label: 'P', x: freeTip.x, y: freeTip.y, color: '#f43f5e' };
+            setPoints((prev) => [...prev, ptP!]);
+          }
+          let ptH = getPointNear(foot.x, foot.y, points, 24);
+          if (!ptH) {
+            ptH = { id: `pt-H-${Date.now()}`, label: 'H', x: foot.x, y: foot.y, color: '#10b396' };
+            setPoints((prev) => [...prev, ptH!]);
+          }
+          createPerpendicularBetween(ptP, ptH);
           setSelectedPointForLink(null);
           setHoverPos(null);
+          touchDrawStartRef.current = null;
           return;
         }
       }
@@ -3071,7 +3075,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     // Check distance to vertex and baseline alignment
     let isNearVertex = false;
     let isAligned = false;
-    let interceptedList: Array<{ deg: number; label: string; pt: { x: number; y: number } }> = [];
+    let interceptedList: Array<{
+      deg: number;
+      label: string;
+      angleName?: string;
+      pt: { x: number; y: number };
+    }> = [];
 
     if (angleGameTarget) {
       const distToVertex = Math.hypot(protractorCenter.x - angleGameTarget.vertex.x, protractorCenter.y - angleGameTarget.vertex.y);
@@ -3085,36 +3094,121 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       if (isNearVertex) {
         const rawDeg = getProtractorDegreeAtPoint(angleGameTarget.p2);
         if (rawDeg >= 0 && rawDeg <= 180) {
-          interceptedList.push({ deg: rawDeg, label: 'B', pt: angleGameTarget.p2 });
+          interceptedList.push({ deg: rawDeg, label: 'B', angleName: '∠AOB', pt: angleGameTarget.p2 });
         }
       }
     } else {
-      // Free workshop mode: check points on the canvas
+      // Free workshop mode: check points and angles on the canvas
       const nearVertexPt = getPointNear(protractorCenter.x, protractorCenter.y, points, 28);
       isNearVertex = !!nearVertexPt;
 
-      // Find points on the canvas that cross the protractor upper semi-circle
-      for (const pt of points) {
-        if (nearVertexPt && pt.id === nearVertexPt.id) continue;
-        const d = Math.hypot(pt.x - protractorCenter.x, pt.y - protractorCenter.y);
-        if (d >= 25 && d <= 500) {
-          const rawDeg = getProtractorDegreeAtPoint(pt);
-          if (rawDeg >= 0 && rawDeg <= 180) {
-            interceptedList.push({ deg: rawDeg, label: pt.label, pt });
+      if (nearVertexPt) {
+        // Find all points that are geometrically connected to nearVertexPt (arms of angles or lines)
+        const connectedPointIds = new Set<string>();
+
+        // 1. From existing angles with vertex at nearVertexPt
+        angles.forEach((ang) => {
+          if (ang.vertex.id === nearVertexPt.id) {
+            connectedPointIds.add(ang.p1.id);
+            connectedPointIds.add(ang.p2.id);
+          }
+        });
+
+        // 2. From lines, rays, segments, perpendiculars
+        objects.forEach((o) => {
+          if (o.p1.id === nearVertexPt.id && o.p2) {
+            connectedPointIds.add(o.p2.id);
+          } else if (o.p2 && o.p2.id === nearVertexPt.id) {
+            connectedPointIds.add(o.p1.id);
+          } else if (o.type === 'line' && o.p2) {
+            // Check if nearVertexPt lies on this infinite line
+            const pA = points.find((p) => p.id === o.p1.id) || o.p1;
+            const pB = points.find((p) => p.id === o.p2!.id) || o.p2!;
+            const dx = pB.x - pA.x;
+            const dy = pB.y - pA.y;
+            const len = Math.hypot(dx, dy);
+            if (len > 0) {
+              const dist = Math.abs((nearVertexPt.x - pA.x) * dy - (nearVertexPt.y - pA.y) * dx) / len;
+              if (dist <= 18) {
+                connectedPointIds.add(pA.id);
+                connectedPointIds.add(pB.id);
+              }
+            }
+          }
+        });
+
+        // 3. From polygons
+        polygons.forEach((poly) => {
+          const idx = poly.points.findIndex((p) => p.id === nearVertexPt.id);
+          if (idx !== -1) {
+            const prev = poly.points[(idx - 1 + poly.points.length) % poly.points.length];
+            const next = poly.points[(idx + 1) % poly.points.length];
+            if (prev) connectedPointIds.add(prev.id);
+            if (next) connectedPointIds.add(next.id);
+          }
+        });
+
+        // Identify baseline points along 0° or 180°
+        let basePt0: GeoPoint | null = null;
+        let basePt180: GeoPoint | null = null;
+
+        for (const pt of points) {
+          if (pt.id === nearVertexPt.id) continue;
+          if (connectedPointIds.size > 0 && !connectedPointIds.has(pt.id)) continue;
+
+          const d = Math.hypot(pt.x - protractorCenter.x, pt.y - protractorCenter.y);
+          if (d < 20) continue;
+
+          const deg = getProtractorDegreeAtPoint(pt);
+          if (Math.abs(deg - 0) <= 4 || Math.abs(deg - 360) <= 4) {
+            if (!basePt0 || d < Math.hypot(basePt0.x - protractorCenter.x, basePt0.y - protractorCenter.y)) {
+              basePt0 = pt;
+            }
+          } else if (Math.abs(deg - 180) <= 4) {
+            if (!basePt180 || d < Math.hypot(basePt180.x - protractorCenter.x, basePt180.y - protractorCenter.y)) {
+              basePt180 = pt;
+            }
           }
         }
-      }
 
-      // Check baseline alignment (is there a point at ~0° or ~180°?)
-      if (isNearVertex) {
-        const hasBaselinePt = points.some((p) => {
-          if (nearVertexPt && p.id === nearVertexPt.id) return false;
-          const d = Math.hypot(p.x - protractorCenter.x, p.y - protractorCenter.y);
-          if (d < 25) return false;
-          const deg = getProtractorDegreeAtPoint(p);
-          return Math.abs(deg - 0) <= 3 || Math.abs(deg - 180) <= 3 || Math.abs(deg - 360) <= 3;
-        });
-        isAligned = hasBaselinePt;
+        isAligned = !!(basePt0 || basePt180);
+
+        // Find candidate angle arm points (exclude points not connected to nearVertexPt)
+        for (const pt of points) {
+          if (pt.id === nearVertexPt.id) continue;
+          // Unrelated points (like A or B not connected to vertex G) must be ignored
+          if (connectedPointIds.size > 0 && !connectedPointIds.has(pt.id)) continue;
+
+          const d = Math.hypot(pt.x - protractorCenter.x, pt.y - protractorCenter.y);
+          if (d < 25 || d > 600) continue;
+
+          const rawDeg = getProtractorDegreeAtPoint(pt);
+          // Only measure angle arms on the scale (do not show redundant badges directly on baseline 0°/180°)
+          if (rawDeg > 3 && rawDeg < 177) {
+            const matchingAngle = angles.find(
+              (a) => a.vertex.id === nearVertexPt.id && (a.p1.id === pt.id || a.p2.id === pt.id)
+            );
+
+            let angleName = '';
+            if (matchingAngle) {
+              const otherArm = matchingAngle.p1.id === pt.id ? matchingAngle.p2 : matchingAngle.p1;
+              angleName = `∠${pt.label}${nearVertexPt.label}${otherArm.label}`;
+            } else if (basePt0) {
+              angleName = `∠${pt.label}${nearVertexPt.label}${basePt0.label}`;
+            } else if (basePt180) {
+              angleName = `∠${pt.label}${nearVertexPt.label}${basePt180.label}`;
+            } else {
+              angleName = `∠${pt.label}${nearVertexPt.label}`;
+            }
+
+            interceptedList.push({
+              deg: rawDeg,
+              label: pt.label,
+              angleName,
+              pt
+            });
+          }
+        }
       }
     }
 
@@ -3255,67 +3349,56 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               <circle cx={lx} cy={ly} r="4.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
 
               {/* Intercept Value Badge */}
-              <g
-                transform={`translate(${bx}, ${by})`}
-                className="cursor-pointer pointer-events-auto"
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  if (isAngleGameActive) {
-                    setAngleGameMeasurement(String(item.deg));
-                    setAngleMeasureError(null);
-                    playSound('click');
-                    setFeedbackMsg(`🎯 İletkide okunan ${item.deg}° değeri ölçüm kutusuna aktarıldı. Şimdi "Ölçümü Onayla" butonuna basabilirsiniz.`);
-                  } else {
-                    playSound('click');
-                    setFeedbackMsg(`🎯 İletki ile ölçülen ${item.label} açısı: ${item.deg}°. Taban: ${isAligned ? 'Hizalandı' : 'Serbest'}`);
-                  }
-                }}
-              >
-                <rect
-                  x="-46"
-                  y="-13"
-                  width="92"
-                  height="26"
-                  rx="8"
-                  fill="#0f172a"
-                  stroke={isAligned ? '#10b981' : '#f59e0b'}
-                  strokeWidth="2"
-                  className="shadow-lg hover:scale-105 transition-transform"
-                />
-                <text
-                  x="0"
-                  y="4.5"
-                  textAnchor="middle"
-                  fill={isAligned ? '#34d399' : '#fde047'}
-                  fontSize="10.5"
-                  fontWeight="900"
-                >
-                  🎯 {item.deg}° {isAngleGameActive ? '(Yaz)' : `(${item.label})`}
-                </text>
-              </g>
+              {(() => {
+                const displayText = isAngleGameActive
+                  ? `🎯 ${item.deg}° (Yaz)`
+                  : `🎯 ${item.deg}° (${item.angleName || item.label})`;
+                const badgeW = Math.max(92, displayText.length * 7 + 18);
+
+                return (
+                  <g
+                    transform={`translate(${bx}, ${by})`}
+                    className="cursor-pointer pointer-events-auto"
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      if (isAngleGameActive) {
+                        setAngleGameMeasurement(String(item.deg));
+                        setAngleMeasureError(null);
+                        playSound('click');
+                        setFeedbackMsg(`🎯 İletkide okunan ${item.deg}° değeri ölçüm kutusuna aktarıldı. Şimdi "Ölçümü Onayla" butonuna basabilirsiniz.`);
+                      } else {
+                        playSound('click');
+                        setFeedbackMsg(`🎯 İletki ile ölçülen ${item.angleName || item.label} açısı: ${item.deg}°. Taban: ${isAligned ? 'Hizalandı' : 'Serbest'}`);
+                      }
+                    }}
+                  >
+                    <rect
+                      x={-badgeW / 2}
+                      y="-13"
+                      width={badgeW}
+                      height="26"
+                      rx="8"
+                      fill="#0f172a"
+                      stroke={isAligned ? '#10b981' : '#f59e0b'}
+                      strokeWidth="2"
+                      className="shadow-lg hover:scale-105 transition-transform"
+                    />
+                    <text
+                      x="0"
+                      y="4.5"
+                      textAnchor="middle"
+                      fill={isAligned ? '#34d399' : '#fde047'}
+                      fontSize="10.5"
+                      fontWeight="900"
+                    >
+                      {displayText}
+                    </text>
+                  </g>
+                );
+              })()}
             </g>
           );
         })}
-
-        {/* Alignment Success Banner */}
-        {isAligned && (
-          <g transform="translate(0, -32)" className="pointer-events-none animate-in zoom-in-95 duration-200">
-            <rect
-              x="-68"
-              y="-11"
-              width="136"
-              height="22"
-              rx="6"
-              fill="#065f46"
-              stroke="#34d399"
-              strokeWidth="1.5"
-              className="shadow-md"
-            />
-            <text x="0" y="4" textAnchor="middle" fill="#ecfdf5" fontSize="10" fontWeight="900">
-              ✅ Taban Koluna Hizalandı!
-            </text>
-          </g>
-        )}
 
         {/* Center Drag Grip Handle (Turuncu Halka) */}
         <g
@@ -3340,12 +3423,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             className="animate-pulse"
           />
           <circle cx="0" cy="0" r="4.5" fill="#d97706" stroke="#ffffff" strokeWidth="1.5" />
-          <g transform="translate(0, 20)">
-            <rect x="-38" y="-9" width="76" height="18" rx="5" fill="#0f172a" opacity="0.85" />
-            <text x="0" y="3.5" textAnchor="middle" fill="#fde047" fontSize="9" fontWeight="900">
-              🎯 Merkez (Taşı)
-            </text>
-          </g>
         </g>
 
         {/* Baseline Right End - Döndürme Tutamağı (Mavi Halka) */}
@@ -3384,12 +3461,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           >
             🔄
           </text>
-          <g transform="translate(0, 20)">
-            <rect x="-30" y="-9" width="60" height="18" rx="5" fill="#0f172a" opacity="0.85" className="transition-opacity group-hover:opacity-100" />
-            <text x="0" y="3.5" textAnchor="middle" fill="#7dd3fc" fontSize="9" fontWeight="900">
-              Döndür
-            </text>
-          </g>
         </g>
 
         {/* Baseline Left End - Tuvalden Kaldırma (✕) Butonu */}
@@ -3427,12 +3498,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             >
               ✕
             </text>
-            <g transform="translate(0, 18)">
-              <rect x="-24" y="-8" width="48" height="16" rx="4" fill="#0f172a" opacity="0.85" className="transition-opacity group-hover:opacity-100" />
-              <text x="0" y="3.5" textAnchor="middle" fill="#fca5a5" fontSize="8.5" fontWeight="900">
-                Kaldır
-              </text>
-            </g>
           </g>
         )}
       </g>
@@ -3550,11 +3615,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           className="cursor-pointer pointer-events-auto group/magnet"
           onPointerDown={(e) => {
             e.stopPropagation();
-            dropPerpendicularFromSetSquare();
+            handleSetSquarePointClick('freeTip');
           }}
         >
+          <title>Mıknatıslı Tepe Noktası (P) - Çizgi Başlangıç / Bitiş</title>
           {/* Geniş Görünmez Tıklama/Mıknatıs Alanı */}
-          <circle cx="0" cy={-H} r="22" fill="transparent" />
+          <circle cx="0" cy={-H} r="24" fill="transparent" />
           <circle
             cx="0"
             cy={-H}
@@ -3566,6 +3632,30 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             className="animate-pulse"
           />
           <circle cx="0" cy={-H} r="5" fill="#f43f5e" stroke="#ffffff" strokeWidth="2" />
+        </g>
+
+        {/* Kesişim Noktası (Mıknatıslı Ayak Noktası H - 90° Köşesi) */}
+        <g
+          className="cursor-pointer pointer-events-auto group/foot-magnet"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            handleSetSquarePointClick('foot');
+          }}
+        >
+          <title>Mıknatıslı Kesişim Noktası (H) - Çizgi Başlangıç / Bitiş</title>
+          {/* Geniş Görünmez Tıklama/Mıknatıs Alanı */}
+          <circle cx="0" cy="0" r="24" fill="transparent" />
+          <circle
+            cx="0"
+            cy="0"
+            r="16"
+            fill="#10b396"
+            fillOpacity="0.25"
+            stroke="#10b396"
+            strokeWidth="2.5"
+            className="animate-pulse"
+          />
+          <circle cx="0" cy="0" r="5" fill="#10b396" stroke="#ffffff" strokeWidth="2" />
         </g>
 
         {/* Merkez Taşıma Tutamağı (Turuncu Halka - Centroid) */}
@@ -5124,22 +5214,25 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       onClick={() => {
                         if (!isProtractorOnCanvas) {
                           setIsProtractorOnCanvas(true);
-                          setActiveTool('protractor');
+                          setActiveTool('drag');
+                          setSelectedPointForLink(null);
+                          setMeasureAnglePoints([]);
+                          setMeasureLengthPoints([]);
                           if (protractorCenter.y > 380 || protractorCenter.x < 80) {
                             setProtractorCenter({ x: 380, y: 240 });
                           }
                           playSound('click');
-                          setFeedbackMsg('📐 İletki tuvale bırakıldı. Açının köşesine taşıyabilir, taban koluna döndürebilirsiniz. İletki tuvaldeyken diğer araçlarla (nokta, ışın, doğru) çizim yapabilirsiniz.');
+                          setFeedbackMsg('📐 İletki tuvale yerleştirildi. Taşıma aracı aktif: Turuncu merkezden taşıyabilir, mavi tutamaktan döndürebilirsiniz.');
                         } else {
-                          // Already on canvas: toggle between protractor tool and point tool
-                          if (activeTool === 'protractor') {
+                          // Already on canvas: toggle between drag tool and point tool
+                          if (activeTool === 'drag') {
                             setActiveTool('point');
                             playSound('click');
-                            setFeedbackMsg('Nokta aracı seçildi. İletki tuvalde kalmaya devam ediyor.');
+                            setFeedbackMsg('📍 Nokta aracı seçildi. İletki tuvalde kalmaya devam ediyor.');
                           } else {
-                            setActiveTool('protractor');
+                            setActiveTool('drag');
                             playSound('click');
-                            setFeedbackMsg('📐 İletki aracı seçildi. Tuvale tıklayarak iletkiyi taşıyabilirsiniz.');
+                            setFeedbackMsg('🖐️ Taşıma aracı aktif: İletkiyi turuncu merkezden taşıyabilir, mavi tutamaktan döndürebilirsiniz.');
                           }
                         }
                       }}
@@ -5158,47 +5251,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       </span>
                     </button>
                   </div>
-
-                  {/* İletki Araç Rehberi */}
-                  {(isProtractorOnCanvas || activeTool === 'protractor') && (
-                    <div className="p-3 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-950 space-y-2 text-xs shadow-xs animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between font-black text-amber-900">
-                        <span className="flex items-center gap-1.5">
-                          <Compass className="w-3.5 h-3.5 text-amber-600" />
-                          İnteraktif Açıölçer (İletki)
-                        </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 font-bold">
-                          Dönüş: {protractorRotation}°
-                        </span>
-                      </div>
-                      <p className="text-[10.5px] text-amber-800 leading-tight">
-                        💡 İletkiyi merkez noktadan açının tepe noktasına taşıyın. Dış tutamaçtan döndürerek taban koluna hizalayın. İletki tuvaldeyken diğer çizim araçlarını özgürce kullanabilirsiniz.
-                      </p>
-                      <div className="flex items-center gap-2 pt-1">
-                        <button
-                          onClick={() => {
-                            setProtractorRotation(0);
-                            playSound('click');
-                            setFeedbackMsg('İletki açısı 0° (yatay) konumuna sıfırlandı.');
-                          }}
-                          className="py-1 px-2.5 bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 rounded-lg font-bold text-[10.5px] cursor-pointer"
-                        >
-                          🔄 0° Sıfırla
-                        </button>
-                        <button
-                          onClick={() => {
-                            setIsProtractorOnCanvas(false);
-                            setActiveTool('point');
-                            playSound('click');
-                            setFeedbackMsg('İletki tuvalden kaldırıldı.');
-                          }}
-                          className="py-1 px-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg font-bold text-[10.5px] cursor-pointer"
-                        >
-                          ✕ Kaldır
-                        </button>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Açı Ölçüm Adım Rehberi */}
                   {activeTool === 'measure-angle' && (
@@ -5849,6 +5901,32 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 <span className="hidden sm:inline-block text-[11px] text-slate-400">Noktalar: {points.length}</span>
                 <span className="hidden sm:inline-block text-[11px] text-slate-400">Şekiller: {objects.length}</span>
                 {angles.length > 0 && <span className="hidden md:inline-block text-[11px] text-slate-400">Açılar: {angles.length}</span>}
+
+                {/* Taşı (Move / Drag) Simgesi */}
+                <button
+                  onClick={() => {
+                    const nextTool = activeTool === 'drag' ? 'point' : 'drag';
+                    setActiveTool(nextTool);
+                    setSelectedPointForLink(null);
+                    setMeasureAnglePoints([]);
+                    setMeasureLengthPoints([]);
+                    playSound('click');
+                    setFeedbackMsg(
+                      nextTool === 'drag'
+                        ? '🖐️ Taşıma Aracı: Tahtadaki noktaları ve nesneleri sürükleyerek taşıyabilirsiniz.'
+                        : '📍 Nokta Aracı Aktif.'
+                    );
+                  }}
+                  className={`p-1.5 rounded-xl border transition-all flex items-center justify-center cursor-pointer shadow-xs ${
+                    activeTool === 'drag'
+                      ? 'bg-indigo-600 text-white border-indigo-400 shadow-indigo-500/30 ring-2 ring-indigo-300'
+                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white hover:bg-slate-700'
+                  }`}
+                  title={activeTool === 'drag' ? '🖐️ Taşıma Aracı Açık (Kapatmak için tıklayın)' : '🖐️ Taşıma Aracı (Taşımak için tıklayın)'}
+                  aria-label="Taşıma Aracı"
+                >
+                  <Move className="w-4 h-4" />
+                </button>
 
                 {/* Mıknatıs Toggle Simgesi (Izgara Yapışması) */}
                 <button
