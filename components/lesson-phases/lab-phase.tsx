@@ -341,6 +341,249 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
   }
 ];
 
+export const MOTIF_2_GUIDES: MotifGuideElement[] = [
+  {
+    id: 'm2-seg-ta',
+    name: 'Tepe - Sağ Köşe [TA]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 380,
+    y1: 45,
+    x2: 550,
+    y2: 215,
+    p1Label: 'T',
+    p2Label: 'A',
+    instruction: 'Doğru Parçası aracını seçerek T ve A noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-ab',
+    name: 'Sağ Kol Dışı [AB]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 550,
+    y1: 215,
+    x2: 490,
+    y2: 275,
+    p1Label: 'A',
+    p2Label: 'B',
+    instruction: 'Doğru Parçası aracını seçerek A ve B noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-bc',
+    name: 'Sağ Dirsek İçi [BC]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 490,
+    y1: 275,
+    x2: 430,
+    y2: 215,
+    p1Label: 'B',
+    p2Label: 'C',
+    instruction: 'Doğru Parçası aracını seçerek B ve C noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-cd',
+    name: 'Sağ El [CD]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 430,
+    y1: 215,
+    x2: 490,
+    y2: 215,
+    p1Label: 'C',
+    p2Label: 'D',
+    instruction: 'Doğru Parçası aracını seçerek C ve D noktalarını yatay birleştirin.'
+  },
+  {
+    id: 'm2-seg-de',
+    name: 'Sağ El - Koltuk [DE]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 490,
+    y1: 215,
+    x2: 445,
+    y2: 170,
+    p1Label: 'D',
+    p2Label: 'E',
+    instruction: 'Doğru Parçası aracını seçerek D ve E noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-ef',
+    name: 'Sağ Koltuk - Bel [EF]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 445,
+    y1: 170,
+    x2: 400,
+    y2: 215,
+    p1Label: 'E',
+    p2Label: 'F',
+    instruction: 'Doğru Parçası aracını seçerek E ve F noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-fg',
+    name: 'Sağ Bel - Etek [FG]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 400,
+    y1: 215,
+    x2: 490,
+    y2: 305,
+    p1Label: 'F',
+    p2Label: 'G',
+    instruction: 'Doğru Parçası aracını seçerek F ve G noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-gs',
+    name: 'Sağ Etek - Taban [GS]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 490,
+    y1: 305,
+    x2: 380,
+    y2: 415,
+    p1Label: 'G',
+    p2Label: 'S',
+    instruction: 'Doğru Parçası aracını seçerek G ve S noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-sh',
+    name: 'Taban - Sol Etek [SH]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 380,
+    y1: 415,
+    x2: 270,
+    y2: 305,
+    p1Label: 'S',
+    p2Label: 'H',
+    instruction: 'Doğru Parçası aracını seçerek S ve H noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-hk',
+    name: 'Sol Etek - Bel [HK]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 270,
+    y1: 305,
+    x2: 360,
+    y2: 215,
+    p1Label: 'H',
+    p2Label: 'K',
+    instruction: 'Doğru Parçası aracını seçerek H ve K noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-kl',
+    name: 'Sol Bel - Koltuk [KL]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 360,
+    y1: 215,
+    x2: 315,
+    y2: 170,
+    p1Label: 'K',
+    p2Label: 'L',
+    instruction: 'Doğru Parçası aracını seçerek K ve L noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-lm',
+    name: 'Sol Koltuk - El [LM]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 315,
+    y1: 170,
+    x2: 270,
+    y2: 215,
+    p1Label: 'L',
+    p2Label: 'M',
+    instruction: 'Doğru Parçası aracını seçerek L ve M noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-mn',
+    name: 'Sol El [MN]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 270,
+    y1: 215,
+    x2: 330,
+    y2: 215,
+    p1Label: 'M',
+    p2Label: 'N',
+    instruction: 'Doğru Parçası aracını seçerek M ve N noktalarını yatay birleştirin.'
+  },
+  {
+    id: 'm2-seg-np',
+    name: 'Sol El - Dirsek İçi [NP]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 330,
+    y1: 215,
+    x2: 270,
+    y2: 275,
+    p1Label: 'N',
+    p2Label: 'P',
+    instruction: 'Doğru Parçası aracını seçerek N ve P noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-pr',
+    name: 'Sol Kol Dışı [PR]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 270,
+    y1: 275,
+    x2: 210,
+    y2: 215,
+    p1Label: 'P',
+    p2Label: 'R',
+    instruction: 'Doğru Parçası aracını seçerek P ve R noktalarını birleştirin.'
+  },
+  {
+    id: 'm2-seg-rt',
+    name: 'Sol Köşe - Tepe [RT]',
+    requiredTool: 'segment',
+    toolTitle: 'Doğru Parçası',
+    toolIcon: '📏',
+    type: 'segment',
+    x1: 210,
+    y1: 215,
+    x2: 380,
+    y2: 45,
+    p1Label: 'R',
+    p2Label: 'T',
+    instruction: 'Doğru Parçası aracını seçerek R ve T noktalarını birleştirin.'
+  }
+];
+
 // Angle calculation between [vertex -> p1] and [vertex -> p2]
 function getAngleDegree(vertex: { x: number; y: number }, p1: { x: number; y: number }, p2: { x: number; y: number }): number {
   const ang1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
@@ -462,7 +705,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   >(isAngleTopic ? 'angle' : 'point');
 
   // Professional digital toolbar active category
-  const [activeToolCategory, setActiveToolCategory] = useState<'all' | 'basic' | 'lines' | 'angle' | 'shapes' | 'special'>('lines');
+  const [activeToolCategory, setActiveToolCategory] = useState<'all' | 'basic' | 'lines' | 'angle' | 'shapes' | 'motifs' | 'special'>('lines');
 
   // Multi-station Flow for MAT.5.3.1
   const [activeStation, setActiveStation] = useState<GeometryStationId>('lines');
@@ -479,8 +722,9 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const [isSnapToGrid, setIsSnapToGrid] = useState<boolean>(true);
   const [snapCandidate, setSnapCandidate] = useState<{ x: number; y: number; isPoint: boolean; label?: string } | null>(null);
 
-  // Motif 1: Selçuklu Yıldızı Görevi State
+  // Motif Görevleri (Selçuklu Yıldızı & Eli Belinde) State
   const [isMotif1Active, setIsMotif1Active] = useState<boolean>(false);
+  const [isMotif2Active, setIsMotif2Active] = useState<boolean>(false);
   const [motifCompletedGuides, setMotifCompletedGuides] = useState<string[]>([]);
   const [motifCelebrated, setMotifCelebrated] = useState<boolean>(false);
   const [motifHintGuideId, setMotifHintGuideId] = useState<string | null>(null);
@@ -926,6 +1170,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const loadMotif1Mission = () => {
     playSound('click');
     setIsMotif1Active(true);
+    setIsMotif2Active(false);
     setMotifCompletedGuides([]);
     setMotifCelebrated(false);
     setMotifHintGuideId(null);
@@ -954,9 +1199,53 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setCompassCenterPoint(null);
     setAngleStepPoint1(null);
     setAngleStepPoint2(null);
-    setActiveToolCategory('all');
+    setActiveToolCategory('motifs');
     setActiveTool('segment');
     setFeedbackMsg('⭐ Motif 1 Başladı! Kesik çizgilerle verilen Selçuklu Yıldızı modelini tamamlamak için uygun araçları (Doğru Parçası, Pergel, Doğru, Işın, Gönye) seçip şekli tamamlayın.');
+  };
+
+  // Motif 2 (Eli Belinde - Anadolu Kilimi) Mission Handlers
+  const loadMotif2Mission = () => {
+    playSound('click');
+    setIsMotif1Active(false);
+    setIsMotif2Active(true);
+    setIsSnapToGrid(false);
+    setMotifCompletedGuides([]);
+    setMotifCelebrated(false);
+    setMotifHintGuideId(null);
+
+    // 16 Symmetrical Points for Eli Belinde Contour (Center X0 = 380) with labels hidden by default
+    const pT: GeoPoint = { id: 'pt-m2-T', label: 'T', x: 380, y: 45, color: '#0284c7', hideLabel: true }; // Tepe
+    const pA: GeoPoint = { id: 'pt-m2-A', label: 'A', x: 550, y: 215, color: '#06b6d4', hideLabel: true }; // Sağ Dış Köşe
+    const pB: GeoPoint = { id: 'pt-m2-B', label: 'B', x: 490, y: 275, color: '#06b6d4', hideLabel: true }; // Sağ Alt Dirsek
+    const pC: GeoPoint = { id: 'pt-m2-C', label: 'C', x: 430, y: 215, color: '#06b6d4', hideLabel: true }; // Sağ El İçi
+    const pD: GeoPoint = { id: 'pt-m2-D', label: 'D', x: 490, y: 215, color: '#06b6d4', hideLabel: true }; // Sağ Kol Dışı
+    const pE: GeoPoint = { id: 'pt-m2-E', label: 'E', x: 445, y: 170, color: '#06b6d4', hideLabel: true }; // Sağ Koltuk
+    const pF: GeoPoint = { id: 'pt-m2-F', label: 'F', x: 400, y: 215, color: '#06b6d4', hideLabel: true }; // Sağ Bel
+    const pG: GeoPoint = { id: 'pt-m2-G', label: 'G', x: 490, y: 305, color: '#0284c7', hideLabel: true }; // Sağ Etek
+    const pS: GeoPoint = { id: 'pt-m2-S', label: 'S', x: 380, y: 415, color: '#0284c7', hideLabel: true }; // Taban
+    const pH: GeoPoint = { id: 'pt-m2-H', label: 'H', x: 270, y: 305, color: '#0284c7', hideLabel: true }; // Sol Etek
+    const pK: GeoPoint = { id: 'pt-m2-K', label: 'K', x: 360, y: 215, color: '#06b6d4', hideLabel: true }; // Sol Bel
+    const pL: GeoPoint = { id: 'pt-m2-L', label: 'L', x: 315, y: 170, color: '#06b6d4', hideLabel: true }; // Sol Koltuk
+    const pM: GeoPoint = { id: 'pt-m2-M', label: 'M', x: 270, y: 215, color: '#06b6d4', hideLabel: true }; // Sol Kol Dışı
+    const pN: GeoPoint = { id: 'pt-m2-N', label: 'N', x: 330, y: 215, color: '#06b6d4', hideLabel: true }; // Sol El İçi
+    const pP: GeoPoint = { id: 'pt-m2-P', label: 'P', x: 270, y: 275, color: '#06b6d4', hideLabel: true }; // Sol Alt Dirsek
+    const pR: GeoPoint = { id: 'pt-m2-R', label: 'R', x: 210, y: 215, color: '#06b6d4', hideLabel: true }; // Sol Dış Köşe
+
+    setPoints([pT, pA, pB, pC, pD, pE, pF, pG, pS, pH, pK, pL, pM, pN, pP, pR]);
+    setObjects([]);
+    setAngles([]);
+    setPolygons([]);
+    setPolygonDraft([]);
+    setMeasureAnglePoints([]);
+    setMeasureLengthPoints([]);
+    setSelectedPointForLink(null);
+    setCompassCenterPoint(null);
+    setAngleStepPoint1(null);
+    setAngleStepPoint2(null);
+    setActiveToolCategory('motifs');
+    setActiveTool('segment');
+    setFeedbackMsg('🌸 Motif 2 Başladı! Anadolu kilimlerinin analık ve bereket simgesi "Eli Belinde" figürünün dış hatlarını Doğru Parçası aracıyla noktaları sırayla birleştirerek tamamlayın.');
   };
 
   const completeMotifGuide = (guideId: string) => {
@@ -966,16 +1255,17 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     playSound('success');
     addPoints(15);
 
-    const guide = MOTIF_1_GUIDES.find((g) => g.id === guideId);
+    const guides = isMotif2Active ? MOTIF_2_GUIDES : MOTIF_1_GUIDES;
+    const guide = guides.find((g) => g.id === guideId);
     if (guide) {
-      setFeedbackMsg(`✨ Harika! ${guide.name} başarıyla tamamlandı! (${newCompleted.length}/${MOTIF_1_GUIDES.length})`);
+      setFeedbackMsg(`✨ Harika! ${guide.name} başarıyla tamamlandı! (${newCompleted.length}/${guides.length})`);
     }
 
-    if (newCompleted.length === MOTIF_1_GUIDES.length) {
+    if (newCompleted.length === guides.length) {
       setMotifCelebrated(true);
       playSound('success');
       addPoints(100);
-      unlockBadge('seljuk-architect');
+      unlockBadge(isMotif2Active ? 'kilim-artisan' : 'seljuk-architect');
       try {
         confetti({
           particleCount: 140,
@@ -987,39 +1277,62 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   };
 
   const checkAndCompleteMotifObject = (newObj: GeoObject) => {
-    if (!isMotif1Active) return;
+    if (!isMotif1Active && !isMotif2Active) return;
     const l1 = newObj.p1?.label;
     const l2 = newObj.p2?.label;
 
-    if (newObj.type === 'segment' && l1 && l2) {
-      const pair = [l1, l2].sort().join('-');
-      if (pair === 'A-B') completeMotifGuide('motif-seg-ab');
-      else if (pair === 'B-C') completeMotifGuide('motif-seg-bc');
-      else if (pair === 'C-D') completeMotifGuide('motif-seg-cd');
-      else if (pair === 'A-D') completeMotifGuide('motif-seg-da');
-      else if (pair === 'E-F') completeMotifGuide('motif-seg-ef');
-      else if (pair === 'F-G') completeMotifGuide('motif-seg-fg');
-      else if (pair === 'G-H') completeMotifGuide('motif-seg-gh');
-      else if (pair === 'E-H') completeMotifGuide('motif-seg-he');
-    } else if (newObj.type === 'circle' && (l1 === 'M' || l2 === 'M')) {
-      completeMotifGuide('motif-circle');
-    } else if (newObj.type === 'line' && l1 && l2) {
-      const pair = [l1, l2].sort().join('-');
-      if (pair === 'B-D' || l1 === 'M' || l2 === 'M') {
-        completeMotifGuide('motif-line-h');
+    if (isMotif1Active) {
+      if (newObj.type === 'segment' && l1 && l2) {
+        const pair = [l1, l2].sort().join('-');
+        if (pair === 'A-B') completeMotifGuide('motif-seg-ab');
+        else if (pair === 'B-C') completeMotifGuide('motif-seg-bc');
+        else if (pair === 'C-D') completeMotifGuide('motif-seg-cd');
+        else if (pair === 'A-D') completeMotifGuide('motif-seg-da');
+        else if (pair === 'E-F') completeMotifGuide('motif-seg-ef');
+        else if (pair === 'F-G') completeMotifGuide('motif-seg-fg');
+        else if (pair === 'G-H') completeMotifGuide('motif-seg-gh');
+        else if (pair === 'E-H') completeMotifGuide('motif-seg-he');
+      } else if (newObj.type === 'circle' && (l1 === 'M' || l2 === 'M')) {
+        completeMotifGuide('motif-circle');
+      } else if (newObj.type === 'line' && l1 && l2) {
+        const pair = [l1, l2].sort().join('-');
+        if (pair === 'B-D' || l1 === 'M' || l2 === 'M') {
+          completeMotifGuide('motif-line-h');
+        }
+      } else if (newObj.type === 'ray' && (l1 === 'M' || l2 === 'M' || l1 === 'E' || l2 === 'E')) {
+        completeMotifGuide('motif-ray-diag');
+      } else if (newObj.type === 'perpendicular') {
+        completeMotifGuide('motif-perp-v');
       }
-    } else if (newObj.type === 'ray' && (l1 === 'M' || l2 === 'M' || l1 === 'E' || l2 === 'E')) {
-      completeMotifGuide('motif-ray-diag');
-    } else if (newObj.type === 'perpendicular') {
-      completeMotifGuide('motif-perp-v');
+    } else if (isMotif2Active) {
+      if (newObj.type === 'segment' && l1 && l2) {
+        const pair = [l1, l2].sort().join('-');
+        if (pair === 'A-T') completeMotifGuide('m2-seg-ta');
+        else if (pair === 'A-B') completeMotifGuide('m2-seg-ab');
+        else if (pair === 'B-C') completeMotifGuide('m2-seg-bc');
+        else if (pair === 'C-D') completeMotifGuide('m2-seg-cd');
+        else if (pair === 'D-E') completeMotifGuide('m2-seg-de');
+        else if (pair === 'E-F') completeMotifGuide('m2-seg-ef');
+        else if (pair === 'F-G') completeMotifGuide('m2-seg-fg');
+        else if (pair === 'G-S') completeMotifGuide('m2-seg-gs');
+        else if (pair === 'H-S') completeMotifGuide('m2-seg-sh');
+        else if (pair === 'H-K') completeMotifGuide('m2-seg-hk');
+        else if (pair === 'K-L') completeMotifGuide('m2-seg-kl');
+        else if (pair === 'L-M') completeMotifGuide('m2-seg-lm');
+        else if (pair === 'M-N') completeMotifGuide('m2-seg-mn');
+        else if (pair === 'N-P') completeMotifGuide('m2-seg-np');
+        else if (pair === 'P-R') completeMotifGuide('m2-seg-pr');
+        else if (pair === 'R-T') completeMotifGuide('m2-seg-rt');
+      }
     }
   };
 
   const giveMotifNextHint = () => {
-    if (!isMotif1Active) return;
-    const remaining = MOTIF_1_GUIDES.find((g) => !motifCompletedGuides.includes(g.id));
+    if (!isMotif1Active && !isMotif2Active) return;
+    const guides = isMotif2Active ? MOTIF_2_GUIDES : MOTIF_1_GUIDES;
+    const remaining = guides.find((g) => !motifCompletedGuides.includes(g.id));
     if (!remaining) {
-      setFeedbackMsg('⭐ Tebrikler! Tüm Selçuklu motifi çizgilerini zaten tamamladınız!');
+      setFeedbackMsg(`⭐ Tebrikler! Tüm ${isMotif2Active ? 'Eli Belinde' : 'Selçuklu'} motifi çizgilerini zaten tamamladınız!`);
       return;
     }
     setMotifHintGuideId(remaining.id);
@@ -1029,13 +1342,14 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   };
 
   const autoCompleteMotifMission = () => {
-    if (!isMotif1Active) return;
-    const allIds = MOTIF_1_GUIDES.map((g) => g.id);
+    if (!isMotif1Active && !isMotif2Active) return;
+    const guides = isMotif2Active ? MOTIF_2_GUIDES : MOTIF_1_GUIDES;
+    const allIds = guides.map((g) => g.id);
     setMotifCompletedGuides(allIds);
     setMotifCelebrated(true);
     playSound('success');
     addPoints(100);
-    unlockBadge('seljuk-architect');
+    unlockBadge(isMotif2Active ? 'kilim-artisan' : 'seljuk-architect');
     try {
       confetti({
         particleCount: 150,
@@ -1043,7 +1357,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
         origin: { y: 0.55 }
       });
     } catch (e) {}
-    setFeedbackMsg('🎉 Harika! Selçuklu Yıldızı motifinin tüm kesik çizgileri başarıyla tamamlandı!');
+    setFeedbackMsg(`🎉 Harika! ${isMotif2Active ? 'Eli Belinde' : 'Selçuklu Yıldızı'} motifinin tüm kesik çizgileri başarıyla tamamlandı!`);
   };
 
   // ==========================================
@@ -1103,6 +1417,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   const startAngleGame = () => {
     playSound('click');
     setIsMotif1Active(false);
+    setIsMotif2Active(false);
     setIsAngleGameActive(true);
     setAngleGameRound(1);
     setAngleGameTotalScore(0);
@@ -1720,6 +2035,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setAngleNameStatus('idle');
     setAngleNameFeedback(null);
     setIsMotif1Active(false);
+    setIsMotif2Active(false);
     setMotifCompletedGuides([]);
     setMotifCelebrated(false);
     setMotifHintGuideId(null);
@@ -2405,7 +2721,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           label: labelText,
           length: cmLen,
           color: activeColor,
-          hideLength: isMotif1Active ? true : false
+          hideLabel: isMotif2Active ? true : undefined,
+          hideLength: (isMotif1Active || isMotif2Active) ? true : false
         };
 
         setObjects((prev) => [...prev, newObj]);
@@ -2916,7 +3233,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
           label: labelText,
           length: cmLen,
           color: activeColor,
-          hideLength: isMotif1Active ? true : false
+          hideLabel: isMotif2Active ? true : undefined,
+          hideLength: (isMotif1Active || isMotif2Active) ? true : false
         };
 
         setObjects((prev) => [...prev, newObj]);
@@ -5127,13 +5445,13 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             </div>
 
             {/* Category Menus Ribbon (Menü Seçici Sekmeler) */}
-            <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
+            <div className="grid grid-cols-4 gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
               <button
                 onClick={() => {
                   setActiveToolCategory('lines');
                   playSound('click');
                 }}
-                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
+                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
                   activeToolCategory === 'lines'
                     ? 'bg-white text-sky-900 shadow-xs font-black'
                     : 'text-slate-600 hover:text-slate-900'
@@ -5148,7 +5466,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   setActiveToolCategory('angle');
                   playSound('click');
                 }}
-                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 relative ${
+                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 relative ${
                   activeToolCategory === 'angle'
                     ? 'bg-white text-blue-900 shadow-xs font-black'
                     : 'text-slate-600 hover:text-slate-900'
@@ -5163,9 +5481,9 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   setActiveToolCategory('basic');
                   playSound('click');
                 }}
-                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
+                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
                   activeToolCategory === 'basic'
-                    ? 'bg-white text-slate-900 shadow-xs'
+                    ? 'bg-white text-slate-900 shadow-xs font-black'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -5178,9 +5496,9 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   setActiveToolCategory('shapes');
                   playSound('click');
                 }}
-                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
+                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
                   activeToolCategory === 'shapes'
-                    ? 'bg-white text-slate-900 shadow-xs'
+                    ? 'bg-white text-emerald-900 shadow-xs font-black'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -5190,12 +5508,27 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
               <button
                 onClick={() => {
+                  setActiveToolCategory('motifs');
+                  playSound('click');
+                }}
+                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
+                  activeToolCategory === 'motifs'
+                    ? 'bg-white text-amber-900 shadow-xs font-black ring-1 ring-amber-400/60'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>🏛️</span>
+                <span>Motifler</span>
+              </button>
+
+              <button
+                onClick={() => {
                   setActiveToolCategory('special');
                   playSound('click');
                 }}
-                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
+                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
                   activeToolCategory === 'special'
-                    ? 'bg-white text-slate-900 shadow-xs'
+                    ? 'bg-white text-slate-900 shadow-xs font-black'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -5208,14 +5541,14 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   setActiveToolCategory('all');
                   playSound('click');
                 }}
-                className={`py-1.5 px-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
+                className={`col-span-2 py-1.5 px-2 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
                   activeToolCategory === 'all'
-                    ? 'bg-white text-slate-900 shadow-xs font-bold'
+                    ? 'bg-white text-slate-900 shadow-xs font-black'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <span>🌐</span>
-                <span>Tümü</span>
+                <span>Tüm Araçlar</span>
               </button>
             </div>
 
@@ -5768,16 +6101,98 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 </div>
               )}
 
-              {/* 5. ÖZEL & SANAT MENÜSÜ */}
-              {(activeToolCategory === 'special' || activeToolCategory === 'all') && (
-                <div className="space-y-2 p-3 rounded-2xl bg-amber-50/50 border border-amber-100">
-                  <div className="flex items-center justify-between text-[11px] font-black text-amber-800 uppercase tracking-wider">
+              {/* 5. MOTİFLER MENÜSÜ (Kültürel Miras & Sanat [D7.1]) */}
+              {(activeToolCategory === 'motifs' || activeToolCategory === 'all') && (
+                <div className="space-y-2.5 p-3 rounded-2xl bg-amber-50/60 border border-amber-200">
+                  <div className="flex items-center justify-between text-[11px] font-black text-amber-900 uppercase tracking-wider">
                     <span className="flex items-center gap-1.5">
-                      <Palette className="w-3.5 h-3.5 text-amber-600" />
-                      <span>🎨 Özel & Sanat</span>
+                      <span>🏛️ Geleneksel Motifler [D7.1]</span>
                     </span>
-                    <span className="text-[10px] text-amber-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-amber-200">
-                      3 Araç & Görev
+                    <span className="text-[10px] text-amber-700 font-semibold bg-white px-2 py-0.5 rounded-full border border-amber-200">
+                      2 Motif Etkinliği
+                    </span>
+                  </div>
+
+                  {/* Motif 1: Selçuklu Yıldızı Görevi */}
+                  <button
+                    onClick={loadMotif1Mission}
+                    className={`w-full p-2.5 rounded-2xl border text-left font-bold text-xs flex items-center justify-between gap-2 transition-all cursor-pointer shadow-xs ${
+                      isMotif1Active
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/30 scale-[1.01]'
+                        : 'bg-gradient-to-r from-amber-50 to-amber-100/70 border-amber-300 text-amber-950 hover:bg-amber-100 hover:border-amber-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shadow-inner shrink-0 ${
+                        isMotif1Active ? 'bg-white/20 text-white' : 'bg-amber-500 text-white'
+                      }`}>
+                        ⭐
+                      </span>
+                      <div>
+                        <div className="font-extrabold text-xs flex items-center gap-1.5">
+                          <span>Motif 1: Selçuklu Yıldızı</span>
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
+                            isMotif1Active ? 'bg-white/20 text-white' : 'bg-amber-200 text-amber-900'
+                          }`}>
+                            8 Köşeli
+                          </span>
+                        </div>
+                        <div className={`text-[10px] font-normal line-clamp-1 ${
+                          isMotif1Active ? 'text-amber-100' : 'text-amber-800'
+                        }`}>
+                          Türk-İslam sanatı: Kesik çizgileri tamamla!
+                        </div>
+                      </div>
+                    </div>
+                    <Sparkles className={`w-4 h-4 shrink-0 ${isMotif1Active ? 'text-white' : 'text-amber-600'}`} />
+                  </button>
+
+                  {/* Motif 2: Eli Belinde Görevi */}
+                  <button
+                    onClick={loadMotif2Mission}
+                    className={`w-full p-2.5 rounded-2xl border text-left font-bold text-xs flex items-center justify-between gap-2 transition-all cursor-pointer shadow-xs ${
+                      isMotif2Active
+                        ? 'bg-gradient-to-r from-cyan-600 to-sky-600 text-white border-cyan-600 shadow-md shadow-cyan-600/30 scale-[1.01]'
+                        : 'bg-gradient-to-r from-cyan-50 to-sky-100/70 border-cyan-300 text-cyan-950 hover:bg-cyan-100 hover:border-cyan-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shadow-inner shrink-0 ${
+                        isMotif2Active ? 'bg-white/20 text-white' : 'bg-cyan-600 text-white'
+                      }`}>
+                        💠
+                      </span>
+                      <div>
+                        <div className="font-extrabold text-xs flex items-center gap-1.5">
+                          <span>Motif 2: Eli Belinde</span>
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
+                            isMotif2Active ? 'bg-white/20 text-white' : 'bg-cyan-200 text-cyan-900'
+                          }`}>
+                            Anadolu Kilimi
+                          </span>
+                        </div>
+                        <div className={`text-[10px] font-normal line-clamp-1 ${
+                          isMotif2Active ? 'text-cyan-100' : 'text-cyan-800'
+                        }`}>
+                          Analık & bereket simgesi: 16 doğru parçası
+                        </div>
+                      </div>
+                    </div>
+                    <Sparkles className={`w-4 h-4 shrink-0 ${isMotif2Active ? 'text-white' : 'text-cyan-600'}`} />
+                  </button>
+                </div>
+              )}
+
+              {/* 6. ÖZEL & OYUN MENÜSÜ */}
+              {(activeToolCategory === 'special' || activeToolCategory === 'all') && (
+                <div className="space-y-2 p-3 rounded-2xl bg-slate-50/80 border border-slate-200">
+                  <div className="flex items-center justify-between text-[11px] font-black text-slate-800 uppercase tracking-wider">
+                    <span className="flex items-center gap-1.5">
+                      <Palette className="w-3.5 h-3.5 text-slate-600" />
+                      <span>🎨 Özel & Oyun</span>
+                    </span>
+                    <span className="text-[10px] text-slate-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                      2 Araç & Oyun
                     </span>
                   </div>
 
@@ -5825,40 +6240,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       <span className="font-bold text-xs text-center">Sanat [D7.1]</span>
                     </button>
                   </div>
-
-                  {/* Motif 1: Selçuklu Yıldızı Görevi */}
-                  <button
-                    onClick={loadMotif1Mission}
-                    className={`w-full p-2.5 rounded-2xl border text-left font-bold text-xs flex items-center justify-between gap-2 transition-all cursor-pointer shadow-xs ${
-                      isMotif1Active
-                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/30 scale-[1.01]'
-                        : 'bg-gradient-to-r from-amber-50 to-amber-100/70 border-amber-300 text-amber-950 hover:bg-amber-100 hover:border-amber-400'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shadow-inner shrink-0 ${
-                        isMotif1Active ? 'bg-white/20 text-white' : 'bg-amber-500 text-white'
-                      }`}>
-                        ⭐
-                      </span>
-                      <div>
-                        <div className="font-extrabold text-xs flex items-center gap-1.5">
-                          <span>Motif 1: Selçuklu Yıldızı</span>
-                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
-                            isMotif1Active ? 'bg-white/20 text-white' : 'bg-amber-200 text-amber-900'
-                          }`}>
-                            Görev
-                          </span>
-                        </div>
-                        <div className={`text-[10px] font-normal line-clamp-1 ${
-                          isMotif1Active ? 'text-amber-100' : 'text-amber-800'
-                        }`}>
-                          Türk-İslam sanatı: Kesik çizgileri tamamla!
-                        </div>
-                      </div>
-                    </div>
-                    <Sparkles className={`w-4 h-4 shrink-0 ${isMotif1Active ? 'text-white' : 'text-amber-600'}`} />
-                  </button>
 
                   {/* Açı Tahmin & İletki Oyunu Butonu */}
                   <button
@@ -6072,20 +6453,26 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 </p>
               </div>
 
-              {/* Görev Kartı 5: Selçuklu Çinisi & Motif 1 */}
+              {/* Görev Kartı 5: Geleneksel Motifler & Sanat [D7.1] */}
               <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-1.5">
                   <span className="font-extrabold text-amber-950 flex items-center gap-1.5">
                     <span className="w-5 h-5 rounded-full bg-amber-600 text-white text-[11px] font-black flex items-center justify-center">5</span>
-                    <span>Selçuklu Yıldızı & Sanat [D7.1]</span>
+                    <span>Geleneksel Motifler & Sanat [D7.1]</span>
                   </span>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <button
                       onClick={loadMotif1Mission}
                       className="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
                     >
                       <Star className="w-3 h-3" />
-                      <span>Motif 1 Görevi</span>
+                      <span>Selçuklu Yıldızı</span>
+                    </button>
+                    <button
+                      onClick={loadMotif2Mission}
+                      className="px-2 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
+                    >
+                      <span>🌸 Eli Belinde</span>
                     </button>
                     <button
                       onClick={loadArtMotifStationPreset}
@@ -6097,7 +6484,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   </div>
                 </div>
                 <p className="text-[11px] text-amber-800 leading-snug">
-                  Çember, kare ve dikmelerin estetik sentezi: Geleneksel 8 köşeli Selçuklu geometrik çini motifi.
+                  Türk-İslam ve Anadolu kültürel mirası: 8 köşeli Selçuklu Yıldızı ve kilimlerin bereket simgesi Eli Belinde motifleri.
                 </p>
               </div>
 
@@ -6386,6 +6773,98 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                       onClick={() => setIsMotif1Active(false)}
                       className="p-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 transition-all cursor-pointer"
                       title="Motif 1 Görevinden Çık"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Motif 2: Eli Belinde Görev Paneli (HUD) */}
+            {isMotif2Active && (
+              <div className="bg-gradient-to-r from-slate-950 via-cyan-950 to-sky-950 text-white p-3.5 border-b border-cyan-700/60 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-md z-10 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-full bg-cyan-400 text-cyan-950 font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                      <Sparkles className="w-3 h-3 fill-cyan-950" />
+                      <span>Motif 2 Görevi</span>
+                    </span>
+                    <h4 className="font-extrabold text-sm text-cyan-100 flex items-center gap-1.5">
+                      <span>💠 Eli Belinde (Anadolu Kilimi)</span>
+                      <span className="text-[10px] bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 px-2 py-0.5 rounded-full font-bold">
+                        Maarif [D7.1]
+                      </span>
+                    </h4>
+                  </div>
+                  <p className="text-[11px] text-cyan-200/90 leading-snug">
+                    Analık ve bereket sembolü "Eli Belinde": Doğru Parçası aracıyla noktaları sırayla birleştirip dış hatları tamamlayın.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {/* Progress Badge */}
+                  <div className="flex items-center gap-2 bg-slate-950/70 border border-cyan-600/50 px-3 py-1.5 rounded-xl">
+                    <div className="text-right">
+                      <div className="text-[10px] text-cyan-300 font-bold uppercase tracking-wider">İlerleme</div>
+                      <div className="text-xs font-black text-white">
+                        {motifCompletedGuides.length} / {MOTIF_2_GUIDES.length} (%{Math.round((motifCompletedGuides.length / MOTIF_2_GUIDES.length) * 100)})
+                      </div>
+                    </div>
+                    <div className="w-16 bg-slate-900 h-2.5 rounded-full overflow-hidden border border-cyan-700/50">
+                      <div
+                        className="h-full bg-gradient-to-r from-cyan-400 to-sky-400 transition-all duration-300 rounded-full"
+                        style={{ width: `${(motifCompletedGuides.length / MOTIF_2_GUIDES.length) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-1.5">
+                    {/* Magnet Toggle Button */}
+                    <button
+                      onClick={() => {
+                        const nextVal = !isSnapToGrid;
+                        setIsSnapToGrid(nextVal);
+                        playSound('click');
+                        setFeedbackMsg(nextVal ? '🧲 Mıknatıs Açıldı (Izgaraya Yapışma Aktif).' : '🧲 Mıknatıs Kapatıldı (Serbest Çizim Aktif).');
+                      }}
+                      className={`p-1.5 rounded-xl border transition-all flex items-center justify-center cursor-pointer ${
+                        isSnapToGrid
+                          ? 'bg-cyan-400 text-cyan-950 border-cyan-300 shadow-sm ring-2 ring-cyan-300'
+                          : 'bg-cyan-950/60 text-cyan-400/50 border-cyan-700/60 hover:text-cyan-200'
+                      }`}
+                      title={isSnapToGrid ? 'Mıknatıs Açık (Izgara Yapışmasını Kapatmak İçin Tıklayın)' : 'Mıknatıs Kapalı (Serbest Çizim - Açmak İçin Tıklayın)'}
+                      aria-label="Mıknatıs Aç/Kapa"
+                    >
+                      <Magnet className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={giveMotifNextHint}
+                      className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-amber-950 font-extrabold text-xs flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+                      title="Sıradaki tamamlanacak parçayı ve aracını göster"
+                    >
+                      <span>💡 İpucu</span>
+                    </button>
+                    <button
+                      onClick={autoCompleteMotifMission}
+                      className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+                      title="Tüm çizgileri otomatik tamamla"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Tamamla</span>
+                    </button>
+                    <button
+                      onClick={loadMotif2Mission}
+                      className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-cyan-200 transition-all cursor-pointer"
+                      title="Görevi Sıfırla"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setIsMotif2Active(false)}
+                      className="p-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 transition-all cursor-pointer"
+                      title="Motif 2 Görevinden Çık"
                     >
                       <XCircle className="w-4 h-4" />
                     </button>
@@ -6845,6 +7324,107 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 </g>
               )}
 
+              {/* MOTIF 2: ELİ BELİNDE (ANADOLU KİLİMİ) REHBER VE MODEL KATMANI */}
+              {isMotif2Active && (
+                <g id="motif-2-layer">
+                  {/* Outer decorative dashed frame */}
+                  <rect
+                    x="180"
+                    y="25"
+                    width="400"
+                    height="410"
+                    rx="18"
+                    fill="none"
+                    stroke="#0284c7"
+                    strokeWidth="1"
+                    strokeDasharray="3,5"
+                    opacity="0.3"
+                    className="pointer-events-none"
+                  />
+
+                  {/* Translucent Silhouette Fill for Eli Belinde with Inner Cutouts */}
+                  <path
+                    d="M 380,45 L 550,215 L 490,275 L 430,215 L 490,215 L 445,170 L 400,215 L 490,305 L 380,415 L 270,305 L 360,215 L 315,170 L 270,215 L 330,215 L 270,275 L 210,215 Z M 380,105 L 410,135 L 380,165 L 350,135 Z M 380,260 L 425,305 L 380,350 L 335,305 Z"
+                    fillRule="evenodd"
+                    fill="#00d2ff"
+                    fillOpacity={motifCompletedGuides.length === MOTIF_2_GUIDES.length ? 0.35 : 0.08}
+                    stroke="#0284c7"
+                    strokeWidth="1.5"
+                    strokeDasharray="4,4"
+                    className="transition-all duration-500 pointer-events-none"
+                  />
+
+                  {/* Decorative Inner Diamond Outlines */}
+                  <polygon
+                    points="380,105 410,135 380,165 350,135"
+                    fill="none"
+                    stroke="#0284c7"
+                    strokeWidth="1.5"
+                    strokeDasharray="3,3"
+                    opacity="0.6"
+                    className="pointer-events-none"
+                  />
+                  <polygon
+                    points="380,260 425,305 380,350 335,305"
+                    fill="none"
+                    stroke="#0284c7"
+                    strokeWidth="1.5"
+                    strokeDasharray="3,3"
+                    opacity="0.6"
+                    className="pointer-events-none"
+                  />
+
+                  {/* Render the 16 Dashed or Completed Guide Segments */}
+                  {MOTIF_2_GUIDES.map((guide) => {
+                    const isDone = motifCompletedGuides.includes(guide.id);
+                    const isHinted = motifHintGuideId === guide.id;
+
+                    const handleGuideClick = (e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      if (activeTool === guide.requiredTool) {
+                        completeMotifGuide(guide.id);
+                      } else {
+                        playSound('click');
+                        setFeedbackMsg(`💡 Bu kesik çizgi bir ${guide.toolTitle} gerektirir! Lütfen sol menüden "${guide.toolTitle}" aracını seçip çizgiyi tamamlayın.`);
+                        setMotifHintGuideId(guide.id);
+                      }
+                    };
+
+                    if (guide.type === 'segment' && guide.x1 !== undefined && guide.y1 !== undefined && guide.x2 !== undefined && guide.y2 !== undefined) {
+                      const midX = (guide.x1 + guide.x2) / 2;
+                      const midY = (guide.y1 + guide.y2) / 2;
+                      return (
+                        <g key={guide.id} onClick={handleGuideClick} onPointerDown={(e) => e.stopPropagation()} className="cursor-pointer group">
+                          <line x1={guide.x1} y1={guide.y1} x2={guide.x2} y2={guide.y2} stroke="transparent" strokeWidth="24" />
+                          <line
+                            x1={guide.x1}
+                            y1={guide.y1}
+                            x2={guide.x2}
+                            y2={guide.y2}
+                            stroke={isDone ? '#0284c7' : isHinted ? '#f97316' : '#94a3b8'}
+                            strokeWidth={isDone ? '4' : isHinted ? '3.5' : '2.5'}
+                            strokeDasharray={isDone ? 'none' : '6,4'}
+                            strokeLinecap="round"
+                            strokeOpacity={isDone ? 1 : 0.85}
+                            className={isHinted ? 'animate-pulse' : ''}
+                          />
+                          {!isDone && isHinted && (
+                            <g transform={`translate(${midX}, ${midY})`} className="pointer-events-none">
+                              <rect x="-32" y="-9" width="64" height="18" rx="4" fill="#0f172a" stroke="#f97316" strokeWidth="1" />
+                              <text x="0" y="3" textAnchor="middle" fill="#fdba74" fontSize="9" fontWeight="bold">
+                                📏 [{guide.p1Label}{guide.p2Label}]
+                              </text>
+                            </g>
+                          )}
+                        </g>
+                      );
+                    }
+
+                    return null;
+                  })}
+                </g>
+              )}
+
               {/* AÇI TAHMİN OYUNU: HEDEF AÇI ÇİZİM KATMANI */}
               {isAngleGameActive && angleGameTarget && (
                 <g id="angle-game-target-layer">
@@ -7003,7 +7583,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               )}
 
               {/* Empty State Hint */}
-              {points.length === 0 && objects.length === 0 && angles.length === 0 && polygons.length === 0 && !isMotif1Active && !isAngleGameActive && (
+              {points.length === 0 && objects.length === 0 && angles.length === 0 && polygons.length === 0 && !isMotif1Active && !isMotif2Active && !isAngleGameActive && (
                 <g className="pointer-events-none">
                   <text
                     x="50%"
@@ -8035,6 +8615,64 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                     <button
                       onClick={() => setMotifCelebrated(false)}
                       className="flex-1 py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition-all shadow-md shadow-amber-600/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>Motifi İncele</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Motif 2: Tamamlama & Kutlama Kartı (Eli Belinde - Anadolu Kilim Sanatı) */}
+            {isMotif2Active && motifCelebrated && (
+              <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-4 z-30 animate-in fade-in zoom-in-95 duration-300">
+                <div className="max-w-md w-full bg-white rounded-3xl p-6 border-2 border-cyan-300 shadow-2xl space-y-4 text-center">
+                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-500 to-sky-400 text-white flex items-center justify-center text-3xl shadow-lg shadow-cyan-500/30 animate-bounce">
+                    💠
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[11px] font-black text-cyan-700 bg-cyan-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                      Maarif Modeli [D7.1] Kültürel Miras
+                    </span>
+                    <h3 className="text-xl font-black text-slate-900">
+                      "Eli Belinde" Motifini Tamamladın!
+                    </h3>
+                    <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                      Tebrikler! Doğru parçalarıyla simetrik 16 noktayı birleştirerek Anadolu kilim dokuma sanatının simgesi olan "Eli Belinde" figürünün dış hatlarını başarıyla inşa ettiniz.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-cyan-50/80 rounded-2xl border border-cyan-200 text-left space-y-2 text-xs">
+                    <div className="font-extrabold text-cyan-950 flex items-center gap-1.5">
+                      <span>🌾 "Eli Belinde" Motifinin Kültürel Anlamı:</span>
+                    </div>
+                    <p className="text-[11px] text-cyan-900 font-medium leading-relaxed">
+                      Anadolu kilim ve halı dokuma geleneğinde "Eli Belinde", analığın, doğurganlığın, bereketin, kısmet ve yaşam sevincinin sembolüdür. İki elini beline koymuş kadın silüeti, aileyi ve yuvayı temsil eder.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2 pt-1">
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" /> +100 Başarı Puanı
+                    </span>
+                    <span className="text-xs font-bold text-cyan-900 bg-cyan-100 px-3 py-1 rounded-full flex items-center gap-1">
+                      <Award className="w-3.5 h-3.5" /> Kilim Ustası
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2">
+                    <button
+                      onClick={loadMotif2Mission}
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      <span>Tekrar İnşa Et</span>
+                    </button>
+                    <button
+                      onClick={() => setMotifCelebrated(false)}
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-all shadow-md shadow-cyan-600/20 flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <Check className="w-4 h-4" />
                       <span>Motifi İncele</span>
