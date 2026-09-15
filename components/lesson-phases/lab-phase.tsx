@@ -107,7 +107,7 @@ export interface GeoPolygon {
   hideLabel?: boolean;
 }
 
-const GRID_SIZE = 30; // 30px = 1 cm in GeoGebra coordinate grid
+const GRID_SIZE = 30; // 30px = 1 cm in coordinate grid
 
 function snapCoordinate(val: number, isSnapActive = true): number {
   if (!isSnapActive) return val;
@@ -1786,49 +1786,55 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setFeedbackMsg('🎨 [D7.1] Selçuklu Yıldızı & Sanat Panosu yüklendi: Çember, dikme ve doğruların kusursuz estetik birleşimi.');
   };
 
-  // 6. İstasyon: GeoGebra Çokgen, Çevre & Alan Hazır Modeli
+  // 6. İstasyon: Çokgen, Çevre & Alan Hazır Modeli
   const loadPolygonStationPreset = () => {
     playSound('click');
-    const pA: GeoPoint = { id: 'pt-poly-A', label: 'A', x: 150, y: 300, color: '#10b396' };
-    const pB: GeoPoint = { id: 'pt-poly-B', label: 'B', x: 330, y: 300, color: '#10b396' };
-    const pC: GeoPoint = { id: 'pt-poly-C', label: 'C', x: 330, y: 150, color: '#10b396' };
-    const trianglePts = [pA, pB, pC];
+    setMeasureAnglePoints([]);
+    setMeasureLengthPoints([]);
+    setSelectedPointForLink(null);
+    setCompassCenterPoint(null);
+    setAngleStepPoint1(null);
+    setAngleStepPoint2(null);
 
-    const pD: GeoPoint = { id: 'pt-poly-D', label: 'D', x: 420, y: 300, color: '#0284c7' };
-    const pE: GeoPoint = { id: 'pt-poly-E', label: 'E', x: 570, y: 300, color: '#0284c7' };
-    const pF: GeoPoint = { id: 'pt-poly-F', label: 'F', x: 570, y: 180, color: '#0284c7' };
-    const pG: GeoPoint = { id: 'pt-poly-G', label: 'G', x: 420, y: 180, color: '#0284c7' };
-    const rectPts = [pD, pE, pF, pG];
+    // Dik Üçgen ABC
+    const pA: GeoPoint = { id: 'pt-tri-A', label: 'A', x: 200, y: 110, color: '#0d9488' };
+    const pB: GeoPoint = { id: 'pt-tri-B', label: 'B', x: 200, y: 260, color: '#0d9488' };
+    const pC: GeoPoint = { id: 'pt-tri-C', label: 'C', x: 350, y: 260, color: '#0d9488' };
 
-    setPoints([pA, pB, pC, pD, pE, pF, pG]);
+    // Dikdörtgen DEFG
+    const pD: GeoPoint = { id: 'pt-rect-D', label: 'D', x: 440, y: 110, color: '#3b82f6' };
+    const pE: GeoPoint = { id: 'pt-rect-E', label: 'E', x: 620, y: 110, color: '#3b82f6' };
+    const pF: GeoPoint = { id: 'pt-rect-F', label: 'F', x: 620, y: 260, color: '#3b82f6' };
+    const pG: GeoPoint = { id: 'pt-rect-G', label: 'G', x: 440, y: 260, color: '#3b82f6' };
 
     const triPoly: GeoPolygon = {
       id: `poly-tri-${Date.now()}`,
-      points: trianglePts,
+      points: [pA, pB, pC],
       label: 'Dik Üçgen ABC',
-      color: '#10b396',
-      fillOpacity: 0.22,
-      perimeter: calculatePolygonPerimeter(trianglePts),
-      area: calculatePolygonArea(trianglePts)
+      color: '#0d9488',
+      fillOpacity: 0.18,
+      perimeter: calculatePolygonPerimeter([pA, pB, pC]),
+      area: calculatePolygonArea([pA, pB, pC])
     };
 
     const rectPoly: GeoPolygon = {
       id: `poly-rect-${Date.now()}`,
-      points: rectPts,
+      points: [pD, pE, pF, pG],
       label: 'Dikdörtgen DEFG',
-      color: '#0284c7',
-      fillOpacity: 0.22,
-      perimeter: calculatePolygonPerimeter(rectPts),
-      area: calculatePolygonArea(rectPts)
+      color: '#3b82f6',
+      fillOpacity: 0.18,
+      perimeter: calculatePolygonPerimeter([pD, pE, pF, pG]),
+      area: calculatePolygonArea([pD, pE, pF, pG])
     };
 
+    setPoints([pA, pB, pC, pD, pE, pF, pG]);
     setPolygons([triPoly, rectPoly]);
     setObjects([]);
     setAngles([]);
     setPolygonDraft([]);
     playSound('success');
     addPoints(25);
-    setFeedbackMsg('📐 GeoGebra Çokgen Şablonu yüklendi: Dik Üçgen ABC ve Dikdörtgen DEFG. Köşeleri sürükleyerek çevre ve alanın canlı değişimini izleyin!');
+    setFeedbackMsg('📐 Çokgen Şablonu yüklendi: Dik Üçgen ABC ve Dikdörtgen DEFG. Köşeleri sürükleyerek çevre ve alanın canlı değişimini izleyin!');
   };
 
   const closePolygonDraft = () => {
@@ -6368,7 +6374,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 İstasyon Görev Kartları (6 Görev Şablonu)
               </h4>
               <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
-                Maarif + GeoGebra
+                Maarif Modeli
               </span>
             </div>
 
@@ -6488,12 +6494,12 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 </p>
               </div>
 
-              {/* Görev Kartı 6: GeoGebra Çokgen, Alan & Çevre Modeli */}
+              {/* Görev Kartı 6: Çokgen, Alan & Çevre Modeli */}
               <div className="p-3 rounded-2xl bg-emerald-50/90 border-2 border-emerald-300 space-y-2 shadow-xs">
                 <div className="flex items-center justify-between">
                   <span className="font-extrabold text-emerald-950 flex items-center gap-1.5">
                     <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-black flex items-center justify-center">6</span>
-                    <span>GeoGebra Çokgen, Alan & Çevre</span>
+                    <span>Çokgen, Alan & Çevre</span>
                   </span>
                   <button
                     onClick={loadPolygonStationPreset}
@@ -7641,7 +7647,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 </g>
               )}
 
-              {/* 2. Render Polygons (GeoGebra Çokgenler, Canlı Kenar Ölçüleri, Çevre & Gauss Alan) */}
+              {/* 2. Render Polygons (Çokgenler, Canlı Kenar Ölçüleri, Çevre & Gauss Alan) */}
               {polygons.map((poly) => {
                 const polyPoints = poly.points.map((p) => points.find((pt) => pt.id === p.id) || p);
                 const pointsString = polyPoints.map((p) => `${p.x},${p.y}`).join(' ');
@@ -8682,13 +8688,13 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               </div>
             )}
 
-            {/* Bottom Table: GeoGebra Cebir Görünümü & Nesne Denetçisi */}
+            {/* Bottom Table: Cebir Görünümü & Nesne Denetçisi */}
             <div className="bg-slate-900 text-white border-t border-slate-700 p-4 space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-xs font-black uppercase text-teal-300 tracking-wider flex items-center gap-1.5">
                     <Shapes className="w-4 h-4" />
-                    <span>GeoGebra Cebir Görünümü & Nesne Denetçisi</span>
+                    <span>Cebir Görünümü & Nesne Denetçisi</span>
                   </span>
 
                   <button
