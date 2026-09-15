@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface UserAvatarProps {
   avatar?: string | null;
@@ -9,13 +9,60 @@ interface UserAvatarProps {
   className?: string;
 }
 
+const normalizeAvatarUrl = (url?: string | null): string | null => {
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('//')) return `https:${trimmed}`;
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('/') ||
+    trimmed.startsWith('data:image/') ||
+    trimmed.startsWith('blob:')
+  ) {
+    return trimmed;
+  }
+  if (trimmed.includes('googleusercontent.com') || /\.(jpg|jpeg|png|webp|svg|gif|avif)(\?.*)?$/i.test(trimmed)) {
+    return `https://${trimmed}`;
+  }
+  return null;
+};
+
+const isEmojiOrShortSymbol = (str?: string | null): boolean => {
+  if (!str || typeof str !== 'string') return false;
+  const trimmed = str.trim();
+  // If longer than 8 chars or contains common ASCII letters/URL chars, it's not a single emoji
+  if (trimmed.length > 8 || /[a-zA-Z0-9_\-\.\:\/\?=\&\%]/.test(trimmed)) {
+    return false;
+  }
+  return true;
+};
+
+const getInitials = (nameStr?: string): string => {
+  if (!nameStr) return '👤';
+  const clean = nameStr.trim();
+  if (!clean) return '👤';
+  const parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) {
+    return parts[0].substring(0, 2).toUpperCase();
+  }
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
 export function UserAvatar({
   avatar,
   name = 'Kullanıcı',
   size = 'md',
   className = ''
 }: UserAvatarProps) {
-  const isImage = avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('/'));
+  const [imgError, setImgError] = useState(false);
+
+  const imageUrl = normalizeAvatarUrl(avatar);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [avatar]);
 
   const sizeClasses = {
     xs: 'w-6 h-6 text-xs',
@@ -25,28 +72,35 @@ export function UserAvatar({
     xl: 'w-16 h-16 text-2xl',
   };
 
-  const fallbackEmoji = '👤';
-  const displayAvatar = avatar || fallbackEmoji;
+  const isImage = !imgError && Boolean(imageUrl);
 
-  if (isImage) {
+  if (isImage && imageUrl) {
     return (
-      <div className={`relative shrink-0 rounded-full overflow-hidden border border-slate-200/80 shadow-xs flex items-center justify-center bg-slate-100 ${sizeClasses[size]} ${className}`}>
+      <div
+        className={`relative shrink-0 rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs flex items-center justify-center bg-slate-100 select-none ${sizeClasses[size]} ${className}`}
+      >
         <img
-          src={avatar!}
+          src={imageUrl}
           alt={name}
+          referrerPolicy="no-referrer"
+          loading="lazy"
           className="w-full h-full object-cover"
-          onError={(e) => {
-            // fallback if image fails to load
-            (e.target as HTMLElement).style.display = 'none';
-          }}
+          onError={() => setImgError(true)}
         />
       </div>
     );
   }
 
+  // If not an image or failed to load: check if avatar is a short emoji
+  const hasValidEmoji = isEmojiOrShortSymbol(avatar);
+  const fallbackContent = hasValidEmoji ? avatar : (getInitials(name) || '👤');
+
   return (
-    <div className={`shrink-0 rounded-2xl flex items-center justify-center select-none ${sizeClasses[size]} ${className}`}>
-      <span>{displayAvatar}</span>
+    <div
+      className={`shrink-0 rounded-2xl overflow-hidden flex items-center justify-center select-none font-bold ${sizeClasses[size]} ${className}`}
+    >
+      <span className="truncate leading-none">{fallbackContent}</span>
     </div>
   );
 }
+

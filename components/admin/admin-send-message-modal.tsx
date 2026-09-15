@@ -16,6 +16,7 @@ import {
 import { TeacherUser } from '@/types/auth';
 import { useAuth } from '@/lib/auth-store';
 import { sendMessage } from '@/lib/message-store';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import confetti from 'canvas-confetti';
 
 interface AdminSendMessageModalProps {
@@ -137,9 +138,12 @@ export function AdminSendMessageModal({
         <form onSubmit={handleSend} className="p-6 space-y-4">
           {/* RECIPIENT CARD */}
           <div className="p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-100 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-lg font-bold shadow-sm">
-              {teacher.avatar || '👨‍🏫'}
-            </div>
+            <UserAvatar
+              avatar={teacher.avatar || '👨‍🏫'}
+              name={teacher.name}
+              size="md"
+              className="w-10 h-10 rounded-xl bg-indigo-600 text-white text-lg font-bold shadow-sm shrink-0"
+            />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-extrabold text-sm text-slate-900 truncate">{teacher.name}</span>

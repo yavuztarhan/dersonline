@@ -699,7 +699,11 @@ export function MessageInboxModal({
                 {/* Locked recipient badge (direct message from student list) */}
                 {lockedRecipientId ? (
                   <div className="flex items-center gap-2 px-3.5 py-2.5 bg-teal-50 border border-teal-300 rounded-xl">
-                    <span className="text-base">{allowedRecipients.find(r => r.id === lockedRecipientId)?.avatar || '🎓'}</span>
+                    <UserAvatar
+                      avatar={allowedRecipients.find(r => r.id === lockedRecipientId)?.avatar}
+                      name={allowedRecipients.find(r => r.id === lockedRecipientId)?.name}
+                      size="xs"
+                    />
                     <span className="font-black text-xs text-teal-900">
                       {allowedRecipients.find(r => r.id === lockedRecipientId)?.name || 'Öğrenci'}
                     </span>
@@ -719,20 +723,31 @@ export function MessageInboxModal({
                           <button
                             type="button"
                             onClick={() => { setClassSectionFilter('all'); setRecipientId(''); }}
-                            className={`px-2.5 py-0.5 rounded-full text-[11px] font-black transition-all cursor-pointer ${classSectionFilter === 'all' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold transition-colors ${
+                              classSectionFilter === 'all'
+                                ? 'bg-teal-600 text-white shadow-xs'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
                           >
-                            Tümü
+                            Tümü ({allowedRecipients.length})
                           </button>
-                          {classSectionOptions.map((sec) => (
-                            <button
-                              key={sec}
-                              type="button"
-                              onClick={() => { setClassSectionFilter(sec); setRecipientId(''); }}
-                              className={`px-2.5 py-0.5 rounded-full text-[11px] font-black transition-all cursor-pointer ${classSectionFilter === sec ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                            >
-                              {sec}
-                            </button>
-                          ))}
+                          {classSectionOptions.map((cs) => {
+                            const count = allowedRecipients.filter(r => r.classSection === cs).length;
+                            return (
+                              <button
+                                key={cs}
+                                type="button"
+                                onClick={() => { setClassSectionFilter(cs); setRecipientId(''); }}
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold transition-colors ${
+                                  classSectionFilter === cs
+                                    ? 'bg-teal-600 text-white shadow-xs'
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                }`}
+                              >
+                                {cs} ({count})
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -747,7 +762,7 @@ export function MessageInboxModal({
                       <option value="">-- Lütfen Alıcı Seçiniz --</option>
                       {filteredRecipients.map((rec) => (
                         <option key={rec.id} value={rec.id}>
-                          {rec.avatar} {rec.name} ({rec.roleLabel}) {rec.extraInfo ? `- ${rec.extraInfo}` : ''}
+                          {rec.role === 'teacher' ? '👨‍🏫' : rec.role === 'student' ? '🎓' : '👑'} {rec.name} ({rec.roleLabel}) {rec.extraInfo ? `- ${rec.extraInfo}` : ''}
                         </option>
                       ))}
                     </select>

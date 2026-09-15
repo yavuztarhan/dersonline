@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { TeacherUser } from '@/types/auth';
 import { useAuth } from '@/lib/auth-store';
+import { UserAvatar } from '@/components/ui/user-avatar';
 
 interface AdminDeleteTeacherModalProps {
   isOpen: boolean;
@@ -165,9 +166,12 @@ export function AdminDeleteTeacherModal({
         <div className="p-6 space-y-4">
           {/* TEACHER SUMMARY CARD */}
           <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-rose-600 text-white flex items-center justify-center text-xl font-bold shadow-sm">
-              {teacher.avatar || '👨‍🏫'}
-            </div>
+            <UserAvatar
+              avatar={teacher.avatar}
+              name={teacher.name}
+              size="md"
+              className="w-11 h-11 rounded-xl bg-rose-600 text-white text-xl font-bold shadow-sm shrink-0"
+            />
             <div className="flex-1 min-w-0">
               <h4 className="font-extrabold text-sm text-slate-900 truncate">{teacher.name}</h4>
               <p className="text-xs text-slate-600 truncate flex items-center gap-1 mt-0.5">

@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-store';
 import { TeacherUser } from '@/types/auth';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { AdminSendMessageModal } from '@/components/admin/admin-send-message-modal';
 import { AdminDeleteTeacherModal } from '@/components/admin/admin-delete-teacher-modal';
 
@@ -213,9 +214,12 @@ export function AdminTeacherDetailModal({
         {/* MODAL HEADER */}
         <div className="px-6 py-5 bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-2xl shadow-inner">
-              {teacher.avatar || '👨‍🏫'}
-            </div>
+            <UserAvatar
+              avatar={teacherInfo.avatar || teacher.avatar || '👨‍🏫'}
+              name={teacherInfo.name}
+              size="lg"
+              className="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-400/30 text-2xl shadow-inner shrink-0"
+            />
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-black tracking-tight">{teacherInfo.name}</h2>
