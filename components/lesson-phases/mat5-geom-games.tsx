@@ -242,9 +242,10 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
   const { addPoints, unlockBadge } = useApp();
   const { currentUser, awardPointsToStudent } = useAuth();
 
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const [currentLevelIdx, setCurrentLevelIdx] = useState(0);
   const [gonyeAngle, setGonyeAngle] = useState(0);
-  const [gonyePos, setGonyePos] = useState({ x: 300, y: 200 });
+  const [gonyePos, setGonyePos] = useState({ x: 200, y: 280 });
   const [isAimingSnap, setIsAimingSnap] = useState(false);
   const [isPerpendicularDrawn, setIsPerpendicularDrawn] = useState(false);
   const [isReflected, setIsReflected] = useState(false);
@@ -257,10 +258,12 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
 
   const level = LASER_LEVELS[currentLevelIdx];
 
-  // Calculate perpendicular foot H on the laser line
-  // Parametric line: P(t) = P1 + t*(P2 - P1)
+  // Laser line vector and angle
   const dx = level.laserP2.x - level.laserP1.x;
   const dy = level.laserP2.y - level.laserP1.y;
+  const lineAngle = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+
+  // Calculate perpendicular foot H on the laser line (orthogonal projection of tower K)
   const lenSq = dx * dx + dy * dy;
   const t = ((level.towerPos.x - level.laserP1.x) * dx + (level.towerPos.y - level.laserP1.y) * dy) / lenSq;
   const perpFoot = {
@@ -268,18 +271,48 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
     y: level.laserP1.y + t * dy
   };
 
-  // Alignment angle difference
-  const diffAngle = Math.abs((gonyeAngle % 180) - (level.targetPerpAngle % 180));
-  const isAngleAligned = diffAngle <= 6 || Math.abs(diffAngle - 180) <= 6;
+  // Cross product to find whether tower is above (-1) or below (+1) the line
+  const cross = dx * (level.towerPos.y - level.laserP1.y) - dy * (level.towerPos.x - level.laserP1.x);
+  const towerSide = cross >= 0 ? 1 : -1;
 
-  // Auto snap Gönye to the exact laser alignment
+  // Check if Gönye base is aligned parallel to the laser line (either 0° or 180° offset)
+  const angleDiff = Math.abs(((gonyeAngle - lineAngle) % 180 + 180) % 180);
+  const isAngleAligned = angleDiff <= 8 || angleDiff >= 172;
+
+  // Level reset effect
+  useEffect(() => {
+    const lvl = LASER_LEVELS[currentLevelIdx];
+    const curDx = lvl.laserP2.x - lvl.laserP1.x;
+    const curDy = lvl.laserP2.y - lvl.laserP1.y;
+    const curLineAngle = (Math.atan2(curDy, curDx) * 180 / Math.PI + 360) % 360;
+
+    // Initial position: sitting visibly on the laser line
+    setGonyePos({
+      x: Math.round(lvl.laserP1.x + 0.25 * curDx),
+      y: Math.round(lvl.laserP1.y + 0.25 * curDy)
+    });
+    setGonyeAngle(0);
+    setIsPerpendicularDrawn(false);
+    setIsReflected(false);
+    setIsAimingSnap(false);
+  }, [currentLevelIdx]);
+
+  // Convert screen coordinates to SVG viewBox (0..600, 0..400) coordinates
+  const getSvgPoint = (clientX: number, clientY: number) => {
+    if (!svgRef.current) return null;
+    const pt = svgRef.current.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    const ctm = svgRef.current.getScreenCTM();
+    if (!ctm) return null;
+    return pt.matrixTransform(ctm.inverse());
+  };
+
+  // Auto snap Gönye to the exact perpendicular position on line d at point H
   const handleSnapGonye = () => {
     soundSynth.playSnap();
-    setGonyeAngle(level.targetPerpAngle);
-    setGonyePos({
-      x: (level.towerPos.x + perpFoot.x) / 2,
-      y: (level.towerPos.y + perpFoot.y) / 2
-    });
+    setGonyeAngle(Math.round(lineAngle));
+    setGonyePos(perpFoot);
     setIsAimingSnap(true);
   };
 
@@ -291,22 +324,31 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
 
   const handlePointerDownGonye = (e: React.PointerEvent) => {
     if (isReflected) return;
-    setIsDraggingGonye(true);
-    const rect = (e.currentTarget.parentElement as HTMLElement)?.getBoundingClientRect();
-    if (rect) {
+    const pt = getSvgPoint(e.clientX, e.clientY);
+    if (pt) {
+      setIsDraggingGonye(true);
       setDragOffset({
-        x: e.clientX - rect.left - gonyePos.x,
-        y: e.clientY - rect.top - gonyePos.y
+        x: pt.x - gonyePos.x,
+        y: pt.y - gonyePos.y
       });
     }
   };
 
   const handlePointerMoveContainer = (e: React.PointerEvent) => {
     if (!isDraggingGonye || isReflected) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const newX = Math.max(80, Math.min(520, e.clientX - rect.left - dragOffset.x));
-    const newY = Math.max(60, Math.min(340, e.clientY - rect.top - dragOffset.y));
-    setGonyePos({ x: newX, y: newY });
+    const pt = getSvgPoint(e.clientX, e.clientY);
+    if (pt) {
+      const newX = Math.max(30, Math.min(570, pt.x - dragOffset.x));
+      const newY = Math.max(30, Math.min(370, pt.y - dragOffset.y));
+      setGonyePos({ x: newX, y: newY });
+
+      // Proximity auto-snap if near perpendicular foot H and roughly aligned
+      const distToFoot = Math.hypot(newX - perpFoot.x, newY - perpFoot.y);
+      if (distToFoot < 25 && isAngleAligned) {
+        setGonyePos(perpFoot);
+        setGonyeAngle(Math.round(lineAngle));
+      }
+    }
   };
 
   const handlePointerUpContainer = () => {
@@ -317,6 +359,10 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
     if (isReflected) return;
 
     if (isAngleAligned) {
+      // Auto seat at H when firing if close enough
+      setGonyePos(perpFoot);
+      setGonyeAngle(Math.round(lineAngle));
+
       soundSynth.playSnap();
       soundSynth.playLaserReflect();
       setIsPerpendicularDrawn(true);
@@ -330,11 +376,6 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
       setTimeout(() => {
         if (currentLevelIdx < LASER_LEVELS.length - 1) {
           setCurrentLevelIdx((prev) => prev + 1);
-          setGonyeAngle(0);
-          setGonyePos({ x: 300, y: 200 });
-          setIsPerpendicularDrawn(false);
-          setIsReflected(false);
-          setIsAimingSnap(false);
         } else {
           setIsCompleted(true);
           soundSynth.playSuccessFanfare();
@@ -378,7 +419,6 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
   const handleReset = () => {
     setCurrentLevelIdx(0);
     setGonyeAngle(0);
-    setGonyePos({ x: 300, y: 200 });
     setIsPerpendicularDrawn(false);
     setIsReflected(false);
     setIsAimingSnap(false);
@@ -423,11 +463,15 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
 
       {/* Cyber City Arena Canvas */}
       <div
-        onPointerMove={handlePointerMoveContainer}
-        onPointerUp={handlePointerUpContainer}
-        className="relative w-full h-[370px] sm:h-[410px] bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 rounded-2xl border-2 border-slate-800 overflow-hidden select-none touch-none cursor-crosshair"
+        className="relative w-full h-[370px] sm:h-[430px] bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 rounded-2xl border-2 border-slate-800 overflow-hidden select-none touch-none"
       >
-        <svg className="w-full h-full pointer-events-none" viewBox="0 0 600 400">
+        <svg
+          ref={svgRef}
+          onPointerMove={handlePointerMoveContainer}
+          onPointerUp={handlePointerUpContainer}
+          className="w-full h-full cursor-crosshair select-none"
+          viewBox="0 0 600 400"
+        >
           <defs>
             <pattern id="cyber-grid" width="30" height="30" patternUnits="userSpaceOnUse">
               <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(13, 148, 136, 0.09)" strokeWidth="1" />
@@ -460,22 +504,22 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             x2={level.laserP2.x}
             y2={level.laserP2.y}
             stroke="url(#laserGlow)"
-            strokeWidth={isReflected ? '2' : '4.5'}
+            strokeWidth={isReflected ? '2.5' : '5'}
             strokeDasharray={isReflected ? '6 6' : 'none'}
           />
           {/* Pulsing Laser Core Particles */}
           {!isReflected && (
             <>
               <circle
-                cx={level.laserP1.x + 0.35 * (level.laserP2.x - level.laserP1.x)}
-                cy={level.laserP1.y + 0.35 * (level.laserP2.y - level.laserP1.y)}
+                cx={level.laserP1.x + 0.35 * dx}
+                cy={level.laserP1.y + 0.35 * dy}
                 r="4.5"
                 fill="#ffffff"
                 className="animate-ping"
               />
               <circle
-                cx={level.laserP1.x + 0.7 * (level.laserP2.x - level.laserP1.x)}
-                cy={level.laserP1.y + 0.7 * (level.laserP2.y - level.laserP1.y)}
+                cx={level.laserP1.x + 0.7 * dx}
+                cy={level.laserP1.y + 0.7 * dy}
                 r="4.5"
                 fill="#ffffff"
                 className="animate-ping"
@@ -502,7 +546,7 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             <text x="0" y="5" textAnchor="middle" fill="#0f172a" fontSize="10" fontWeight="900">
               K
             </text>
-            <text x="0" y="-30" textAnchor="middle" fill="#5eead4" fontSize="11" fontWeight="900">
+            <text x="0" y={towerSide > 0 ? 36 : -30} textAnchor="middle" fill="#5eead4" fontSize="11" fontWeight="900">
               Savunma Kulesi (K)
             </text>
           </g>
@@ -521,15 +565,36 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
               />
               {/* Foot Point H */}
               <circle cx={perpFoot.x} cy={perpFoot.y} r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-              <text x={perpFoot.x + 14} y={perpFoot.y + 16} fill="#34d399" fontSize="11" fontWeight="900">
+              <text
+                x={perpFoot.x + 14}
+                y={perpFoot.y + (towerSide > 0 ? -14 : 18)}
+                fill="#34d399"
+                fontSize="11"
+                fontWeight="900"
+              >
                 H (Dikme Ayağı)
               </text>
 
               {/* 90° Right Angle Marker Box */}
-              <g transform={`translate(${perpFoot.x}, ${perpFoot.y}) rotate(${level.laserAngle})`}>
-                <rect x="-14" y="-14" width="14" height="14" fill="none" stroke="#22c55e" strokeWidth="2.5" />
-                <circle cx="-7" cy="-7" r="2" fill="#22c55e" />
-                <text x="-7" y="-20" textAnchor="middle" fill="#86efac" fontSize="11" fontWeight="900">
+              <g transform={`translate(${perpFoot.x}, ${perpFoot.y}) rotate(${lineAngle})`}>
+                <rect
+                  x="-14"
+                  y={towerSide > 0 ? '0' : '-14'}
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="2.5"
+                />
+                <circle cx="-7" cy={towerSide > 0 ? 7 : -7} r="2" fill="#22c55e" />
+                <text
+                  x="-7"
+                  y={towerSide > 0 ? 28 : -20}
+                  textAnchor="middle"
+                  fill="#86efac"
+                  fontSize="11"
+                  fontWeight="900"
+                >
                   90° [KH] ⊥ d
                 </text>
               </g>
@@ -551,70 +616,90 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
               strokeLinecap="round"
             />
           )}
+
+          {/* Virtual Set Square (Sanal Gönye) Rendered Inside SVG for 100% Coordinate Accuracy */}
+          <g
+            transform={`translate(${gonyePos.x}, ${gonyePos.y}) rotate(${gonyeAngle})`}
+            className="cursor-grab active:cursor-grabbing pointer-events-auto select-none"
+            onPointerDown={handlePointerDownGonye}
+          >
+            {/* Glow / Outline when Aligned */}
+            {isAngleAligned && (
+              <polygon
+                points={`0,0 145,0 0,${towerSide > 0 ? 100 : -100}`}
+                fill="none"
+                stroke="#10b981"
+                strokeWidth="5"
+                strokeOpacity="0.4"
+                className="animate-pulse"
+              />
+            )}
+
+            {/* Outer Triangle Body */}
+            <polygon
+              points={`0,0 140,0 0,${towerSide > 0 ? 95 : -95}`}
+              fill={isAngleAligned ? 'rgba(16, 185, 129, 0.40)' : 'rgba(56, 189, 248, 0.30)'}
+              stroke={isAngleAligned ? '#10b981' : '#38bdf8'}
+              strokeWidth="2.5"
+            />
+
+            {/* Inner Triangle Cutout */}
+            <polygon
+              points={`16,${towerSide > 0 ? 14 : -14} 95,${towerSide > 0 ? 14 : -14} 16,${towerSide > 0 ? 68 : -68}`}
+              fill="rgba(15, 23, 42, 0.94)"
+              stroke={isAngleAligned ? '#059669' : '#0284c7'}
+              strokeWidth="1.5"
+            />
+
+            {/* 90° Corner Symbol at (0, 0) */}
+            <polyline
+              points={`0,${towerSide > 0 ? 16 : -16} 16,${towerSide > 0 ? 16 : -16} 16,0`}
+              fill="none"
+              stroke={isAngleAligned ? '#22c55e' : '#38bdf8'}
+              strokeWidth="2.5"
+            />
+            <circle cx="8" cy={towerSide > 0 ? 8 : -8} r="2.5" fill={isAngleAligned ? '#22c55e' : '#38bdf8'} />
+
+            {/* Millimeter Ticks along Ruler Base */}
+            {Array.from({ length: 11 }).map((_, i) => (
+              <line
+                key={i}
+                x1={15 + i * 11}
+                y1="0"
+                x2={15 + i * 11}
+                y2={towerSide > 0 ? (i % 2 === 0 ? '8' : '5') : (i % 2 === 0 ? '-8' : '-5')}
+                stroke="#cbd5e1"
+                strokeWidth="1.5"
+              />
+            ))}
+
+            {/* Label */}
+            <text
+              x="45"
+              y={towerSide > 0 ? 32 : -32}
+              fill="#f8fafc"
+              fontSize="8.5"
+              fontWeight="900"
+              transform={`rotate(${towerSide > 0 ? 34 : -34}, 45, ${towerSide > 0 ? 32 : -32})`}
+              textAnchor="middle"
+            >
+              SANAL GÖNYE (90°)
+            </text>
+
+            {/* 90° Corner Apex Dot */}
+            <circle
+              cx="0"
+              cy="0"
+              r="5"
+              fill={isAngleAligned ? '#22c55e' : '#f59e0b'}
+              stroke="#ffffff"
+              strokeWidth="1.5"
+            />
+          </g>
         </svg>
 
-        {/* Draggable & Rotatable Virtual Set Square (Sanal Gönye) */}
-        <div
-          onPointerDown={handlePointerDownGonye}
-          style={{
-            position: 'absolute',
-            left: `${gonyePos.x}px`,
-            top: `${gonyePos.y}px`,
-            transform: `translate(-50%, -50%) rotate(${gonyeAngle}deg)`,
-            transformOrigin: '50% 50%',
-            transition: isDraggingGonye ? 'none' : 'transform 0.12s ease-out'
-          }}
-          className={`cursor-grab active:cursor-grabbing pointer-events-auto select-none ${
-            isAngleAligned ? 'ring-4 ring-emerald-400/80 rounded-xl shadow-2xl' : 'hover:scale-102'
-          }`}
-        >
-          <div className="relative w-48 h-32">
-            <svg viewBox="0 0 160 100" className="w-full h-full drop-shadow-2xl">
-              {/* Outer Triangle Body */}
-              <polygon
-                points="10,90 150,90 10,10"
-                fill={isAngleAligned ? 'rgba(16, 185, 129, 0.35)' : 'rgba(56, 189, 248, 0.28)'}
-                stroke={isAngleAligned ? '#10b981' : '#38bdf8'}
-                strokeWidth="2.5"
-              />
-              {/* Inner Cutout */}
-              <polygon points="25,80 110,80 25,35" fill="rgba(15, 23, 42, 0.92)" stroke="#475569" strokeWidth="1" />
-              {/* Right Angle 90° Corner at (10,90) */}
-              <polyline points="10,74 26,74 26,90" fill="none" stroke={isAngleAligned ? '#22c55e' : '#38bdf8'} strokeWidth="2.5" />
-              <circle cx="18" cy="82" r="2.5" fill={isAngleAligned ? '#22c55e' : '#38bdf8'} />
-              {/* Ruler Millimeter Ticks along base */}
-              {Array.from({ length: 9 }).map((_, i) => (
-                <line
-                  key={i}
-                  x1={25 + i * 14}
-                  y1="90"
-                  x2={25 + i * 14}
-                  y2={i % 2 === 0 ? '82' : '85'}
-                  stroke="#94a3b8"
-                  strokeWidth="1.2"
-                />
-              ))}
-              <text x="80" y="55" fill="#f8fafc" fontSize="8" fontWeight="900" textAnchor="middle">
-                SANAL GÖNYE (90°)
-              </text>
-            </svg>
-
-            {/* Touch Rotation Handle Knob */}
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                handleQuickRotate(15);
-              }}
-              title="15° Döndür"
-              className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 border-2 border-teal-400 text-teal-300 flex items-center justify-center font-mono font-black text-[11px] shadow-lg hover:bg-teal-500 hover:text-slate-950 cursor-pointer active:scale-90 transition-all"
-            >
-              ↻
-            </div>
-          </div>
-        </div>
-
         {/* Live Alignment Status Badge */}
-        <div className="absolute bottom-3 left-3 bg-slate-900/95 border border-slate-700 px-3.5 py-2 rounded-xl text-xs flex items-center gap-3 backdrop-blur-md">
+        <div className="absolute bottom-3 left-3 bg-slate-900/95 border border-slate-700 px-3.5 py-2 rounded-xl text-xs flex items-center gap-3 backdrop-blur-md shadow-lg">
           <div className={`w-3.5 h-3.5 rounded-full ${isAngleAligned ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
           <span className="font-bold text-slate-300">
             Gönye Açısı: <span className="font-mono text-teal-300 font-extrabold">{gonyeAngle}°</span>
@@ -650,7 +735,7 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
               type="range"
               min="0"
               max="180"
-              value={gonyeAngle}
+              value={gonyeAngle % 180}
               onChange={(e) => {
                 setGonyeAngle(Number(e.target.value));
                 soundSynth.playCompass();
