@@ -419,7 +419,7 @@ export function WhiteboardViewerModal({
                   <span className="font-bold text-slate-600 shrink-0">{file.classSection} Şubesi</span>
                 </div>
                 <div className="text-[10px] text-teal-800 font-extrabold uppercase tracking-wide truncate">
-                  MEB • TÜRKİYE YÜZYILI MAARİF MODELİ • {file.outcomeCode}
+                  TÜRKİYE YÜZYILI MAARİF MODELİ • {file.outcomeCode}
                 </div>
               </div>
             </div>

@@ -96,7 +96,7 @@ export function TeacherGuideDrawer({ outcomeCode, outcomeTitle, guide, outcome }
                   <span>Maarif Modeli Günlük Ders Planı</span>
                 </div>
                 <p className="text-[11px] text-teal-100">
-                  Bu dersin resmi müfredat ve 4 aşamalı ders planını okulunuza özel PDF olarak indirin.
+                  Bu dersin müfredat ve 4 aşamalı ders planını okulunuza özel PDF olarak indirin.
                 </p>
               </div>
               <button

@@ -560,7 +560,7 @@ export function StepSelector() {
                                 setPlanModalOutcome(outcome);
                               }}
                               className="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                              title="Bu kazanımın resmi Maarif Modeli Günlük Planını PDF olarak indir"
+                              title="Bu kazanımın Maarif Modeli Günlük Planını PDF olarak indir"
                             >
                               <FileText className="w-3.5 h-3.5 text-teal-600" />
                               <span>Plan İndir (PDF)</span>

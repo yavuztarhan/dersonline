@@ -292,8 +292,8 @@ export default function GamesPage() {
 
       {/* 2. Hero Banner: Maarif Oyun Salonu & Dynamic Stats */}
       <div className="relative overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-teal-950 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl border border-indigo-900/50">
-        <div className="absolute -right-12 -top-12 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -left-12 -bottom-12 w-80 h-80 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -right-12 -top-12 w-80 h-80 bg-[radial-gradient(circle,rgba(99,102,241,0.18)_0%,transparent_70%)] pointer-events-none" />
+        <div className="absolute -left-12 -bottom-12 w-80 h-80 bg-[radial-gradient(circle,rgba(20,184,166,0.18)_0%,transparent_70%)] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
           

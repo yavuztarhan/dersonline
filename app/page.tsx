@@ -101,8 +101,8 @@ export default function HomePage() {
 
       {/* Unified Professional Hero Welcome Card */}
       <div id="onboarding-home-hero" className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-4 sm:p-8 lg:p-10 text-white shadow-xl border border-slate-800">
-        <div className="absolute -right-10 -top-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute right-1/3 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -right-10 -top-10 w-96 h-96 bg-[radial-gradient(circle,rgba(20,184,166,0.18)_0%,transparent_70%)] pointer-events-none" />
+        <div className="absolute right-1/3 -bottom-10 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,0.18)_0%,transparent_70%)] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-8">
           
@@ -152,9 +152,9 @@ export default function HomePage() {
           </div>
 
           {/* Right Column: Grand & Lively Selim Mascot Section */}
-          <div className="flex items-center gap-3.5 sm:gap-5 bg-gradient-to-br from-white/10 to-teal-900/40 backdrop-blur-md p-3.5 sm:p-5 rounded-3xl border border-white/20 shadow-2xl max-w-md w-full lg:w-auto relative group overflow-hidden">
+          <div className="flex items-center gap-3.5 sm:gap-5 bg-gradient-to-br from-white/10 to-teal-900/40 md:backdrop-blur-md p-3.5 sm:p-5 rounded-3xl border border-white/20 shadow-2xl max-w-md w-full lg:w-auto relative group overflow-hidden">
             <div className="relative shrink-0 flex items-center justify-center">
-              <div className="absolute inset-0 bg-teal-400/20 rounded-full blur-xl group-hover:bg-teal-400/30 transition-all" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.3)_0%,transparent_70%)] pointer-events-none" />
               <MascotCharacter
                 pose={currentUser.role === 'student' ? 'pointing' : currentUser.role === 'teacher' ? 'proud' : 'success'}
                 size="lg"

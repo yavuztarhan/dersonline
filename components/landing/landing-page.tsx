@@ -77,8 +77,8 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
       
       {/* 1. HERO SECTION */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-8 sm:p-12 lg:p-16 text-white shadow-2xl border border-slate-800">
-        <div className="absolute -right-16 -top-16 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute right-1/3 -bottom-16 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -right-16 -top-16 w-96 h-96 bg-[radial-gradient(circle,rgba(20,184,166,0.18)_0%,transparent_70%)] pointer-events-none" />
+        <div className="absolute right-1/3 -bottom-16 w-80 h-80 bg-[radial-gradient(circle,rgba(16,185,129,0.18)_0%,transparent_70%)] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
           
@@ -190,7 +190,7 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
             <div className="w-full lg:w-[36%] flex flex-col items-center justify-end relative shrink-0 pt-6 lg:pt-0">
               
               {/* Background Glow */}
-              <div className="absolute inset-0 bg-radial from-teal-500/20 via-transparent to-transparent blur-2xl pointer-events-none" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.25)_0%,transparent_70%)] pointer-events-none" />
 
               {/* Top Floating Badge */}
               <div className="mb-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg flex items-center gap-1.5 border border-white/60 animate-in fade-in slide-in-from-top duration-300 z-10">
@@ -205,7 +205,7 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
                   alt="Selim - Anadolu'nun Matematik Dahisi"
                   width={360}
                   height={420}
-                  className="w-full h-full object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.6)] hover:scale-103 transition-transform duration-300 cursor-pointer"
+                  className="w-full h-full object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer"
                   onClick={() => {
                     playSound('select');
                     setIntroVideoOpen(true);
@@ -215,7 +215,7 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
               </div>
 
               {/* Bottom Glass Quote */}
-              <div className="w-full max-w-sm bg-slate-900/90 backdrop-blur-xl border border-teal-400/30 rounded-2xl p-3 shadow-xl text-center space-y-1.5 z-10 -mt-4">
+              <div className="w-full max-w-sm bg-slate-900/95 border border-teal-400/30 rounded-2xl p-3 shadow-xl text-center space-y-1.5 z-10 -mt-4">
                 <div className="text-xs font-black text-amber-300">Öğrenme Yoldaşın Selim</div>
                 <p className="text-[11px] text-slate-200 italic font-medium leading-snug">
                   "{MASCOT_CONFIG.quotes.heroWelcome}"
@@ -241,7 +241,7 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
 
       {/* 2. NELER YAPABİLİRSİNİZ? FEATURE TEASER SHOWCASE */}
       <section className="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-10 border border-teal-800/40 text-white shadow-xl space-y-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[radial-gradient(circle,rgba(20,184,166,0.18)_0%,transparent_70%)] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">

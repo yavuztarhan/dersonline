@@ -83,7 +83,7 @@ export function PwaInstallBanner() {
   return (
     <>
       <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-5 duration-300">
-        <div className="bg-slate-900/95 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-teal-500/30 flex items-center justify-between gap-3">
+        <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-teal-500/30 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center shrink-0 shadow-md">
               <Smartphone className="w-5 h-5 text-slate-950" />

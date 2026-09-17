@@ -33,7 +33,8 @@ import {
   Flame,
   MousePointerClick,
   BookOpen,
-  ArrowUpRight
+  ArrowUpRight,
+  Download
 } from 'lucide-react';
 
 type RoleCategory = 'all' | 'teacher' | 'student' | 'admin' | 'board';
@@ -331,8 +332,8 @@ export default function NelerYapabilirsinizPage() {
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 border border-teal-800/40 p-6 sm:p-10 lg:p-14 text-white shadow-2xl">
           
           {/* Background Ambient Lights */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[radial-gradient(circle,rgba(20,184,166,0.2)_0%,transparent_70%)] pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[radial-gradient(circle,rgba(245,158,11,0.18)_0%,transparent_70%)] pointer-events-none" />
 
           <div className="relative z-10 max-w-3xl space-y-6">
             
@@ -368,6 +369,16 @@ export default function NelerYapabilirsinizPage() {
                 <span>Öğretmen Olarak Ücretsiz Katıl</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
+
+              <a
+                href="/downloads/maarif-akademi-meb-yenilikci-ogretmenler-tanitim.pdf"
+                download="maarif-akademi-meb-yenilikci-ogretmenler-tanitim.pdf"
+                className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white font-extrabold text-sm transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/30 active:scale-95 cursor-pointer"
+                title="Yüksek Çözünürlüklü MEB Yenilikçi Öğretmenler Tanıtım PDF İndir"
+              >
+                <Download className="w-4 h-4" />
+                <span>MEB Başvuru & Tanıtım PDF</span>
+              </a>
 
               <button
                 type="button"
@@ -662,6 +673,7 @@ export default function NelerYapabilirsinizPage() {
                   Türkiye Yüzyılı Maarif Modeli
                 </span>
 
+                {/* Butonlar kullanıcının isteği doğrultusunda geçici olarak yoruma alındı:
                 {feat.actionHref ? (
                   <Link
                     href={feat.actionHref}
@@ -680,6 +692,7 @@ export default function NelerYapabilirsinizPage() {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 ) : null}
+                */}
               </div>
 
             </div>
@@ -812,7 +825,7 @@ export default function NelerYapabilirsinizPage() {
       {/* 7. FINAL CALL TO ACTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-teal-700 via-emerald-700 to-teal-800 rounded-3xl p-8 sm:p-12 text-white text-center space-y-6 shadow-2xl relative overflow-hidden">
-          <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-[radial-gradient(circle,rgba(255,255,255,0.15)_0%,transparent_70%)] pointer-events-none" />
           
           <div className="relative z-10 max-w-2xl mx-auto space-y-4">
             <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">

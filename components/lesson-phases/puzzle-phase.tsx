@@ -40,6 +40,12 @@ import {
   GeometryScissorsMaglevGame,
   LighthouseAngleGame
 } from '@/components/lesson-phases/mat5-geom-games';
+import {
+  SeljukTileMasterGame,
+  PolarisNavigatorGame,
+  ShortestPathBridgeGame,
+  DynamicAngleRadarGame
+} from '@/components/lesson-phases/mat5-pro-games';
 import { BoardStudentWidget } from '@/components/board/board-student-widget';
 import { useAuth } from '@/lib/auth-store';
 import {
@@ -74,7 +80,11 @@ import {
   Thermometer,
   Wind,
   Rocket,
-  Anchor
+  Anchor,
+  Palette,
+  Navigation,
+  Gauge,
+  Radio
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -94,6 +104,10 @@ interface MatchCard {
 }
 
 export type PuzzleGameId = 
+  | 'seljuktilemaster'
+  | 'polarisnavigator'
+  | 'shortestpathbridge'
+  | 'dynamicangleradar'
   | 'lasershield'
   | 'orbitrescue'
   | 'geometryscissors'
@@ -389,6 +403,46 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
 
   if (isMat531Topic) {
     baseGamesList.push(
+      {
+        id: 'seljuktilemaster',
+        title: 'Selçuklu Sarayı Çini Ustası',
+        tagline: 'Geometrik Mozaik, Sekizgen Yıldız & Simetri',
+        description: 'Çizgeç, pergel ve gönye ile saray duvarlarına eş yarıçaplı çemberler ve sekiz köşeli Selçuklu yıldızı inşa edip sırla!',
+        icon: <Palette className="w-8 h-8" />,
+        badge: '3 Aşama • Sanat & İnşa (D7.1)',
+        gradient: 'from-teal-600 via-emerald-700 to-slate-900',
+        reward: '+100 XP & Baş Çini Mimarı'
+      },
+      {
+        id: 'polarisnavigator',
+        title: 'Kutup Yıldızı Seyrüseferi',
+        tagline: 'Işın ([PA>), Doğru (d) & Doğru Parçası ([AB])',
+        description: 'Gece okyanusunda pusulası bozulan gemiyi Kutup Yıldızı ışınları, takımyıldız doğru parçaları ve ufuk doğrularıyla limana ulaştır!',
+        icon: <Navigation className="w-8 h-8" />,
+        badge: '3 Seviye • Geometrik Modeller',
+        gradient: 'from-indigo-600 via-sky-700 to-slate-900',
+        reward: '+100 XP & Kutup Kaptanı'
+      },
+      {
+        id: 'shortestpathbridge',
+        title: 'En Kısa Yol Dedektifi: Dikme Köprüsü',
+        tagline: 'Gönye ile En Kısa Yol (⊥) Kanıtı',
+        description: 'Nehir kıyısındaki kervan için farklı açılarda köprü halatları çek; lazer telemetre ile 90° dikmenin en kısa yol olduğunu kanıtla!',
+        icon: <Gauge className="w-8 h-8" />,
+        badge: '2 Parkur • Dikme (⊥) & Mesafe',
+        gradient: 'from-emerald-600 via-teal-700 to-slate-900',
+        reward: '+100 XP & Köprü Mimarı'
+      },
+      {
+        id: 'dynamicangleradar',
+        title: 'Radar Dinamik Açı Avcısı',
+        tagline: 'Dönen Işın ile Sinyal ve Açı Modelleme',
+        description: 'Başlangıç noktası etrafında dönen radar ışını ile dar, dik, geniş ve doğru açıdaki uçak sinyallerini tara ve anında kilitle!',
+        icon: <Radio className="w-8 h-8" />,
+        badge: '4 Hedef • Dönen Işın & Açı',
+        gradient: 'from-cyan-600 via-blue-700 to-slate-900',
+        reward: '+100 XP & Radar Kontrolörü'
+      },
       {
         id: 'lasershield',
         title: 'Lazer Kalkanı: Dikme Savunması',
@@ -1106,6 +1160,34 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
 
           {/* Teacher Smart Board Student Delegation Widget */}
           <BoardStudentWidget activityTitle={currentGameInfo?.title || 'Aktif Oyun'} />
+
+          {/* FEATURED GAME: SELÇUKLU SARAYI ÇİNİ USTASI (MAT.5.3.1) */}
+          {selectedGameId === 'seljuktilemaster' && (
+            <div className="animate-in fade-in duration-200">
+              <SeljukTileMasterGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: KUTUP YILDIZI SEYRÜSEFERİ (MAT.5.3.1) */}
+          {selectedGameId === 'polarisnavigator' && (
+            <div className="animate-in fade-in duration-200">
+              <PolarisNavigatorGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: EN KISA YOL DEDEKTİFİ: DİKME KÖPRÜSÜ (MAT.5.3.1) */}
+          {selectedGameId === 'shortestpathbridge' && (
+            <div className="animate-in fade-in duration-200">
+              <ShortestPathBridgeGame />
+            </div>
+          )}
+
+          {/* FEATURED GAME: RADAR DİNAMİK AÇI AVCISI (MAT.5.3.1) */}
+          {selectedGameId === 'dynamicangleradar' && (
+            <div className="animate-in fade-in duration-200">
+              <DynamicAngleRadarGame />
+            </div>
+          )}
 
           {/* FEATURED GAME: LAZER KALKANI: DİKME SAVUNMASI (MAT.5.3.1) */}
           {selectedGameId === 'lasershield' && (

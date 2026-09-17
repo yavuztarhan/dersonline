@@ -2821,7 +2821,7 @@ export function WhiteboardModal({
                       />
                       <div>
                         <div className="text-[9px] font-black text-teal-800 uppercase tracking-wide">
-                          MEB • TÜRKİYE YÜZYILI MAARİF MODELİ
+                          TÜRKİYE YÜZYILI MAARİF MODELİ
                         </div>
                         <div className="text-xs font-extrabold text-slate-900 leading-tight">
                           Matematik Dersi Beyaz Tahta Notları • {outcomeCode}

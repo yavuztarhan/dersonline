@@ -164,7 +164,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
 
         const imgData = canvas.toDataURL('image/jpeg', 0.98);
         pdf.addImage(imgData, 'JPEG', offsetX, offsetY, finalWidth, finalHeight, undefined, 'FAST');
-        pdf.save(`MEB_Maarif_Gunluk_Plan_${safeOutcome}.pdf`);
+        pdf.save(`Maarif_Gunluk_Plan_${safeOutcome}.pdf`);
       } else {
         // Multi-page layout
         if (!page1Ref.current || !page2Ref.current) {
@@ -200,7 +200,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
         const offsetX2 = marginX + (printableWidth - finalWidth2) / 2;
         pdf.addImage(canvas2.toDataURL('image/jpeg', 0.98), 'JPEG', offsetX2, marginTop, finalWidth2, finalHeight2, '', 'FAST');
 
-        pdf.save(`MEB_Maarif_Gunluk_Plan_${safeOutcome}_2Sayfa.pdf`);
+        pdf.save(`Maarif_Gunluk_Plan_${safeOutcome}_2Sayfa.pdf`);
       }
 
       playSound('success');
@@ -232,11 +232,11 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
                   {outcome.code}
                 </span>
                 <span className="text-xs font-semibold text-teal-200">
-                  MEB Türkiye Yüzyılı Maarif Modeli
+                  Türkiye Yüzyılı Maarif Modeli
                 </span>
               </div>
               <h2 className="text-lg sm:text-xl font-black text-white mt-0.5">
-                Resmi Günlük Ders Planı İndir (PDF)
+                Günlük Ders Planı İndir (PDF)
               </h2>
             </div>
           </div>
@@ -261,10 +261,10 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
               <div className="flex items-center gap-2 text-xs font-black text-slate-900">
                 <Sparkles className="w-4 h-4 text-teal-600" />
-                <span>Resmi Belge Bilgileri Doğrulama</span>
+                <span>Belge Bilgileri Doğrulama</span>
               </div>
               <p className="text-[11px] text-slate-500">
-                Aşağıdaki bilgileri kontrol edip gerekirse düzenleyebilirsiniz. İndirilen resmi PDF belgesinin başlık ve imza kısımlarında bu veriler yer alacaktır.
+                Aşağıdaki bilgileri kontrol edip gerekirse düzenleyebilirsiniz. İndirilen PDF belgesinin başlık ve imza kısımlarında bu veriler yer alacaktır.
               </p>
 
               {/* Okul Adı & Punto Ayarlama */}
@@ -417,7 +417,7 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
                 </div>
                 <p className="text-[10.5px] text-slate-500">
                   {pageLayoutMode === 'single'
-                    ? '💡 Tek Sayfa modu, resmi ders planını tek bir A4 sayfasına orantılı sığdırır, sayfa bölünmesi ve yazı kesilmesi yaşanmaz.'
+                    ? '💡 Tek Sayfa modu, günlük ders planını tek bir A4 sayfasına orantılı sığdırır, sayfa bölünmesi ve yazı kesilmesi yaşanmaz.'
                     : '💡 2 Sayfalı mod, aşamaları mantıksal olarak 2 ayrı sayfaya böler ve yazıların bölünmeden basılmasını sağlar.'}
                 </p>
               </div>
@@ -467,10 +467,10 @@ export function LessonPlanModal({ isOpen, onClose, outcome }: LessonPlanModalPro
             </div>
           </div>
 
-          {/* Right: Printable Official Lesson Plan Sheet Preview (7 cols) */}
+          {/* Right: Printable Lesson Plan Sheet Preview (7 cols) */}
           <div className="lg:col-span-7 bg-slate-200 p-3 sm:p-4 rounded-2xl overflow-x-auto flex flex-col items-center">
             <div className="text-[10px] font-bold text-slate-600 mb-2 w-full max-w-[740px] flex items-center justify-between">
-              <span>📄 MEB Standartlarında Resmi Belge Önizlemesi (A4)</span>
+              <span>📄 Belge Önizlemesi (A4)</span>
               <span>{pageLayoutMode === 'single' ? '1/1 Sayfa (Tam Sığdırma)' : '1/2 ve 2/2 Sayfalar'}</span>
             </div>
 

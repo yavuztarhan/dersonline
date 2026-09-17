@@ -1089,9 +1089,9 @@ export default function ProfilePage() {
                     <span className="flex items-center gap-1.5">
                       <User className="w-3.5 h-3.5 text-teal-600" />
                       <span>Okul Müdürü Adı ve Soyadı</span>
-                      <span className="text-teal-600 font-normal text-[11px]">(Resmi Günlük Plan PDF Onayı İçin)</span>
+                      <span className="text-teal-600 font-normal text-[11px]">(Günlük Plan PDF Onayı İçin)</span>
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400">
+                    <span className="text-slate-400 font-normal text-[11px] block mt-0.5">
                       Ders Planı İmzası
                     </span>
                   </label>
@@ -1103,7 +1103,7 @@ export default function ProfilePage() {
                     className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 transition-all"
                   />
                   <p className="text-[11px] text-slate-400">
-                    📄 İndireceğiniz MEB Maarif Modeli Günlük Ders Planı PDF çıktılarının sol/sağ alt imza bölümünde &quot;Okul Müdürü&quot; unvanıyla yer alır.
+                    📄 İndireceğiniz Maarif Modeli Günlük Ders Planı PDF çıktılarının sol/sağ alt imza bölümünde &quot;Okul Müdürü&quot; unvanıyla yer alır.
                   </p>
                 </div>
               </div>
