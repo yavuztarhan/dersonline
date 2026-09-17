@@ -11,7 +11,7 @@ export default function TeacherPage() {
       title="Öğretmen Paneli Girişi"
       description="Sınıf yönetimi, akıllı tahta kazanım takibi ve öğrenci puanlarını yönetmek için öğretmen hesabınızla giriş yapınız."
     >
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <TeacherDashboard />
       </div>
     </AuthGuard>

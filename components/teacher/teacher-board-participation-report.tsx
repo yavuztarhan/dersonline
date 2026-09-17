@@ -279,7 +279,7 @@ export function TeacherBoardParticipationReport({ teacherBranch }: TeacherBoardP
       
       {/* 1. Header Banner */}
       <div className="bg-gradient-to-r from-teal-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[radial-gradient(circle,rgba(20,184,166,0.18)_0%,transparent_70%)] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">

@@ -1310,7 +1310,7 @@ export function ActivitySheetView({
       >
         {/* Background Decorative Patterns */}
         <div
-          className={`absolute right-0 top-0 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
+          className={`absolute right-0 top-0 w-96 h-96 rounded-full [mask-image:radial-gradient(circle,black_30%,transparent_70%)] pointer-events-none ${
             isMat713OperationsActivity
               ? 'bg-teal-500/25'
               : isMat712ComparisonActivity
@@ -1353,7 +1353,7 @@ export function ActivitySheetView({
           }`}
         />
         <div
-          className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full blur-2xl pointer-events-none ${
+          className={`absolute left-1/3 bottom-0 w-64 h-64 rounded-full [mask-image:radial-gradient(circle,black_30%,transparent_70%)] pointer-events-none ${
             isMat712ComparisonActivity
               ? 'bg-indigo-500/25'
               : isMat711RulerActivity

@@ -329,8 +329,8 @@ export function KolilemeFactoryGame({ onBackToMenu }: KolilemeFactoryGameProps =
     <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 border-2 border-amber-500/50 shadow-2xl space-y-6 select-none relative overflow-hidden">
       
       {/* Background Glow */}
-      <div className="absolute -right-20 -top-20 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-orange-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -right-20 -top-20 w-80 h-80 bg-[radial-gradient(circle,rgba(245,158,11,0.2)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-[radial-gradient(circle,rgba(249,115,22,0.2)_0%,transparent_70%)] pointer-events-none" />
 
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4 relative z-10">

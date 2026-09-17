@@ -408,7 +408,7 @@ export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
           
           {/* Hero Banner */}
           <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-rose-950 p-6 sm:p-10 text-white relative overflow-hidden">
-            <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-[radial-gradient(circle,rgba(245,158,11,0.25)_0%,transparent_70%)] pointer-events-none" />
             
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="space-y-3 text-center md:text-left">
@@ -430,7 +430,7 @@ export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
               </div>
 
               <div className="relative shrink-0 flex items-center justify-center">
-                <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-xl animate-pulse" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.35)_0%,transparent_70%)] pointer-events-none" />
                 <MascotCharacter pose="proud" size="xl" showBadge badgeText="Selim" />
               </div>
             </div>
@@ -754,7 +754,7 @@ export function MathWheelGame({ onBackToHub }: MathWheelGameProps) {
             </div>
 
             <div className="relative shrink-0 flex items-center justify-center">
-              <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-xl animate-pulse" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.3)_0%,transparent_70%)] pointer-events-none" />
               <MascotCharacter
                 pose={score >= 200 ? 'success' : score >= 90 ? 'proud' : 'pointing'}
                 size="xl"

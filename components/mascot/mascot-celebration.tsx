@@ -26,7 +26,7 @@ export function MascotCelebration({
     <div
       className={"relative overflow-hidden bg-gradient-to-br from-amber-500 via-orange-500 to-teal-700 rounded-3xl p-6 text-white shadow-2xl flex flex-col sm:flex-row items-center gap-6 " + className}
     >
-      <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-[radial-gradient(circle,rgba(255,255,255,0.18)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="relative w-28 h-28 sm:w-36 sm:h-36 shrink-0 bg-white/15 rounded-3xl p-2 border-2 border-white/30 shadow-inner flex items-center justify-center">
         <Image
