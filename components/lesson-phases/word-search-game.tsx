@@ -14,7 +14,9 @@ import {
   Zap,
   Eye,
   EyeOff,
-  Shuffle
+  Shuffle,
+  Tv,
+  Maximize2
 } from 'lucide-react';
 import { MathText } from '@/components/ui/math-fraction';
 
@@ -860,6 +862,7 @@ export function WordSearchGame() {
   const [tapStart, setTapStart] = useState<CellPos | null>(null);
   const [revealedHints, setRevealedHints] = useState<Record<string, boolean>>({});
   const [foundCellColors, setFoundCellColors] = useState<Record<string, string>>({});
+  const [boardScale, setBoardScale] = useState<'normal' | 'large' | 'xlarge'>('large');
 
   // Refs for bulletproof touch & mouse interaction on mobile / smart board
   const selectedCellsRef = useRef<CellPos[]>([]);
@@ -1196,11 +1199,23 @@ export function WordSearchGame() {
 
   const gridSize = gridMatrix.length || 12;
 
+  // Responsive tile size classes based on boardScale
+  const getCellSizeClasses = () => {
+    if (boardScale === 'xlarge') {
+      return 'w-9 h-9 sm:w-11 sm:h-11 md:w-13 md:h-13 lg:w-15 lg:h-15 xl:w-17 xl:h-17 2xl:w-20 2xl:h-20 rounded-xl sm:rounded-2xl text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl';
+    }
+    if (boardScale === 'normal') {
+      return 'w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 2xl:w-12 2xl:h-12 rounded-lg sm:rounded-xl text-xs sm:text-xs md:text-sm lg:text-base xl:text-lg';
+    }
+    // 'large' (Default / Akıllı Tahta)
+    return 'w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-13 lg:h-13 xl:w-15 xl:h-15 2xl:w-17 2xl:h-17 rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base lg:text-xl xl:text-2xl 2xl:text-3xl';
+  };
+
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+    <div className="w-full max-w-full space-y-6 animate-in fade-in duration-300">
       
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-blue-700 via-indigo-800 to-slate-900 rounded-3xl p-6 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-800 to-slate-900 rounded-3xl p-5 sm:p-6 text-white shadow-lg flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-xs font-bold uppercase">
             <Search className="w-3.5 h-3.5 text-blue-300" />
@@ -1208,7 +1223,7 @@ export function WordSearchGame() {
               {isMat511 ? '5. Sınıf MAT.5.1.1 • Kelime Avı' : 'Matematiksel Kelime Avı Bulmacası'}
             </span>
           </div>
-          <h3 className="text-xl font-black text-white">
+          <h3 className="text-xl sm:text-2xl font-black text-white">
             {isMat511
               ? 'Doğal Sayılar & Bölükleri Yakala!'
               : isMat713 || isMat712 || isMat711 || isMat711W2
@@ -1217,34 +1232,78 @@ export function WordSearchGame() {
               ? 'Gizli Sayı & Çarpan Kavramlarını Yakala!'
               : 'Gizli Geometrik Kavramları Yakala!'}
           </h3>
-          <p className="text-xs text-blue-200 max-w-lg">
+          <p className="text-xs sm:text-sm text-blue-200 max-w-2xl">
             Soruları oku, harf ızgarasında gizlenen doğru kavramı fareyle sürükleyerek veya sırayla ilk ve son harfe dokunarak seç!
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-end sm:self-center">
-          <div className="text-right">
-            <div className="text-2xl font-black text-yellow-300">
-              {foundWordIds.length} / {activeClues.length}
-            </div>
-            <div className="text-[11px] text-blue-200">Kavram Bulundu</div>
+        <div className="flex flex-wrap items-center gap-3 self-stretch lg:self-center justify-between lg:justify-end">
+          {/* Smart Board Size Switcher */}
+          <div className="flex items-center gap-1 bg-white/10 p-1.5 rounded-2xl border border-white/20">
+            <span className="text-[11px] font-bold text-blue-200 px-2 flex items-center gap-1">
+              <Tv className="w-3.5 h-3.5 text-yellow-300" />
+              <span className="hidden sm:inline">Tahta Boyutu:</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setBoardScale('normal')}
+              className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                boardScale === 'normal'
+                  ? 'bg-white text-indigo-900 shadow-sm'
+                  : 'text-blue-100 hover:bg-white/10'
+              }`}
+            >
+              Standart
+            </button>
+            <button
+              type="button"
+              onClick={() => setBoardScale('large')}
+              className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                boardScale === 'large'
+                  ? 'bg-white text-indigo-900 shadow-sm'
+                  : 'text-blue-100 hover:bg-white/10'
+              }`}
+            >
+              Büyük (Tahta)
+            </button>
+            <button
+              type="button"
+              onClick={() => setBoardScale('xlarge')}
+              className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                boardScale === 'xlarge'
+                  ? 'bg-white text-indigo-900 shadow-sm'
+                  : 'text-blue-100 hover:bg-white/10'
+              }`}
+            >
+              Dev Ekran
+            </button>
           </div>
-          <button
-            onClick={initRandomGrid}
-            className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer"
-          >
-            <Shuffle className="w-4 h-4" />
-            <span className="hidden sm:inline">Yeni Izgara</span>
-          </button>
+
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className="text-2xl sm:text-3xl font-black text-yellow-300">
+                {foundWordIds.length} / {activeClues.length}
+              </div>
+              <div className="text-[11px] text-blue-200">Kavram Bulundu</div>
+            </div>
+            <button
+              onClick={initRandomGrid}
+              className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-sm"
+              title="Yeni Karışık Izgara Oluştur"
+            >
+              <Shuffle className="w-4 h-4" />
+              <span className="hidden sm:inline">Yeni Izgara</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         
         {/* LEFT: WORD SEARCH GRID */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col items-center justify-center overflow-x-auto">
+        <div className="xl:col-span-7 2xl:col-span-8 bg-white rounded-3xl p-3 sm:p-6 lg:p-7 border-2 border-slate-200 shadow-sm flex flex-col items-center justify-center overflow-x-auto">
           <div
-            className="grid gap-1 sm:gap-1.5 select-none touch-none"
+            className="grid gap-1 sm:gap-1.5 md:gap-2 select-none touch-none"
             style={{ gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))` }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -1267,14 +1326,14 @@ export function WordSearchGame() {
                     onMouseDown={(e) => handleMouseDown(r, c, e)}
                     onMouseEnter={() => handleMouseEnter(r, c)}
                     onMouseUp={() => handleMouseUp(r, c)}
-                    className={`w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-9.5 lg:h-9.5 rounded-xl font-black text-xs sm:text-xs lg:text-sm font-mono flex items-center justify-center transition-all cursor-pointer touch-manipulation select-none ${
+                    className={`${getCellSizeClasses()} font-mono font-black flex items-center justify-center transition-all cursor-pointer touch-manipulation select-none ${
                       isTapStartCell
-                        ? 'bg-amber-400 text-slate-950 scale-110 shadow-lg ring-4 ring-amber-400/70 z-20 animate-pulse'
+                        ? 'bg-amber-400 text-slate-950 scale-110 shadow-xl ring-4 ring-amber-400/80 border-2 border-amber-600 z-20 animate-pulse'
                         : selected
-                        ? 'bg-amber-400 text-slate-950 scale-105 shadow-md ring-2 ring-amber-500 z-10'
+                        ? 'bg-amber-400 text-slate-950 scale-105 shadow-md ring-3 ring-amber-500 border-2 border-amber-600 z-10'
                         : foundColor
-                        ? 'text-white font-black shadow-xs scale-102'
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-800 active:scale-95'
+                        ? 'text-white font-black shadow-md border-2 border-white/70 scale-102'
+                        : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-2 border-slate-200 hover:border-indigo-400 active:scale-95 shadow-2xs'
                     }`}
                     style={foundColor && !selected ? { backgroundColor: foundColor } : {}}
                   >
@@ -1286,11 +1345,11 @@ export function WordSearchGame() {
           </div>
 
           {/* Interactive Touch / Smart Board Helper Banner */}
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-xl mt-4">
             {tapStart ? (
-              <div className="mt-4 px-4 py-2.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold flex items-center justify-between gap-2 animate-in fade-in">
+              <div className="px-4 py-3 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 text-xs sm:text-sm font-bold flex items-center justify-between gap-3 animate-in fade-in shadow-xs">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping shrink-0" />
+                  <span className="w-3 h-3 rounded-full bg-amber-500 animate-ping shrink-0" />
                   <span>
                     1. harf seçildi (<strong>{gridMatrix[tapStart.row]?.[tapStart.col]}</strong>). Şimdi kelimenin <strong>son harfine</strong> dokunun veya sürükleyin!
                   </span>
@@ -1302,28 +1361,30 @@ export function WordSearchGame() {
                     setSelectedCells([]);
                     playSound('click');
                   }}
-                  className="px-2.5 py-1 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 text-[11px] font-bold cursor-pointer transition-colors shrink-0"
+                  className="px-3 py-1.5 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 text-xs font-extrabold cursor-pointer transition-colors shrink-0 shadow-2xs"
                 >
                   İptal
                 </button>
               </div>
             ) : (
-              <div className="mt-4 px-3.5 py-2 rounded-2xl bg-slate-50 border border-slate-200 text-slate-500 text-[11px] sm:text-xs flex items-center justify-between text-center sm:text-left">
-                <span>💡 <strong>Akıllı Tahta & Mobil:</strong> Parmağınızı kaydırarak seçebilir ya da önce ilk, sonra son harfe dokunabilirsiniz.</span>
+              <div className="px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 text-xs sm:text-sm flex items-center justify-center text-center">
+                <span>💡 <strong>Akıllı Tahta & Mobil:</strong> Harfleri parmağınızla sürükleyerek seçebilir ya da önce ilk, sonra son harfe dokunabilirsiniz.</span>
               </div>
             )}
           </div>
         </div>
 
         {/* RIGHT: CLUES / QUESTIONS LIST */}
-        <div className="lg:col-span-5 space-y-3">
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-3">
-            <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+        <div className="xl:col-span-5 2xl:col-span-4 space-y-3">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 border-2 border-slate-200 shadow-sm space-y-4">
+            <h4 className="text-xs sm:text-sm font-black text-slate-500 uppercase tracking-wider flex items-center justify-between">
               <span>Sorular ve İpuçları</span>
-              <span className="text-teal-600 font-bold">{foundWordIds.length}/{activeClues.length} Tamamlandı</span>
+              <span className="text-teal-600 font-bold bg-teal-50 px-2.5 py-1 rounded-full border border-teal-200">
+                {foundWordIds.length}/{activeClues.length} Tamamlandı
+              </span>
             </h4>
 
-            <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+            <div className="space-y-3 max-h-[550px] xl:max-h-[650px] 2xl:max-h-[750px] overflow-y-auto pr-1">
               {activeClues.map((clue, idx) => {
                 const isFound = foundWordIds.includes(clue.id);
                 const isHintOpen = revealedHints[clue.id];
@@ -1331,44 +1392,44 @@ export function WordSearchGame() {
                 return (
                   <div
                     key={clue.id}
-                    className={`p-3.5 rounded-2xl border transition-all ${
+                    className={`p-3.5 sm:p-4 rounded-2xl border-2 transition-all ${
                       isFound
-                        ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
-                        : 'bg-slate-50 border-slate-200 text-slate-800'
+                        ? 'bg-emerald-50/80 border-emerald-400 text-emerald-950 shadow-xs'
+                        : 'bg-slate-50 hover:bg-slate-100/80 border-slate-200 text-slate-800'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="space-y-1">
-                        <div className="text-xs font-black flex items-center gap-1.5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1.5 flex-1">
+                        <div className="text-xs sm:text-sm lg:text-base font-extrabold flex items-start gap-2">
                           <span
-                            className="w-5 h-5 rounded-full text-white text-[10px] flex items-center justify-center font-bold"
+                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full text-white text-xs sm:text-sm flex items-center justify-center font-black shrink-0 shadow-xs mt-0.5"
                             style={{ backgroundColor: clue.color }}
                           >
                             {idx + 1}
                           </span>
-                          <span><MathText text={clue.question} /></span>
+                          <span className="leading-snug"><MathText text={clue.question} /></span>
                         </div>
 
                         {/* Hint box */}
                         {isHintOpen && (
-                          <div className="text-[11px] font-bold text-amber-800 bg-amber-100/80 px-2 py-1 rounded-md border border-amber-300 animate-in fade-in">
+                          <div className="text-xs sm:text-sm font-bold text-amber-900 bg-amber-100/90 p-2 sm:p-2.5 rounded-xl border border-amber-300 animate-in fade-in">
                             💡 İpucu: <MathText text={clue.hint} />
                           </div>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
                         {isFound ? (
-                          <span className="px-2 py-0.5 rounded-lg bg-emerald-500 text-white font-mono font-black text-[11px]">
+                          <span className="px-2.5 py-1 rounded-xl bg-emerald-500 text-white font-mono font-black text-xs sm:text-sm shadow-xs tracking-wider">
                             {clue.word}
                           </span>
                         ) : (
                           <button
                             onClick={() => toggleHint(clue.id)}
-                            className="p-1 rounded-lg hover:bg-slate-200 text-slate-500"
+                            className="p-1.5 sm:p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer transition-colors"
                             title="İpucu Göster"
                           >
-                            <Lightbulb className="w-4 h-4 text-amber-500" />
+                            <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
                           </button>
                         )}
                       </div>

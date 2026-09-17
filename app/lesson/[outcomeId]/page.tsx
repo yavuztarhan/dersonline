@@ -173,7 +173,7 @@ export default function LessonRoomPage() {
         </div>
 
         {/* Dynamic Lesson Phase Slot */}
-        <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 z-10">
+        <div className="flex-1 max-w-[1700px] w-full mx-auto p-3 sm:p-5 lg:p-7 z-10">
           {activePhase === 'story' && (
             <StoryPhase
               data={outcome.phases.story}
