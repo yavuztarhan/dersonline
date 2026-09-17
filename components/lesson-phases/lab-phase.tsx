@@ -48,10 +48,10 @@ import {
   Eraser,
   Magnet,
   RotateCw,
-  Trophy
+  Trophy,
+  ChevronDown
 } from 'lucide-react';
 import { MascotLabHelper } from '@/components/mascot';
-import { GeometryFlowSelector, GeometryStationId } from '@/components/lesson-phases/geometry-flow-selector';
 
 interface LabPhaseProps {
   data: LabPhaseData;
@@ -168,9 +168,9 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Pergel',
     toolIcon: '⭕',
     type: 'circle',
-    cx: 380,
-    cy: 225,
-    r: 115,
+    cx: 560,
+    cy: 340,
+    r: 200,
     p1Label: 'M',
     p2Label: 'A',
     instruction: 'Pergel aracını seçerek M merkezli ve A noktasından geçen çemberi çizin.'
@@ -182,10 +182,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru',
     toolIcon: '↔️',
     type: 'line',
-    x1: 195,
-    y1: 225,
-    x2: 565,
-    y2: 225,
+    x1: 240,
+    y1: 340,
+    x2: 880,
+    y2: 340,
     p1Label: 'D',
     p2Label: 'B',
     instruction: 'Doğru aracını seçerek D ve B noktalarından geçen doğruyu çizin.'
@@ -197,25 +197,25 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Gönye & Dikme',
     toolIcon: '⊥',
     type: 'perpendicular',
-    x1: 380,
-    y1: 65,
-    x2: 380,
-    y2: 385,
+    x1: 560,
+    y1: 60,
+    x2: 560,
+    y2: 620,
     p1Label: 'A',
     p2Label: 'M',
     instruction: 'Gönye & Dikme aracını seçerek 90° dikme eksenini oluşturun.'
   },
   {
     id: 'motif-ray-diag',
-    name: 'Yıldız Köşe Işını [ME>',
+    name: 'Yıldız Köşe Işını [ME',
     requiredTool: 'ray',
     toolTitle: 'Işın',
     toolIcon: '⚡',
     type: 'ray',
-    x1: 380,
-    y1: 225,
-    x2: 515,
-    y2: 90,
+    x1: 560,
+    y1: 340,
+    x2: 780,
+    y2: 120,
     p1Label: 'M',
     p2Label: 'E',
     instruction: 'Işın aracını seçerek M noktasından E köşesine uzanan ışını çizin.'
@@ -227,10 +227,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 380,
-    y1: 110,
-    x2: 495,
-    y2: 225,
+    x1: 560,
+    y1: 140,
+    x2: 760,
+    y2: 340,
     p1Label: 'A',
     p2Label: 'B',
     instruction: 'Doğru Parçası aracını seçerek A ve B noktalarını birleştirin.'
@@ -242,10 +242,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 495,
-    y1: 225,
-    x2: 380,
-    y2: 340,
+    x1: 760,
+    y1: 340,
+    x2: 560,
+    y2: 540,
     p1Label: 'B',
     p2Label: 'C',
     instruction: 'Doğru Parçası aracını seçerek B ve C noktalarını birleştirin.'
@@ -257,10 +257,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 380,
-    y1: 340,
-    x2: 265,
-    y2: 225,
+    x1: 560,
+    y1: 540,
+    x2: 360,
+    y2: 340,
     p1Label: 'C',
     p2Label: 'D',
     instruction: 'Doğru Parçası aracını seçerek C ve D noktalarını birleştirin.'
@@ -272,10 +272,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 265,
-    y1: 225,
-    x2: 380,
-    y2: 110,
+    x1: 360,
+    y1: 340,
+    x2: 560,
+    y2: 140,
     p1Label: 'D',
     p2Label: 'A',
     instruction: 'Doğru Parçası aracını seçerek D ve A noktalarını birleştirin.'
@@ -287,10 +287,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 461,
-    y1: 144,
-    x2: 461,
-    y2: 306,
+    x1: 701,
+    y1: 199,
+    x2: 701,
+    y2: 481,
     p1Label: 'E',
     p2Label: 'F',
     instruction: 'Doğru Parçası aracını seçerek E ve F noktalarını birleştirin.'
@@ -302,10 +302,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 461,
-    y1: 306,
-    x2: 299,
-    y2: 306,
+    x1: 701,
+    y1: 481,
+    x2: 419,
+    y2: 481,
     p1Label: 'F',
     p2Label: 'G',
     instruction: 'Doğru Parçası aracını seçerek F ve G noktalarını birleştirin.'
@@ -317,10 +317,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 299,
-    y1: 306,
-    x2: 299,
-    y2: 144,
+    x1: 419,
+    y1: 481,
+    x2: 419,
+    y2: 199,
     p1Label: 'G',
     p2Label: 'H',
     instruction: 'Doğru Parçası aracını seçerek G ve H noktalarını birleştirin.'
@@ -332,10 +332,10 @@ export const MOTIF_1_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 299,
-    y1: 144,
-    x2: 461,
-    y2: 144,
+    x1: 419,
+    y1: 199,
+    x2: 701,
+    y2: 199,
     p1Label: 'H',
     p2Label: 'E',
     instruction: 'Doğru Parçası aracını seçerek H ve E noktalarını birleştirin.'
@@ -350,10 +350,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 380,
-    y1: 45,
-    x2: 550,
-    y2: 215,
+    x1: 560,
+    y1: 44,
+    x2: 832,
+    y2: 316,
     p1Label: 'T',
     p2Label: 'A',
     instruction: 'Doğru Parçası aracını seçerek T ve A noktalarını birleştirin.'
@@ -365,10 +365,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 550,
-    y1: 215,
-    x2: 490,
-    y2: 275,
+    x1: 832,
+    y1: 316,
+    x2: 736,
+    y2: 412,
     p1Label: 'A',
     p2Label: 'B',
     instruction: 'Doğru Parçası aracını seçerek A ve B noktalarını birleştirin.'
@@ -380,10 +380,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 490,
-    y1: 275,
-    x2: 430,
-    y2: 215,
+    x1: 736,
+    y1: 412,
+    x2: 640,
+    y2: 316,
     p1Label: 'B',
     p2Label: 'C',
     instruction: 'Doğru Parçası aracını seçerek B ve C noktalarını birleştirin.'
@@ -395,10 +395,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 430,
-    y1: 215,
-    x2: 490,
-    y2: 215,
+    x1: 640,
+    y1: 316,
+    x2: 736,
+    y2: 316,
     p1Label: 'C',
     p2Label: 'D',
     instruction: 'Doğru Parçası aracını seçerek C ve D noktalarını yatay birleştirin.'
@@ -410,10 +410,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 490,
-    y1: 215,
-    x2: 445,
-    y2: 170,
+    x1: 736,
+    y1: 316,
+    x2: 664,
+    y2: 244,
     p1Label: 'D',
     p2Label: 'E',
     instruction: 'Doğru Parçası aracını seçerek D ve E noktalarını birleştirin.'
@@ -425,10 +425,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 445,
-    y1: 170,
-    x2: 400,
-    y2: 215,
+    x1: 664,
+    y1: 244,
+    x2: 592,
+    y2: 316,
     p1Label: 'E',
     p2Label: 'F',
     instruction: 'Doğru Parçası aracını seçerek E ve F noktalarını birleştirin.'
@@ -440,10 +440,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 400,
-    y1: 215,
-    x2: 490,
-    y2: 305,
+    x1: 592,
+    y1: 316,
+    x2: 736,
+    y2: 460,
     p1Label: 'F',
     p2Label: 'G',
     instruction: 'Doğru Parçası aracını seçerek F ve G noktalarını birleştirin.'
@@ -455,10 +455,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 490,
-    y1: 305,
-    x2: 380,
-    y2: 415,
+    x1: 736,
+    y1: 460,
+    x2: 560,
+    y2: 636,
     p1Label: 'G',
     p2Label: 'S',
     instruction: 'Doğru Parçası aracını seçerek G ve S noktalarını birleştirin.'
@@ -470,10 +470,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 380,
-    y1: 415,
-    x2: 270,
-    y2: 305,
+    x1: 560,
+    y1: 636,
+    x2: 384,
+    y2: 460,
     p1Label: 'S',
     p2Label: 'H',
     instruction: 'Doğru Parçası aracını seçerek S ve H noktalarını birleştirin.'
@@ -485,10 +485,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 270,
-    y1: 305,
-    x2: 360,
-    y2: 215,
+    x1: 384,
+    y1: 460,
+    x2: 528,
+    y2: 316,
     p1Label: 'H',
     p2Label: 'K',
     instruction: 'Doğru Parçası aracını seçerek H ve K noktalarını birleştirin.'
@@ -500,10 +500,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 360,
-    y1: 215,
-    x2: 315,
-    y2: 170,
+    x1: 528,
+    y1: 316,
+    x2: 456,
+    y2: 244,
     p1Label: 'K',
     p2Label: 'L',
     instruction: 'Doğru Parçası aracını seçerek K ve L noktalarını birleştirin.'
@@ -515,10 +515,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 315,
-    y1: 170,
-    x2: 270,
-    y2: 215,
+    x1: 456,
+    y1: 244,
+    x2: 384,
+    y2: 316,
     p1Label: 'L',
     p2Label: 'M',
     instruction: 'Doğru Parçası aracını seçerek L ve M noktalarını birleştirin.'
@@ -530,10 +530,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 270,
-    y1: 215,
-    x2: 330,
-    y2: 215,
+    x1: 384,
+    y1: 316,
+    x2: 480,
+    y2: 316,
     p1Label: 'M',
     p2Label: 'N',
     instruction: 'Doğru Parçası aracını seçerek M ve N noktalarını yatay birleştirin.'
@@ -545,10 +545,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 330,
-    y1: 215,
-    x2: 270,
-    y2: 275,
+    x1: 480,
+    y1: 316,
+    x2: 384,
+    y2: 412,
     p1Label: 'N',
     p2Label: 'P',
     instruction: 'Doğru Parçası aracını seçerek N ve P noktalarını birleştirin.'
@@ -560,10 +560,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 270,
-    y1: 275,
-    x2: 210,
-    y2: 215,
+    x1: 384,
+    y1: 412,
+    x2: 288,
+    y2: 316,
     p1Label: 'P',
     p2Label: 'R',
     instruction: 'Doğru Parçası aracını seçerek P ve R noktalarını birleştirin.'
@@ -575,10 +575,10 @@ export const MOTIF_2_GUIDES: MotifGuideElement[] = [
     toolTitle: 'Doğru Parçası',
     toolIcon: '📏',
     type: 'segment',
-    x1: 210,
-    y1: 215,
-    x2: 380,
-    y2: 45,
+    x1: 288,
+    y1: 316,
+    x2: 560,
+    y2: 44,
     p1Label: 'R',
     p2Label: 'T',
     instruction: 'Doğru Parçası aracını seçerek R ve T noktalarını birleştirin.'
@@ -714,11 +714,9 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     'angle' | 'measure-angle' | 'measure-length' | 'three-point-angle' | 'ray' | 'segment' | 'line' | 'point' | 'compass' | 'setsquare' | 'artmotif' | 'polygon' | 'drag' | 'eraser' | 'protractor'
   >(isAngleTopic ? 'angle' : 'point');
 
-  // Professional digital toolbar active category
+  // Professional digital toolbar active category & dropdowns
   const [activeToolCategory, setActiveToolCategory] = useState<'all' | 'basic' | 'lines' | 'angle' | 'shapes' | 'motifs' | 'special'>('lines');
-
-  // Multi-station Flow for MAT.5.3.1
-  const [activeStation, setActiveStation] = useState<GeometryStationId>('lines');
+  const [openDropdownMenu, setOpenDropdownMenu] = useState<string | null>(null);
   const [compassCenterPoint, setCompassCenterPoint] = useState<GeoPoint | null>(null);
 
   const [points, setPoints] = useState<GeoPoint[]>([]);
@@ -1018,8 +1016,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       type: 'ray',
       p1: pC,
       p2: pD,
-      symbol: '[CD>',
-      label: 'Işın [CD>',
+      symbol: '[CD',
+      label: 'Işın [CD',
       color: '#0284c7'
     };
 
@@ -1036,7 +1034,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setObjects([seg, ray, line]);
     setAngles([]);
     setSelectedPointForLink(null);
-    setFeedbackMsg('🎨 Örnek geometrik modeller yüklendi: Doğru Parçası [AB], Işın [CD> ve Doğru EF.');
+    setFeedbackMsg('🎨 Örnek geometrik modeller yüklendi: Doğru Parçası [AB], Işın [CD ve Doğru EF.');
   };
 
   const loadAngleStationPreset = () => {
@@ -1051,8 +1049,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       type: 'ray',
       p1: v,
       p2: pA,
-      symbol: '[BA>',
-      label: 'Taban Kolu [BA>',
+      symbol: '[BA',
+      label: 'Taban Kolu [BA',
       color: '#0284c7'
     };
     const ray2: GeoObject = {
@@ -1060,8 +1058,8 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
       type: 'ray',
       p1: v,
       p2: pC,
-      symbol: '[BC>',
-      label: 'Dönen Kol [BC>',
+      symbol: '[BC',
+      label: 'Dönen Kol [BC',
       color: '#10b396'
     };
     const rightAngle: GeoAngle = {
@@ -1076,7 +1074,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     };
     setObjects([ray1, ray2]);
     setAngles([rightAngle]);
-    setFeedbackMsg('📐 Dinamik 90° Dik Açı yüklendi: Ortak B köşesinden çıkan [BA> ve [BC> ışınları.');
+    setFeedbackMsg('📐 Dinamik 90° Dik Açı yüklendi: Ortak B köşesinden çıkan [BA ve [BC ışınları.');
   };
 
   const loadCircleStationPreset = () => {
@@ -1185,18 +1183,17 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setMotifCelebrated(false);
     setMotifHintGuideId(null);
 
-    // 8 star vertices + 1 center point M
-    // Center: (380, 225), R = 115
-    const pM: GeoPoint = { id: 'pt-m1-M', label: 'M', x: 380, y: 225, color: '#f59e0b' };
-    const pA: GeoPoint = { id: 'pt-m1-A', label: 'A', x: 380, y: 110, color: '#0284c7' };
-    const pB: GeoPoint = { id: 'pt-m1-B', label: 'B', x: 495, y: 225, color: '#0284c7' };
-    const pC: GeoPoint = { id: 'pt-m1-C', label: 'C', x: 380, y: 340, color: '#0284c7' };
-    const pD: GeoPoint = { id: 'pt-m1-D', label: 'D', x: 265, y: 225, color: '#0284c7' };
+    // 8 star vertices + 1 center point M (Centered at 560, 340 with R = 200)
+    const pM: GeoPoint = { id: 'pt-m1-M', label: 'M', x: 560, y: 340, color: '#f59e0b' };
+    const pA: GeoPoint = { id: 'pt-m1-A', label: 'A', x: 560, y: 140, color: '#0284c7' };
+    const pB: GeoPoint = { id: 'pt-m1-B', label: 'B', x: 760, y: 340, color: '#0284c7' };
+    const pC: GeoPoint = { id: 'pt-m1-C', label: 'C', x: 560, y: 540, color: '#0284c7' };
+    const pD: GeoPoint = { id: 'pt-m1-D', label: 'D', x: 360, y: 340, color: '#0284c7' };
 
-    const pE: GeoPoint = { id: 'pt-m1-E', label: 'E', x: 461, y: 144, color: '#10b396' };
-    const pF: GeoPoint = { id: 'pt-m1-F', label: 'F', x: 461, y: 306, color: '#10b396' };
-    const pG: GeoPoint = { id: 'pt-m1-G', label: 'G', x: 299, y: 306, color: '#10b396' };
-    const pH: GeoPoint = { id: 'pt-m1-H', label: 'H', x: 299, y: 144, color: '#10b396' };
+    const pE: GeoPoint = { id: 'pt-m1-E', label: 'E', x: 701, y: 199, color: '#10b396' };
+    const pF: GeoPoint = { id: 'pt-m1-F', label: 'F', x: 701, y: 481, color: '#10b396' };
+    const pG: GeoPoint = { id: 'pt-m1-G', label: 'G', x: 419, y: 481, color: '#10b396' };
+    const pH: GeoPoint = { id: 'pt-m1-H', label: 'H', x: 419, y: 199, color: '#10b396' };
 
     setPoints([pM, pA, pB, pC, pD, pE, pF, pG, pH]);
     setObjects([]);
@@ -1224,23 +1221,23 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
     setMotifCelebrated(false);
     setMotifHintGuideId(null);
 
-    // 16 Symmetrical Points for Eli Belinde Contour (Center X0 = 380) with labels hidden by default
-    const pT: GeoPoint = { id: 'pt-m2-T', label: 'T', x: 380, y: 45, color: '#0284c7', hideLabel: true }; // Tepe
-    const pA: GeoPoint = { id: 'pt-m2-A', label: 'A', x: 550, y: 215, color: '#06b6d4', hideLabel: true }; // Sağ Dış Köşe
-    const pB: GeoPoint = { id: 'pt-m2-B', label: 'B', x: 490, y: 275, color: '#06b6d4', hideLabel: true }; // Sağ Alt Dirsek
-    const pC: GeoPoint = { id: 'pt-m2-C', label: 'C', x: 430, y: 215, color: '#06b6d4', hideLabel: true }; // Sağ El İçi
-    const pD: GeoPoint = { id: 'pt-m2-D', label: 'D', x: 490, y: 215, color: '#06b6d4', hideLabel: true }; // Sağ Kol Dışı
-    const pE: GeoPoint = { id: 'pt-m2-E', label: 'E', x: 445, y: 170, color: '#06b6d4', hideLabel: true }; // Sağ Koltuk
-    const pF: GeoPoint = { id: 'pt-m2-F', label: 'F', x: 400, y: 215, color: '#06b6d4', hideLabel: true }; // Sağ Bel
-    const pG: GeoPoint = { id: 'pt-m2-G', label: 'G', x: 490, y: 305, color: '#0284c7', hideLabel: true }; // Sağ Etek
-    const pS: GeoPoint = { id: 'pt-m2-S', label: 'S', x: 380, y: 415, color: '#0284c7', hideLabel: true }; // Taban
-    const pH: GeoPoint = { id: 'pt-m2-H', label: 'H', x: 270, y: 305, color: '#0284c7', hideLabel: true }; // Sol Etek
-    const pK: GeoPoint = { id: 'pt-m2-K', label: 'K', x: 360, y: 215, color: '#06b6d4', hideLabel: true }; // Sol Bel
-    const pL: GeoPoint = { id: 'pt-m2-L', label: 'L', x: 315, y: 170, color: '#06b6d4', hideLabel: true }; // Sol Koltuk
-    const pM: GeoPoint = { id: 'pt-m2-M', label: 'M', x: 270, y: 215, color: '#06b6d4', hideLabel: true }; // Sol Kol Dışı
-    const pN: GeoPoint = { id: 'pt-m2-N', label: 'N', x: 330, y: 215, color: '#06b6d4', hideLabel: true }; // Sol El İçi
-    const pP: GeoPoint = { id: 'pt-m2-P', label: 'P', x: 270, y: 275, color: '#06b6d4', hideLabel: true }; // Sol Alt Dirsek
-    const pR: GeoPoint = { id: 'pt-m2-R', label: 'R', x: 210, y: 215, color: '#06b6d4', hideLabel: true }; // Sol Dış Köşe
+    // 16 Symmetrical Points for Eli Belinde Contour (Centered at 560, 340) with labels hidden by default
+    const pT: GeoPoint = { id: 'pt-m2-T', label: 'T', x: 560, y: 44, color: '#0284c7', hideLabel: true }; // Tepe
+    const pA: GeoPoint = { id: 'pt-m2-A', label: 'A', x: 832, y: 316, color: '#06b6d4', hideLabel: true }; // Sağ Dış Köşe
+    const pB: GeoPoint = { id: 'pt-m2-B', label: 'B', x: 736, y: 412, color: '#06b6d4', hideLabel: true }; // Sağ Alt Dirsek
+    const pC: GeoPoint = { id: 'pt-m2-C', label: 'C', x: 640, y: 316, color: '#06b6d4', hideLabel: true }; // Sağ El İçi
+    const pD: GeoPoint = { id: 'pt-m2-D', label: 'D', x: 736, y: 316, color: '#06b6d4', hideLabel: true }; // Sağ Kol Dışı
+    const pE: GeoPoint = { id: 'pt-m2-E', label: 'E', x: 664, y: 244, color: '#06b6d4', hideLabel: true }; // Sağ Koltuk
+    const pF: GeoPoint = { id: 'pt-m2-F', label: 'F', x: 592, y: 316, color: '#06b6d4', hideLabel: true }; // Sağ Bel
+    const pG: GeoPoint = { id: 'pt-m2-G', label: 'G', x: 736, y: 460, color: '#0284c7', hideLabel: true }; // Sağ Etek
+    const pS: GeoPoint = { id: 'pt-m2-S', label: 'S', x: 560, y: 636, color: '#0284c7', hideLabel: true }; // Taban
+    const pH: GeoPoint = { id: 'pt-m2-H', label: 'H', x: 384, y: 460, color: '#0284c7', hideLabel: true }; // Sol Etek
+    const pK: GeoPoint = { id: 'pt-m2-K', label: 'K', x: 528, y: 316, color: '#06b6d4', hideLabel: true }; // Sol Bel
+    const pL: GeoPoint = { id: 'pt-m2-L', label: 'L', x: 456, y: 244, color: '#06b6d4', hideLabel: true }; // Sol Koltuk
+    const pM: GeoPoint = { id: 'pt-m2-M', label: 'M', x: 384, y: 316, color: '#06b6d4', hideLabel: true }; // Sol Kol Dışı
+    const pN: GeoPoint = { id: 'pt-m2-N', label: 'N', x: 480, y: 316, color: '#06b6d4', hideLabel: true }; // Sol El İçi
+    const pP: GeoPoint = { id: 'pt-m2-P', label: 'P', x: 384, y: 412, color: '#06b6d4', hideLabel: true }; // Sol Alt Dirsek
+    const pR: GeoPoint = { id: 'pt-m2-R', label: 'R', x: 288, y: 316, color: '#06b6d4', hideLabel: true }; // Sol Dış Köşe
 
     setPoints([pT, pA, pB, pC, pD, pE, pF, pG, pS, pH, pK, pL, pM, pN, pP, pR]);
     setObjects([]);
@@ -5326,18 +5323,18 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
   // 3. OUTCOME: MAT.5.3.1 (GEOMETRIC DRAWING LAB)
   // ==========================================
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+    <div className="w-full max-w-7xl mx-auto space-y-4 animate-in fade-in duration-300">
       
       {/* Top Banner */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold uppercase tracking-wider mb-1.5">
             <Shapes className="w-3.5 h-3.5 text-teal-600" />
-            <span>2. Aşama: Temel Geometrik Çizim Laboratuvarı</span>
+            <span>2. Aşama: Temel Geometrik Çizim &amp; Sanat Atölyesi</span>
           </div>
           <h2 className="text-2xl font-black text-slate-900">{data.title}</h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Nokta, Doğru, Doğru Parçası ve Işın modellerini inşa edin, sembolik temsillerini ve uzunluklarını canlı inceleyin.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Nokta, Doğru, Doğru Parçası, Işın, Açı, Pergel ve Gönye araçlarıyla dinamik geometrik inşa yapın; sembolik gösterimleri canlı inceleyin.
           </p>
         </div>
 
@@ -5347,37 +5344,11 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             toolName={data.title}
             hint="Pergel ve cetvel ile çizim yaparken uç noktaları hassas birleştirin. Her doğru parçasının iki ucu sınırlıdır!"
           />
-          <button
-            onClick={() => setShowGrid(!showGrid)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all ${
-              showGrid ? 'bg-teal-50 border-teal-200 text-teal-800' : 'bg-slate-50 border-slate-200 text-slate-600'
-            }`}
-          >
-            Izgara: {showGrid ? 'Açık 🔲' : 'Kapalı'}
-          </button>
-          {/* Magnetic Grid Snapping Toggle (Yazısız, Sadece İkon) */}
-          <button
-            onClick={() => {
-              const nextVal = !isSnapToGrid;
-              setIsSnapToGrid(nextVal);
-              playSound('click');
-              setFeedbackMsg(nextVal ? '🧲 Mıknatıs Açıldı (Izgara Çizgilerine Yapışma Aktif).' : '🧲 Mıknatıs Kapatıldı (Serbest Çizim Aktif).');
-            }}
-            className={`p-2.5 rounded-xl border transition-all flex items-center justify-center cursor-pointer ${
-              isSnapToGrid
-                ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-sm ring-2 ring-amber-200 scale-102'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-400 border-slate-300'
-            }`}
-            title={isSnapToGrid ? 'Mıknatıs Açık (Kapatmak için tıklayın)' : 'Mıknatıs Kapalı (Açmak için tıklayın)'}
-            aria-label="Mıknatıs Aç/Kapa"
-          >
-            <Magnet className="w-4 h-4" />
-          </button>
           {/* Polygon Draft Actions if in progress */}
           {polygonDraft.length >= 3 && (
             <button
               onClick={closePolygonDraft}
-              className="px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 transition-all flex items-center gap-1.5 animate-pulse"
+              className="px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 transition-all flex items-center gap-1.5 animate-pulse cursor-pointer"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Çokgeni Kapat ⬡ ({polygonDraft.length} Köşe)</span>
@@ -5390,240 +5361,95 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 playSound('clear');
                 setFeedbackMsg('Çokgen çizimi iptal edildi.');
               }}
-              className="px-2.5 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200"
+              className="px-2.5 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer"
             >
               İptal ❌
             </button>
           )}
+          <button
+            onClick={() => {
+              playSound('select');
+              onNextPhase();
+            }}
+            className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+          >
+            <span>Oyun Zamanı</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      {/* Geometry Station Flow Selector for MAT.5.3.1 */}
-      <GeometryFlowSelector
-        activeStation={activeStation}
-        onSelectStation={(st) => {
-          setActiveStation(st);
-          playSound('click');
-          if (st === 'lines') {
-            setActiveTool('segment');
-            setActiveToolCategory('lines');
-            setFeedbackMsg('1. İstasyon: Çizgeç ile iki nokta arasında aynı hizada noktaları bağlayarak Doğru Parçası [AB], Işın veya Doğru inşa ediniz.');
-          } else if (st === 'angle') {
-            setActiveTool('angle');
-            setActiveToolCategory('angle');
-            setFeedbackMsg('2. İstasyon: Başlangıç noktası ortak iki ışınla Dinamik Açı (∠ABC) oluşturunuz veya Açı Ölç aracı ile ölçüm yapınız.');
-          } else if (st === 'compass') {
-            setActiveTool('compass');
-            setActiveToolCategory('shapes');
-            setFeedbackMsg('3. İstasyon: Pergel aracı ile merkez (M) ve yarıçap (r) belirleyerek Çember ve Eş Çemberler çiziniz.');
-          } else if (st === 'perpendicular') {
-            setActiveTool('setsquare');
-            setIsSetSquareOnCanvas(true);
-            setActiveToolCategory('lines');
-            // If no lines on canvas, provide baseline d and point P so the set square immediately snaps to it
-            if (!objects.some((o) => o.type === 'line' || o.type === 'segment')) {
-              const pD1: GeoPoint = { id: 'pt-d1', label: 'E', x: 80, y: 320, color: '#38bdf8' };
-              const pD2: GeoPoint = { id: 'pt-d2', label: 'F', x: 560, y: 320, color: '#38bdf8' };
-              const pTop: GeoPoint = { id: 'pt-P', label: 'P', x: 300, y: 170, color: '#f43f5e' };
-              setPoints((prev) => [...prev.filter((p) => p.id !== 'pt-d1' && p.id !== 'pt-d2' && p.id !== 'pt-P'), pD1, pD2, pTop]);
-              const dLine: GeoObject = {
-                id: 'line-d-base',
-                type: 'line',
-                p1: pD1,
-                p2: pD2,
-                symbol: 'd Doğrusu',
-                label: 'Kıyı d Doğrusu',
-                color: '#38bdf8'
-              };
-              setObjects((prev) => [...prev.filter((o) => o.id !== 'line-d-base'), dLine]);
-              setSetSquareOrigin({ x: 300, y: 320 });
-              setSetSquareRotation(0);
-              setSnappedLineInfo({ lineId: 'line-d-base', lineSymbol: 'd Doğrusu', footPt: { x: 300, y: 320 } });
-            }
-            setFeedbackMsg('4. İstasyon: İnteraktif Gönye tuvalde! Doğruya yapışan gönyenin mıknatıslı ucundan (P) 90° dikme indiriniz.');
-          } else if (st === 'art') {
-            setActiveTool('artmotif');
-            setActiveToolCategory('special');
-            setFeedbackMsg('5. İstasyon: Görsel Sanatlar entegrasyonu [D7.1] ile Selçuklu çinisi ve logo tasarımınızı tahtaya yerleştiriniz.');
-          }
-        }}
-        completedStations={{
-          lines: geoMissionsDone.point && geoMissionsDone.segment,
-          angle: geoMissionsDone.angle,
-          compass: geoMissionsDone.circle,
-          perpendicular: geoMissionsDone.perpendicular,
-          art: geoMissionsDone.art
-        }}
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* FULL WIDTH GEOMETRY CANVAS CONTAINER */}
+      <div className="relative bg-white rounded-3xl border-2 border-slate-200 shadow-md overflow-hidden min-h-[640px] flex flex-col justify-between">
         
-        {/* LEFT TOOLBAR */}
-        <div className="lg:col-span-4 space-y-4">
-          
-          {/* Main Geometry Tools (Profesyonel Geometrik Dijital Araç Çubuğu) */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-4">
-            {/* Toolbar Header */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                  <Sliders className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Geometrik Araç Çubuğu</span>
-                </h3>
-                <p className="text-[11px] text-slate-500 font-medium">Profesyonel dijital çizim & ölçüm menüleri</p>
-              </div>
-            </div>
+        {/* YENİDEN TASARLANAN EN ÜST AÇILIR GEOMETRİ ARAÇ ÇUBUĞU (TOP DROPDOWN TOOLBAR) */}
+        <div className="bg-slate-900 text-white p-2.5 px-4 border-b border-slate-800 z-20 relative">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            
+            {/* SOL: AÇILIR MENÜ BUTONLARI (DROPDOWNS) */}
+            <div className="flex items-center gap-1.5 flex-wrap relative z-30">
+              {/* Click-away backdrop overlay when any dropdown is open */}
+              {openDropdownMenu && (
+                <div
+                  className="fixed inset-0 z-20 cursor-default bg-slate-950/20 backdrop-blur-[1px]"
+                  onClick={() => setOpenDropdownMenu(null)}
+                />
+              )}
 
-            {/* Category Menus Ribbon (Menü Seçici Sekmeler) */}
-            <div className="grid grid-cols-4 gap-1.5 bg-slate-100 p-1.5 rounded-2xl">
-              <button
-                onClick={() => {
-                  setActiveToolCategory('lines');
-                  playSound('click');
-                }}
-                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  activeToolCategory === 'lines'
-                    ? 'bg-white text-sky-900 shadow-xs font-black'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>📏</span>
-                <span>Çizgiler</span>
-              </button>
+              {/* 1. ÇİZGİLER & ÖLÇÜM DROPDOWN */}
+              <div className="relative z-30">
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdownMenu(openDropdownMenu === 'lines' ? null : 'lines')}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                    activeTool === 'segment' || activeTool === 'ray' || activeTool === 'line' || activeTool === 'setsquare' || activeTool === 'measure-length' || isSetSquareOnCanvas
+                      ? 'bg-sky-600 text-white border-sky-400 shadow-sm shadow-sky-600/40 ring-2 ring-sky-300/60'
+                      : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white'
+                  }`}
+                  title="Doğru Parçası, Işın, Doğru, Gönye ve Uzunluk Ölçümü"
+                >
+                  <Minus className="w-3.5 h-3.5 stroke-[3] text-sky-300" />
+                  <span>Çizgiler &amp; Ölçüm</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdownMenu === 'lines' ? 'rotate-180' : ''}`} />
+                </button>
 
-              <button
-                onClick={() => {
-                  setActiveToolCategory('angle');
-                  playSound('click');
-                }}
-                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 relative ${
-                  activeToolCategory === 'angle'
-                    ? 'bg-white text-blue-900 shadow-xs font-black'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>📐</span>
-                <span>Açı</span>
-              </button>
+                {openDropdownMenu === 'lines' && (
+                  <div className="absolute left-0 top-full mt-2 w-72 bg-slate-950/98 backdrop-blur-2xl rounded-2xl border-2 border-sky-500/80 shadow-2xl shadow-slate-950/90 p-2.5 space-y-1.5 z-40 animate-in fade-in zoom-in-95 duration-150 ring-1 ring-white/10">
+                    <div className="text-[11px] font-black uppercase text-sky-300 px-2.5 py-1.5 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/60 rounded-lg mb-1">
+                      <span>📏 Çizgiler &amp; Cetvel Araçları</span>
+                      <span className="text-sky-300 font-bold bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px]">5 Araç</span>
+                    </div>
 
-              <button
-                onClick={() => {
-                  setActiveToolCategory('basic');
-                  playSound('click');
-                }}
-                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  activeToolCategory === 'basic'
-                    ? 'bg-white text-slate-900 shadow-xs font-black'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>📍</span>
-                <span>Temel</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setActiveToolCategory('shapes');
-                  playSound('click');
-                }}
-                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  activeToolCategory === 'shapes'
-                    ? 'bg-white text-emerald-900 shadow-xs font-black'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>⬡</span>
-                <span>Çokgen</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setActiveToolCategory('motifs');
-                  playSound('click');
-                }}
-                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  activeToolCategory === 'motifs'
-                    ? 'bg-white text-amber-900 shadow-xs font-black ring-1 ring-amber-400/60'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>🏛️</span>
-                <span>Motifler</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setActiveToolCategory('special');
-                  playSound('click');
-                }}
-                className={`py-1.5 px-1.5 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  activeToolCategory === 'special'
-                    ? 'bg-white text-slate-900 shadow-xs font-black'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>🎨</span>
-                <span>Özel</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setActiveToolCategory('all');
-                  playSound('click');
-                }}
-                className={`col-span-2 py-1.5 px-2 rounded-xl text-[10.5px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  activeToolCategory === 'all'
-                    ? 'bg-white text-slate-900 shadow-xs font-black'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>🌐</span>
-                <span>Tüm Araçlar</span>
-              </button>
-            </div>
-
-            {/* TOOL SECTIONS */}
-            <div className="space-y-4">
-              {/* 1. ÇİZGİLER MENÜSÜ */}
-              {(activeToolCategory === 'lines' || activeToolCategory === 'all') && (
-                <div className="space-y-2 p-3 rounded-2xl bg-sky-50/50 border border-sky-100">
-                  <div className="flex items-center justify-between text-[11px] font-black text-sky-800 uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5">
-                      <Minus className="w-3.5 h-3.5 text-sky-600 stroke-[3]" />
-                      <span>📏 Çizgiler &amp; Uzunluk Ölçümü</span>
-                    </span>
-                    <span className="text-[10px] text-sky-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-sky-200">
-                      5 Araç
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
                     {/* Doğru Parçası */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('segment');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
                         setFeedbackMsg('📏 Doğru Parçası [AB]: İki noktayı bağlayan boyu ölçülebilir çizgi oluşturunuz.');
                       }}
-                      className={`p-2.5 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'segment'
-                          ? 'bg-sky-600 text-white border-sky-600 shadow-sm scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-sky-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'segment' ? 'bg-sky-600 text-white shadow-md shadow-sky-950/50 border border-sky-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-center gap-1">
-                        <Minus className="w-4 h-4 stroke-[3]" />
-                        <span className="text-xs font-bold">Parça [AB]</span>
+                      <div className="flex items-center gap-2.5">
+                        <Minus className="w-4 h-4 stroke-[3] text-sky-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Doğru Parçası [AB]</div>
+                          <div className="text-[11px] text-slate-300 font-medium">İki ucu kapalı, ölçülebilir</div>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-normal opacity-85">İki nokta arası</span>
+                      {activeTool === 'segment' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
-                    {/* Gönye (Dik Üçgen Cetveli) */}
+                    {/* Gönye (Dikme Aracı) */}
                     <button
+                      type="button"
                       onClick={() => {
                         setIsSetSquareOnCanvas(true);
                         setActiveTool('setsquare');
@@ -5631,153 +5457,140 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
-                        setFeedbackMsg('📐 İnteraktif Gönye tuvale bırakıldı! Cetveli çizgilere yaklaştırarak yapıştırabilir, mıknatıslı ucundan 90° dikme indirebilirsiniz.');
+                        setFeedbackMsg('📐 Gönye Tuvalde! Cetveli çizgilere yaklaştırarak 90° dikme indirebilirsiniz.');
                       }}
-                      className={`p-2.5 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all relative cursor-pointer ${
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
                         isSetSquareOnCanvas || activeTool === 'setsquare'
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/30 scale-102 ring-2 ring-emerald-300'
-                          : 'bg-white border-emerald-300 text-emerald-950 hover:bg-emerald-50 hover:border-emerald-400'
+                          ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/50 border border-emerald-400'
+                          : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 bg-emerald-500 text-white font-black text-[9px] rounded-full uppercase shadow-xs">
-                        90° ⊥
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <span className="font-black text-sm leading-none">📐</span>
-                        <span className="text-xs font-extrabold">Gönye (Dikme)</span>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-base shrink-0">📐</span>
+                        <div>
+                          <div className="font-extrabold text-white text-xs flex items-center gap-1.5">
+                            <span>Gönye (90° Dikme)</span>
+                            <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-500/30 text-emerald-300 font-bold border border-emerald-400/40">90° ⊥</span>
+                          </div>
+                          <div className="text-[11px] text-slate-300 font-medium">Doğruya en kısa dikme indir</div>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-normal opacity-90">
-                        {isSetSquareOnCanvas ? 'Tuvalde (Açık)' : '90° Dik Üçgen Cetveli'}
-                      </span>
+                      {(isSetSquareOnCanvas || activeTool === 'setsquare') && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
                     {/* Işın */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('ray');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
-                        setFeedbackMsg('🔦 Işın [CD>: 1. Tıklanan nokta başlangıçtır [C], 2. nokta yönü belirler.');
+                        setFeedbackMsg('🔦 Işın [CD: Başlangıç noktası kapalı, diğer ucu sonsuza uzanan model oluşturunuz.');
                       }}
-                      className={`p-2.5 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'ray'
-                          ? 'bg-sky-600 text-white border-sky-600 shadow-sm scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-sky-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'ray' ? 'bg-sky-600 text-white shadow-md shadow-sky-950/50 border border-sky-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-center gap-1">
-                        <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-                        <span className="text-xs font-bold">Işın [CD&gt;</span>
+                      <div className="flex items-center gap-2.5">
+                        <ArrowRight className="w-4 h-4 text-sky-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Işın [CD</div>
+                          <div className="text-[11px] text-slate-300 font-medium">Tek yöne sınırsız ışık huzmesi</div>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-normal opacity-85">Tek yön sonsuz</span>
+                      {activeTool === 'ray' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
                     {/* Doğru */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('line');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
-                        setFeedbackMsg('↔️ Doğru EF (d): İki yönden de sonsuza uzayan çift oklu çizgi çiziniz.');
+                        setFeedbackMsg('↔️ Doğru EF: Her iki yöne sonsuza uzanan düz çizgi modeli oluşturunuz.');
                       }}
-                      className={`p-2.5 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'line'
-                          ? 'bg-sky-600 text-white border-sky-600 shadow-sm scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-sky-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'line' ? 'bg-sky-600 text-white shadow-md shadow-sky-950/50 border border-sky-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-center gap-1">
-                        <span className="font-black text-xs leading-none">&lt;—&gt;</span>
-                        <span className="text-xs font-bold">Doğru EF</span>
+                      <div className="flex items-center gap-2.5">
+                        <span className="font-mono font-bold text-sky-400 text-sm shrink-0">↔</span>
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Doğru EF</div>
+                          <div className="text-[11px] text-slate-300 font-medium">İki yöne sonsuz uzanan doğru</div>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-normal opacity-85">İki yön sonsuz</span>
+                      {activeTool === 'line' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
-                    {/* Uzunluk Ölç (Col span 2) */}
+                    {/* Uzunluk Ölç */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('measure-length');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
                         setFeedbackMsg('📏 UZUNLUK ÖLÇ: Tahtadaki 2 noktayı seçin, aralarındaki mesafeyi |AB| = ... cm olarak gösterin.');
                       }}
-                      className={`col-span-2 p-2.5 rounded-xl border text-center font-bold text-xs flex items-center justify-center gap-2 transition-all relative cursor-pointer ${
-                        activeTool === 'measure-length'
-                          ? 'bg-cyan-600 text-white border-cyan-600 shadow-md shadow-cyan-600/20 scale-101'
-                          : 'bg-white border-cyan-200 text-cyan-900 hover:bg-cyan-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'measure-length' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-950/50 border border-cyan-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <Ruler className="w-4 h-4" />
-                      <span className="text-xs font-extrabold">Uzunluk Ölç (|AB| = cm göster)</span>
+                      <div className="flex items-center gap-2.5">
+                        <Ruler className="w-4 h-4 text-cyan-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Uzunluk Ölç (|AB| cm)</div>
+                          <div className="text-[11px] text-slate-300 font-medium">2 nokta arası mesafeyi hesapla</div>
+                        </div>
+                      </div>
+                      {activeTool === 'measure-length' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
                   </div>
+                )}
+              </div>
 
+              {/* 2. AÇI MENÜSÜ DROPDOWN */}
+              <div className="relative z-30">
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdownMenu(openDropdownMenu === 'angle' ? null : 'angle')}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                    activeTool === 'angle' || activeTool === 'three-point-angle' || activeTool === 'measure-angle' || isProtractorOnCanvas
+                      ? 'bg-blue-600 text-white border-blue-400 shadow-sm shadow-blue-600/40 ring-2 ring-blue-300/60'
+                      : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white'
+                  }`}
+                  title="3 Noktadan Açı, Serbest Açı, Açı Ölçer ve İletki"
+                >
+                  <Maximize2 className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Açı Menüsü</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdownMenu === 'angle' ? 'rotate-180' : ''}`} />
+                </button>
 
-                  {/* Uzunluk Ölçüm Adım Rehberi */}
-                  {activeTool === 'measure-length' && (
-                    <div className="p-3 rounded-2xl bg-white border border-cyan-200 text-cyan-950 space-y-2 text-xs shadow-xs animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between font-black text-cyan-900">
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-cyan-500 animate-ping" />
-                          Uzunluk Ölçüm Adımları ({measureLengthPoints.length}/2)
-                        </span>
-                        {measureLengthPoints.length > 0 && (
-                          <button
-                            onClick={() => {
-                              setMeasureLengthPoints([]);
-                              setHoverPos(null);
-                              setFeedbackMsg('Uzunluk seçimi sıfırlandı. 1. Noktayı seçiniz.');
-                            }}
-                            className="text-[10px] text-rose-600 hover:underline font-bold cursor-pointer"
-                          >
-                            Sıfırla
-                          </button>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-2 gap-1.5 text-[10.5px] font-bold text-center">
-                        <div className={`p-1.5 rounded-xl border ${measureLengthPoints.length >= 1 ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>1. Nokta</div>
-                          <div className="text-[9.5px] font-normal">{measureLengthPoints[0] ? `✓ ${measureLengthPoints[0].label}` : 'Seçiniz'}</div>
-                        </div>
-                        <div className={`p-1.5 rounded-xl border ${measureLengthPoints.length === 1 ? 'bg-cyan-100 border-cyan-400 text-cyan-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>2. Nokta</div>
-                          <div className="text-[9.5px] font-normal">{measureLengthPoints.length === 1 ? 'Tıklayın!' : 'Bekleniyor'}</div>
-                        </div>
-                      </div>
-                      <p className="text-[10.5px] text-cyan-800 leading-tight">
-                        💡 {measureLengthPoints.length === 0 ? 'Tahtadaki bir noktaya tıklayın veya yeni nokta belirleyin (1. Nokta).' : 'Şimdi uzunluğu ölçülecek 2. noktayı seçiniz.'}
-                      </p>
+                {openDropdownMenu === 'angle' && (
+                  <div className="absolute left-0 top-full mt-2 w-72 bg-slate-950/98 backdrop-blur-2xl rounded-2xl border-2 border-blue-500/80 shadow-2xl shadow-slate-950/90 p-2.5 space-y-1.5 z-40 animate-in fade-in zoom-in-95 duration-150 ring-1 ring-white/10">
+                    <div className="text-[11px] font-black uppercase text-blue-300 px-2.5 py-1.5 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/60 rounded-lg mb-1">
+                      <span>📐 Dinamik Açı Araçları</span>
+                      <span className="text-blue-300 font-bold bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px]">4 Araç</span>
                     </div>
-                  )}
-                </div>
-              )}
 
-              {/* 2. AÇI MENÜSÜ */}
-              {(activeToolCategory === 'angle' || activeToolCategory === 'all') && (
-                <div className="space-y-2 p-3 rounded-2xl bg-blue-50/50 border border-blue-100">
-                  <div className="flex items-center justify-between text-[11px] font-black text-blue-800 uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5">
-                      <Maximize2 className="w-3.5 h-3.5 text-blue-600" />
-                      <span>📐 Açı Menüsü (Çiz &amp; Ölç)</span>
-                    </span>
-                    <span className="text-[10px] text-blue-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-blue-200">
-                      4 Araç
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {/* 3 Noktadan Açı Oluştur */}
+                    {/* 3 Noktadan Açı */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('three-point-angle');
                         setSelectedPointForLink(null);
@@ -5786,29 +5599,27 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
-                        setFeedbackMsg('📐 3 NOKTADAN AÇI OLUŞTUR: Tahtada sırasıyla 1. Kol noktasını, 2. KÖŞE (Tepe) noktasını ve 3. İkinci Kol noktasını seçerek açıyı ve kollarını oluşturun.');
+                        setFeedbackMsg('📐 3 NOKTADAN AÇI: Sırasıyla 1. Kol (A), Köşe (B) ve 2. Kol (C) noktalarını seçin.');
                       }}
-                      className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all relative cursor-pointer ${
-                        activeTool === 'three-point-angle'
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-102 ring-2 ring-blue-300'
-                          : 'bg-white border-blue-200 text-blue-900 hover:bg-blue-50 hover:border-blue-300'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'three-point-angle' ? 'bg-blue-600 text-white shadow-md shadow-blue-950/50 border border-blue-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 bg-blue-600 text-white font-black text-[9px] rounded-full uppercase shadow-xs">
-                        Yeni
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <Shapes className="w-4 h-4" />
-                        <span className="font-extrabold text-xs">3 Noktadan Açı</span>
+                      <div className="flex items-center gap-2.5">
+                        <Shapes className="w-4 h-4 text-blue-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">3 Noktadan Açı</div>
+                          <div className="text-[11px] text-slate-300 font-medium">A - Köşe - B ile inşa et</div>
+                        </div>
                       </div>
-                      <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
-                        A-Köşe-B ile oluştur
-                      </span>
+                      {activeTool === 'three-point-angle' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
                     {/* Açı Çiz */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('angle');
                         setSelectedPointForLink(null);
@@ -5817,26 +5628,27 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
-                        setFeedbackMsg('📐 AÇI ÇİZ: Tahtaya tıklayarak 1. Köşe (O), 2. Taban kolu (A) ve 3. Dönen kolu (B) belirleyip açı oluşturun.');
+                        setFeedbackMsg('📐 AÇI ÇİZ: 1. Köşe (O), 2. Taban kolu (A) ve 3. Dönen kolu (B) belirleyin.');
                       }}
-                      className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'angle'
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-blue-50 hover:border-blue-200'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'angle' ? 'bg-blue-600 text-white shadow-md shadow-blue-950/50 border border-blue-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-center gap-1">
-                        <Maximize2 className="w-4 h-4" />
-                        <span className="font-extrabold text-xs">Açı Çiz</span>
+                      <div className="flex items-center gap-2.5">
+                        <Maximize2 className="w-4 h-4 text-blue-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Serbest Açı Çiz</div>
+                          <div className="text-[11px] text-slate-300 font-medium">Köşe ve kollarla açı oluştur</div>
+                        </div>
                       </div>
-                      <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
-                        Köşe &amp; kol
-                      </span>
+                      {activeTool === 'angle' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
                     {/* Açı Ölç */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('measure-angle');
                         setSelectedPointForLink(null);
@@ -5845,269 +5657,232 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
-                        setFeedbackMsg('📏 AÇI ÖLÇ: Tahtadaki 3 noktayı sırayla seçin: 1. Kol noktası, 2. Köşe (Tepe) noktası, 3. İkinci Kol noktası.');
+                        setFeedbackMsg('📏 AÇI ÖLÇ: Tahtadaki 3 noktayı seçin: 1. Kol, 2. Köşe, 3. İkinci Kol.');
                       }}
-                      className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all relative cursor-pointer ${
-                        activeTool === 'measure-angle'
-                          ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20 scale-102'
-                          : 'bg-white border-teal-200 text-teal-800 hover:bg-teal-50 hover:border-teal-300'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'measure-angle' ? 'bg-teal-600 text-white shadow-md shadow-teal-950/50 border border-teal-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-center gap-1">
-                        <Ruler className="w-4 h-4" />
-                        <span className="font-extrabold text-xs">Açı Ölç</span>
+                      <div className="flex items-center gap-2.5">
+                        <Compass className="w-4 h-4 text-teal-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Açı Ölç (Derece Bul)</div>
+                          <div className="text-[11px] text-slate-300 font-medium">Köşedeki açıyı tam ölç</div>
+                        </div>
                       </div>
-                      <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
-                        3 nokta ile ölç
-                      </span>
+                      {activeTool === 'measure-angle' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
-                    {/* İletki (Açıölçer) */}
+                    {/* İletkiyi Aç/Kapat */}
                     <button
+                      type="button"
                       onClick={() => {
-                        if (!isProtractorOnCanvas) {
-                          setIsProtractorOnCanvas(true);
-                          setActiveTool('drag');
-                          setSelectedPointForLink(null);
-                          setMeasureAnglePoints([]);
-                          setMeasureLengthPoints([]);
-                          setThreePointAnglePoints([]);
-                          if (protractorCenter.y > 380 || protractorCenter.x < 80) {
-                            setProtractorCenter({ x: 380, y: 240 });
-                          }
-                          playSound('click');
-                          setFeedbackMsg('📐 İletki tuvale yerleştirildi. Taşıma aracı aktif: Turuncu merkezden taşıyabilir, mavi tutamaktan döndürebilirsiniz.');
-                        } else {
-                          // Already on canvas: toggle between drag tool and point tool
-                          if (activeTool === 'drag') {
-                            setActiveTool('point');
-                            playSound('click');
-                            setFeedbackMsg('📍 Nokta aracı seçildi. İletki tuvalde kalmaya devam ediyor.');
-                          } else {
-                            setActiveTool('drag');
-                            playSound('click');
-                            setFeedbackMsg('🖐️ Taşıma aracı aktif: İletkiyi turuncu merkezden taşıyabilir, mavi tutamaktan döndürebilirsiniz.');
-                          }
-                        }
+                        const nextVal = !isProtractorOnCanvas;
+                        setIsProtractorOnCanvas(nextVal);
+                        setOpenDropdownMenu(null);
+                        playSound('click');
+                        setFeedbackMsg(nextVal ? '📐 Sanal İletki (180°) tuvale yerleştirildi! Sürükleyip döndürerek açıları ölçebilirsiniz.' : 'İletki kaldırıldı.');
                       }}
-                      className={`p-2.5 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all relative cursor-pointer ${
-                        isProtractorOnCanvas
-                          ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/30 scale-102 ring-2 ring-amber-300'
-                          : 'bg-white border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        isProtractorOnCanvas ? 'bg-amber-600 text-white shadow-md shadow-amber-950/50 border border-amber-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-center gap-1">
-                        <Compass className="w-4 h-4 text-current" />
-                        <span className="font-extrabold text-xs">İletki</span>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-base shrink-0">📐</span>
+                        <div>
+                          <div className="font-extrabold text-white text-xs flex items-center gap-1.5">
+                            <span>Sanal İletki (180°)</span>
+                            <span className="px-1.5 py-0.5 rounded text-[9px] bg-amber-500/30 text-amber-300 font-bold border border-amber-400/40">Açıölçer</span>
+                          </div>
+                          <div className="text-[11px] text-slate-300 font-medium">{isProtractorOnCanvas ? 'Tuvalden Kaldır' : 'Tuvale Bırak'}</div>
+                        </div>
                       </div>
-                      <span className="text-[9.5px] font-normal opacity-85 text-center line-clamp-1">
-                        {isProtractorOnCanvas ? 'Tuvalde (Açık)' : 'Açıölçer aracı'}
-                      </span>
+                      {isProtractorOnCanvas && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
                   </div>
+                )}
+              </div>
 
-                  {/* 3 Noktadan Açı Oluşturma Adım Rehberi */}
-                  {activeTool === 'three-point-angle' && (
-                    <div className="p-3 rounded-2xl bg-white border border-blue-200 text-blue-950 space-y-2 text-xs shadow-xs animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between font-black text-blue-900">
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                          3 Noktadan Açı Oluşturma ({threePointAnglePoints.length}/3)
-                        </span>
-                        {threePointAnglePoints.length > 0 && (
-                          <button
-                            onClick={() => {
-                              setThreePointAnglePoints([]);
-                              setHoverPos(null);
-                              setFeedbackMsg('Açı oluşturma adımları sıfırlandı. 1. Kol noktasını seçiniz.');
-                            }}
-                            className="text-[10px] text-rose-600 hover:underline font-bold cursor-pointer"
-                          >
-                            Sıfırla
-                          </button>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-3 gap-1.5 text-[10.5px] font-bold text-center">
-                        <div className={`p-1.5 rounded-xl border ${threePointAnglePoints.length >= 1 ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>1. Kol (A)</div>
-                          <div className="text-[9.5px] font-normal">{threePointAnglePoints[0] ? `✓ ${threePointAnglePoints[0].label}` : 'Seçiniz'}</div>
-                        </div>
-                        <div className={`p-1.5 rounded-xl border ${threePointAnglePoints.length >= 2 ? 'bg-amber-500 text-white border-amber-500' : threePointAnglePoints.length === 1 ? 'bg-amber-100 border-amber-400 text-amber-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>Köşe 📍 (B)</div>
-                          <div className="text-[9.5px] font-normal">{threePointAnglePoints[1] ? `✓ ${threePointAnglePoints[1].label}` : threePointAnglePoints.length === 1 ? 'Tıklayın!' : 'Bekleniyor'}</div>
-                        </div>
-                        <div className={`p-1.5 rounded-xl border ${threePointAnglePoints.length === 3 ? 'bg-emerald-600 text-white border-emerald-600' : threePointAnglePoints.length === 2 ? 'bg-emerald-100 border-emerald-400 text-emerald-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>2. Kol (C)</div>
-                          <div className="text-[9.5px] font-normal">{threePointAnglePoints[2] ? `✓ ${threePointAnglePoints[2].label}` : threePointAnglePoints.length === 2 ? 'Tıklayın!' : 'Bekleniyor'}</div>
-                        </div>
-                      </div>
-                      <p className="text-[10.5px] text-blue-800 leading-tight">
-                        💡 {threePointAnglePoints.length === 0 ? 'Tahtadaki bir noktaya tıklayın veya yeni nokta oluşturun (1. Kol).' : threePointAnglePoints.length === 1 ? 'Şimdi açının KÖŞE (Tepe) noktasını belirleyin.' : 'Son olarak 2. Kol noktasını seçerek açıyı ve kollarını oluşturun!'}
-                      </p>
+              {/* 3. TEMEL ARAÇLAR DROPDOWN */}
+              <div className="relative z-30">
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdownMenu(openDropdownMenu === 'basic' ? null : 'basic')}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                    activeTool === 'point' || activeTool === 'drag' || activeTool === 'eraser'
+                      ? 'bg-emerald-700 text-white border-emerald-500 shadow-sm shadow-emerald-700/40 ring-2 ring-emerald-300/60'
+                      : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white'
+                  }`}
+                  title="Taşı, Nokta Ekle, Silgi ve Temizleme"
+                >
+                  <Dot className="w-4 h-4 text-emerald-300 stroke-[3]" />
+                  <span>Temel Araçlar</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdownMenu === 'basic' ? 'rotate-180' : ''}`} />
+                </button>
+
+                {openDropdownMenu === 'basic' && (
+                  <div className="absolute left-0 top-full mt-2 w-64 bg-slate-950/98 backdrop-blur-2xl rounded-2xl border-2 border-emerald-500/80 shadow-2xl shadow-slate-950/90 p-2.5 space-y-1.5 z-40 animate-in fade-in zoom-in-95 duration-150 ring-1 ring-white/10">
+                    <div className="text-[11px] font-black uppercase text-emerald-300 px-2.5 py-1.5 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/60 rounded-lg mb-1">
+                      <span>📍 Temel Çizim &amp; Düzenleme</span>
+                      <span className="text-emerald-300 font-bold bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px]">4 Araç</span>
                     </div>
-                  )}
 
-                  {/* Açı Ölçüm Adım Rehberi */}
-                  {activeTool === 'measure-angle' && (
-                    <div className="p-3 rounded-2xl bg-white border border-teal-200 text-teal-950 space-y-2 text-xs shadow-xs animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between font-black text-teal-900">
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-teal-500 animate-ping" />
-                          Açı Ölçüm Adımları ({measureAnglePoints.length}/3)
-                        </span>
-                        {measureAnglePoints.length > 0 && (
-                          <button
-                            onClick={() => {
-                              setMeasureAnglePoints([]);
-                              setHoverPos(null);
-                              setFeedbackMsg('Açı seçimi sıfırlandı. 1. Kol noktasını seçiniz.');
-                            }}
-                            className="text-[10px] text-rose-600 hover:underline font-bold cursor-pointer"
-                          >
-                            Sıfırla
-                          </button>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-3 gap-1.5 text-[10.5px] font-bold text-center">
-                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length >= 1 ? 'bg-teal-600 text-white border-teal-600' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>1. Kol</div>
-                          <div className="text-[9.5px] font-normal">{measureAnglePoints[0] ? `✓ ${measureAnglePoints[0].label}` : 'Seçiniz'}</div>
-                        </div>
-                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length >= 2 ? 'bg-blue-600 text-white border-blue-600' : measureAnglePoints.length === 1 ? 'bg-amber-100 border-amber-400 text-amber-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>Köşe (O)</div>
-                          <div className="text-[9.5px] font-normal">{measureAnglePoints[1] ? `✓ ${measureAnglePoints[1].label}` : measureAnglePoints.length === 1 ? 'Tıklayın!' : 'Bekleniyor'}</div>
-                        </div>
-                        <div className={`p-1.5 rounded-xl border ${measureAnglePoints.length === 3 ? 'bg-teal-600 text-white border-teal-600' : measureAnglePoints.length === 2 ? 'bg-teal-100 border-teal-400 text-teal-900 animate-pulse' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                          <div>2. Kol</div>
-                          <div className="text-[9.5px] font-normal">{measureAnglePoints[2] ? `✓ ${measureAnglePoints[2].label}` : measureAnglePoints.length === 2 ? 'Tıklayın!' : 'Bekleniyor'}</div>
-                        </div>
-                      </div>
-                      <p className="text-[10.5px] text-teal-800 leading-tight">
-                        💡 {measureAnglePoints.length === 0 ? 'Tahtadaki bir noktaya tıklayın veya yeni nokta belirleyin (1. Kol).' : measureAnglePoints.length === 1 ? 'Şimdi açının KÖŞE (Tepe) noktasını seçiniz.' : 'Son olarak 2. Kol noktasını seçerek açıyı ölçün!'}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* 3. TEMEL MENÜ (Nokta, Taşı & Silgi) */}
-              {(activeToolCategory === 'basic' || activeToolCategory === 'all') && (
-                <div className="space-y-2 p-3 rounded-2xl bg-slate-50 border border-slate-200">
-                  <div className="flex items-center justify-between text-[11px] font-black text-slate-700 uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5">
-                      <Dot className="w-4 h-4 text-teal-600" />
-                      <span>📍 Temel Araçlar (Nokta, Taşı & Silgi)</span>
-                    </span>
-                    <span className="text-[10px] text-slate-500 font-semibold bg-white px-2 py-0.5 rounded-full border border-slate-200">
-                      3 Araç
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-1.5">
                     {/* Taşı / Düzenle */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('drag');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
                         setFeedbackMsg('🖐️ Taşıma Aracı: Tahtadaki noktaları sürükleyerek şekilleri dinamik boyutlandırın.');
                       }}
-                      className={`p-2 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'drag'
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'drag' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-950/50 border border-indigo-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <Move className="w-4 h-4" />
-                      <span className="text-[11px]">Taşı</span>
+                      <div className="flex items-center gap-2.5">
+                        <Move className="w-4 h-4 text-indigo-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Taşı / Düzenle 🖐️</div>
+                          <div className="text-[11px] text-slate-300 font-medium">Noktaları serbest sürükle</div>
+                        </div>
+                      </div>
+                      {activeTool === 'drag' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
                     {/* Nokta Ekle */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('point');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
-                        setFeedbackMsg('📍 Nokta Aracı: Tahtaya tıklayarak isimlendirilmiş noktalar yerleştiriniz.');
+                        setFeedbackMsg('📍 Nokta Aracı: Tahtaya tıklayarak isimlendirilmiş noktalar (•) yerleştirin.');
                       }}
-                      className={`p-2 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'point'
-                          ? 'bg-teal-600 text-white border-teal-600 shadow-sm scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'point' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/50 border border-emerald-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <Dot className="w-4 h-4" />
-                      <span className="text-[11px]">Nokta (•)</span>
+                      <div className="flex items-center gap-2.5">
+                        <Dot className="w-5 h-5 text-emerald-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Nokta Ekle (•)</div>
+                          <div className="text-[11px] text-slate-300 font-medium">A, B, C... isimlendir</div>
+                        </div>
+                      </div>
+                      {activeTool === 'point' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
                     {/* Tekil Silgi */}
                     <button
+                      type="button"
                       onClick={() => {
-                        setActiveTool('eraser');
+                        const nextTool = activeTool === 'eraser' ? 'point' : 'eraser';
+                        setActiveTool(nextTool);
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
-                        setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
-                        setFeedbackMsg('🧹 TEKİL SİLME ARACI: Tahtada silmek istediğiniz noktaya, doğru parçasına veya çembere tıklayın.');
+                        setFeedbackMsg(nextTool === 'eraser' ? '🧹 Silgi Aktif: Silmek istediğiniz nokta, çizgi veya açıya tıklayın.' : '📍 Nokta Aracı seçildi.');
                       }}
-                      className={`p-2 rounded-xl border text-center font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'eraser'
-                          ? 'bg-rose-600 text-white border-rose-600 shadow-sm scale-102'
-                          : 'bg-white border-rose-200 text-rose-700 hover:bg-rose-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'eraser' ? 'bg-rose-600 text-white shadow-md shadow-rose-950/50 border border-rose-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <Eraser className="w-4 h-4" />
-                      <span className="text-[11px]">Silgi</span>
+                      <div className="flex items-center gap-2.5">
+                        <Eraser className="w-4 h-4 text-rose-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Tekil Silgi 🧹</div>
+                          <div className="text-[11px] text-slate-300 font-medium">Tıkladığın nesneyi sil</div>
+                        </div>
+                      </div>
+                      {activeTool === 'eraser' && <Check className="w-4 h-4 text-white shrink-0" />}
+                    </button>
+
+                    {/* Tümünü Temizle */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearAll();
+                        setOpenDropdownMenu(null);
+                      }}
+                      className="w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center gap-2.5 hover:bg-rose-950/80 text-rose-200 border border-rose-900/60 transition-all cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4 text-rose-400 shrink-0" />
+                      <div>
+                        <div className="font-extrabold text-white text-xs">Tümünü Temizle</div>
+                        <div className="text-[11px] text-rose-300 font-medium">Tuvali tamamen sıfırla</div>
+                      </div>
                     </button>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              {/* 4. ÇOKGEN & ÇEMBER MENÜSÜ */}
-              {(activeToolCategory === 'shapes' || activeToolCategory === 'all') && (
-                <div className="space-y-2 p-3 rounded-2xl bg-emerald-50/50 border border-emerald-100">
-                  <div className="flex items-center justify-between text-[11px] font-black text-emerald-800 uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5">
-                      <Shapes className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>⬡ Çokgen & Çember</span>
-                    </span>
-                    <span className="text-[10px] text-emerald-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-emerald-200">
-                      2 Araç
-                    </span>
-                  </div>
+              {/* 4. ÇOKGEN & ÇEMBER DROPDOWN */}
+              <div className="relative z-30">
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdownMenu(openDropdownMenu === 'shapes' ? null : 'shapes')}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                    activeTool === 'polygon' || activeTool === 'compass'
+                      ? 'bg-purple-600 text-white border-purple-400 shadow-sm shadow-purple-600/40 ring-2 ring-purple-300/60'
+                      : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white'
+                  }`}
+                  title="Çokgen Çizimi, Pergel ve Çember"
+                >
+                  <Shapes className="w-3.5 h-3.5 text-purple-300" />
+                  <span>Çokgen &amp; Çember</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdownMenu === 'shapes' ? 'rotate-180' : ''}`} />
+                </button>
 
-                  <div className="grid grid-cols-2 gap-2">
+                {openDropdownMenu === 'shapes' && (
+                  <div className="absolute left-0 top-full mt-2 w-72 bg-slate-950/98 backdrop-blur-2xl rounded-2xl border-2 border-purple-500/80 shadow-2xl shadow-slate-950/90 p-2.5 space-y-1.5 z-40 animate-in fade-in zoom-in-95 duration-150 ring-1 ring-white/10">
+                    <div className="text-[11px] font-black uppercase text-purple-300 px-2.5 py-1.5 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/60 rounded-lg mb-1">
+                      <span>⬡ Çokgen &amp; Pergel Araçları</span>
+                      <span className="text-purple-300 font-bold bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px]">2 Araç</span>
+                    </div>
+
                     {/* Çokgen */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('polygon');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
                         setFeedbackMsg('⬡ Çokgen Aracı: Köşeleri sırayla ekleyin. Kapatmak için 1. köşeye tıklayın veya "Çokgeni Kapat" butonuna basın.');
                       }}
-                      className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'polygon'
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20 scale-102'
-                          : 'bg-white border-emerald-200 text-emerald-800 hover:bg-emerald-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'polygon' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/50 border border-emerald-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <Shapes className="w-5 h-5" />
-                      <span className="font-extrabold text-xs text-center">Çokgen (Alan & Çevre)</span>
+                      <div className="flex items-center gap-2.5">
+                        <Shapes className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Çokgen (Alan &amp; Çevre)</div>
+                          <div className="text-[11px] text-slate-300 font-medium">Üçgen, Dörtgen, Çokgen oluştur</div>
+                        </div>
+                      </div>
+                      {activeTool === 'polygon' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
                     {/* Pergel & Çember */}
                     <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('compass');
                         setSelectedPointForLink(null);
@@ -6115,503 +5890,344 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
                         setFeedbackMsg('⭕ Pergel: 1. Tıklama ile Merkez (M), 2. tıklama ile Yarıçap (r) belirleyip çember çizin.');
                       }}
-                      className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'compass'
-                          ? 'bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-600/20 scale-102'
-                          : 'bg-white border-purple-200 text-purple-800 hover:bg-purple-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'compass' ? 'bg-purple-600 text-white shadow-md shadow-purple-950/50 border border-purple-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <Compass className="w-5 h-5" />
-                      <span className="font-extrabold text-xs text-center">Pergel & Çember</span>
+                      <div className="flex items-center gap-2.5">
+                        <Compass className="w-4 h-4 text-purple-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Pergel &amp; Çember (r)</div>
+                          <div className="text-[11px] text-slate-300 font-medium">Merkez ve yarıçap ile çember çiz</div>
+                        </div>
+                      </div>
+                      {activeTool === 'compass' && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              {/* 5. MOTİFLER MENÜSÜ (Kültürel Miras & Sanat [D7.1]) */}
-              {(activeToolCategory === 'motifs' || activeToolCategory === 'all') && (
-                <div className="space-y-2.5 p-3 rounded-2xl bg-amber-50/60 border border-amber-200">
-                  <div className="flex items-center justify-between text-[11px] font-black text-amber-900 uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5">
-                      <span>🏛️ Geleneksel Motifler [D7.1]</span>
-                    </span>
-                    <span className="text-[10px] text-amber-700 font-semibold bg-white px-2 py-0.5 rounded-full border border-amber-200">
-                      2 Motif Etkinliği
-                    </span>
-                  </div>
+              {/* 5. SANAT & MOTİFLER DROPDOWN [D7.1] */}
+              <div className="relative z-30">
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdownMenu(openDropdownMenu === 'motifs' ? null : 'motifs')}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                    isMotif1Active || isMotif2Active || activeTool === 'artmotif' || isAngleGameActive
+                      ? 'bg-amber-600 text-white border-amber-400 shadow-sm shadow-amber-600/40 ring-2 ring-amber-300/60'
+                      : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white'
+                  }`}
+                  title="Selçuklu Yıldızı, Eli Belinde, Sanat Çinisi ve Açı Tahmin Oyunu"
+                >
+                  <span>🏛️</span>
+                  <span>Sanat &amp; Motifler</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdownMenu === 'motifs' ? 'rotate-180' : ''}`} />
+                </button>
 
-                  {/* Motif 1: Selçuklu Yıldızı Görevi */}
-                  <button
-                    onClick={loadMotif1Mission}
-                    className={`w-full p-2.5 rounded-2xl border text-left font-bold text-xs flex items-center justify-between gap-2 transition-all cursor-pointer shadow-xs ${
-                      isMotif1Active
-                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/30 scale-[1.01]'
-                        : 'bg-gradient-to-r from-amber-50 to-amber-100/70 border-amber-300 text-amber-950 hover:bg-amber-100 hover:border-amber-400'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shadow-inner shrink-0 ${
-                        isMotif1Active ? 'bg-white/20 text-white' : 'bg-amber-500 text-white'
-                      }`}>
-                        ⭐
-                      </span>
-                      <div>
-                        <div className="font-extrabold text-xs flex items-center gap-1.5">
-                          <span>Motif 1: Selçuklu Yıldızı</span>
-                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
-                            isMotif1Active ? 'bg-white/20 text-white' : 'bg-amber-200 text-amber-900'
-                          }`}>
-                            8 Köşeli
-                          </span>
-                        </div>
-                        <div className={`text-[10px] font-normal line-clamp-1 ${
-                          isMotif1Active ? 'text-amber-100' : 'text-amber-800'
-                        }`}>
-                          Türk-İslam sanatı: Kesik çizgileri tamamla!
-                        </div>
-                      </div>
+                {openDropdownMenu === 'motifs' && (
+                  <div className="absolute left-0 top-full mt-2 w-80 bg-slate-950/98 backdrop-blur-2xl rounded-2xl border-2 border-amber-500/80 shadow-2xl shadow-slate-950/90 p-2.5 space-y-1.5 z-40 animate-in fade-in zoom-in-95 duration-150 ring-1 ring-white/10">
+                    <div className="text-[11px] font-black uppercase text-amber-300 px-2.5 py-1.5 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/60 rounded-lg mb-1">
+                      <span>🏛️ Kültürel Miras &amp; Oyun [D7.1]</span>
+                      <span className="text-amber-300 font-bold bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px]">4 Etkinlik</span>
                     </div>
-                    <Sparkles className={`w-4 h-4 shrink-0 ${isMotif1Active ? 'text-white' : 'text-amber-600'}`} />
-                  </button>
 
-                  {/* Motif 2: Eli Belinde Görevi */}
-                  <button
-                    onClick={loadMotif2Mission}
-                    className={`w-full p-2.5 rounded-2xl border text-left font-bold text-xs flex items-center justify-between gap-2 transition-all cursor-pointer shadow-xs ${
-                      isMotif2Active
-                        ? 'bg-gradient-to-r from-cyan-600 to-sky-600 text-white border-cyan-600 shadow-md shadow-cyan-600/30 scale-[1.01]'
-                        : 'bg-gradient-to-r from-cyan-50 to-sky-100/70 border-cyan-300 text-cyan-950 hover:bg-cyan-100 hover:border-cyan-400'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shadow-inner shrink-0 ${
-                        isMotif2Active ? 'bg-white/20 text-white' : 'bg-cyan-600 text-white'
-                      }`}>
-                        💠
-                      </span>
-                      <div>
-                        <div className="font-extrabold text-xs flex items-center gap-1.5">
-                          <span>Motif 2: Eli Belinde</span>
-                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
-                            isMotif2Active ? 'bg-white/20 text-white' : 'bg-cyan-200 text-cyan-900'
-                          }`}>
-                            Anadolu Kilimi
-                          </span>
-                        </div>
-                        <div className={`text-[10px] font-normal line-clamp-1 ${
-                          isMotif2Active ? 'text-cyan-100' : 'text-cyan-800'
-                        }`}>
-                          Analık & bereket simgesi: 16 doğru parçası
-                        </div>
-                      </div>
-                    </div>
-                    <Sparkles className={`w-4 h-4 shrink-0 ${isMotif2Active ? 'text-white' : 'text-cyan-600'}`} />
-                  </button>
-                </div>
-              )}
-
-              {/* 6. ÖZEL & OYUN MENÜSÜ */}
-              {(activeToolCategory === 'special' || activeToolCategory === 'all') && (
-                <div className="space-y-2 p-3 rounded-2xl bg-slate-50/80 border border-slate-200">
-                  <div className="flex items-center justify-between text-[11px] font-black text-slate-800 uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5">
-                      <Palette className="w-3.5 h-3.5 text-slate-600" />
-                      <span>🎨 Özel & Oyun</span>
-                    </span>
-                    <span className="text-[10px] text-slate-600 font-semibold bg-white px-2 py-0.5 rounded-full border border-slate-200">
-                      2 Araç & Oyun
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {/* Gönye (Dik Üçgen) */}
+                    {/* Selçuklu Yıldızı Görevi */}
                     <button
+                      type="button"
                       onClick={() => {
-                        setActiveTool('setsquare');
-                        setIsSetSquareOnCanvas(true);
-                        setSelectedPointForLink(null);
-                        setMeasureAnglePoints([]);
-                        setThreePointAnglePoints([]);
-                        setMeasureLengthPoints([]);
-                        playSound('click');
-                        setFeedbackMsg('📐 Gönye tuvale bırakıldı! Cetveli çizgilere yaklaştırarak yapıştırabilir, mıknatıslı ucundan 90° dikme indirebilirsiniz.');
+                        loadMotif1Mission();
+                        setOpenDropdownMenu(null);
                       }}
-                      className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'setsquare' || isSetSquareOnCanvas
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20 scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-emerald-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        isMotif1Active ? 'bg-amber-600 text-white shadow-md shadow-amber-950/50 border border-amber-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <span className="font-black text-sm">📐 ⊥</span>
-                      <span className="font-bold text-xs text-center">Gönye (Dik Üçgen)</span>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-base shrink-0">⭐</span>
+                        <div>
+                          <div className="font-extrabold text-white text-xs flex items-center gap-1.5">
+                            <span>Selçuklu Yıldızı Görevi</span>
+                            <span className="px-1.5 py-0.5 rounded text-[9px] bg-amber-500/30 text-amber-300 font-bold border border-amber-400/40">8 Köşeli</span>
+                          </div>
+                          <div className="text-[11px] text-slate-300 font-medium">Kesik çizgileri araçlarla tamamla</div>
+                        </div>
+                      </div>
+                      {isMotif1Active && <Check className="w-4 h-4 text-white shrink-0" />}
                     </button>
 
-                    {/* Sanat Motifi */}
+                    {/* Eli Belinde Görevi */}
                     <button
+                      type="button"
+                      onClick={() => {
+                        loadMotif2Mission();
+                        setOpenDropdownMenu(null);
+                      }}
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        isMotif2Active ? 'bg-cyan-600 text-white shadow-md shadow-cyan-950/50 border border-cyan-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-base shrink-0">💠</span>
+                        <div>
+                          <div className="font-extrabold text-white text-xs flex items-center gap-1.5">
+                            <span>Eli Belinde Görevi</span>
+                            <span className="px-1.5 py-0.5 rounded text-[9px] bg-cyan-500/30 text-cyan-300 font-bold border border-cyan-400/40">Anadolu</span>
+                          </div>
+                          <div className="text-[11px] text-slate-300 font-medium">Kilim motifini doğru parçalarıyla kur</div>
+                        </div>
+                      </div>
+                      {isMotif2Active && <Check className="w-4 h-4 text-white shrink-0" />}
+                    </button>
+
+                    {/* Selçuklu Çinisi Motifi Damgası */}
+                    <button
+                      type="button"
                       onClick={() => {
                         setActiveTool('artmotif');
                         setSelectedPointForLink(null);
                         setMeasureAnglePoints([]);
                         setThreePointAnglePoints([]);
                         setMeasureLengthPoints([]);
+                        setOpenDropdownMenu(null);
                         playSound('click');
                         setFeedbackMsg('🎨 Görsel Sanatlar: Tahtaya tıklayarak Selçuklu Çinisi motifi ekleyin.');
                       }}
-                      className={`p-3 rounded-2xl border text-left font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        activeTool === 'artmotif'
-                          ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20 scale-102'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-amber-50'
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        activeTool === 'artmotif' ? 'bg-amber-600 text-white shadow-md shadow-amber-950/50 border border-amber-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
                       }`}
                     >
-                      <Palette className="w-5 h-5" />
-                      <span className="font-bold text-xs text-center">Sanat [D7.1]</span>
-                    </button>
-                  </div>
-
-                  {/* Açı Tahmin & İletki Oyunu Butonu */}
-                  <button
-                    onClick={startAngleGame}
-                    className={`w-full p-2.5 rounded-2xl border text-left font-bold text-xs flex items-center justify-between gap-2 transition-all cursor-pointer shadow-xs ${
-                      isAngleGameActive
-                        ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white border-sky-500 shadow-md shadow-sky-600/30 scale-[1.01]'
-                        : 'bg-gradient-to-r from-sky-50 to-indigo-50/80 border-sky-200 text-sky-950 hover:bg-sky-100 hover:border-sky-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shadow-inner shrink-0 ${
-                        isAngleGameActive ? 'bg-white/20 text-white' : 'bg-sky-600 text-white'
-                      }`}>
-                        🎯
-                      </span>
-                      <div>
-                        <div className="font-extrabold text-xs flex items-center gap-1.5">
-                          <span>Açı Tahmin Oyunu</span>
-                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
-                            isAngleGameActive ? 'bg-white/20 text-white' : 'bg-sky-200 text-sky-900'
-                          }`}>
-                            Oyun
-                          </span>
-                        </div>
-                        <div className={`text-[10px] font-normal line-clamp-1 ${
-                          isAngleGameActive ? 'text-sky-100' : 'text-sky-800'
-                        }`}>
-                          Göz kararı tahmin et &amp; iletkiyle ölç!
+                      <div className="flex items-center gap-2.5">
+                        <Palette className="w-4 h-4 text-amber-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs">Selçuklu Çinisi Damgala</div>
+                          <div className="text-[11px] text-slate-300 font-medium">Tahtaya hazır sanatsal motif ekle</div>
                         </div>
                       </div>
+                      {activeTool === 'artmotif' && <Check className="w-4 h-4 text-white shrink-0" />}
+                    </button>
+
+                    {/* Açı Tahmin ve İletki Oyunu */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        startAngleGame();
+                        setOpenDropdownMenu(null);
+                      }}
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                        isAngleGameActive ? 'bg-sky-600 text-white shadow-md shadow-sky-950/50 border border-sky-400' : 'hover:bg-slate-800/90 text-slate-100 hover:text-white border border-slate-800/60 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Target className="w-4 h-4 text-sky-400 shrink-0" />
+                        <div>
+                          <div className="font-extrabold text-white text-xs flex items-center gap-1.5">
+                            <span>Açı Tahmin &amp; İletki Oyunu</span>
+                            <span className="px-1.5 py-0.5 rounded text-[9px] bg-sky-500/30 text-sky-300 font-bold border border-sky-400/40">Mini Oyun</span>
+                          </div>
+                          <div className="text-[11px] text-slate-300 font-medium">Göz kararı tahmin et &amp; iletkiyle ölç</div>
+                        </div>
+                      </div>
+                      {isAngleGameActive && <Check className="w-4 h-4 text-white shrink-0" />}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* 6. HAZIR ŞABLONLAR DROPDOWN */}
+              <div className="relative z-30">
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdownMenu(openDropdownMenu === 'presets' ? null : 'presets')}
+                  className="px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white"
+                  title="Hazır Geometrik Şablonlar ve Çizim Modelleri"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Şablonlar</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdownMenu === 'presets' ? 'rotate-180' : ''}`} />
+                </button>
+
+                {openDropdownMenu === 'presets' && (
+                  <div className="absolute left-0 top-full mt-2 w-72 bg-slate-950/98 backdrop-blur-2xl rounded-2xl border-2 border-teal-500/80 shadow-2xl shadow-slate-950/90 p-2.5 space-y-1.5 z-40 animate-in fade-in zoom-in-95 duration-150 ring-1 ring-white/10">
+                    <div className="text-[11px] font-black uppercase text-teal-300 px-2.5 py-1.5 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/60 rounded-lg mb-1">
+                      <span>✨ Hazır Çizim Şablonları</span>
+                      <span className="text-teal-300 font-bold bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px]">5 Model</span>
                     </div>
-                    <Target className={`w-4 h-4 shrink-0 ${isAngleGameActive ? 'text-white' : 'text-sky-600'}`} />
-                  </button>
-                </div>
-              )}
+
+                    {/* Şablon 1: Temel Çizgiler */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        loadDefaultGeometricPresets();
+                        setOpenDropdownMenu(null);
+                      }}
+                      className="w-full p-2.5 rounded-xl text-left text-xs font-bold hover:bg-slate-800/90 text-slate-100 hover:text-white transition-all cursor-pointer flex items-center gap-2.5 border border-slate-800/60 hover:border-slate-700"
+                    >
+                      <span className="w-5 h-5 rounded-full bg-teal-500/30 border border-teal-400/50 text-teal-300 text-[10px] font-black flex items-center justify-center shrink-0">1</span>
+                      <div>
+                        <div className="font-extrabold text-white text-xs">Temel Çizgiler [AB], [CD, EF</div>
+                        <div className="text-[11px] text-slate-300 font-medium">Parça, Işın ve Doğru modeli</div>
+                      </div>
+                    </button>
+
+                    {/* Şablon 2: Dik Açı */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        loadAngleStationPreset();
+                        setOpenDropdownMenu(null);
+                      }}
+                      className="w-full p-2.5 rounded-xl text-left text-xs font-bold hover:bg-slate-800/90 text-slate-100 hover:text-white transition-all cursor-pointer flex items-center gap-2.5 border border-slate-800/60 hover:border-slate-700"
+                    >
+                      <span className="w-5 h-5 rounded-full bg-blue-500/30 border border-blue-400/50 text-blue-300 text-[10px] font-black flex items-center justify-center shrink-0">2</span>
+                      <div>
+                        <div className="font-extrabold text-white text-xs">90° Dik Açı Modeli (∠ABC)</div>
+                        <div className="text-[11px] text-slate-300 font-medium">Ortak başlangıçlı dik ışınlar</div>
+                      </div>
+                    </button>
+
+                    {/* Şablon 3: Eş Çemberler */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        loadCircleStationPreset();
+                        setOpenDropdownMenu(null);
+                      }}
+                      className="w-full p-2.5 rounded-xl text-left text-xs font-bold hover:bg-slate-800/90 text-slate-100 hover:text-white transition-all cursor-pointer flex items-center gap-2.5 border border-slate-800/60 hover:border-slate-700"
+                    >
+                      <span className="w-5 h-5 rounded-full bg-purple-500/30 border border-purple-400/50 text-purple-300 text-[10px] font-black flex items-center justify-center shrink-0">3</span>
+                      <div>
+                        <div className="font-extrabold text-white text-xs">Pergel Kilidi: Eş Çemberler</div>
+                        <div className="text-[11px] text-slate-300 font-medium">Eşit yarıçaplı (r1 = r2) çemberler</div>
+                      </div>
+                    </button>
+
+                    {/* Şablon 4: En Kısa Dikme */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        loadPerpendicularStationPreset();
+                        setOpenDropdownMenu(null);
+                      }}
+                      className="w-full p-2.5 rounded-xl text-left text-xs font-bold hover:bg-slate-800/90 text-slate-100 hover:text-white transition-all cursor-pointer flex items-center gap-2.5 border border-slate-800/60 hover:border-slate-700"
+                    >
+                      <span className="w-5 h-5 rounded-full bg-rose-500/30 border border-rose-400/50 text-rose-300 text-[10px] font-black flex items-center justify-center shrink-0">4</span>
+                      <div>
+                        <div className="font-extrabold text-white text-xs">Kıyıya En Kısa Dikme [PH] ⊥ d</div>
+                        <div className="text-[11px] text-slate-300 font-medium">Noktadan doğruya dikme mesafesi</div>
+                      </div>
+                    </button>
+
+                    {/* Şablon 5: Çokgen & Alan */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        loadPolygonStationPreset();
+                        setOpenDropdownMenu(null);
+                      }}
+                      className="w-full p-2.5 rounded-xl text-left text-xs font-bold hover:bg-slate-800/90 text-slate-100 hover:text-white transition-all cursor-pointer flex items-center gap-2.5 border border-slate-800/60 hover:border-slate-700"
+                    >
+                      <span className="w-5 h-5 rounded-full bg-emerald-500/30 border border-emerald-400/50 text-emerald-300 text-[10px] font-black flex items-center justify-center shrink-0">5</span>
+                      <div>
+                        <div className="font-extrabold text-white text-xs">Çokgen, Alan &amp; Çevre Modeli</div>
+                        <div className="text-[11px] text-slate-300 font-medium">Dik üçgen ve dikdörtgen modeli</div>
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </div>
+
             </div>
 
-            {/* Color Palette */}
-            <div className="pt-3 border-t border-slate-100 space-y-2">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Çizim Rengi</span>
-              <div className="flex items-center gap-2">
+            {/* SAĞ: HIZLI AYARLAR & PALET */}
+            <div className="flex items-center gap-2">
+              
+              {/* Renk Seçici Butonları */}
+              <div className="hidden sm:flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700">
                 {COLORS.map((c) => (
                   <button
                     key={c}
+                    type="button"
                     onClick={() => {
                       setActiveColor(c);
                       playSound('click');
                     }}
-                    className={`w-7 h-7 rounded-full transition-transform ${
-                      activeColor === c ? 'scale-125 ring-2 ring-offset-2 ring-slate-400' : 'hover:scale-110'
+                    className={`w-5 h-5 rounded-full transition-transform cursor-pointer ${
+                      activeColor === c ? 'scale-125 ring-2 ring-white' : 'hover:scale-110 opacity-75 hover:opacity-100'
                     }`}
                     style={{ backgroundColor: c }}
+                    title={`Çizim rengi: ${c}`}
                   />
                 ))}
               </div>
-            </div>
 
-            {/* Clear, Eraser, Magnet & Undo Buttons */}
-            <div className="pt-2 border-t border-slate-100 flex items-center gap-1.5">
+              {/* Geri Al */}
               <button
+                type="button"
                 onClick={undoLast}
-                className="flex-1 py-2 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer"
+                className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer transition-all"
                 title="Son işlemi geri al"
               >
                 <Undo2 className="w-3.5 h-3.5" />
-                <span>Geri Al</span>
+                <span className="hidden md:inline">Geri Al</span>
               </button>
-              {/* Magnet Toggle Button (Yazısız Sadece İkon) */}
+
+              {/* Mıknatıs (Izgara Yapışması) */}
               <button
+                type="button"
                 onClick={() => {
                   const nextVal = !isSnapToGrid;
                   setIsSnapToGrid(nextVal);
                   playSound('click');
                   setFeedbackMsg(nextVal ? '🧲 Mıknatıs Açıldı (Izgaraya Yapışma Aktif).' : '🧲 Mıknatıs Kapatıldı (Serbest Çizim Aktif).');
                 }}
-                className={`py-2 px-2.5 rounded-xl border text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
+                className={`p-2 rounded-xl border transition-all flex items-center justify-center cursor-pointer ${
                   isSnapToGrid
-                    ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-sm ring-2 ring-amber-200 scale-102'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-400 border-slate-200'
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-400 shadow-sm ring-2 ring-amber-300/60'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-400 border-slate-700'
                 }`}
-                title={isSnapToGrid ? 'Mıknatıs Açık (Kapatmak için tıklayın)' : 'Mıknatıs Kapalı (Açmak için tıklayın)'}
+                title={isSnapToGrid ? 'Mıknatıs Açık (Izgara Yapışması Aktif)' : 'Mıknatıs Kapalı (Serbest Çizim)'}
                 aria-label="Mıknatıs Aç/Kapa"
               >
                 <Magnet className="w-3.5 h-3.5" />
               </button>
+
+              {/* Izgara Aç / Kapat */}
               <button
-                onClick={() => {
-                  const nextTool = activeTool === 'eraser' ? 'point' : 'eraser';
-                  setActiveTool(nextTool);
-                  setSelectedPointForLink(null);
-                  setMeasureAnglePoints([]);
-                  setMeasureLengthPoints([]);
-                  playSound('click');
-                  if (nextTool === 'eraser') {
-                    setFeedbackMsg('🧹 TEKİL SİLME ARACI: Tahtada silmek istediğiniz herhangi bir noktaya veya çizgiye tıklayın.');
-                  } else {
-                    setFeedbackMsg('📍 Nokta aracı seçildi.');
-                  }
-                }}
-                className={`py-2 px-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                  activeTool === 'eraser'
-                    ? 'bg-rose-600 text-white border-rose-600 shadow-sm ring-2 ring-rose-300 scale-102'
-                    : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                type="button"
+                onClick={() => setShowGrid(!showGrid)}
+                className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                  showGrid ? 'bg-teal-600 text-white border-teal-400' : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
                 }`}
-                title="Noktaları veya çizgileri tek tek sil"
+                title="Arka Plan Izgarasını Göster / Gizle"
               >
-                <Eraser className="w-3.5 h-3.5" />
-                <span>Tekil Sil</span>
+                <span>🔲</span>
+                <span className="hidden lg:inline ml-1">{showGrid ? 'Izgara Açık' : 'Izgara Kapalı'}</span>
               </button>
+
+              {/* Hızlı Temizle */}
               <button
-                onClick={clearAll}
-                className="py-2 px-2 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer"
+                type="button"
+                onClick={() => {
+                  clearAll();
+                  setFeedbackMsg('🗑️ Tahtadaki tüm çizimler ve noktalar silindi.');
+                }}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-200 border border-slate-700 hover:border-rose-500/50 transition-all cursor-pointer"
                 title="Tüm tahtayı temizle"
+                aria-label="Tümünü Sil"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Tümünü Sil</span>
               </button>
+
             </div>
+
           </div>
-
-          {/* Quick Presets for MAT.5.3.1 (İstasyon Görev Kartları & Şablonlar) */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
-                İstasyon Görev Kartları (6 Görev Şablonu)
-              </h4>
-              <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
-                Maarif Modeli
-              </span>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              {/* Görev Kartı 1: Çizgi Modelleri */}
-              <div className="p-3 rounded-2xl bg-teal-50/70 border border-teal-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-teal-950 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-teal-600 text-white text-[11px] font-black flex items-center justify-center">1</span>
-                    <span>Temel Çizgiler [AB], [CD&gt;, EF</span>
-                  </span>
-                  <button
-                    onClick={loadDefaultGeometricPresets}
-                    className="px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-[11px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Şablonu Yükle</span>
-                  </button>
-                </div>
-                <p className="text-[11px] text-teal-800 leading-snug">
-                  İki ucu kapalı doğru parçası [AB] ölçülebilir; tek yönlü ışın [CD&gt; ve iki yöne sonsuz doğru EF.
-                </p>
-              </div>
-
-              {/* Görev Kartı 2: Dik Açı Modeli */}
-              <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-blue-950 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-black flex items-center justify-center">2</span>
-                    <span>Dinamik 90° Dik Açı Modeli</span>
-                  </span>
-                  <button
-                    onClick={loadAngleStationPreset}
-                    className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Şablonu Yükle</span>
-                  </button>
-                </div>
-                <p className="text-[11px] text-blue-800 leading-snug">
-                  Ortak başlangıç noktalı [BA&gt; ve [BC&gt; ışınlarıyla inşa edilen 90° dik açı (∠ABC).
-                </p>
-              </div>
-
-              {/* Görev Kartı 3: Eş Çemberler */}
-              <div className="p-3 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-purple-950 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-[11px] font-black flex items-center justify-center">3</span>
-                    <span>Pergel Kilidi: Eş Çemberler</span>
-                  </span>
-                  <button
-                    onClick={loadCircleStationPreset}
-                    className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Şablonu Yükle</span>
-                  </button>
-                </div>
-                <p className="text-[11px] text-purple-800 leading-snug">
-                  Pergel açıklığı bozulmadan çizilen eşit yarıçaplı (r1 = r2 = 5 cm) çemberler birbirine eştir.
-                </p>
-              </div>
-
-              {/* Görev Kartı 4: En Kısa Yol (Dikme) */}
-              <div className="p-3 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-rose-950 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-rose-600 text-white text-[11px] font-black flex items-center justify-center">4</span>
-                    <span>Kıyıya En Kısa Dikme [PH] ⊥ d</span>
-                  </span>
-                  <button
-                    onClick={loadPerpendicularStationPreset}
-                    className="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Şablonu Yükle</span>
-                  </button>
-                </div>
-                <p className="text-[11px] text-rose-800 leading-snug">
-                  Bir noktadan doğruya indirilen dikme mesafesi (15 cm), her eğik yoldan (23 cm) daha kısadır.
-                </p>
-              </div>
-
-              {/* Görev Kartı 5: Geleneksel Motifler & Sanat [D7.1] */}
-              <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
-                <div className="flex items-center justify-between flex-wrap gap-1.5">
-                  <span className="font-extrabold text-amber-950 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-600 text-white text-[11px] font-black flex items-center justify-center">5</span>
-                    <span>Geleneksel Motifler & Sanat [D7.1]</span>
-                  </span>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <button
-                      onClick={loadMotif1Mission}
-                      className="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                    >
-                      <Star className="w-3 h-3" />
-                      <span>Selçuklu Yıldızı</span>
-                    </button>
-                    <button
-                      onClick={loadMotif2Mission}
-                      className="px-2 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                    >
-                      <span>🌸 Eli Belinde</span>
-                    </button>
-                    <button
-                      onClick={loadArtMotifStationPreset}
-                      className="px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-[10px] transition-all flex items-center gap-1 cursor-pointer"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      <span>Hazır Model</span>
-                    </button>
-                  </div>
-                </div>
-                <p className="text-[11px] text-amber-800 leading-snug">
-                  Türk-İslam ve Anadolu kültürel mirası: 8 köşeli Selçuklu Yıldızı ve kilimlerin bereket simgesi Eli Belinde motifleri.
-                </p>
-              </div>
-
-              {/* Görev Kartı 6: Çokgen, Alan & Çevre Modeli */}
-              <div className="p-3 rounded-2xl bg-emerald-50/90 border-2 border-emerald-300 space-y-2 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-emerald-950 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-black flex items-center justify-center">6</span>
-                    <span>Çokgen, Alan & Çevre</span>
-                  </span>
-                  <button
-                    onClick={loadPolygonStationPreset}
-                    className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Şablonu Yükle</span>
-                  </button>
-                </div>
-                <p className="text-[11px] text-emerald-800 leading-snug">
-                  Dik Üçgen ABC ve Dikdörtgen DEFG modelleri. Köşeleri sürükleyerek çevre (Ç) ve Gauss alanı (cm²) canlı izleyin!
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Goals Checklist Card */}
-          <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-5 shadow-md space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-black uppercase text-amber-400">
-                <Target className="w-4 h-4" />
-                <span>İstasyon Görevleri (7 Görev)</span>
-              </div>
-              <span className="text-[11px] text-indigo-200">
-                {Object.values(geoMissionsDone).filter(Boolean).length} / 7 Tamamlandı
-              </span>
-            </div>
-
-            <div className="space-y-1.5 text-xs">
-              <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.point ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
-              }`}>
-                <span>📍 1. En az 1 Nokta (•) yerleştir</span>
-                {geoMissionsDone.point ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
-              </div>
-
-              <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.segment ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
-              }`}>
-                <span>📏 2. Doğru Parçası [AB] çiz (Çizgeç)</span>
-                {geoMissionsDone.segment ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
-              </div>
-
-              <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.rayLine ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
-              }`}>
-                <span>🔦 3. Işın [CD&gt; veya Doğru EF oluştur</span>
-                {geoMissionsDone.rayLine ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
-              </div>
-
-              <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.angle ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
-              }`}>
-                <span>📐 4. Dinamik Açı (∠ABC) oluştur</span>
-                {geoMissionsDone.angle ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
-              </div>
-
-              <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.circle ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
-              }`}>
-                <span>⭕ 5. Pergel ile Çember (r) çiz</span>
-                {geoMissionsDone.circle ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
-              </div>
-
-              <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.perpendicular ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
-              }`}>
-                <span>📐 6. Gönye ile Dikme (d ⊥ k) indir</span>
-                {geoMissionsDone.perpendicular ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
-              </div>
-
-              <div className={`p-2 rounded-xl flex items-center justify-between border ${
-                geoMissionsDone.art ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/10 border-white/15 text-slate-300'
-              }`}>
-                <span>🎨 7. Estetik Sanat Motifi ekle [D7.1]</span>
-                {geoMissionsDone.art ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Target className="w-3.5 h-3.5 opacity-40" />}
-              </div>
-            </div>
-          </div>
-
         </div>
 
-        {/* RIGHT COLUMN: Geometry Canvas */}
-        <div className="lg:col-span-8 space-y-4">
-          
-          <div className="relative bg-white rounded-3xl border-2 border-slate-200 shadow-inner overflow-hidden min-h-[520px] flex flex-col justify-between">
-            
-            {/* Status & Feedback Bar */}
+        {/* Status & Feedback Bar */}
             <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between text-xs font-medium z-10 border-b border-slate-800 gap-3">
               <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
                 <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${activeTool === 'eraser' ? 'bg-rose-500 animate-ping' : 'bg-teal-400 animate-pulse'}`} />
@@ -7105,15 +6721,18 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
               </div>
             )}
 
-            {/* SVG Interactive Canvas */}
+            {/* SVG Interactive Canvas (Maksimum Boyut & Akıllı Tahta Uyumu) */}
             <svg
               ref={svgRef}
-              onPointerDown={handlePointerDown}
+              onPointerDown={(e) => {
+                setOpenDropdownMenu(null);
+                handlePointerDown(e);
+              }}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerLeave={handlePointerUp}
               onPointerCancel={handlePointerUp}
-              className={`w-full h-[470px] ${activeTool === 'eraser' ? 'cursor-pointer' : activeTool === 'drag' ? 'cursor-grab' : activeTool === 'protractor' ? 'cursor-default' : 'cursor-crosshair'} select-none touch-none bg-white`}
+              className={`w-full h-[580px] sm:h-[640px] lg:h-[700px] ${activeTool === 'eraser' ? 'cursor-pointer' : activeTool === 'drag' ? 'cursor-grab' : activeTool === 'protractor' ? 'cursor-default' : 'cursor-crosshair'} select-none touch-none bg-white`}
             >
               <defs>
                 <pattern id="lab-canvas-grid" width={GRID_SIZE} height={GRID_SIZE} patternUnits="userSpaceOnUse">
@@ -7138,55 +6757,55 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 <g id="motif-1-layer">
                   {/* Outer decorative dashed boundary */}
                   <circle
-                    cx="380"
-                    cy="225"
-                    r="125"
+                    cx="560"
+                    cy="340"
+                    r="220"
                     fill="none"
                     stroke="#f59e0b"
-                    strokeWidth="1"
-                    strokeDasharray="2,4"
-                    opacity="0.4"
+                    strokeWidth="1.5"
+                    strokeDasharray="4,6"
+                    opacity="0.45"
                     className="pointer-events-none"
                   />
 
                   {/* Translucent Star Fill */}
                   <polygon
-                    points="380,110 495,225 380,340 265,225"
+                    points="560,140 760,340 560,540 360,340"
                     fill="#0284c7"
                     fillOpacity={motifCompletedGuides.length >= 8 ? 0.2 : 0.04}
                     stroke="#0284c7"
-                    strokeWidth="1.5"
-                    strokeDasharray="4,4"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
                     className="transition-all duration-500 pointer-events-none"
                   />
                   <polygon
-                    points="461,144 461,306 299,306 299,144"
+                    points="701,199 701,481 419,481 419,199"
                     fill="#10b396"
                     fillOpacity={motifCompletedGuides.length >= 8 ? 0.2 : 0.04}
                     stroke="#10b396"
-                    strokeWidth="1.5"
-                    strokeDasharray="4,4"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
                     className="transition-all duration-500 pointer-events-none"
                   />
 
                   {/* Center Medallion */}
                   <circle
-                    cx="380"
-                    cy="225"
-                    r="24"
+                    cx="560"
+                    cy="340"
+                    r="36"
                     fill="#f59e0b"
                     fillOpacity={motifCompletedGuides.length === MOTIF_1_GUIDES.length ? 0.3 : 0.08}
                     stroke="#f59e0b"
-                    strokeWidth="2"
-                    strokeDasharray="3,3"
+                    strokeWidth="2.5"
+                    strokeDasharray="4,4"
                     className="pointer-events-none"
                   />
                   <text
-                    x="380"
-                    y="229"
+                    x="560"
+                    y="346"
                     textAnchor="middle"
                     fill="#d97706"
-                    fontSize="11"
+                    fontSize="16"
                     fontWeight="bold"
                     className="pointer-events-none select-none"
                   >
@@ -7359,22 +6978,22 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                 <g id="motif-2-layer">
                   {/* Outer decorative dashed frame */}
                   <rect
-                    x="180"
-                    y="25"
-                    width="400"
-                    height="410"
-                    rx="18"
+                    x="240"
+                    y="20"
+                    width="640"
+                    height="640"
+                    rx="24"
                     fill="none"
                     stroke="#0284c7"
-                    strokeWidth="1"
-                    strokeDasharray="3,5"
-                    opacity="0.3"
+                    strokeWidth="1.5"
+                    strokeDasharray="4,6"
+                    opacity="0.35"
                     className="pointer-events-none"
                   />
 
                   {/* Translucent Silhouette Fill for Eli Belinde with Inner Cutouts */}
                   <path
-                    d="M 380,45 L 550,215 L 490,275 L 430,215 L 490,215 L 445,170 L 400,215 L 490,305 L 380,415 L 270,305 L 360,215 L 315,170 L 270,215 L 330,215 L 270,275 L 210,215 Z M 380,105 L 410,135 L 380,165 L 350,135 Z M 380,260 L 425,305 L 380,350 L 335,305 Z"
+                    d="M 560,44 L 832,316 L 736,412 L 640,316 L 736,316 L 664,244 L 592,316 L 736,460 L 560,636 L 384,460 L 528,316 L 456,244 L 384,316 L 480,316 L 384,412 L 288,316 Z M 560,140 L 608,188 L 560,236 L 512,188 Z M 560,388 L 632,460 L 560,532 L 488,460 Z"
                     fillRule="evenodd"
                     fill="#00d2ff"
                     fillOpacity={motifCompletedGuides.length === MOTIF_2_GUIDES.length ? 0.35 : 0.08}
@@ -7386,7 +7005,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
 
                   {/* Decorative Inner Diamond Outlines */}
                   <polygon
-                    points="380,105 410,135 380,165 350,135"
+                    points="560,140 608,188 560,236 512,188"
                     fill="none"
                     stroke="#0284c7"
                     strokeWidth="1.5"
@@ -7395,7 +7014,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                     className="pointer-events-none"
                   />
                   <polygon
-                    points="380,260 425,305 380,350 335,305"
+                    points="560,388 632,460 560,532 488,460"
                     fill="none"
                     stroke="#0284c7"
                     strokeWidth="1.5"
@@ -9033,7 +8652,7 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
                   playSound('select');
                   onNextPhase();
                 }}
-                className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 active:scale-95 shrink-0"
+                className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5 active:scale-95 shrink-0 cursor-pointer"
               >
                 <span>3. Aşamaya Geç: Oyun Zamanı</span>
                 <ArrowRight className="w-4 h-4" />
@@ -9041,10 +8660,6 @@ export function LabPhase({ data, onNextPhase }: LabPhaseProps) {
             </div>
 
           </div>
-
-        </div>
-
-      </div>
 
     </div>
   );

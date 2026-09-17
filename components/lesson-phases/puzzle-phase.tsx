@@ -84,7 +84,9 @@ import {
   Palette,
   Navigation,
   Gauge,
-  Radio
+  Radio,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 
 interface PuzzlePhaseProps {
@@ -416,10 +418,10 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
       {
         id: 'polarisnavigator',
         title: 'Kutup Yıldızı Seyrüseferi',
-        tagline: 'Işın ([PA>), Doğru (d) & Doğru Parçası ([AB])',
-        description: 'Gece okyanusunda pusulası bozulan gemiyi Kutup Yıldızı ışınları, takımyıldız doğru parçaları ve ufuk doğrularıyla limana ulaştır!',
+        tagline: 'Büyük Ayı, Küçük Ayı, Işın ([PA) & Doğrular',
+        description: 'Büyük Ayı ve Küçük Ayı takımyıldızlarını çiz, işaretçi yıldızlardan Kutup Yıldızı ışınını fırlat ve gök haritasıyla gemiyi kurtar!',
         icon: <Navigation className="w-8 h-8" />,
-        badge: '3 Seviye • Geometrik Modeller',
+        badge: '4 Seviye • Büyük & Küçük Ayı',
         gradient: 'from-indigo-600 via-sky-700 to-slate-900',
         reward: '+100 XP & Kutup Kaptanı'
       },
@@ -1104,7 +1106,6 @@ export function PuzzlePhase({ data, onNextPhase, initialGameId = null, onBackToH
       ) : (
         /* 2. VIEW: SELECTED GAME IN FULL FOCUS */
         <div className="space-y-6 animate-in fade-in duration-200">
-          
           {/* Top Control Bar with Back Button */}
           <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
             

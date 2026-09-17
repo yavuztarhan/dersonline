@@ -444,7 +444,7 @@ function generateMEBPromotionalPDF() {
 
   const gameDetails = [
     { name: 'Selçuklu Sarayı Çini Ustası (D7.1)', desc: 'Pergel ile eş çember rozeti, gönye ile 90° dikme ve sekizgen Selçuklu yıldızı inşası.' },
-    { name: 'Kutup Yıldızı Seyrüseferi (Işın & Doğru)', desc: 'Kutup Yıldızı\'ndan çıkan ışınlar [PA>, takımyıldız doğru parçaları [AB] ve ufuk doğruları d.' },
+    { name: 'Kutup Yıldızı Seyrüseferi (Işın & Doğru)', desc: 'Kutup Yıldızı\'ndan çıkan ışınlar [PA, takımyıldız doğru parçaları [AB] ve ufuk doğruları d.' },
     { name: 'En Kısa Yol Dedektifi (Dikme Köprüsü)', desc: 'Lazer telemetre ile farklı açılardaki halatları ölçüp EN KISA mesafenin 90° dikme olduğunu kanıtlama.' },
     { name: 'Radar Dinamik Açı Avcısı (Dönen Işın)', desc: 'Başlangıç noktası etrafında dönen ışın kolu ile dar, dik, geniş ve doğru açıları anlık sinyalle yakalama.' },
     { name: 'Kuantum Alan Çarpanı (Nano-Grid)', desc: 'Rasyonel sayılarda çarpmayı kesişen grid dilimleri ile modelleme ve sadeleştirme lazeri.' },

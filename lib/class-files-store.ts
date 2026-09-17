@@ -278,7 +278,7 @@ const INITIAL_FILES: ClassroomFileRecord[] = [
         <tr>
           <td style="padding: 4px 6px; border: 1px solid #e2e8f0; font-weight: bold;">Işın</td>
           <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">•———►</td>
-          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><code>[AB></code></td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><code>[AB</code></td>
           <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">Başlangıç sınırlı [A], B yönünde sonsuz.</td>
         </tr>
         <tr style="background: #f8fafc;">

@@ -35,12 +35,12 @@ export const GEOMETRY_STATIONS: GeometryStation[] = [
     stationNumber: 1,
     title: 'Nokta, Çizgeç & Çizgiler',
     badge: 'OB2 • SB1.1',
-    toolFocus: '•, [AB], [AB>, d',
+    toolFocus: '•, [AB], [AB, d',
     icon: <Minus className="w-4 h-4 stroke-[3]" />,
     color: 'text-teal-700',
     activeBg: 'bg-teal-50 border-teal-500 text-teal-900',
     borderColor: 'border-teal-200',
-    summary: 'Boyutsuz nokta, ölçüsüz cetvel (çizgeç), [AB] doğru parçası, [AB> ışını ve sınırsız d doğrusu.'
+    summary: 'Boyutsuz nokta, ölçüsüz cetvel (çizgeç), [AB] doğru parçası, [AB ışını ve sınırsız d doğrusu.'
   },
   {
     id: 'angle',

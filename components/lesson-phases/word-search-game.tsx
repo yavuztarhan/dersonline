@@ -87,7 +87,7 @@ const MAT_5_3_1_CLUES: WordClue[] = [
     id: 'c2',
     question: 'Başlangıç noktası sabit olup diğer ucu uzayda sonsuza uzanan fener ışığı modeline ne denir?',
     word: 'IŞIN',
-    hint: '4 Harfli • Sembolü [AB>',
+    hint: '4 Harfli • Sembolü [AB',
     color: '#3b82f6'
   },
   {

@@ -518,13 +518,13 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       },
       {
         id: 'c2',
-        title: 'Sonsuza Uzama: Işın [AB> ve Küçük Harfle d Doğrusu',
+        title: 'Sonsuza Uzama: Işın [AB ve Küçük Harfle d Doğrusu',
         category: 'Matematiksel Dil & Semboller (MAB3)',
         levelDescriptions: {
           1: 'Işının başlangıç noktası ile doğrunun sınırsızlığını birbirine karıştırıyor, sembolleri ters yazıyorum.',
           2: 'Işının tek yönde sonsuza gittiğini biliyorum ancak doğrunun iki uca da sınırsız uzandığını ve küçük harfle (d doğrusu) adlandırıldığını ifade etmekte zorlanıyorum.',
-          3: '[AB> ışınını başlangıç noktasına göre doğru gösteriyor; AB doğrusunun uç noktası olmadığını ve d doğrusu olarak adlandırılabileceğini biliyorum.',
-          4: 'Işın ve doğrunun uçsuzluğunu modellerle kanıtlar; matematiksel dili ([AB>, AB, d) günlük ve teorik problemlerde eksiksiz kullanırım.'
+          3: '[AB ışınını başlangıç noktasına göre doğru gösteriyor; AB doğrusunun uç noktası olmadığını ve d doğrusu olarak adlandırılabileceğini biliyorum.',
+          4: 'Işın ve doğrunun uçsuzluğunu modellerle kanıtlar; matematiksel dili ([AB, AB, d) günlük ve teorik problemlerde eksiksiz kullanırım.'
         }
       },
       {
@@ -574,7 +574,7 @@ export const OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
     ],
     checklistItems: [
       { id: 'chk1', text: 'Noktanın boyutsuz olduğunu ve [AB] doğru parçasının uzunluğunun (|AB|) ölçülebildiğini biliyorum.' },
-      { id: 'chk2', text: 'Işın [AB> ile d doğrusunun sınırsızlık farkını ve sembolik yazımını doğru uygulayabiliyorum.' },
+      { id: 'chk2', text: 'Işın [AB ile d doğrusunun sınırsızlık farkını ve sembolik yazımını doğru uygulayabiliyorum.' },
       { id: 'chk3', text: 'Bir ışının başlangıç noktası etrafında dönmesiyle açının oluştuğunu ve s(B) sembolünü kavradım.' },
       { id: 'chk4', text: 'Pergelin sabit ayağıyla eşit uzaklık izi sürerek çember ve eş yarıçaplı çemberler çizebiliyorum.' },
       { id: 'chk5', text: 'Bir doğruya dış noktadan indirilen en kısa doğru parçasının dikme (d ⊥ k) olduğunu gönye ile gösterdim.' },
@@ -1447,11 +1447,11 @@ export const PEER_OUTCOME_RUBRICS: Record<string, SelfAssessmentRubric> = {
       },
       {
         id: 'c2',
-        title: 'Sonsuzluk, Işın [AB> ve d Doğrusu Temsili',
+        title: 'Sonsuzluk, Işın [AB ve d Doğrusu Temsili',
         category: 'Matematiksel Dil & Semboller (MAB3)',
         levelDescriptions: {
           1: 'Işının tek uçlu başlangıcı ile doğrunun çift yönlü sınırsızlığını karıştırıyor.',
-          2: 'Işını çiziyor ancak ok yönünü ve sembol gösterimini ([AB>) ters yazabiliyor.',
+          2: 'Işını çiziyor ancak ok yönünü ve sembol gösterimini ([AB) ters yazabiliyor.',
           3: 'Işın ve doğru modellerini doğru çiziyor; küçük harfle adlandırmayı (d doğrusu) ve sembolik dili kurallara uygun kullanıyor.',
           4: 'Doğru ve ışının sınırsızlık kavramını modeller üzerinde eksiksiz açıklıyor, arkadaşının sembolik hatalarını düzeltiyor.'
         }

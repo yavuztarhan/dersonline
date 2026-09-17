@@ -58,7 +58,7 @@ export const CURRICULUM_DATA: Grade[] = [
                         'SB2.1: Bir ışının başlangıç noktası etrafında dönmesiyle açıyı dinamik olarak modelleme',
                         'SB2.2: Bir noktaya eşit uzaklıktaki noktaların pergelin iz bırakmasıyla çember oluşturduğunu fark etme ve yarıçapları karşılaştırma',
                         'SB2.3: Bir doğruya dışındaki noktadan çizilebilecek en kısa çizginin dikme olduğunu gönye ile ortaya koyma ve düzlem yüzeyini tanıma',
-                        'SB3.1: Sembolik gösterimleri (MAB3) ve matematiksel dili hatasız kullanma ([AB], [AB>, AB, d, s(B), d ⊥ k, |AB|)',
+                        'SB3.1: Sembolik gösterimleri (MAB3) ve matematiksel dili hatasız kullanma ([AB], [AB, AB, d, s(B), d ⊥ k, |AB|)',
                         'SB3.2: Görsel Sanatlar ile ilişkilendirerek çember ve doğrulardan oluşan estetik tasarım (logo, çini, kilim) panosu hazırlama (D7.1)'
                       ],
                       learningGoals: [
@@ -154,9 +154,9 @@ export const CURRICULUM_DATA: Grade[] = [
                             id: 'p-3',
                             pageNumber: 3,
                             chapterTitle: '3. Bölüm: Sonsuza Uzanan Çizgiler: Işın ve d Doğrusu',
-                            conceptTitle: 'Işın [AB> ve Doğru AB (d)',
-                            conceptBadge: 'Işın [AB> • Doğru d',
-                            symbolicCode: '[AB> ve AB (veya d)',
+                            conceptTitle: 'Işın [AB ve Doğru AB (d)',
+                            conceptBadge: 'Işın [AB • Doğru d',
+                            symbolicCode: '[AB ve AB (veya d)',
                             narrativeText: 'Mimar Defne sordu: "Peki bu çizginin uçlarından aynı hizada noktalar koymaya devam edersek ne olur?" Kaptan feneri açtı: Fenerden çıkan ışık tek yönde sonsuza aktı (Işın). Ufuk çizgisine baktıklarında ise çizgi her iki yönde de sınırsız uzadı (Doğru).',
                             characterDialogue: {
                               speaker: 'Kaptan & Mimar',
@@ -164,14 +164,14 @@ export const CURRICULUM_DATA: Grade[] = [
                             },
                             visualScene: {
                               type: 'lighthouse-ray',
-                              caption: 'Fener ışığı tek yöne giden IŞIN [AB>, ufuk çizgisi ise çift yöne uzanan DOĞRU (d) modelidir.'
+                              caption: 'Fener ışığı tek yöne giden IŞIN [AB, ufuk çizgisi ise çift yöne uzanan DOĞRU (d) modelidir.'
                             },
                             interactiveAction: {
                               prompt: 'Çizginin uçlarını uzatarak tek uçlu ışın ve çift uçlu d doğrusunu keşfedin!',
                               actionLabel: 'Sonsuzluk Oklarını Çek ↔️',
-                              feedbackRevealed: 'Işın [AB> ve d Doğrusu oluşturuldu! Doğrunun uç noktası yoktur, ışının ise başlangıç haricinde uç noktası bulunmaz.'
+                              feedbackRevealed: 'Işın [AB ve d Doğrusu oluşturuldu! Doğrunun uç noktası yoktur, ışının ise başlangıç haricinde uç noktası bulunmaz.'
                             },
-                            mathTakeaway: 'Işın: Başlangıcı sabit, diğer ucu sonsuza giden modeldir ([AB>). Doğru: İki yönden de sınırsız uzayan, uç noktası olmayan düz çizgidir (AB veya d).'
+                            mathTakeaway: 'Işın: Başlangıcı sabit, diğer ucu sonsuza giden modeldir ([AB). Doğru: İki yönden de sınırsız uzayan, uç noktası olmayan düz çizgidir (AB veya d).'
                           },
                           {
                             id: 'p-4',
@@ -323,7 +323,7 @@ export const CURRICULUM_DATA: Grade[] = [
                           {
                             id: 'pz-2',
                             concept: 'Işın',
-                            symbol: '[AB veya [AB>',
+                            symbol: '[AB veya [BA',
                             definition: 'Başlangıç noktası sabit, diğer ucu sonsuza doğru giden çizgi.',
                             visualType: 'ray'
                           },
@@ -386,7 +386,7 @@ export const CURRICULUM_DATA: Grade[] = [
                               'D) Düzlem'
                             ],
                             correctOptionIndex: 2,
-                            explanation: 'Fener lambası sabit kapalı bir başlangıç noktasıdır [A], uzaya doğru kesintisiz ilerleyen ışık ise tek yönde sınırsızlığı ifade eder. Bu model IŞINdır ve [AB> şeklinde gösterilir.',
+                            explanation: 'Fener lambası sabit kapalı bir başlangıç noktasıdır [A], uzaya doğru kesintisiz ilerleyen ışık ise tek yönde sınırsızlığı ifade eder. Bu model IŞINdır ve [AB şeklinde gösterilir.',
                             bloomLevel: 'Kavrama & Modelleme'
                           },
                           {
@@ -522,7 +522,7 @@ export const CURRICULUM_DATA: Grade[] = [
                             options: [
                               'A) AB veya d',
                               'B) [AB]',
-                              'C) [AB>',
+                              'C) [AB',
                               'D) (AB>'
                             ],
                             correctOptionIndex: 1,

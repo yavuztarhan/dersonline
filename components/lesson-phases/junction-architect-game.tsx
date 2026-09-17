@@ -967,7 +967,7 @@ export function JunctionArchitectGame({ onGameComplete, onBackToMenu }: Junction
                             fill="#00f0ff"
                             stroke="#ffffff"
                             strokeWidth="3"
-                            className="cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
+                            className="cursor-grab active:cursor-grabbing hover:stroke-cyan-200 hover:stroke-[4px] drop-shadow-[0_0_8px_#00f0ff] transition-all"
                             onPointerDown={(e) => {
                               e.stopPropagation();
                               (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
@@ -984,7 +984,7 @@ export function JunctionArchitectGame({ onGameComplete, onBackToMenu }: Junction
                             fill="#ec4899"
                             stroke="#ffffff"
                             strokeWidth="3"
-                            className="cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
+                            className="cursor-grab active:cursor-grabbing hover:stroke-rose-200 hover:stroke-[4px] drop-shadow-[0_0_8px_#ec4899] transition-all"
                             onPointerDown={(e) => {
                               e.stopPropagation();
                               (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
@@ -1002,7 +1002,7 @@ export function JunctionArchitectGame({ onGameComplete, onBackToMenu }: Junction
                               fill="#a855f7"
                               stroke="#ffffff"
                               strokeWidth="3"
-                              className="cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
+                              className="cursor-grab active:cursor-grabbing hover:stroke-purple-200 hover:stroke-[4px] drop-shadow-[0_0_8px_#a855f7] transition-all"
                               onPointerDown={(e) => {
                                 e.stopPropagation();
                                 (e.currentTarget as Element).setPointerCapture?.(e.pointerId);

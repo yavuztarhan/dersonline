@@ -52,62 +52,62 @@ const MAT_5_3_1_PAIRS: MemoryPair[] = [
     symbol: '↔ AB veya d',
     badge: '↔ Doğru',
     definition: 'Her iki yönden de sınırsızca sonsuza uzayan, başlangıcı ve bitişi olmayan dümdüz çizgi modelidir.',
-    example: 'İki yöne sonsuz uzayan tren rayları, ufuk çizgisi.',
+    example: 'İki yöne sonsuz uzatılan düz hat, ufuk çizgisi.',
     color: '#0284c7' // Sky Blue
   },
   {
     id: 'mat1-p3',
     concept: 'DOĞRU PARÇASI',
-    symbol: '[AB]',
+    symbol: '[AB] veya [BA]',
     badge: '📏 Doğru Parçası',
     definition: 'Bir doğrunun iki noktası arasında kalan sınırlı parçasıdır. İki ucu da kapalıdır ve uzunluğu cetvelle ölçülebilir.',
-    example: 'Kurşun kalem, cetvelin kenarı, masa çıtası.',
+    example: 'Kurşun kalem, masanın kenar çıtası, cetvel boyu.',
     color: '#f59e0b' // Amber
   },
   {
     id: 'mat1-p4',
+    concept: 'DOĞRU PARÇASININ UZUNLUĞU',
+    symbol: '|AB|',
+    badge: '📐 Uzunluk Sembolü',
+    definition: 'Bir doğru parçasının iki uç noktası arasındaki mesafenin sayısal değeridir; mutlak değer çizgileriyle ifade edilir.',
+    example: '|AB| = 12 cm, iki kule arasındaki köprü kirişinin boyu.',
+    color: '#06b6d4' // Cyan
+  },
+  {
+    id: 'mat1-p5',
     concept: 'IŞIN',
-    symbol: '[AB>',
+    symbol: '[AB',
     badge: '🔦 Işın',
     definition: 'Başlangıç noktası sabit olup diğer ucu bir yönde sonsuza kadar uzayan çizgi modelidir.',
     example: 'El fenerinden çıkan ışık huzmesi, çivi, güneş ışını.',
     color: '#8b5cf6' // Purple
   },
   {
-    id: 'mat1-p5',
+    id: 'mat1-p6',
     concept: 'AÇI',
-    symbol: 'm(AOB) veya B̂',
+    symbol: 's(B̂) veya ∠ABC',
     badge: '📐 Açı',
-    definition: 'Başlangıç noktaları aynı olan iki ışının birleşmesiyle oluşan açıklıktır.',
-    example: 'Açılan makas kolları, saatteki akrep ile yelkovan arası.',
+    definition: 'Başlangıç noktaları ortak olan iki ışının birleşimi veya bir ışının başlangıç noktası etrafında dönmesiyle oluşan açıklıktır.',
+    example: 'Açılan makas kolları, saatteki akrep ile yelkovan arası açıklık.',
     color: '#ec4899' // Pink
   },
   {
-    id: 'mat1-p6',
-    concept: 'PARALEL DOĞRULAR',
-    symbol: 'd₁ // d₂',
-    badge: '🛤️ Paralel',
-    definition: 'Aynı düzlemde bulunan, hiçbir zaman kesişmeyen ve aralarındaki mesafe hep eşit kalan doğrulardır.',
-    example: 'Karşılıklı tren rayları, defter çizgileri.',
-    color: '#6366f1' // Indigo
-  },
-  {
     id: 'mat1-p7',
-    concept: 'DİK DOĞRULAR',
-    symbol: 'd₁ ⊥ d₂',
-    badge: '➕ Dik Doğrular',
-    definition: 'Birbirini tam 90 derecelik dik açıyla kesen iki doğru modelidir.',
-    example: 'Artı (+) işareti, duvar ile tabanın birleştiği köşe.',
+    concept: 'DİKME',
+    symbol: '[PH] ⊥ d veya d ⊥ k',
+    badge: '📐 Dikme (⊥)',
+    definition: 'Bir noktadan bir doğruya indirilen ve doğruyla 90° dik açı yapan en kısa doğru parçasıdır.',
+    example: 'Kıyı doğrusuna P noktasından inilen en kısa köprü veya iskele hattı.',
     color: '#14b8a6' // Teal
   },
   {
     id: 'mat1-p8',
-    concept: 'KESİŞEN DOĞRULAR',
-    symbol: 'd₁ ∩ d₂ = {K}',
-    badge: '✖️ Kesişen Doğrular',
-    definition: 'Aynı düzlemde yalnız ve yalnız bir tek ortak noktada birbirini kesen doğrulardır.',
-    example: 'Çarpı (X) işareti, kavşakta kesişen iki cadde.',
-    color: '#ef4444' // Rose
+    concept: 'DİK AÇININ SEMBOLLE GÖSTERİMİ',
+    symbol: '90° (⌞•)',
+    badge: '⏹️ Diklik Sembolü',
+    definition: 'Birbirine tam dik iki çizgi veya ışın arasındaki 90 derecelik dik açının köşe kare-nokta sembolüyle gösterimidir.',
+    example: 'Gönyenin dik köşesi, duvar ile tabanın oluşturduğu 90° köşe.',
+    color: '#e11d48' // Rose
   }
 ];
 

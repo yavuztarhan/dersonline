@@ -33,7 +33,7 @@ const MAT_5_3_1_TF: TFQuestion[] = [
     id: 'tf-2',
     statement: 'Işının hem başlangıç hem de bitiş noktası kapalıdır.',
     isTrue: false,
-    explanation: 'Işının başlangıç noktası sabittir ancak diğer ucu tek yönde sonsuza gider ([AB>).'
+    explanation: 'Işının başlangıç noktası sabittir ancak diğer ucu tek yönde sonsuza gider ([AB).'
   },
   {
     id: 'tf-3',

@@ -33,7 +33,9 @@ import {
   Play,
   ArrowRight,
   Target,
-  Maximize2
+  Maximize2,
+  Minus,
+  Plus
 } from 'lucide-react';
 import { getStoredActiveBoardStudent, clearActiveBoardStudent, saveBoardParticipation } from '@/lib/board-participation-store';
 import { useAuth } from '@/lib/auth-store';
@@ -194,7 +196,7 @@ interface LaserLevel {
   id: number;
   name: string;
   sub: string;
-  laserAngle: number; // in degrees
+  laserAngle: number;
   laserP1: { x: number; y: number };
   laserP2: { x: number; y: number };
   towerPos: { x: number; y: number };
@@ -205,7 +207,7 @@ interface LaserLevel {
 const LASER_LEVELS: LaserLevel[] = [
   {
     id: 1,
-    name: 'Seviye 1: Düz Hat Savunması (Yatay Lazer)',
+    name: 'Seviye 1: Düz Hat Savunması (0° Yatay Lazer)',
     sub: 'Yatay lazer doğrusuna (d) savunma kulesinden (K) tam 90° dikme indir!',
     laserAngle: 0,
     laserP1: { x: 30, y: 280 },
@@ -217,24 +219,24 @@ const LASER_LEVELS: LaserLevel[] = [
   {
     id: 2,
     name: 'Seviye 2: Çapraz Saldırı (45° Eğimli Lazer)',
-    sub: '45° eğik gelen lazer doğrusuna gönyeyi döndürüp tabanını yaslayarak 90° dikme indir!',
-    laserAngle: 45,
-    laserP1: { x: 60, y: 350 },
-    laserP2: { x: 520, y: 90 },
-    towerPos: { x: 420, y: 80 },
+    sub: '45° eğik gelen lazer doğrusuna gönyeyi döndürüp (135°) yaslayarak 90° dikme indir!',
+    laserAngle: -45,
+    laserP1: { x: 70, y: 370 },
+    laserP2: { x: 490, y: 50 },
+    towerPos: { x: 390, y: 80 },
     targetPerpAngle: 135,
-    dronePos: { x: 80, y: 338 }
+    dronePos: { x: 90, y: 350 }
   },
   {
     id: 3,
-    name: 'Seviye 3: Kritik Ters Eğim (-30° Lazer Hattı)',
-    sub: 'Aşağıdan geçen eğik lazere savunma kulesinden dikme hattını kilitler kalkanı ateşle!',
-    laserAngle: -30,
-    laserP1: { x: 40, y: 140 },
-    laserP2: { x: 560, y: 320 },
-    towerPos: { x: 320, y: 340 },
-    targetPerpAngle: 60,
-    dronePos: { x: 60, y: 146 }
+    name: 'Seviye 3: Kritik Ters Eğim (30° Eğimli Lazer)',
+    sub: '30° eğimle aşağı inen lazer doğrusuna gönyeyi yaslayıp (30°) kuleden dikme indir!',
+    laserAngle: 30,
+    laserP1: { x: 50, y: 110 },
+    laserP2: { x: 550, y: 399 },
+    towerPos: { x: 320, y: 360 },
+    targetPerpAngle: 30,
+    dronePos: { x: 70, y: 122 }
   }
 ];
 
@@ -245,7 +247,7 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [currentLevelIdx, setCurrentLevelIdx] = useState(0);
   const [gonyeAngle, setGonyeAngle] = useState(0);
-  const [gonyePos, setGonyePos] = useState({ x: 200, y: 280 });
+  const [gonyePos, setGonyePos] = useState({ x: 160, y: 260 });
   const [isAimingSnap, setIsAimingSnap] = useState(false);
   const [isPerpendicularDrawn, setIsPerpendicularDrawn] = useState(false);
   const [isReflected, setIsReflected] = useState(false);
@@ -255,13 +257,15 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
   const [isCompleted, setIsCompleted] = useState(false);
   const [isDraggingGonye, setIsDraggingGonye] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
 
   const level = LASER_LEVELS[currentLevelIdx];
 
   // Laser line vector and angle
   const dx = level.laserP2.x - level.laserP1.x;
   const dy = level.laserP2.y - level.laserP1.y;
-  const lineAngle = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+  const rawLineAngle = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+  const normalizedLineAngle = Math.round(((rawLineAngle % 180) + 180) % 180);
 
   // Calculate perpendicular foot H on the laser line (orthogonal projection of tower K)
   const lenSq = dx * dx + dy * dy;
@@ -275,26 +279,33 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
   const cross = dx * (level.towerPos.y - level.laserP1.y) - dy * (level.towerPos.x - level.laserP1.x);
   const towerSide = cross >= 0 ? 1 : -1;
 
-  // Check if Gönye base is aligned parallel to the laser line (either 0° or 180° offset)
-  const angleDiff = Math.abs(((gonyeAngle - lineAngle) % 180 + 180) % 180);
+  // 1. Angle Alignment: Gönye base parallel to laser line d (either 0° or 180° difference)
+  const angleDiff = Math.abs(((gonyeAngle - normalizedLineAngle) % 180 + 180) % 180);
   const isAngleAligned = angleDiff <= 8 || angleDiff >= 172;
+
+  // 2. Position Alignment: Gönye 90° corner must be close to perpendicular foot H
+  const distToFoot = Math.hypot(gonyePos.x - perpFoot.x, gonyePos.y - perpFoot.y);
+  const isPositionAligned = distToFoot <= 38;
+
+  // 3. Complete Alignment: Both angle and position must be aligned
+  const isReadyToDefend = isAngleAligned && isPositionAligned;
 
   // Level reset effect
   useEffect(() => {
     const lvl = LASER_LEVELS[currentLevelIdx];
     const curDx = lvl.laserP2.x - lvl.laserP1.x;
     const curDy = lvl.laserP2.y - lvl.laserP1.y;
-    const curLineAngle = (Math.atan2(curDy, curDx) * 180 / Math.PI + 360) % 360;
 
-    // Initial position: sitting visibly on the laser line
+    // Initial position: sitting visibly on the left side of the laser line
     setGonyePos({
-      x: Math.round(lvl.laserP1.x + 0.25 * curDx),
-      y: Math.round(lvl.laserP1.y + 0.25 * curDy)
+      x: Math.round(lvl.laserP1.x + 0.2 * curDx),
+      y: Math.round(lvl.laserP1.y + 0.2 * curDy)
     });
     setGonyeAngle(0);
     setIsPerpendicularDrawn(false);
     setIsReflected(false);
     setIsAimingSnap(false);
+    setActionFeedback(null);
   }, [currentLevelIdx]);
 
   // Convert screen coordinates to SVG viewBox (0..600, 0..400) coordinates
@@ -311,15 +322,24 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
   // Auto snap Gönye to the exact perpendicular position on line d at point H
   const handleSnapGonye = () => {
     soundSynth.playSnap();
-    setGonyeAngle(Math.round(lineAngle));
+    setGonyeAngle(normalizedLineAngle);
     setGonyePos(perpFoot);
     setIsAimingSnap(true);
+    setActionFeedback(null);
   };
 
   const handleQuickRotate = (delta: number) => {
     soundSynth.playCompass();
     setGonyeAngle((prev) => (prev + delta + 360) % 360);
     setIsAimingSnap(false);
+    setActionFeedback(null);
+  };
+
+  const handleSetPresetAngle = (deg: number) => {
+    soundSynth.playCompass();
+    setGonyeAngle(deg);
+    setIsAimingSnap(false);
+    setActionFeedback(null);
   };
 
   const handlePointerDownGonye = (e: React.PointerEvent) => {
@@ -331,6 +351,7 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
         x: pt.x - gonyePos.x,
         y: pt.y - gonyePos.y
       });
+      setActionFeedback(null);
     }
   };
 
@@ -342,11 +363,11 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
       const newY = Math.max(30, Math.min(370, pt.y - dragOffset.y));
       setGonyePos({ x: newX, y: newY });
 
-      // Proximity auto-snap if near perpendicular foot H and roughly aligned
-      const distToFoot = Math.hypot(newX - perpFoot.x, newY - perpFoot.y);
-      if (distToFoot < 25 && isAngleAligned) {
+      // Proximity auto-snap if near perpendicular foot H and aligned
+      const curDist = Math.hypot(newX - perpFoot.x, newY - perpFoot.y);
+      if (curDist < 25 && isAngleAligned) {
         setGonyePos(perpFoot);
-        setGonyeAngle(Math.round(lineAngle));
+        setGonyeAngle(normalizedLineAngle);
       }
     }
   };
@@ -358,62 +379,71 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
   const handleDropPerpendicular = () => {
     if (isReflected) return;
 
-    if (isAngleAligned) {
-      // Auto seat at H when firing if close enough
-      setGonyePos(perpFoot);
-      setGonyeAngle(Math.round(lineAngle));
-
-      soundSynth.playSnap();
-      soundSynth.playLaserReflect();
-      setIsPerpendicularDrawn(true);
-      setIsReflected(true);
-      setScore((prev) => prev + 100);
-
-      try {
-        confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
-      } catch (e) {}
-
-      setTimeout(() => {
-        if (currentLevelIdx < LASER_LEVELS.length - 1) {
-          setCurrentLevelIdx((prev) => prev + 1);
-        } else {
-          setIsCompleted(true);
-          soundSynth.playSuccessFanfare();
-          addPoints(100);
-          unlockBadge('laser-master');
-
-          const activeBoardStu = getStoredActiveBoardStudent();
-          if (activeBoardStu) {
-            awardPointsToStudent(activeBoardStu.id, 100);
-            saveBoardParticipation({
-              studentId: activeBoardStu.id,
-              studentName: activeBoardStu.name,
-              studentNumber: activeBoardStu.studentNumber,
-              classSection: activeBoardStu.classSection,
-              school: activeBoardStu.school,
-              teacherId: currentUser?.id,
-              teacherName: currentUser?.name,
-              activityType: 'game',
-              activityTitle: 'Lazer Kalkanı: Dikme Savunması',
-              outcomeCode: 'MAT.5.3.1',
-              score: 100,
-              maxScore: 100,
-              xpEarned: 100
-            });
-            clearActiveBoardStudent();
-          }
-
-          if (onComplete) onComplete();
-        }
-      }, 1800);
-    } else {
+    if (!isAngleAligned) {
       soundSynth.playError();
+      setActionFeedback('⚠️ Önce gönyeyi doğruya yaslayınız (açıyı ayarlayınız)!');
       setLives((prev) => {
         const next = prev - 1;
         if (next <= 0) setIsGameOver(true);
         return Math.max(0, next);
       });
+      return;
     }
+
+    if (!isPositionAligned) {
+      soundSynth.playError();
+      setActionFeedback('⚠️ Açı doğru! Şimdi gönyeyi kule hizasındaki dikme ayağına (H) sürükleyiniz!');
+      return;
+    }
+
+    // Both angle and position are correctly aligned
+    setActionFeedback(null);
+    setGonyePos(perpFoot);
+    setGonyeAngle(normalizedLineAngle);
+
+    soundSynth.playSnap();
+    soundSynth.playLaserReflect();
+    setIsPerpendicularDrawn(true);
+    setIsReflected(true);
+    setScore((prev) => prev + 100);
+
+    try {
+      confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+    } catch (e) {}
+
+    setTimeout(() => {
+      if (currentLevelIdx < LASER_LEVELS.length - 1) {
+        setCurrentLevelIdx((prev) => prev + 1);
+      } else {
+        setIsCompleted(true);
+        soundSynth.playSuccessFanfare();
+        addPoints(100);
+        unlockBadge('laser-master');
+
+        const activeBoardStu = getStoredActiveBoardStudent();
+        if (activeBoardStu) {
+          awardPointsToStudent(activeBoardStu.id, 100);
+          saveBoardParticipation({
+            studentId: activeBoardStu.id,
+            studentName: activeBoardStu.name,
+            studentNumber: activeBoardStu.studentNumber,
+            classSection: activeBoardStu.classSection,
+            school: activeBoardStu.school,
+            teacherId: currentUser?.id,
+            teacherName: currentUser?.name,
+            activityType: 'game',
+            activityTitle: 'Lazer Kalkanı: Dikme Savunması',
+            outcomeCode: 'MAT.5.3.1',
+            score: 100,
+            maxScore: 100,
+            xpEarned: 100
+          });
+          clearActiveBoardStudent();
+        }
+
+        if (onComplete) onComplete();
+      }
+    }, 1800);
   };
 
   const handleReset = () => {
@@ -426,6 +456,7 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
     setScore(0);
     setIsGameOver(false);
     setIsCompleted(false);
+    setActionFeedback(null);
   };
 
   return (
@@ -476,11 +507,6 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             <pattern id="cyber-grid" width="30" height="30" patternUnits="userSpaceOnUse">
               <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(13, 148, 136, 0.09)" strokeWidth="1" />
             </pattern>
-            <linearGradient id="laserGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.4" />
-              <stop offset="50%" stopColor="#ef4444" stopOpacity="1" />
-              <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.8" />
-            </linearGradient>
             <linearGradient id="reflectLaser" x1="0%" y1="100%" x2="0%" y2="0%">
               <stop offset="0%" stopColor="#10b981" />
               <stop offset="100%" stopColor="#22d3ee" />
@@ -497,30 +523,57 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             </text>
           </g>
 
-          {/* Target Laser Line (d) */}
+          {/* TARGET LASER LINE (Always 100% visible with multi-layer high-contrast styling) */}
+          {/* Layer 1: Broad Red Glow Aura */}
           <line
             x1={level.laserP1.x}
             y1={level.laserP1.y}
             x2={level.laserP2.x}
             y2={level.laserP2.y}
-            stroke="url(#laserGlow)"
-            strokeWidth={isReflected ? '2.5' : '5'}
-            strokeDasharray={isReflected ? '6 6' : 'none'}
+            stroke="#f43f5e"
+            strokeWidth={isReflected ? '4' : '12'}
+            strokeOpacity={isReflected ? '0.3' : '0.55'}
+            strokeLinecap="round"
           />
+          {/* Layer 2: Core Crimson Laser Beam */}
+          <line
+            x1={level.laserP1.x}
+            y1={level.laserP1.y}
+            x2={level.laserP2.x}
+            y2={level.laserP2.y}
+            stroke="#ef4444"
+            strokeWidth={isReflected ? '2.5' : '6'}
+            strokeDasharray={isReflected ? '6 6' : 'none'}
+            strokeLinecap="round"
+          />
+          {/* Layer 3: Ultra-Bright White Core Beam */}
+          {!isReflected && (
+            <line
+              x1={level.laserP1.x}
+              y1={level.laserP1.y}
+              x2={level.laserP2.x}
+              y2={level.laserP2.y}
+              stroke="#ffffff"
+              strokeWidth="2.5"
+              strokeOpacity="0.95"
+              strokeLinecap="round"
+            />
+          )}
+
           {/* Pulsing Laser Core Particles */}
           {!isReflected && (
             <>
               <circle
                 cx={level.laserP1.x + 0.35 * dx}
                 cy={level.laserP1.y + 0.35 * dy}
-                r="4.5"
+                r="5"
                 fill="#ffffff"
                 className="animate-ping"
               />
               <circle
                 cx={level.laserP1.x + 0.7 * dx}
                 cy={level.laserP1.y + 0.7 * dy}
-                r="4.5"
+                r="5"
                 fill="#ffffff"
                 className="animate-ping"
               />
@@ -530,7 +583,7 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
           {/* Laser Line Label (d Doğrusu) */}
           <text
             x={level.laserP2.x - 20}
-            y={level.laserP2.y - 12}
+            y={level.laserP2.y - 14}
             fill="#f43f5e"
             fontSize="12"
             fontWeight="900"
@@ -550,6 +603,35 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
               Savunma Kulesi (K)
             </text>
           </g>
+
+          {/* Alignment Target Foot Hint (shown when angle is aligned but position not yet reached) */}
+          {isAngleAligned && !isPositionAligned && !isPerpendicularDrawn && (
+            <g className="animate-pulse">
+              {/* Dashed guide line from K to H */}
+              <line
+                x1={level.towerPos.x}
+                y1={level.towerPos.y}
+                x2={perpFoot.x}
+                y2={perpFoot.y}
+                stroke="#38bdf8"
+                strokeWidth="2"
+                strokeDasharray="4 4"
+                strokeOpacity="0.7"
+              />
+              {/* Target Foot H circle */}
+              <circle cx={perpFoot.x} cy={perpFoot.y} r="14" fill="none" stroke="#38bdf8" strokeWidth="2" strokeDasharray="3 3" />
+              <circle cx={perpFoot.x} cy={perpFoot.y} r="5" fill="#38bdf8" />
+              <text
+                x={perpFoot.x + 16}
+                y={perpFoot.y + (towerSide > 0 ? -12 : 16)}
+                fill="#38bdf8"
+                fontSize="11"
+                fontWeight="900"
+              >
+                H (Buraya Kaydır)
+              </text>
+            </g>
+          )}
 
           {/* Dropped Perpendicular (KH Doğru Parçası) */}
           {isPerpendicularDrawn && (
@@ -576,7 +658,7 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
               </text>
 
               {/* 90° Right Angle Marker Box */}
-              <g transform={`translate(${perpFoot.x}, ${perpFoot.y}) rotate(${lineAngle})`}>
+              <g transform={`translate(${perpFoot.x}, ${perpFoot.y}) rotate(${rawLineAngle})`}>
                 <rect
                   x="-14"
                   y={towerSide > 0 ? '0' : '-14'}
@@ -617,20 +699,20 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             />
           )}
 
-          {/* Virtual Set Square (Sanal Gönye) Rendered Inside SVG for 100% Coordinate Accuracy */}
+          {/* Virtual Set Square (Sanal Gönye) Rendered Inside SVG */}
           <g
             transform={`translate(${gonyePos.x}, ${gonyePos.y}) rotate(${gonyeAngle})`}
             className="cursor-grab active:cursor-grabbing pointer-events-auto select-none"
             onPointerDown={handlePointerDownGonye}
           >
-            {/* Glow / Outline when Aligned */}
-            {isAngleAligned && (
+            {/* Glow / Outline when Ready */}
+            {isReadyToDefend && (
               <polygon
                 points={`0,0 145,0 0,${towerSide > 0 ? 100 : -100}`}
                 fill="none"
                 stroke="#10b981"
-                strokeWidth="5"
-                strokeOpacity="0.4"
+                strokeWidth="6"
+                strokeOpacity="0.5"
                 className="animate-pulse"
               />
             )}
@@ -638,8 +720,20 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             {/* Outer Triangle Body */}
             <polygon
               points={`0,0 140,0 0,${towerSide > 0 ? 95 : -95}`}
-              fill={isAngleAligned ? 'rgba(16, 185, 129, 0.40)' : 'rgba(56, 189, 248, 0.30)'}
-              stroke={isAngleAligned ? '#10b981' : '#38bdf8'}
+              fill={
+                isReadyToDefend
+                  ? 'rgba(16, 185, 129, 0.45)'
+                  : isAngleAligned
+                  ? 'rgba(245, 158, 11, 0.35)'
+                  : 'rgba(56, 189, 248, 0.30)'
+              }
+              stroke={
+                isReadyToDefend
+                  ? '#10b981'
+                  : isAngleAligned
+                  ? '#f59e0b'
+                  : '#38bdf8'
+              }
               strokeWidth="2.5"
             />
 
@@ -647,7 +741,7 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             <polygon
               points={`16,${towerSide > 0 ? 14 : -14} 95,${towerSide > 0 ? 14 : -14} 16,${towerSide > 0 ? 68 : -68}`}
               fill="rgba(15, 23, 42, 0.94)"
-              stroke={isAngleAligned ? '#059669' : '#0284c7'}
+              stroke={isReadyToDefend ? '#059669' : '#0284c7'}
               strokeWidth="1.5"
             />
 
@@ -655,10 +749,15 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             <polyline
               points={`0,${towerSide > 0 ? 16 : -16} 16,${towerSide > 0 ? 16 : -16} 16,0`}
               fill="none"
-              stroke={isAngleAligned ? '#22c55e' : '#38bdf8'}
+              stroke={isReadyToDefend ? '#22c55e' : isAngleAligned ? '#f59e0b' : '#38bdf8'}
               strokeWidth="2.5"
             />
-            <circle cx="8" cy={towerSide > 0 ? 8 : -8} r="2.5" fill={isAngleAligned ? '#22c55e' : '#38bdf8'} />
+            <circle
+              cx="8"
+              cy={towerSide > 0 ? 8 : -8}
+              r="2.5"
+              fill={isReadyToDefend ? '#22c55e' : isAngleAligned ? '#f59e0b' : '#38bdf8'}
+            />
 
             {/* Millimeter Ticks along Ruler Base */}
             {Array.from({ length: 11 }).map((_, i) => (
@@ -690,91 +789,169 @@ export function LaserShieldDefenseGame({ onComplete }: { onComplete?: () => void
             <circle
               cx="0"
               cy="0"
-              r="5"
-              fill={isAngleAligned ? '#22c55e' : '#f59e0b'}
+              r="5.5"
+              fill={isReadyToDefend ? '#22c55e' : isAngleAligned ? '#f59e0b' : '#38bdf8'}
               stroke="#ffffff"
-              strokeWidth="1.5"
+              strokeWidth="2"
             />
           </g>
         </svg>
 
         {/* Live Alignment Status Badge */}
-        <div className="absolute bottom-3 left-3 bg-slate-900/95 border border-slate-700 px-3.5 py-2 rounded-xl text-xs flex items-center gap-3 backdrop-blur-md shadow-lg">
-          <div className={`w-3.5 h-3.5 rounded-full ${isAngleAligned ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
+        <div className="absolute bottom-3 left-3 right-3 sm:right-auto bg-slate-900/95 border border-slate-700 px-3.5 py-2.5 rounded-xl text-xs flex flex-wrap items-center gap-2.5 backdrop-blur-md shadow-lg">
+          <div
+            className={`w-3 h-3 rounded-full shrink-0 ${
+              isReadyToDefend
+                ? 'bg-emerald-400 animate-ping'
+                : isAngleAligned
+                ? 'bg-amber-400'
+                : 'bg-rose-400'
+            }`}
+          />
           <span className="font-bold text-slate-300">
-            Gönye Açısı: <span className="font-mono text-teal-300 font-extrabold">{gonyeAngle}°</span>
+            Açı: <span className="font-mono text-teal-300 font-extrabold">{gonyeAngle}°</span>
           </span>
-          <span className="text-slate-600">|</span>
-          <span className={isAngleAligned ? 'text-emerald-400 font-black' : 'text-slate-400'}>
-            {isAngleAligned ? '✓ DİKLİK KİLİTLENDİ (90°)' : 'Gönyeyi Doğruya Yaslayınız'}
+          <span className="text-slate-600 hidden sm:inline">|</span>
+          <span
+            className={
+              isReadyToDefend
+                ? 'text-emerald-400 font-black'
+                : isAngleAligned
+                ? 'text-amber-300 font-bold'
+                : 'text-slate-400'
+            }
+          >
+            {isReadyToDefend
+              ? '✓ DİKLİK KİLİTLENDİ (90° Dikme İndirebilirsiniz!)'
+              : isAngleAligned
+              ? '👆 Açı Tamam! Gönyeyi Dikme Ayağına (H) Sürükleyiniz'
+              : '1. Adım: Gönyeyi Lazer Doğrusuna Yaslayınız (Açıyı Ayarlayınız)'}
           </span>
         </div>
       </div>
 
+      {/* Action Feedback Warning Banner */}
+      {actionFeedback && (
+        <div className="px-4 py-2.5 rounded-xl bg-amber-950/80 border border-amber-500 text-amber-200 text-xs font-bold animate-in fade-in flex items-center justify-between gap-2">
+          <span>{actionFeedback}</span>
+          <button
+            onClick={() => setActionFeedback(null)}
+            className="px-2 py-0.5 rounded-lg bg-amber-800 text-amber-100 text-[11px] font-bold"
+          >
+            Kapat
+          </button>
+        </div>
+      )}
+
       {/* Interactive Controls Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center bg-slate-900 p-4 rounded-2xl border border-slate-800">
-        {/* Rotation Wheel & Quick Angles (5 cols) */}
-        <div className="lg:col-span-5 space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
-            <span className="flex items-center gap-1.5">
-              <RotateCcw className="w-3.5 h-3.5 text-teal-400" />
-              Gönye Döndürme & İnce Açı Ayarı:
-            </span>
-            <span className="font-mono text-teal-300 font-extrabold">{gonyeAngle}°</span>
-          </div>
-
-          <div className="flex items-center gap-2">
+      <div className="space-y-2.5 bg-slate-900 p-3 sm:p-4 rounded-2xl border border-slate-800">
+        {/* Preset Angle Buttons */}
+        <div className="flex items-center gap-1.5 flex-wrap text-xs font-bold text-slate-300">
+          <span className="text-slate-400 text-[11px]">Hızlı Açı:</span>
+          {[0, 30, 45, 60, 90, 120, 135, 150, 180].map((deg) => (
             <button
-              onClick={() => handleQuickRotate(-15)}
+              key={deg}
+              type="button"
+              onClick={() => handleSetPresetAngle(deg)}
               disabled={isReflected}
-              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 active:scale-95 cursor-pointer"
+              className={`px-2 py-0.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                gonyeAngle % 180 === deg
+                  ? 'bg-teal-500 text-slate-950 shadow-md font-black'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+              }`}
             >
-              -15°
+              {deg}°
             </button>
-            <input
-              type="range"
-              min="0"
-              max="180"
-              value={gonyeAngle % 180}
-              onChange={(e) => {
-                setGonyeAngle(Number(e.target.value));
-                soundSynth.playCompass();
-              }}
-              disabled={isReflected}
-              className="w-full h-2.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-400"
-            />
-            <button
-              onClick={() => handleQuickRotate(15)}
-              disabled={isReflected}
-              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 active:scale-95 cursor-pointer"
-            >
-              +15°
-            </button>
-          </div>
+          ))}
         </div>
 
-        {/* Magnetic Snap Helper Button (3 cols) */}
-        <div className="lg:col-span-3">
-          <button
-            onClick={handleSnapGonye}
-            disabled={isReflected}
-            className="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/40 text-xs font-black shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all"
-          >
-            <Target className="w-4 h-4 text-teal-400" />
-            <span>Mıknatıslı Oturt (Snap)</span>
-          </button>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-center">
+          {/* Rotation Wheel & Fine Slider (5 cols) */}
+          <div className="lg:col-span-5 space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+              <span className="flex items-center gap-1.5">
+                <RotateCcw className="w-3.5 h-3.5 text-teal-400" />
+                Gönye Açısı:
+              </span>
+              <span className="font-mono text-teal-300 font-extrabold">{gonyeAngle}°</span>
+            </div>
 
-        {/* Drop Perpendicular Action Button (4 cols) */}
-        <div className="lg:col-span-4">
-          <button
-            onClick={handleDropPerpendicular}
-            disabled={isReflected}
-            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>90° Dikme İndir & Savun</span>
-          </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => handleQuickRotate(-15)}
+                disabled={isReflected}
+                className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 active:scale-95 cursor-pointer"
+                title="-15° Döndür"
+              >
+                -15°
+              </button>
+              <button
+                onClick={() => handleQuickRotate(-5)}
+                disabled={isReflected}
+                className="px-1.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 active:scale-95 cursor-pointer"
+                title="-5° Hassas Ayar"
+              >
+                -5°
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="180"
+                value={gonyeAngle % 180}
+                onChange={(e) => {
+                  setGonyeAngle(Number(e.target.value));
+                  soundSynth.playCompass();
+                  setActionFeedback(null);
+                }}
+                disabled={isReflected}
+                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-400"
+              />
+              <button
+                onClick={() => handleQuickRotate(5)}
+                disabled={isReflected}
+                className="px-1.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 active:scale-95 cursor-pointer"
+                title="+5° Hassas Ayar"
+              >
+                +5°
+              </button>
+              <button
+                onClick={() => handleQuickRotate(15)}
+                disabled={isReflected}
+                className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 active:scale-95 cursor-pointer"
+                title="+15° Döndür"
+              >
+                +15°
+              </button>
+            </div>
+          </div>
+
+          {/* Magnetic Snap Helper Button (3 cols) */}
+          <div className="lg:col-span-3">
+            <button
+              onClick={handleSnapGonye}
+              disabled={isReflected}
+              className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/40 text-xs font-black shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+            >
+              <Target className="w-4 h-4 text-teal-400" />
+              <span>Mıknatıslı Oturt</span>
+            </button>
+          </div>
+
+          {/* Drop Perpendicular Action Button (4 cols) */}
+          <div className="lg:col-span-4">
+            <button
+              onClick={handleDropPerpendicular}
+              disabled={isReflected}
+              className={`w-full py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                isReadyToDefend
+                  ? 'bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 shadow-teal-500/30 animate-pulse'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-400 border border-slate-700'
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>90° Dikme İndir & Savun</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -939,7 +1116,7 @@ export function OrbitRescueCompassGame({ onComplete }: { onComplete?: () => void
 
       {/* Orbit Canvas SVG Screen */}
       <div className="relative w-full h-[380px] bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 rounded-2xl border-2 border-slate-800 overflow-hidden select-none">
-        <svg className="w-full h-full">
+        <svg className="w-full h-full" viewBox="0 0 600 380">
           {/* Starfield */}
           <circle cx="60" cy="50" r="1.5" fill="#ffffff" opacity="0.6" />
           <circle cx="480" cy="80" r="1.5" fill="#ffffff" opacity="0.4" />
@@ -1247,73 +1424,154 @@ export function GeometryScissorsMaglevGame({ onComplete }: { onComplete?: () => 
 
       {/* Maglev Track Canvas SVG */}
       <div className="relative w-full h-[280px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-2xl border-2 border-slate-800 overflow-hidden select-none">
-        <svg className="w-full h-full">
-          {/* Scenery track pillars */}
-          <line x1="100" y1="180" x2="100" y2="280" stroke="#334155" strokeWidth="6" />
-          <line x1="500" y1="180" x2="500" y2="280" stroke="#334155" strokeWidth="6" />
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 600 300"
+        >
+          <defs>
+            <linearGradient id="trainGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#0369a1" />
+              <stop offset="60%" stopColor="#0284c7" />
+              <stop offset="100%" stopColor="#38bdf8" />
+            </linearGradient>
+            <linearGradient id="trackGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#0284c7" stopOpacity="0.2" />
+            </linearGradient>
+            <pattern id="maglev-grid" width="25" height="25" patternUnits="userSpaceOnUse">
+              <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(14, 165, 233, 0.08)" strokeWidth="1" />
+            </pattern>
+          </defs>
 
-          {/* Left Track Section */}
-          <line x1="20" y1="180" x2="180" y2="180" stroke="#64748b" strokeWidth="8" />
-          <line x1="20" y1="180" x2="180" y2="180" stroke="#0ea5e9" strokeWidth="3" />
+          {/* Grid background & stars */}
+          <rect width="600" height="300" fill="url(#maglev-grid)" />
+          <circle cx="80" cy="40" r="1.5" fill="#ffffff" opacity="0.6" />
+          <circle cx="250" cy="60" r="1" fill="#ffffff" opacity="0.4" />
+          <circle cx="480" cy="35" r="1.5" fill="#ffffff" opacity="0.5" />
+          <circle cx="540" cy="70" r="1" fill="#ffffff" opacity="0.4" />
 
-          {/* Right Track Section */}
-          <line x1="420" y1="180" x2="580" y2="180" stroke="#64748b" strokeWidth="8" />
-          <line x1="420" y1="180" x2="580" y2="180" stroke="#0ea5e9" strokeWidth="3" />
+          {/* Distant Cyber Cityscape Silhouette */}
+          <path
+            d="M 0 175 L 30 140 L 60 140 L 70 175 L 120 120 L 150 120 L 170 175 L 430 175 L 450 130 L 480 130 L 500 175 L 530 110 L 560 110 L 600 175 Z"
+            fill="#0f172a"
+            opacity="0.6"
+          />
 
-          {/* Gap Zone & Placed Geometric Entity */}
+          {/* Scenery Concrete Track Pillars */}
+          <rect x="70" y="175" width="14" height="100" fill="#1e293b" rx="2" stroke="#334155" strokeWidth="1" />
+          <rect x="130" y="175" width="14" height="100" fill="#1e293b" rx="2" stroke="#334155" strokeWidth="1" />
+          <rect x="450" y="175" width="14" height="100" fill="#1e293b" rx="2" stroke="#334155" strokeWidth="1" />
+          <rect x="510" y="175" width="14" height="100" fill="#1e293b" rx="2" stroke="#334155" strokeWidth="1" />
+
+          {/* Station A Pillar & Marker */}
+          <rect x="173" y="175" width="14" height="105" fill="#0f766e" rx="3" stroke="#14b8a6" strokeWidth="1.5" />
+          <circle cx="180" cy="175" r="14" fill="#0f172a" stroke="#14b8a6" strokeWidth="2" />
+          <text x="180" y="179" textAnchor="middle" fill="#2dd4bf" fontSize="11" fontWeight="900">A</text>
+          <text x="180" y="210" textAnchor="middle" fill="#99f6e4" fontSize="9" fontWeight="800">1. İstasyon</text>
+
+          {/* Station B Pillar & Marker */}
+          <rect x="413" y="175" width="14" height="105" fill="#0f766e" rx="3" stroke="#14b8a6" strokeWidth="1.5" />
+          <circle cx="420" cy="175" r="14" fill="#0f172a" stroke="#14b8a6" strokeWidth="2" />
+          <text x="420" y="179" textAnchor="middle" fill="#2dd4bf" fontSize="11" fontWeight="900">B</text>
+          <text x="420" y="210" textAnchor="middle" fill="#99f6e4" fontSize="9" fontWeight="800">2. İstasyon</text>
+
+          {/* Left Permanent Track Section */}
+          <line x1="0" y1="175" x2="180" y2="175" stroke="#0369a1" strokeWidth="10" strokeLinecap="round" />
+          <line x1="0" y1="175" x2="180" y2="175" stroke="#38bdf8" strokeWidth="3" />
+
+          {/* Right Permanent Track Section */}
+          <line x1="420" y1="175" x2="600" y2="175" stroke="#0369a1" strokeWidth="10" strokeLinecap="round" />
+          <line x1="420" y1="175" x2="600" y2="175" stroke="#38bdf8" strokeWidth="3" />
+
+          {/* GAP ZONE (x=180 to x=420) & GEOMETRIC ENTITY */}
+          {!selectedEntity && (
+            <g className="animate-pulse">
+              {/* Dashed placeholder gap */}
+              <line x1="180" y1="175" x2="420" y2="175" stroke="#f59e0b" strokeWidth="3" strokeDasharray="6 6" />
+              <rect x="200" y="130" width="200" height="30" rx="8" fill="#1e1b4b" stroke="#f59e0b" strokeWidth="1.5" />
+              <text x="300" y="150" textAnchor="middle" fill="#fde047" fontSize="10" fontWeight="900">
+                ⚡ Ray Boşluğu (Aşağıdan Seçin)
+              </text>
+            </g>
+          )}
+
+          {/* Placed Geometric Entity */}
           {selectedEntity && (
-            <g transform="translate(180, 180)">
-              {/* Base Line */}
-              <line x1="0" y1="0" x2="240" y2="0" stroke="#10b981" strokeWidth="6" />
+            <g className="animate-in fade-in duration-300">
+              {/* Glow Aura */}
+              <line x1="180" y1="175" x2="420" y2="175" stroke="#10b981" strokeWidth="14" opacity="0.3" strokeLinecap="round" />
+              {/* Core Rail */}
+              <line x1="180" y1="175" x2="420" y2="175" stroke="#10b981" strokeWidth="8" strokeLinecap="round" />
+              <line x1="180" y1="175" x2="420" y2="175" stroke="#6ee7b7" strokeWidth="3" />
 
-              {/* Endcaps according to geometry type */}
+              {/* 1. Doğru Parçası [AB] */}
               {selectedEntity === 'segment' && (
                 <>
-                  <circle cx="0" cy="0" r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-                  <circle cx="240" cy="0" r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-                  <text x="120" y="-12" textAnchor="middle" fill="#34d399" fontSize="11" fontWeight="800">
-                    [A, B] Doğru Parçası (İki ucu kapalı)
+                  <circle cx="180" cy="175" r="9" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" className="drop-shadow-[0_0_8px_#10b981]" />
+                  <circle cx="420" cy="175" r="9" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" className="drop-shadow-[0_0_8px_#10b981]" />
+                  <rect x="195" y="125" width="210" height="28" rx="8" fill="#064e3b" stroke="#10b981" strokeWidth="1.5" />
+                  <text x="300" y="143" textAnchor="middle" fill="#6ee7b7" fontSize="11" fontWeight="900">
+                    [A, B] Doğru Parçası • İki ucu sınırlı
                   </text>
                 </>
               )}
 
+              {/* 2. Işın [AB) */}
               {selectedEntity === 'ray' && (
                 <>
-                  <circle cx="0" cy="0" r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-                  <polygon points="240,-8 256,0 240,8" fill="#10b981" />
-                  <text x="120" y="-12" textAnchor="middle" fill="#34d399" fontSize="11" fontWeight="800">
-                    [A, -&gt;) Işın (Tek ucu sonsuz)
+                  <circle cx="180" cy="175" r="9" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" className="drop-shadow-[0_0_8px_#10b981]" />
+                  <polygon points="420,166 438,175 420,184" fill="#10b981" stroke="#ffffff" strokeWidth="1.5" className="drop-shadow-[0_0_8px_#10b981]" />
+                  <rect x="195" y="125" width="210" height="28" rx="8" fill="#064e3b" stroke="#10b981" strokeWidth="1.5" />
+                  <text x="300" y="143" textAnchor="middle" fill="#6ee7b7" fontSize="11" fontWeight="900">
+                    [A, B) Işını • A'dan başlar, sonsuza uzanır
                   </text>
                 </>
               )}
 
+              {/* 3. Doğru (d) */}
               {selectedEntity === 'line' && (
                 <>
-                  <polygon points="0,-8 -16,0 0,8" fill="#10b981" />
-                  <polygon points="240,-8 256,0 240,8" fill="#10b981" />
-                  <text x="120" y="-12" textAnchor="middle" fill="#34d399" fontSize="11" fontWeight="800">
-                    (&lt;- -&gt;) Doğru (İki ucu sonsuz)
+                  <polygon points="180,166 162,175 180,184" fill="#10b981" stroke="#ffffff" strokeWidth="1.5" className="drop-shadow-[0_0_8px_#10b981]" />
+                  <polygon points="420,166 438,175 420,184" fill="#10b981" stroke="#ffffff" strokeWidth="1.5" className="drop-shadow-[0_0_8px_#10b981]" />
+                  <rect x="195" y="125" width="210" height="28" rx="8" fill="#064e3b" stroke="#10b981" strokeWidth="1.5" />
+                  <text x="300" y="143" textAnchor="middle" fill="#6ee7b7" fontSize="11" fontWeight="900">
+                    (d) Doğrusu • İki yönde sonsuza uzanır
                   </text>
                 </>
               )}
             </g>
           )}
 
-          {/* Maglev Train */}
+          {/* HIGH-SPEED MAGLEV TRAIN */}
           <g
+            transform={isTrainMoving ? 'translate(440, 0)' : 'translate(30, 0)'}
             style={{
-              transform: isTrainMoving ? 'translateX(550px)' : 'translateX(30px)',
-              transition: isTrainMoving ? 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'
+              transition: isTrainMoving ? 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1)' : 'transform 0.3s ease-out'
             }}
           >
-            <rect x="0" y="145" width="100" height="30" rx="8" fill="#0284c7" stroke="#38bdf8" strokeWidth="2" />
-            <polygon points="100,160 115,160 100,145" fill="#0284c7" />
-            {/* Windows */}
-            <rect x="15" y="150" width="18" height="10" rx="2" fill="#e0f2fe" />
-            <rect x="40" y="150" width="18" height="10" rx="2" fill="#e0f2fe" />
-            <rect x="65" y="150" width="18" height="10" rx="2" fill="#e0f2fe" />
-            {/* Headlight beam */}
-            <polygon points="115,160 220,130 220,190" fill="rgba(56, 189, 248, 0.25)" />
+            {/* Magnetic Hover Glow underneath */}
+            <ellipse cx="60" cy="174" rx="55" ry="4" fill="rgba(56, 189, 248, 0.6)" className="animate-pulse" />
+
+            {/* Aerodynamic Maglev Body */}
+            <path
+              d="M 5 146 Q 5 140 15 140 L 90 140 Q 115 140 128 158 Q 132 165 125 170 L 15 170 Q 5 170 5 162 Z"
+              fill="url(#trainGrad)"
+              stroke="#e0f2fe"
+              strokeWidth="2"
+            />
+
+            {/* Cockpit & Passenger Windows */}
+            <path d="M 92 145 L 115 156 L 92 156 Z" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1" />
+            <rect x="25" y="146" width="16" height="9" rx="2" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1" />
+            <rect x="47" y="146" width="16" height="9" rx="2" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1" />
+            <rect x="69" y="146" width="16" height="9" rx="2" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1" />
+
+            {/* Cyan LED Side Trim */}
+            <line x1="12" y1="162" x2="118" y2="162" stroke="#22d3ee" strokeWidth="2" />
+
+            {/* Headlight Beam Cone */}
+            <polygon points="128,160 260,125 260,195" fill="rgba(56, 189, 248, 0.22)" pointerEvents="none" />
+            <circle cx="127" cy="162" r="3.5" fill="#ffffff" className="drop-shadow-[0_0_6px_#ffffff]" />
           </g>
         </svg>
       </div>
@@ -1414,8 +1672,8 @@ const LIGHTHOUSE_TASKS: LighthouseTask[] = [
     id: 2,
     type: 'dik',
     title: 'Dik Açı Görevi: Liman Girişi Taraması (Tam 90°)',
-    targetMin: 88,
-    targetMax: 92,
+    targetMin: 90,
+    targetMax: 90,
     prompt: 'Işık kollarını tam DİK AÇIYA (90°) getir. Liman girişini kare-nokta diklik sembolüyle kilitle!',
     symbol: '= 90°'
   },
@@ -1510,7 +1768,7 @@ export function LighthouseAngleGame({ onComplete }: { onComplete?: () => void })
   };
 
   return (
-    <div className="bg-slate-950 text-white rounded-3xl p-5 sm:p-7 border-2 border-amber-500/40 shadow-2xl space-y-6">
+    <div className="bg-slate-950 text-white rounded-3xl p-5 sm:p-7 border-2 border-amber-500/40 shadow-2xl space-y-6 select-none">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div>
@@ -1530,8 +1788,8 @@ export function LighthouseAngleGame({ onComplete }: { onComplete?: () => void })
       </div>
 
       {/* Sea & Lighthouse Canvas SVG */}
-      <div className="relative w-full h-[360px] bg-gradient-to-b from-slate-950 via-slate-900 to-sky-950/80 rounded-2xl border-2 border-slate-800 overflow-hidden select-none">
-        <svg className="w-full h-full">
+      <div className="relative w-full h-[360px] bg-gradient-to-b from-slate-950 via-slate-900 to-sky-950/80 rounded-2xl border-2 border-slate-800 overflow-hidden select-none flex items-center justify-center p-2">
+        <svg className="w-full h-full select-none drop-shadow-2xl" viewBox="0 0 600 360">
           {/* Waves background */}
           <path d="M 0 300 Q 150 290 300 300 T 600 300" fill="none" stroke="#0369a1" strokeWidth="2" opacity="0.3" />
           <path d="M 0 330 Q 150 320 300 330 T 600 330" fill="none" stroke="#0369a1" strokeWidth="2" opacity="0.4" />
@@ -1624,25 +1882,65 @@ export function LighthouseAngleGame({ onComplete }: { onComplete?: () => void })
       </div>
 
       {/* Angle Slider & Action */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-slate-900 p-4 rounded-2xl border border-slate-800">
-        <div className="space-y-1.5 md:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center bg-slate-900 p-4 rounded-2xl border border-slate-800">
+        <div className="space-y-2 lg:col-span-2">
           <div className="flex items-center justify-between text-xs font-bold text-slate-300">
             <span>Sanal İletki / Açı Kolu Açıklığı:</span>
-            <span className="font-mono text-amber-400 font-black text-sm">{angleValue}°</span>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-amber-400 font-black text-sm bg-slate-950 px-2.5 py-0.5 rounded-lg border border-slate-700">
+                {angleValue}°
+              </span>
+              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-lg ${
+                angleValue === 90 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
+              }`}>
+                {angleCategory}
+              </span>
+            </div>
           </div>
-          <input
-            type="range"
-            min="10"
-            max="170"
-            value={angleValue}
-            onChange={(e) => {
-              setAngleValue(Number(e.target.value));
-              soundSynth.playCompass();
-            }}
-            disabled={isLocked}
-            className="w-full h-2.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-400"
-          />
-          <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                const next = Math.max(10, angleValue - 1);
+                setAngleValue(next);
+                soundSynth.playCompass();
+              }}
+              disabled={isLocked}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all cursor-pointer disabled:opacity-50"
+              title="1° Azalt"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+
+            <input
+              type="range"
+              min="10"
+              max="170"
+              step="1"
+              value={angleValue}
+              onChange={(e) => {
+                setAngleValue(Number(e.target.value));
+                soundSynth.playCompass();
+              }}
+              disabled={isLocked}
+              className="flex-1 h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-400"
+            />
+
+            <button
+              onClick={() => {
+                const next = Math.min(170, angleValue + 1);
+                setAngleValue(next);
+                soundSynth.playCompass();
+              }}
+              disabled={isLocked}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all cursor-pointer disabled:opacity-50"
+              title="1° Artır"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="flex justify-between text-[10px] text-slate-500 font-mono pt-0.5">
             <span>Dar Açı (10°-89°)</span>
             <span className="text-emerald-400 font-bold">Tam Dik (90°)</span>
             <span>Geniş Açı (91°-170°)</span>

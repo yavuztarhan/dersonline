@@ -565,13 +565,13 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                               fillOpacity="0.12"
                             />
 
-                            {/* Base Ray [BA> */}
+                            {/* Base Ray [BA */}
                             <line x1={vx} y1={vy} x2={vx + armLen + 20} y2={vy} stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" />
                             <polygon points={`${vx + armLen + 30},${vy} ${vx + armLen + 18},${vy - 6} ${vx + armLen + 18},${vy + 6}`} fill="#38bdf8" />
                             <circle cx={vx + 110} cy={vy} r="4" fill="#38bdf8" stroke="#ffffff" strokeWidth="1.5" />
                             <text fill="#7dd3fc" fontSize="11" fontWeight="bold" x={vx + 110} y={vy + 18} textAnchor="middle">A Kolu</text>
 
-                            {/* Rotating Ray [BC> */}
+                            {/* Rotating Ray [BC */}
                             <line x1={vx} y1={vy} x2={cx + (18 * Math.cos(rad))} y2={cy - (18 * Math.sin(rad))} stroke="#fde047" strokeWidth="4" strokeLinecap="round" />
                             <polygon
                               points={`${cx + (25 * Math.cos(rad))},${cy - (25 * Math.sin(rad))} ${cx - (6 * Math.sin(rad))},${cy - (6 * Math.cos(rad))} ${cx + (6 * Math.sin(rad))},${cy + (6 * Math.cos(rad))}`}
@@ -1481,9 +1481,13 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                       <text fill="#94a3b8" fontSize="8" x="72" y="136" textAnchor="middle">Pergel açıklığı sabit</text>
                     </g>
 
-                    <rect x="50" y="225" width="300" height="30" rx="8" fill="#042f2e" stroke="#10b396" />
-                    <text fill="#5ee7cc" fontSize="11" fontWeight="bold" x="200" y="244" textAnchor="middle">
-                      Pergel açıklığı yarıçapı korur: Tüm yarıçaplar eşittir (|OK|=|OL|=|OM|).
+                    {/* Bottom Summary Badge */}
+                    <rect x="15" y="222" width="370" height="46" rx="10" fill="#042f2e" stroke="#10b396" strokeWidth="1.5" />
+                    <text fill="#5ee7cc" fontSize="10.5" fontWeight="bold" x="200" y="240" textAnchor="middle">
+                      Pergel açıklığı yarıçapı korur: Yarıçap uzunluğu sabittir.
+                    </text>
+                    <text fill="#99f6e4" fontSize="9.5" fontWeight="bold" x="200" y="256" textAnchor="middle">
+                      Tüm yarıçaplar eşittir (|OK| = |OL| = |OM| = r).
                     </text>
                   </svg>
                 )}
@@ -1521,8 +1525,8 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     <text fill="#5ee7cc" fontSize="11" fontWeight="900" x="195" y="100">G</text>
 
                     {/* Badge */}
-                    <rect x="60" y="235" width="280" height="32" rx="8" fill="#1e1e38" stroke="#ec4899" />
-                    <text fill="#fbcfe8" fontSize="11" fontWeight="bold" x="200" y="255" textAnchor="middle">
+                    <rect x="15" y="235" width="370" height="34" rx="8" fill="#1e1e38" stroke="#ec4899" strokeWidth="1.5" />
+                    <text fill="#fbcfe8" fontSize="10" fontWeight="bold" x="200" y="256" textAnchor="middle">
                       Pergel ile her iki kolda |AD| = |AE| ve |DF| = |EG| eşitliği kurulur.
                     </text>
                   </svg>
@@ -1580,9 +1584,12 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     <text fill="#f59e0b" fontSize="10" fontWeight="900" x="225" y="200">90°</text>
 
                     {/* Badge */}
-                    <rect x="50" y="238" width="300" height="30" rx="8" fill="#042f2e" stroke="#10b396" />
-                    <text fill="#5ee7cc" fontSize="11" fontWeight="bold" x="200" y="257" textAnchor="middle">
-                      Bir doğruya dışındaki P noktasından YALNIZ BİR dikme [PH] ⊥ d çizilebilir!
+                    <rect x="15" y="235" width="370" height="38" rx="10" fill="#042f2e" stroke="#10b396" strokeWidth="1.5" />
+                    <text fill="#5ee7cc" fontSize="10" fontWeight="bold" x="200" y="251" textAnchor="middle">
+                      Dışındaki P noktasından doğruya YALNIZ BİR dikme ([PH] ⊥ d) çizilebilir.
+                    </text>
+                    <text fill="#94a3b8" fontSize="8.5" x="200" y="264" textAnchor="middle">
+                      Gönyeyle indirilen dikme, d doğrusuna olan EN KISA mesafedir.
                     </text>
                   </svg>
                 )}
@@ -1627,11 +1634,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                     </text>
 
                     {/* Badge */}
-                    <rect x="50" y="225" width="300" height="35" rx="10" fill="#042f2e" stroke="#10b396" />
-                    <text fill="#5ee7cc" fontSize="11" fontWeight="bold" x="200" y="242" textAnchor="middle">
+                    <rect x="15" y="224" width="370" height="46" rx="10" fill="#042f2e" stroke="#10b396" strokeWidth="1.5" />
+                    <text fill="#5ee7cc" fontSize="10.5" fontWeight="bold" x="200" y="242" textAnchor="middle">
                       Eşit uzaklıktaki dikmeler birleştirilince paralel doğru oluşur.
                     </text>
-                    <text fill="#94a3b8" fontSize="9" x="200" y="254" textAnchor="middle">
+                    <text fill="#94a3b8" fontSize="8.5" x="200" y="258" textAnchor="middle">
                       Doğrular uzatılsa bile aralarındaki mesafe (h) asla değişmez, kesişmezler.
                     </text>
                   </svg>
