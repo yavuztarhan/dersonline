@@ -496,7 +496,7 @@ export function LandingPage({ onOpenAuth }: LandingPageProps) {
             </div>
             <h4 className="font-extrabold text-sm text-white">Hikâye & Bağlam</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Mimar Sinan ve Çırak Hasan'ın Selimiye Camii şantiyesindeki günlük hayat problemleri.
+              Mimar Sinan ve Çırak Selim'in Selimiye ve köprü şantiyelerindeki gerçek hayat kurguları.
             </p>
           </div>
 

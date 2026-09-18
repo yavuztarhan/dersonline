@@ -624,77 +624,80 @@ export const CURRICULUM_DATA: Grade[] = [
                     },
                     phases: {
                       story: {
-                        title: 'Mimarın Geometri Çantası: Cetvel, Pergel ve Gönyenin Sırrı',
+                        title: 'Sultanın Büyük Kanyon Su Kemeri ve Raylı Nakil Hattı',
                         character: {
-                          name: 'Mimar Sinan & Çırak Hasan',
-                          role: 'Usta Geometrik Mimarlar',
+                          name: 'Mimar Sinan & Çırak Selim',
+                          role: 'Baş Mimar & Genç Geometri Çırağı',
                           avatar: '🏛️'
                         },
-                        scenario: 'Mimar Sinan, büyük mimari yapılar ve köprü projelerinde çırağı Hasan’a geometri çantasını açıyor. Çantada sayısız cetvel, pergel ve gönye var. Sinan Usta soruyor: "Bu aletler sadece çizim için değil, evrenin değişmez geometrik kurallarını inşa etmek içindir!"',
-                        realLifeConnection: 'Tarihi köprü ayakları iki noktadan geçen tek doğruyla hizalanır, kubbe ve kemerler pergelin eşit yarıçapıyla yükselir, tren rayları ise gönyenin eşit dikmeleriyle paralel kılınır.',
-                        reflectionQuestion: 'Bir doğruya dışındaki tek bir noktadan kaç tane dikme çizebiliriz? Peki bu doğruya paralel bir doğru inşa etmek için noktaların uzaklığı nasıl olmalıdır?',
-                        keyTakeaway: 'Ölçüsüz cetvel doğruluğu, pergel eşit mesafeyi, gönye ise diklik ve paralelliği inşa etmenin değişmez anahtarıdır.',
+                        scenario: 'Sultan, payitahta su ulaştırmak için sarp Kaya Boğazı Kanyonu üzerine asırlar boyu yıkılmayacak bir su kemeri ve ocaktan mermer blokları taşıyacak raylı nakil hattı yapılmasını emreder. Kanyonda hazır ölçü aleti yoktur. Sinan Usta, çırağı Selim’e yalnızca 3 ata yadigarı araç uzatır: Ölçüsüz Çizgeç, Sabit Pergel ve Gönye!',
+                        realLifeConnection: 'Tarihi köprü ayakları iki noktadan geçen tek doğruyla hizalanır, tonoz kemerleri pergelin eşit yarıçapıyla yükselir, tren rayları ise gönyenin eşit dikmeleriyle paralel kılınır.',
+                        reflectionQuestion: 'Bir doğruya dışındaki tek bir noktadan kaç tane dikme çizebiliriz? Peki bu doğruya paralel raylar inşa etmek için noktaların uzaklığı nasıl olmalıdır?',
+                        keyTakeaway: 'Ölçüsüz çizgeç doğruluğu, pergel eşit mesafeyi, gönye ise diklik ve ray paralelliğini inşa etmenin değişmez anahtarıdır.',
                         pages: [
                           {
                             id: 'p2-1',
                             pageNumber: 1,
-                            chapterTitle: '1. Bölüm: İki Nokta Arasındaki Tek Yol',
-                            conceptTitle: 'Ölçüsüz Cetvel ve İki Noktadan Geçen Doğru',
-                            conceptBadge: 'A ve B Noktaları',
+                            chapterTitle: '1. Bölüm: Kanyonun İki Yakası & Ana Kemer Ekseni',
+                            conceptTitle: 'Ölçüsüz Çizgeç ve İki Noktadan Geçen Tek Doğru',
+                            conceptBadge: 'A ve B Ankraj Kayaları',
                             symbolicCode: 'AB Doğrusu (Tek Doğru)',
-                            narrativeText: 'Mimar Sinan çizim masasına iki çivi çaktı (A ve B noktaları). Çırak Hasan’a ölçüsüz düz bir tahta cetvel uzattı.',
+                            narrativeText: 'Kanyonun kenarında fırtınalı rüzgarlar eserken Mimar Sinan, kanyonun karşılıklı iki sarp yamacındaki en sağlam ana kayalara iki demir mil çaktı (A ve B noktaları). Çırağı Selim’e ölçüsüz düz tahta çizgeci uzatarak su kemerinin ana omurgasını belirleme görevini verdi.',
                             characterDialogue: {
                               speaker: 'Mimar Sinan',
-                              text: 'Evlat, bu iki noktadan geçecek düz bir çizgi çek. İkinci bir farklı düz doğru çizebilir misin? Dene bakalım!'
+                              text: 'Selim evlat! Suyun kanyonu aşacağı ana köprü eksenini bu iki kaya noktası (A ve B) arasından çek. Bu iki sabit nokta arasından geçecek ikinci bir farklı düz hat çizebilir misin? Hayır! İki nokta arasındaki kader tektir; kemerimizin omurgası bu değişmez doğru üzerine oturacak.'
                             },
                             visualScene: {
                               type: 'straightedge-twopoints',
+                              imageUrl: '/images/stories/mat5-3-2/sahne 1.png',
                               caption: 'İki farklı noktadan yalnız ve yalnız tek bir doğru geçer.'
                             },
                             interactiveAction: {
-                              prompt: 'Ölçüsüz cetveli A ve B noktalarına oturtarak tek doğruyu çizin!',
+                              prompt: 'Ölçüsüz çizgeci A ve B noktalarına oturtarak kanyonun ana taşıyıcı doğrusunu çekin!',
                               actionLabel: 'İki Noktadan Doğru Çek 📏',
-                              feedbackRevealed: 'Harika çıkarım! Düzlemdeki herhangi iki farklı noktadan yalnız 1 doğru çizilebilir.'
+                              feedbackRevealed: 'Kusursuz çıkarım! Düzlemdeki herhangi iki farklı noktadan yalnız ve yalnız 1 doğru çizilebilir.'
                             },
-                            mathTakeaway: 'Çıkarım 1: İki farklı noktadan geçen yalnız ve yalnız bir doğru çizilebilir.'
+                            mathTakeaway: 'Çıkarım 1: Düzlemdeki iki farklı noktadan geçen yalnız ve yalnız bir doğru çizilebilir (AB Doğrusu).'
                           },
                           {
                             id: 'p2-2',
                             pageNumber: 2,
-                            chapterTitle: '2. Bölüm: Pergelin Adımları ve Çemberin Yarıçapı',
+                            chapterTitle: '2. Bölüm: Kemer Ayaklarının Adımlanması & Temel Çemberleri',
                             conceptTitle: 'Merkezden Eşit Uzaklık & Işında Parça Kesme',
                             conceptBadge: 'Pergel & Yarıçap (r)',
-                            symbolicCode: '|OA| = |OB| = r, [AB] = [BC]',
-                            narrativeText: 'Sinan Usta pergelin sivri ucunu masaya sabitledi ve kurşun kalemli ucuyla tam bir tur döndü. Ardından aynı pergel açıklığını bir ışının başlangıç noktasına koydu.',
+                            symbolicCode: '|OA| = |OB| = r, [OA] = [AB] = [BC]',
+                            narrativeText: 'Ana eksen belirlendikten sonra, su kemerini taşıyacak devasa ayakların vadi tabanına eşit aralıklarla yerleştirilmesi ve kemer yaylarının aynı açılmayla örülmesi gerekiyordu. Sinan Usta pirinç pergelin açıklığını kilitledi ve ışının başlangıç noktasına (O) koydu.',
                             characterDialogue: {
                               speaker: 'Mimar Sinan',
-                              text: 'Pergelin ayağını bozmadıkça merkezden çember üzerindeki her noktaya mesafe aynıdır! Işın üzerine art arda batırdığında ise yan yana eşit doğru parçaları kesersin.'
+                              text: 'Pergelin ayağını hiç bozma evlat! Sivri ucu her çukurun merkezine batırıp döndürdüğünde, merkezden çember yayına uzanan tüm taşlar eşit yarıçaptadır (r). Aynı pergel adımını ışın boyunca art arda bastığında ise kemer ayakları ([OA] = [AB] = [BC]) kusursuz bir eşitlikle vadiye dizilir.'
                             },
                             visualScene: {
                               type: 'compass-circle-ray',
+                              imageUrl: '/images/stories/mat5-3-2/sahne 2.jpg',
                               caption: 'Çemberin tüm yarıçapları eşittir; pergel ışın üzerinde eşit parçalar keser.'
                             },
                             interactiveAction: {
                               prompt: 'Pergel ile çemberi çizin ve ışın üzerinde eşit doğru parçaları adımlayın!',
                               actionLabel: 'Pergel ile Eşit Parçalar Kes 🧭',
-                              feedbackRevealed: 'Kusursuz! Çemberin tüm yarıçapları eşittir (|OA|=|OB|=r). Işın üzerinde [AB]=[BC]=[CD] eşit parçaları inşa edildi.'
+                              feedbackRevealed: 'Kusursuz! Çemberin tüm yarıçapları eşittir (|OA|=|OB|=r). Işın üzerinde [OA]=[AB]=[BC] eşit parçaları inşa edildi.'
                             },
-                            mathTakeaway: 'Çıkarım 2: Çember merkezinden üzerindeki tüm noktalara çizilen doğru parçaları eşit uzunluktadır. Pergel eşit uzunlukta doğru parçaları kesmek için kullanılır.'
+                            mathTakeaway: 'Çıkarım 2: Çember merkezinden üzerindeki tüm noktalara çizilen doğru parçaları eşit uzunluktadır (r). Pergel eşit uzunlukta doğru parçaları kesmek için kullanılır.'
                           },
                           {
                             id: 'p2-3',
                             pageNumber: 3,
-                            chapterTitle: '3. Bölüm: Açının Kollarını Eşitleme',
+                            chapterTitle: '3. Bölüm: Kemer Tonoz Çatısı & Açının Kollarını Eşitleme',
                             conceptTitle: 'Açının Kollarından Eşit Parça Kesme İnşası',
                             conceptBadge: 'Açı Kolu İnşası',
                             symbolicCode: '|OA| = |OB| (Eşit Kollar)',
-                            narrativeText: 'Çırak Hasan bir açı çizdi. Sinan Usta pergelin sivri ucunu açının köşe noktasına (O) batırıp açının her iki kolunu kesen bir yay çizdi.',
+                            narrativeText: 'Yükselen kemer ayaklarının üstünde su kanallarını taşıyacak üçgen tonoz çatıları çatılıyordu. Tonozun tepe noktasında oluşan açının (AOB) tonlarca ağırlığa dayanabilmesi için iki yanındaki taşıyıcı payandaların köşe noktasından tam olarak eşit uzaklıkta kilitlenmesi şarttı.',
                             characterDialogue: {
-                              speaker: 'Çırak Hasan',
-                              text: 'Ustam! Pergelin açıklığını hiç değiştirmeden iki kolu da kestiğimiz için [OA] ve [OB] parçalarının uzunluğu birbirine tıpatıp eşit oldu!'
+                              speaker: 'Çırak Selim',
+                              text: 'Ustam! Pergelin sivri ucunu açının tam tepe taşına (O) batırıp tek bir kavisli yay çizdim! Açının sağ ve sol kollarında işaretlediğim [OA] ve [OB] payanda yuvaları birbirine milimetrik olarak eşitlendi. Kemer artık sağa veya sola kaymadan dengede duracak!'
                             },
                             visualScene: {
                               type: 'angle-compass-cut',
+                              imageUrl: '/images/stories/mat5-3-2/sahne 3.jpg',
                               caption: 'Açının köşesine batırılan pergel, kollarından eşit uzunlukta parçalar keser.'
                             },
                             interactiveAction: {
@@ -702,53 +705,31 @@ export const CURRICULUM_DATA: Grade[] = [
                               actionLabel: 'Açının Kollarını Kes 📐',
                               feedbackRevealed: 'İnşa tamamlandı! Açının kollarından pergel yarıçapı kadar eşit uzunlukta doğru parçaları (|OA|=|OB|) kesildi.'
                             },
-                            mathTakeaway: 'Çıkarım 3: Pergel yardımıyla bir açının kollarından köşe noktasından itibaren eşit uzunlukta doğru parçaları kesilebilir.'
+                            mathTakeaway: 'Çıkarım 3: Pergel yardımıyla bir açının kollarından köşe noktasından itibaren eşit uzunlukta doğru parçaları kesilebilir (|OA| = |OB|).'
                           },
                           {
                             id: 'p2-4',
                             pageNumber: 4,
-                            chapterTitle: '4. Bölüm: Gönyenin Dikliği ve Dış Noktalar',
-                            conceptTitle: 'Bir Doğruya Dış Noktadan Tek Dikme',
-                            conceptBadge: 'Dikme (⊥)',
-                            symbolicCode: 'P ⊥ d (Tek Dikme)',
-                            narrativeText: 'Sinan Usta bir zemin doğrusu çizdi ve doğrunun dışına bir P noktası koydu. Hasan eline gönyeyi alarak P noktasından taban doğrusuna dikme indirdi.',
+                            chapterTitle: '4. Bölüm: Kule Terazisi, Gönyeyle Tek Dikme & Paralel Raylar',
+                            conceptTitle: 'Dış Noktadan Tek Dikme ve Paralel Ray İnşası',
+                            conceptBadge: 'Dikme (⊥) & Paralellik (//)',
+                            symbolicCode: 'P ⊥ d (Tek Dikme) & d₁ // d₂ (Paralel Raylar)',
+                            narrativeText: 'Su kemerinin kulesini (P) temel doğrusuna tam 90° dik indirmek için gönye kullanıldı. Ardından taş ocağından mermer taşıyacak vagonlar için birinci ray boyunca hep eşit dik mesafede noktalar işaretlenerek ikinci ray çekildi.',
                             characterDialogue: {
-                              speaker: 'Mimar Sinan',
-                              text: 'Gönyenin dik köşesini tabana yasla. Dışarıdaki bu sabit P noktasından tabana ikinci bir farklı dikme çizebilir misin? Hayır, yalnız tek bir dikme geçer!'
+                              speaker: 'Mimar Sinan & Selim',
+                              text: 'Gönyeyle gökyüzündeki P noktasından zemine sadece 1 tek dikme inebilir; bu en sağlam ve en kısa yoldur! Aynı gönyeyle ray boyunca eşit uzaklıktaki noktaları birleştirdiğimizde ise raylar asla kesişmez: Paralel doğrularla (d₁ // d₂) su kemerimiz tamamlandı!'
                             },
                             visualScene: {
                               type: 'setsquare-perpendicular',
-                              caption: 'Bir doğruya dışındaki sabit bir noktadan yalnız bir dikme çizilebilir.'
+                              imageUrl: '/images/stories/mat5-3-2/sahne 4.jpg',
+                              caption: 'Dış noktadan tek dikme ve eşit uzaklıktaki noktaların birleşimiyle paralel doğrular.'
                             },
                             interactiveAction: {
-                              prompt: 'Gönyeyi P noktasına hizalayarak taban doğrusuna 90° dikme indirin!',
-                              actionLabel: 'Gönyeyle Dikme İndir 📐',
-                              feedbackRevealed: 'Harika çıkarım! Dışındaki sabit bir noktadan doğruya yalnız 1 adet dikme çizilebilir.'
+                              prompt: 'Gönyeyi P noktasına hizalayarak 90° dikme indirin ve paralel rayları tamamlayın!',
+                              actionLabel: 'Gönyeyle Dikme & Paralel Ray İnşa Et 📐',
+                              feedbackRevealed: 'Tebrikler! Dışındaki sabit bir noktadan doğruya yalnız 1 dikme çizilebilir. Bir doğruya eşit uzaklıktaki noktaların oluşturduğu yeni doğru paraleldir (d₁ // d₂).'
                             },
-                            mathTakeaway: 'Çıkarım 4: Bir doğruya dışındaki bir noktadan yalnız bir dikme çizilebilir. Dışındaki farklı noktalardan ise eşit veya farklı uzunlukta dikmeler çizilebilir.'
-                          },
-                          {
-                            id: 'p2-5',
-                            pageNumber: 5,
-                            chapterTitle: '5. Bölüm: Eşit Uzaklıktaki Noktalar ve Tren Rayları',
-                            conceptTitle: 'Paralel Doğru İnşası ve Çıkarım Özeti',
-                            conceptBadge: 'Paralel Doğrular (//)',
-                            symbolicCode: 'd₁ // d₂ (Sabit Mesafe)',
-                            narrativeText: 'Son olarak Hasan, taban doğrusuna gönye yardımıyla hep 10 cm uzaklıkta 3 farklı nokta belirledi ve bu noktaları cetvelle birleştirdi.',
-                            characterDialogue: {
-                              speaker: 'Hasan & Sinan',
-                              text: 'Tıpkı tren rayları gibi! Bir doğruya eşit uzaklıktaki tüm noktaların oluşturduğu doğru, ilk doğruyla asla kesişmez; bu doğrular PARALELDİR (d₁ // d₂)!'
-                            },
-                            visualScene: {
-                              type: 'parallel-tracks',
-                              caption: 'Bir doğruya eşit uzaklıktaki noktaların birleşimi paralel doğru oluşturur.'
-                            },
-                            interactiveAction: {
-                              prompt: 'Eşit uzaklıktaki noktaları birleştirip paralel rayları oluşturun!',
-                              actionLabel: 'Paralel Doğruyu İnşa Et ⏸️',
-                              feedbackRevealed: 'Mükemmel! Bir doğruya eşit uzaklıktaki noktaların oluşturduğu yeni doğru, taban doğrusuna paraleldir (d₁ // d₂).'
-                            },
-                            mathTakeaway: 'Çıkarım 5: Gönye ile bir doğruya eşit uzaklıktaki noktalar belirlenip birleştirildiğinde oluşan doğru, ilk doğruya paraleldir (d₁ // d₂).'
+                            mathTakeaway: 'Çıkarım 4 & 5: Bir doğruya dışındaki noktadan yalnız bir dikme çizilebilir (P ⊥ d). Gönye ile bir doğruya eşit uzaklıktaki noktalar birleştirildiğinde paralel doğru (d₁ // d₂) oluşur.'
                           }
                         ]
                       },

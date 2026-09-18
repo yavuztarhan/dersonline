@@ -52,6 +52,7 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [visualFocusMode, setVisualFocusMode] = useState<'split' | 'expanded'>('split');
   const [reflectionRevealed, setReflectionRevealed] = useState(false);
+  const [sceneDisplayTab, setSceneDisplayTab] = useState<'illustration' | 'interactive'>('illustration');
 
   // Interactive local states for scenes
   const [scene1PointPlaced, setScene1PointPlaced] = useState(false);
@@ -162,6 +163,11 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
     }, 1000);
     return () => clearTimeout(timer);
   }, [compassWaiting]);
+
+  // Reset scene display tab on page change
+  useEffect(() => {
+    setSceneDisplayTab('illustration');
+  }, [currentPageIndex]);
 
   const pages: StorybookPage[] = data.pages || [
     {
@@ -317,33 +323,93 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                   )}
                 </div>
 
-                {/* Visual View Expansion Toggle */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    playSound('click');
-                    setVisualFocusMode(visualFocusMode === 'split' ? 'expanded' : 'split');
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all border border-slate-200 shadow-2xs cursor-pointer active:scale-95"
-                  title={visualFocusMode === 'split' ? 'Görseli Tam Genişliğe Yay' : 'İki Sayfalı Görünüme Dön'}
-                >
-                  {visualFocusMode === 'split' ? (
-                    <>
-                      <Maximize2 className="w-3.5 h-3.5 text-teal-600" />
-                      <span className="hidden sm:inline">Görseli Büyüt</span>
-                    </>
-                  ) : (
-                    <>
-                      <Minimize2 className="w-3.5 h-3.5 text-teal-600" />
-                      <span className="hidden sm:inline">Standart Görünüm</span>
-                    </>
+                <div className="flex items-center gap-2">
+                  {/* Segmented Image / Interactive Switcher for pages with custom scene image */}
+                  {currentPage.visualScene?.imageUrl && (
+                    <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('click');
+                          setSceneDisplayTab('illustration');
+                        }}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          sceneDisplayTab === 'illustration'
+                            ? 'bg-white text-teal-800 shadow-2xs border border-slate-200/80 font-black'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        <span>🖼️ Görsel</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('click');
+                          setSceneDisplayTab('interactive');
+                        }}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          sceneDisplayTab === 'interactive'
+                            ? 'bg-white text-teal-800 shadow-2xs border border-slate-200/80 font-black'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        <span>📐 Çizim</span>
+                      </button>
+                    </div>
                   )}
-                </button>
+
+                  {/* Visual View Expansion Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playSound('click');
+                      setVisualFocusMode(visualFocusMode === 'split' ? 'expanded' : 'split');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all border border-slate-200 shadow-2xs cursor-pointer active:scale-95"
+                    title={visualFocusMode === 'split' ? 'Görseli Tam Genişliğe Yay' : 'İki Sayfalı Görünüme Dön'}
+                  >
+                    {visualFocusMode === 'split' ? (
+                      <>
+                        <Maximize2 className="w-3.5 h-3.5 text-teal-600" />
+                        <span className="hidden sm:inline">Görseli Büyüt</span>
+                      </>
+                    ) : (
+                      <>
+                        <Minimize2 className="w-3.5 h-3.5 text-teal-600" />
+                        <span className="hidden sm:inline">Standart Görünüm</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
-              {/* Dynamic SVG Visual Scenes */}
+              {/* Dynamic SVG Visual Scenes / Image View */}
               <div className={`relative w-full ${visualFocusMode === 'expanded' ? 'min-h-[460px] lg:min-h-[500px]' : 'min-h-[400px] lg:min-h-[440px]'} bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center select-none shadow-inner transition-all duration-300`}>
                 
+                {/* PHOTO / ILLUSTRATION DISPLAY MODE */}
+                {currentPage.visualScene?.imageUrl && sceneDisplayTab === 'illustration' ? (
+                  <div className="relative w-full h-full min-h-[380px] lg:min-h-[420px] flex flex-col items-center justify-center p-3 bg-slate-950/90 select-none group">
+                    <img
+                      src={currentPage.visualScene.imageUrl}
+                      alt={currentPage.chapterTitle}
+                      className="max-h-[360px] lg:max-h-[400px] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-slate-800/80 transition-transform duration-300 group-hover:scale-[1.01]"
+                    />
+                    <div className="mt-2.5 px-4 py-1.5 rounded-full bg-slate-900/90 border border-teal-500/40 text-teal-300 text-xs font-bold flex items-center gap-2 shadow-lg">
+                      <span>{currentPage.visualScene.caption}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('select');
+                          setSceneDisplayTab('interactive');
+                        }}
+                        className="px-2.5 py-0.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-[11px] font-black transition-all cursor-pointer active:scale-95 shadow-xs"
+                      >
+                        Geometrik Çizimi Aç 📐
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
                 {/* SCENE 1: POINT MAP */}
                 {currentPage.visualScene.type === 'point-map' && (
                   <svg className="w-full h-full" viewBox="0 0 400 280">
@@ -5806,6 +5872,8 @@ export function StoryPhase({ data, onNextPhase }: StoryPhaseProps) {
                       <p className="text-xs text-slate-400 max-w-sm">{currentPage.symbolicCode}</p>
                     </div>
                   </div>
+                )}
+                  </>
                 )}
 
               </div>

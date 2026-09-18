@@ -33,6 +33,7 @@ export interface StorybookPage {
   visualScene: {
     type: 'point-map' | 'lighthouse-ray' | 'bridge-segment' | 'horizon-line' | 'summary-chart' | 'selimiye-plan' | 'ray-angle' | 'perpendicular-parallel' | string;
     caption: string;
+    imageUrl?: string;
   };
   interactiveAction?: {
     prompt: string;
