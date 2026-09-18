@@ -738,7 +738,7 @@ export const CURRICULUM_DATA: Grade[] = [
                             conceptTitle: 'Eşit Uzaklıktaki Noktalar ve Paralel Doğrular',
                             conceptBadge: 'Paralel Doğrular (//)',
                             symbolicCode: 'd₁ // d₂ (Sabit Mesafe)',
-                            narrativeText: 'Kemerin inşasında kullanılacak tonlarca ağırlıktaki mermer blokları ocaktan taşımak için birinci nakil rayı (d₁) döşenmişti. Selim, gönye yardımıyla birinci raydan hep h=10 cm dik mesafede noktalar işaretledi ve çizgeçle birleştirerek ikinci rayı (d₂) çekti.',
+                            narrativeText: 'Kemerin inşasında kullanılacak tonlarca ağırlıktaki mermer blokları ocaktan taşımak için birinci nakil rayı (d₁) döşenmişti. Selim, gönye yardımıyla birinci raydan hep h=100 cm dik mesafede noktalar işaretledi ve çizgeçle birleştirerek ikinci rayı (d₂) çekti.',
                             characterDialogue: {
                               speaker: 'Mimar Sinan & Selim',
                               text: 'İki ray arasındaki dik mesafe her noktada eşit ve sabit olduğu için raylar kanyon boyunca nereye kadar uzarsa uzasın asla kesişmeyecek: İşte PARALEL DOĞRULAR (d₁ // d₂) ve tamamlanan su kemeri!'
