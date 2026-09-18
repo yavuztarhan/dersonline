@@ -710,26 +710,50 @@ export const CURRICULUM_DATA: Grade[] = [
                           {
                             id: 'p2-4',
                             pageNumber: 4,
-                            chapterTitle: '4. Bölüm: Kule Terazisi, Gönyeyle Tek Dikme & Paralel Raylar',
-                            conceptTitle: 'Dış Noktadan Tek Dikme ve Paralel Ray İnşası',
-                            conceptBadge: 'Dikme (⊥) & Paralellik (//)',
-                            symbolicCode: 'P ⊥ d (Tek Dikme) & d₁ // d₂ (Paralel Raylar)',
-                            narrativeText: 'Su kemerinin kulesini (P) temel doğrusuna tam 90° dik indirmek için gönye kullanıldı. Ardından taş ocağından mermer taşıyacak vagonlar için birinci ray boyunca hep eşit dik mesafede noktalar işaretlenerek ikinci ray çekildi.',
+                            chapterTitle: '4. Bölüm: Gözetleme Kulesi & Gönye ile Yerçekimi Dikmesi',
+                            conceptTitle: 'Bir Doğruya Dış Noktadan Tek Dikme',
+                            conceptBadge: 'Dikme (⊥)',
+                            symbolicCode: 'P ⊥ d (Tek Dikme)',
+                            narrativeText: 'Su kemerinin kanyonu gözetleyecek ana kulesinin tepe noktası (P) gökyüzünde yükseldi. Kulenin devasa ağırlığının devrilmemesi için taban zemin doğrusuna (d) tam 90° dik bir ana taşıyıcı kolon dikilmeliydi. Selim eline gönyeyi alarak zemin doğrusuna yerleştirdi.',
                             characterDialogue: {
-                              speaker: 'Mimar Sinan & Selim',
-                              text: 'Gönyeyle gökyüzündeki P noktasından zemine sadece 1 tek dikme inebilir; bu en sağlam ve en kısa yoldur! Aynı gönyeyle ray boyunca eşit uzaklıktaki noktaları birleştirdiğimizde ise raylar asla kesişmez: Paralel doğrularla (d₁ // d₂) su kemerimiz tamamlandı!'
+                              speaker: 'Mimar Sinan',
+                              text: 'Gönyenin dik köşesini zemin çizgisine yasla Selim. Gökyüzündeki o P noktasından zemine kaç farklı dikme indirebilirsin? Sadece 1 tane! En ufak açı kayması kuleyi yıkar. Bir noktadan bir doğruya inen tek dikme, hem en güvenli hem de en kısa yoldur!'
                             },
                             visualScene: {
                               type: 'setsquare-perpendicular',
                               imageUrl: '/images/stories/mat5-3-2/sahne 4.jpg',
-                              caption: 'Dış noktadan tek dikme ve eşit uzaklıktaki noktaların birleşimiyle paralel doğrular.'
+                              caption: 'Bir doğruya dışındaki sabit bir noktadan yalnız bir dikme çizilebilir.'
                             },
                             interactiveAction: {
-                              prompt: 'Gönyeyi P noktasına hizalayarak 90° dikme indirin ve paralel rayları tamamlayın!',
-                              actionLabel: 'Gönyeyle Dikme & Paralel Ray İnşa Et 📐',
-                              feedbackRevealed: 'Tebrikler! Dışındaki sabit bir noktadan doğruya yalnız 1 dikme çizilebilir. Bir doğruya eşit uzaklıktaki noktaların oluşturduğu yeni doğru paraleldir (d₁ // d₂).'
+                              prompt: 'Gönyeyi P noktasına hizalayarak taban doğrusuna 90° tek dikmeyi indirin!',
+                              actionLabel: 'Gönyeyle Dikme İndir 📐',
+                              feedbackRevealed: 'Harika çıkarım! Dışındaki sabit bir noktadan doğruya yalnız 1 adet dikme çizilebilir (P ⊥ d).'
                             },
-                            mathTakeaway: 'Çıkarım 4 & 5: Bir doğruya dışındaki noktadan yalnız bir dikme çizilebilir (P ⊥ d). Gönye ile bir doğruya eşit uzaklıktaki noktalar birleştirildiğinde paralel doğru (d₁ // d₂) oluşur.'
+                            mathTakeaway: 'Çıkarım 4: Bir doğruya dışındaki bir noktadan yalnız bir dikme çizilebilir (P ⊥ d). Dışındaki farklı noktalardan ise eşit veya farklı uzunlukta dikmeler çizilebilir.'
+                          },
+                          {
+                            id: 'p2-5',
+                            pageNumber: 5,
+                            chapterTitle: '5. Bölüm: Mermer Nakil Hattı & Çift Tren Rayı Paralelliği',
+                            conceptTitle: 'Eşit Uzaklıktaki Noktalar ve Paralel Doğrular',
+                            conceptBadge: 'Paralel Doğrular (//)',
+                            symbolicCode: 'd₁ // d₂ (Sabit Mesafe)',
+                            narrativeText: 'Kemerin inşasında kullanılacak tonlarca ağırlıktaki mermer blokları ocaktan taşımak için birinci nakil rayı (d₁) döşenmişti. Selim, gönye yardımıyla birinci raydan hep h=10 cm dik mesafede noktalar işaretledi ve çizgeçle birleştirerek ikinci rayı (d₂) çekti.',
+                            characterDialogue: {
+                              speaker: 'Mimar Sinan & Selim',
+                              text: 'İki ray arasındaki dik mesafe her noktada eşit ve sabit olduğu için raylar kanyon boyunca nereye kadar uzarsa uzasın asla kesişmeyecek: İşte PARALEL DOĞRULAR (d₁ // d₂) ve tamamlanan su kemeri!'
+                            },
+                            visualScene: {
+                              type: 'parallel-tracks',
+                              imageUrl: '/images/stories/mat5-3-2/sahne 5.png',
+                              caption: 'Bir doğruya eşit uzaklıktaki noktaların birleşimi paralel doğru oluşturur.'
+                            },
+                            interactiveAction: {
+                              prompt: 'Eşit uzaklıktaki noktaları birleştirip paralel rayları inşa edin ve mermer vagonunu sürün!',
+                              actionLabel: 'Paralel Rayları İnşa Et ⏸️',
+                              feedbackRevealed: 'Harika mühendislik! Bir doğruya eşit uzaklıktaki noktaların oluşturduğu yeni doğru, taban doğrusuna paraleldir (d₁ // d₂).'
+                            },
+                            mathTakeaway: 'Çıkarım 5: Gönye ile bir doğruya eşit uzaklıktaki noktalar belirlenip birleştirildiğinde oluşan doğru, ilk doğruya paraleldir (d₁ // d₂).'
                           }
                         ]
                       },
